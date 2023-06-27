@@ -1,20 +1,11 @@
-import { StyleSheet, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { Landing } from '@/components/Landing';
+import { Landing } from '@components/Landing';
 
 export default function App() {
   return (
-    <View style={styles.container}>
+    <SafeAreaProvider>
       <Landing />
-    </View>
+    </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
