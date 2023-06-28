@@ -3,15 +3,20 @@
   "trailingComma": "all",
   "parser": "typescript",
   "importOrder": [
+    "<THIRD_PARTY_MODULES>",
     "^[./]",
-    "^@expo/(.*)$",
     "^@/(.*)$",
+    "^@api/(.*)$",
+    "^@assets/(.*)$",
+    "^@components/(.*)$",
     "^@config/(.*)$",
     "^@constants/(.*)$",
+    "^@dto/(.*)$",
     "^@hooks/(.*)$",
-    "^@components/(.*)$",
     "^@navigation/(.*)$",
-    "^@screens/(.*)$"
+    "^@screens/(.*)$",
+    "^@services/(.*)$",
+    "^@utils/(.*)$"
   ],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true
