@@ -1,0 +1,32 @@
+export const balances = [
+  {
+    balance: '105.0000000',
+    limit: '922337203685.4775807',
+    buying_liabilities: '0.0000000',
+    selling_liabilities: '0.0000000',
+    last_modified_ledger: 221892,
+    is_authorized: true,
+    is_authorized_to_maintain_liabilities: true,
+    asset_type: 'credit_alphanum4',
+    asset_code: 'BRL',
+    asset_issuer: 'GB6XCXYPZLRAMI6BXATMRBLRIWYBHSH4VP5OS57PQ2TR6MBB4GTD4B4M',
+  },
+  {
+    balance: '345.0000000',
+    limit: '922337203685.4775807',
+    buying_liabilities: '0.0000000',
+    selling_liabilities: '0.0000000',
+    last_modified_ledger: 221994,
+    is_authorized: true,
+    is_authorized_to_maintain_liabilities: true,
+    asset_type: 'credit_alphanum4',
+    asset_code: 'USDC',
+    asset_issuer: 'GA5WM5HAHFQTEJIA55SS4BIVWX4WCAO4GQLEDCETY5XG5QLFM2XUHP6H',
+  },
+  {
+    balance: '9999.9999800',
+    buying_liabilities: '0.0000000',
+    selling_liabilities: '0.0000000',
+    asset_type: 'native',
+  },
+];
