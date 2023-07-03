@@ -1,12 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthenticationDetails, CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
+import { AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js';
 
-// Crea un objeto CognitoUserPool con los parámetros necesarios
-const userPool = new CognitoUserPool({
-  UserPoolId: process.env.AWS_COGNITO_USER_POOL_ID || '',
-  ClientId: process.env.AWS_COGNITO_CLIENT_ID || '',
-  endpoint: process.env.AWS_ENDPOINT || '',
-});
+import userPool from '@api/userPool';
 
 export default async function signIn(username: string, password: string) {
   const user = new CognitoUser({ Username: username, Pool: userPool });

@@ -9,17 +9,17 @@ const StyledText = styled(Text);
 const StyledView = styled(View);
 
 const MakePayment = () => {
-  const [showScanner, setShowScanner] = useState(false);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   const handleScanPress = () => {
-    setShowScanner(true);
+    setIsScannerOpen(true);
   };
 
   const handleCancelPress = () => {
-    setShowScanner(false);
+    setIsScannerOpen(false);
   };
 
-  if (showScanner) {
+  if (isScannerOpen) {
     return (
       <>
         <QRCodeScanner onCancel={handleCancelPress} />
@@ -32,7 +32,7 @@ const MakePayment = () => {
       <Header children />
       <StyledView>
         <StyledText>Made a payment</StyledText>
-        <Button title="Escanear QR" onPress={handleScanPress} />
+        <Button title="Scan QR" onPress={handleScanPress} />
       </StyledView>
     </>
   );

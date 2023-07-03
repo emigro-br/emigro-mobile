@@ -8,7 +8,6 @@ import arsLogo from '@assets/images/ars.png';
 import brLogo from '@assets/images/br.png';
 import usdLogo from '@assets/images/usd.png';
 
-import ConfirmUserForm from '@components/ConfirmUserForm';
 import Header from '@components/Header';
 
 const StyledView = styled(View);
@@ -20,15 +19,17 @@ const Wallet = () => {
       <Header children />
       <StyledView className="flex justify-center items-center">
         <StyledText className="text-center font-bold text-xl my-4">Balances:</StyledText>
-        {balances.map((bal, index) => (
+        {balances.map((balance, index) => (
           <StyledView key={index} className="flex-row justify-between m-1 p-3 w-[200px] border-gray border-2 rounded">
             <StyledView className="flex-row">
-              {bal.asset_code === 'BRL' && <Image source={brLogo} style={{ width: 20, height: 20 }} />}
-              {bal.asset_code === 'USDC' && <Image source={usdLogo} style={{ width: 20, height: 20 }} />}
-              {bal.asset_code === 'ARS' && <Image source={arsLogo} style={{ width: 20, height: 20 }} />}
-              <StyledText className="font-bold">{bal.asset_code ? bal.asset_code : bal.asset_type}:</StyledText>
+              {balance.asset_code === 'BRL' && <Image source={brLogo} style={{ width: 20, height: 20 }} />}
+              {balance.asset_code === 'USDC' && <Image source={usdLogo} style={{ width: 20, height: 20 }} />}
+              {balance.asset_code === 'ARS' && <Image source={arsLogo} style={{ width: 20, height: 20 }} />}
+              <StyledText className="font-bold">
+                {balance.asset_code ? balance.asset_code : balance.asset_type}:
+              </StyledText>
             </StyledView>
-            <StyledText>{bal.balance}</StyledText>
+            <StyledText>{balance.balance}</StyledText>
           </StyledView>
         ))}
       </StyledView>

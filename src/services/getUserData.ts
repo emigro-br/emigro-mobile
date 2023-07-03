@@ -1,6 +1,6 @@
 const BASE_URL = process.env.BASE_URL;
 
-export async function getUserData() {
+export async function getUser() {
   try {
     const response = await fetch(`${BASE_URL}/user`);
     const data = await response.json();

@@ -18,7 +18,7 @@ const StyledButton = styled(Button);
 
 const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [scanned, setScanned] = useState(false);
+  const [isScanned, setIsScanned] = useState(false);
   const [text, setText] = useState({ name: '', vendorId: '', address: '', publicKey: '' });
 
   const askForCameraPermission = () => {
@@ -33,7 +33,7 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
   }, []);
 
   const handleBarCodeScanned = ({ data }: any) => {
-    setScanned(true);
+    setIsScanned(true);
     try {
       const qrObject = JSON.parse(data);
       setText(qrObject);
@@ -65,7 +65,7 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
       </StyledTouchableOpacity>
       <StyledView className="items-center justify-center h-96 w-96 rounded-3xl bg-tomato">
         <BarCodeScanner
-          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+          onBarCodeScanned={isScanned ? undefined : handleBarCodeScanned}
           style={[StyleSheet.absoluteFill, styles.container]}
           barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
         >
@@ -80,7 +80,7 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
       <StyledText className="text-lg">Vendor Id: {text.vendorId}</StyledText>
       <StyledText className="text-lg">Address: {text.address}</StyledText>
       <StyledText className="text-lg">Public Key: {text.publicKey}</StyledText>
-      {scanned && <StyledButton title={'Tap to Scan Again'} onPress={() => setScanned(false)} color="tomato" />}
+      {isScanned && <StyledButton title={'Tap to Scan Again'} onPress={() => setIsScanned(false)} color="tomato" />}
     </StyledView>
   );
 };
