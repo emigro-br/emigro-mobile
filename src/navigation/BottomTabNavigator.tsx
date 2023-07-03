@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import * as IconsOutline from 'react-native-heroicons/outline';
 import * as IconsSolid from 'react-native-heroicons/solid';
 
+import Location from '@screens/Location';
 import MakePayment from '@screens/MakePayment';
 import Wallet from '@screens/Wallet';
 
@@ -44,7 +45,7 @@ export function BottomTabNavigator() {
         name="MakePayment"
         component={MakePayment}
         options={() => ({
-          title: 'MakePayment',
+          title: 'Transaction',
           tabBarIcon: ({ focused }) =>
             focused ? (
               <StyledView className="h-full border-t-2 border-artic-500 w-full justify-center items-center">
@@ -55,6 +56,26 @@ export function BottomTabNavigator() {
             ) : (
               <StyledView className="mt-1">
                 <IconsOutline.QrCodeIcon size={24} color="grey" />
+              </StyledView>
+            ),
+          header: () => '',
+        })}
+      />
+      <BottomTab.Screen
+        name="Location"
+        component={Location}
+        options={() => ({
+          title: 'Location',
+          tabBarIcon: ({ focused }) =>
+            focused ? (
+              <StyledView className="h-full border-t-2 border-artic-500 w-full justify-center items-center">
+                <StyledView className="mt-1">
+                  <IconsSolid.MapIcon size={24} color="black" />
+                </StyledView>
+              </StyledView>
+            ) : (
+              <StyledView className="mt-1">
+                <IconsOutline.MapIcon size={24} color="grey" />
               </StyledView>
             ),
           header: () => '',

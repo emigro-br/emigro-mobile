@@ -19,8 +19,7 @@ const Login = ({ navigation }: LoginProps) => {
   const handleSignIn = async () => {
     try {
       const accessToken = signIn(username, password);
-      (await accessToken) && navigation?.navigate('Wallet');
-      // Redirige a la pantalla de inicio
+      (await accessToken) && navigation?.navigate('Root');
     } catch (error) {
       console.log(error);
       setError('Error to sign in, please check your credentials');

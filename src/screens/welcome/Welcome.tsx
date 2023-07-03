@@ -1,4 +1,3 @@
-import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { styled } from 'nativewind';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';

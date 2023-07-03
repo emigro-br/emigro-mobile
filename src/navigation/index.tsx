@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { BottomTabNavigator } from './BottomTabNavigator';
 
+import ConfirmPayment from '@screens/ConfirmPayment';
 import CreateAccount from '@screens/welcome/CreateAccount';
 import Login from '@screens/welcome/Login';
 import { Welcome } from '@screens/welcome/Welcome';
@@ -13,6 +14,8 @@ type RootStackParamList = {
   SignUp: undefined;
   LogIn: undefined;
   Root: undefined;
+  ConfirmPayment: undefined;
+  Wallet: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -25,6 +28,7 @@ export default function RootNavigator() {
     const checkAuthentication = async () => {
       const token = await getItem();
       if (token) {
+        console.log(token, 'esta logeado?');
         setIsLoggedIn(true);
       } else {
         setIsLoggedIn(false);
@@ -39,6 +43,7 @@ export default function RootNavigator() {
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="SignUp" component={CreateAccount} options={{ headerTitle: 'Sign Up' }} />
       <Stack.Screen name="LogIn" component={Login} options={{ headerTitle: 'Log In' }} />
+      <Stack.Screen name="ConfirmPayment" component={ConfirmPayment} options={{ headerShown: false }} />
     </Stack.Navigator>
   );
 }

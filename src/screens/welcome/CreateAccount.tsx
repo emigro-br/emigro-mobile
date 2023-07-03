@@ -19,7 +19,6 @@ const CreateAccount = ({ navigation }: SignUpProps) => {
   const handleSubmit = async () => {
     try {
       const response = SignUp(email, password);
-      console.log(response);
     } catch (error) {
       console.log(error);
     }
