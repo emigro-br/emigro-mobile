@@ -3,8 +3,7 @@ const BASE_URL = process.env.BASE_URL;
 export async function getUser() {
   try {
     const response = await fetch(`${BASE_URL}/user`);
-    const data = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
     console.log(error);
   }

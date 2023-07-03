@@ -32,13 +32,13 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
     askForCameraPermission();
   }, []);
 
-  const handleBarCodeScanned = ({ data }: any) => {
+  const handleBarCodeScanned = (vendor: any) => {
     setIsScanned(true);
     try {
-      const qrObject = JSON.parse(data);
-      setText(qrObject);
+      const scannedInfo = JSON.parse(vendor);
+      setText(scannedInfo);
     } catch (error) {
-      console.log(error, 'Código QR no válido');
+      console.log(error, 'Invalid QR code');
     }
   };
 
