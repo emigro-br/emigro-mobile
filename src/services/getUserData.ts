@@ -5,6 +5,6 @@ export async function getUserData() {
     const response = await fetch(`${BASE_URL}/user`);
     return await response.json();
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 }

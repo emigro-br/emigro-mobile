@@ -12,7 +12,7 @@ export function SignUp(email: string, password: string) {
 
   userPool.signUp(email, password, userAttributes, [], (error) => {
     if (error) {
-      console.log(error);
+      console.error(error);
     }
   });
 }

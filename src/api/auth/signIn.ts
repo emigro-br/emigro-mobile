@@ -27,7 +27,7 @@ export default async function signIn(username: string, password: string) {
 
     return accessToken;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     throw error;
   }
 }

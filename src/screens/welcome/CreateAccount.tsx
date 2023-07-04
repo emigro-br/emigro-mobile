@@ -20,7 +20,7 @@ const CreateAccount = ({ navigation }: SignUpProps) => {
     try {
       SignUp(email, password);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
