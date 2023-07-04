@@ -2,7 +2,7 @@ import { styled } from 'nativewind';
 import React, { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import SignUp from '@api/auth/signUp';
+import signUp from '@api/auth/signUp';
 
 type SignUpProps = {
   navigation: any;
@@ -18,7 +18,7 @@ const CreateAccount = ({ navigation }: SignUpProps) => {
 
   const handleSubmit = async () => {
     try {
-      SignUp(email, password);
+      signUp(email, password);
     } catch (error) {
       console.error(error);
     }

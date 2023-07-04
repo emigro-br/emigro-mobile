@@ -2,7 +2,7 @@ import { CognitoUserAttribute } from 'amazon-cognito-identity-js';
 
 import userPool from '../userPool';
 
-export function SignUp(email: string, password: string) {
+export function signUp(email: string, password: string) {
   const userAttributes = [
     new CognitoUserAttribute({
       Name: 'email',
@@ -18,4 +18,4 @@ export function SignUp(email: string, password: string) {
   });
 }
 
-export default SignUp;
+export default signUp;
