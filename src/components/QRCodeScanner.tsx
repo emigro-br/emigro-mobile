@@ -48,8 +48,7 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
         <StyledText className="text-lg">Requesting for camera permission</StyledText>
       </StyledView>
     );
-  }
-  if (hasPermission === false) {
+  } else if (!hasPermission) {
     return (
       <StyledView className="flex items-center justify-center">
         <StyledText className="text-lg m-4">No access to camera</StyledText>
