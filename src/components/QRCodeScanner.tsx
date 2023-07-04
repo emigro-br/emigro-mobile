@@ -8,6 +8,13 @@ type QRCodeScannerProps = {
   onCancel: () => void;
 };
 
+interface Vendor {
+  name: string;
+  vendorId: string;
+  address: string;
+  publicKey: string;
+}
+
 const StyledView = styled(View);
 
 const StyledText = styled(Text);
@@ -19,7 +26,7 @@ const StyledButton = styled(Button);
 const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [isScanned, setIsScanned] = useState(false);
-  const [text, setText] = useState({ name: '', vendorId: '', address: '', publicKey: '' });
+  const [text, setText] = useState<Vendor>({ name: '', vendorId: '', address: '', publicKey: '' });
 
   const askForCameraPermission = () => {
     (async () => {
@@ -32,10 +39,10 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
     askForCameraPermission();
   }, []);
 
-  const handleBarCodeScanned = (vendor: any) => {
+  const handleBarCodeScanned = (vendor: string) => {
     setIsScanned(true);
     try {
-      const scannedInfo = JSON.parse(vendor);
+      const scannedInfo: Vendor = JSON.parse(vendor);
       setText(scannedInfo);
     } catch (error) {
       console.error(error, 'Invalid QR code');
