@@ -2,7 +2,7 @@ import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useEffect, useState } from 'react';
 
-import { BottomTabNavigator } from './BottomTabNavigator';
+import BottomTabNavigator from './BottomTabNavigator';
 
 import CreateAccount from '@screens/welcome/CreateAccount';
 import Login from '@screens/welcome/Login';
@@ -17,7 +17,7 @@ type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export default function RootNavigator() {
+const RootNavigator = () => {
   const { getItem } = useAsyncStorage('authToken');
   const [isLoggedIn, setIsLoggedIn] = useState(true);
 
@@ -41,4 +41,6 @@ export default function RootNavigator() {
       <Stack.Screen name="LogIn" component={Login} options={{ headerTitle: 'Log In' }} />
     </Stack.Navigator>
   );
-}
+};
+
+export default RootNavigator;
