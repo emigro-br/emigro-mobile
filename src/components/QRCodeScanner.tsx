@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { BarCodeEvent, BarCodeScanner } from 'expo-barcode-scanner';
 import { styled } from 'nativewind';
 import React, { useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -39,10 +39,10 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
     askForCameraPermission();
   }, []);
 
-  const handleBarCodeScanned = (vendor: string) => {
+  const handleBarCodeScanned = (vendor: BarCodeEvent) => {
     setIsScanned(true);
     try {
-      const scannedInfo: Vendor = JSON.parse(vendor);
+      const scannedInfo: Vendor = JSON.parse(vendor.data);
       setText(scannedInfo);
     } catch (error) {
       console.error(error, 'Invalid QR code');
