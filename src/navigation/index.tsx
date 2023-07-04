@@ -28,7 +28,6 @@ export default function RootNavigator() {
     const checkAuthentication = async () => {
       const token = await getItem();
       if (token) {
-        console.log(token, 'esta logeado?');
         setIsLoggedIn(true);
       } else {
         setIsLoggedIn(false);

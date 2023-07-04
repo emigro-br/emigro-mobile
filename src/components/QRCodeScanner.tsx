@@ -61,9 +61,6 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
 
   return (
     <StyledView className="flex items-center justify-center h-full">
-      <StyledTouchableOpacity className="absolute top-20 right-6" onPress={onCancel}>
-        <Ionicons name="close" size={32} color="white" />
-      </StyledTouchableOpacity>
       <StyledView className="items-center justify-center h-96 w-full rounded-3xl">
         <BarCodeScanner
           onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
@@ -71,6 +68,9 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
           barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
         >
           <StyledView style={styles.rectangleContainer}>
+            <StyledTouchableOpacity className="absolute right-0 top-8 mr-8" onPress={onCancel}>
+              <Ionicons name="close" size={32} color="white" />
+            </StyledTouchableOpacity>
             <StyledView style={styles.rectangle} />
           </StyledView>
         </BarCodeScanner>

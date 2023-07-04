@@ -1,6 +1,6 @@
 import { CognitoUserAttribute } from 'amazon-cognito-identity-js';
 
-import userPool from '../UserPool';
+import userPool from '../userPool';
 
 export function SignUp(email: string, password: string) {
   const userAttributes = [
@@ -10,11 +10,10 @@ export function SignUp(email: string, password: string) {
     }),
   ];
 
-  userPool.signUp(email, password, userAttributes, [], (error, data) => {
+  userPool.signUp(email, password, userAttributes, [], (error) => {
     if (error) {
       console.log(error);
     }
-    console.log(data);
   });
 }
 
