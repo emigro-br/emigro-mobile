@@ -38,7 +38,7 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
       const scannedInfo = JSON.parse(vendor);
       setText(scannedInfo);
     } catch (error) {
-      console.log(error, 'Invalid QR code');
+      console.error(error, 'Invalid QR code');
     }
   };
 

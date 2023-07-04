@@ -21,7 +21,7 @@ const Login = ({ navigation }: LoginProps) => {
       const accessToken = signIn(username, password);
       (await accessToken) && navigation.navigate('Wallet');
     } catch (error) {
-      console.log(error);
+      console.error(error);
       setError('Error to sign in, please check your credentials');
     }
   };
