@@ -25,6 +25,12 @@
     "strict": true,
     "module": "es6",
     "paths": {
+      "@api/*": [
+        "./src/api/*"
+      ],
+      "@assets/*": [
+        "./src/assets/*"
+      ],
       "@components/*": [
         "./src/components/*"
       ],

@@ -1,3 +1,13 @@
-import { Text } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 
-export const Landing = () => <Text>Hello World!</Text>;
+import RootNavigator from '@navigation/index';
+
+export const Landing = () => {
+  return (
+    <>
+      <NavigationContainer>
+        <RootNavigator />
+      </NavigationContainer>
+    </>
+  );
+};
