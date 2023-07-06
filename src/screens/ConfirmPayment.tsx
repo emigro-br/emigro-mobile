@@ -41,8 +41,6 @@ const ConfirmPayment = () => {
   const [transactionValue, setTransactionValue] = useState('');
   console.log(transactionValue, 'valor transaccion');
 
-  const from = 'USDC:GA5WM5HAHFQTEJIA55SS4BIVWX4WCAO4GQLEDCETY5XG5QLFM2XUHP6H';
-  const to = 'BRL:GB6XCXYPZLRAMI6BXATMRBLRIWYBHSH4VP5OS57PQ2TR6MBB4GTD4B4M';
 
   const handlePayment = async () => {
     try {
