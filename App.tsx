@@ -3,6 +3,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { Landing } from '@components/Landing';
 
+/* Geocoder.init('TU_API_KEY'); */
+
 export default function App() {
   return (
     <SafeAreaProvider>

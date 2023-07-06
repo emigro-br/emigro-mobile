@@ -1,8 +1,10 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { styled } from 'nativewind';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Text, TextInput, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
+
+import { handleQuote, sendTransaction } from '@/services/emigro';
 
 import { balances } from '@api/balance';
 
@@ -36,13 +38,38 @@ const ConfirmPayment = () => {
       .map((bal) => ({ label: bal.asset_code, value: bal.asset_code })),
   );
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [transactionValue, setTransactionValue] = useState('');
+  console.log(transactionValue, 'valor transaccion');
+
+  const from = 'USDC:GA5WM5HAHFQTEJIA55SS4BIVWX4WCAO4GQLEDCETY5XG5QLFM2XUHP6H';
+  const to = 'BRL:GB6XCXYPZLRAMI6BXATMRBLRIWYBHSH4VP5OS57PQ2TR6MBB4GTD4B4M';
+
+  const handlePayment = async () => {
+    try {
+      const quoteResponse = await handleQuote(from, to, paymentAmount);
+      setTransactionValue(quoteResponse);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleConfirmPayment = async () => {
+    try {
+      const paymentResponse = await sendTransaction(transactionValue, route.params.scannedData.publicKey);
+      console.log(transactionValue, 'valor que va a recibir el vendor');
+      console.log(route.params.scannedData.publicKey, 'public key escaneada');
+      console.log(paymentResponse, 'respueste d confirmacion de pago');
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    paymentAmount && handlePayment();
+  });
 
   const handleOpenModal = () => {
     setIsModalVisible(true);
-  };
-
-  const handlePayment = () => {
-    console.log('Paying...');
   };
 
   const handleCurrencyChange = (value: any) => {
@@ -102,10 +129,12 @@ const ConfirmPayment = () => {
             </StyledView>
           )}
           <StyledView className="mb-6">
-            <StyledText className="text-lg mb-1">Rate:</StyledText>
-            <StyledText className="text-lg mb-1">Markup:</StyledText>
-            <StyledText className="text-lg mb-1">Fee:</StyledText>
-            <StyledText className="text-lg mb-1">Total:</StyledText>
+            <StyledText className="text-lg mb-1">Rate: 1 USD = 5BRL</StyledText>
+            <StyledText className="text-lg mb-1">Markup: 0%</StyledText>
+            <StyledText className="text-lg mb-1">Fee: 0 USD</StyledText>
+            <StyledText className="text-lg mb-1 font-bold">
+              Total: <StyledText>{transactionValue}</StyledText> BRL
+            </StyledText>
           </StyledView>
           <StyledView>
             <Button
@@ -124,13 +153,18 @@ const ConfirmPayment = () => {
                 <StyledText className="font-bold text-lg mb-2">
                   {scannedData.name} {scannedData.address}
                 </StyledText>
+                <StyledView className="mb-2">
+                  <StyledText>VENDOR WILL RECEIVE:</StyledText>
+                  <StyledText className="font-bold text-lg text-green">$R: {transactionValue}</StyledText>
+                </StyledView>
                 <StyledText>TRANSACTION AMOUNT:</StyledText>
-                <StyledText className="font-bold text-lg text-green">
+                <StyledText className="font-bold text-lg text-red">
                   {amountType} {paymentAmount}
                 </StyledText>
               </StyledView>
+
               <StyledView className="my-4">
-                <Button bg="red" textColor="white" onPress={handlePayment}>
+                <Button bg="red" textColor="white" onPress={handleConfirmPayment}>
                   CONFIRM
                 </Button>
               </StyledView>

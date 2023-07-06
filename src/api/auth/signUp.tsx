@@ -10,9 +10,11 @@ export function SignUp(email: string, password: string) {
     }),
   ];
 
-  userPool.signUp(email, password, userAttributes, [], (error) => {
+  userPool.signUp(email, password, userAttributes, [], (error, result) => {
     if (error) {
       console.error(error);
+    } else {
+      console.log(result?.user, 'usuario creado');
     }
   });
 }
