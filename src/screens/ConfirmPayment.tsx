@@ -1,86 +1,55 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { styled } from 'nativewind';
-import React, { useEffect, useState } from 'react';
-import { KeyboardAvoidingView, Text, TextInput, View } from 'react-native';
+import React, { useState } from 'react';
+import { ActivityIndicator, KeyboardAvoidingView, Text, TextInput, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-
-import { handleQuote, sendTransaction } from '@/services/emigro';
-
-import { balances } from '@api/balance';
 
 import Button from '@components/Button';
 import CustomModal from '@components/CustomModal';
 import Header from '@components/Header';
 
+import useCurrencyChange from '@hooks/useCurrencyChange';
+import useGetUserBalance from '@hooks/useGetUserBalance';
+import usePayment from '@hooks/usePayment';
+
 type RootStackParamList = {
   ConfirmPayment: { scannedData: { name: string; vendorId: string; address: string; publicKey: string } };
 };
-
-interface Balance {
-  balance: number;
-}
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledTextInput = styled(TextInput);
 
-const ConfirmPayment = () => {
+const ConfirmPayment = ({ navigation }: any) => {
   const route = useRoute<RouteProp<RootStackParamList, 'ConfirmPayment'>>();
+
   const { scannedData } = route.params;
-  const [paymentAmount, setPaymentAmount] = useState('');
+
   const [open, setOpen] = useState(false);
-  const [currency, setCurrency] = useState(null);
-  const [amountType, setAmountType] = useState('');
-  const [selectedBalance, setSelectedBalance] = useState<Balance | null>(null);
-  const [items, setItems] = useState(
-    balances
-      .filter((bal) => bal.asset_type === 'credit_alphanum4')
-      .map((bal) => ({ label: bal.asset_code, value: bal.asset_code })),
-  );
+
+  const [paymentAmount, setPaymentAmount] = useState('');
+
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [transactionValue, setTransactionValue] = useState('');
-  console.log(transactionValue, 'valor transaccion');
 
+  const {
+    transactionValue,
+    isTransactionLoading,
+    isTransactionCompletedModalVisible,
+    setTransactionCompletedModalVisible,
+    handleConfirmPayment,
+  } = usePayment(paymentAmount, scannedData);
 
-  const handlePayment = async () => {
-    try {
-      const quoteResponse = await handleQuote(from, to, paymentAmount);
-      setTransactionValue(quoteResponse);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const { items, setItems } = useGetUserBalance();
 
-  const handleConfirmPayment = async () => {
-    try {
-      const paymentResponse = await sendTransaction(transactionValue, route.params.scannedData.publicKey);
-      console.log(transactionValue, 'valor que va a recibir el vendor');
-      console.log(route.params.scannedData.publicKey, 'public key escaneada');
-      console.log(paymentResponse, 'respueste d confirmacion de pago');
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    paymentAmount && handlePayment();
-  });
+  const { currency, setCurrency, selectedBalance, amountType, handleCurrencyChange } = useCurrencyChange(items);
 
   const handleOpenModal = () => {
     setIsModalVisible(true);
   };
 
-  const handleCurrencyChange = (value: any) => {
-    setCurrency(value);
-    const balance = balances.find((bal) => bal.asset_code === value);
-    setSelectedBalance(balance as any);
-    if (value === 'BRL') {
-      setAmountType('R$:');
-    } else if (value === 'USDC') {
-      setAmountType('$US:');
-    } else {
-      setAmountType('');
-    }
+  const handleNavigateWallet = () => {
+    navigation.navigate('Wallet');
+    setTransactionCompletedModalVisible(false);
   };
 
   return (
@@ -123,16 +92,21 @@ const ConfirmPayment = () => {
           )}
           {selectedBalance && (
             <StyledView className="mb-6">
-              <StyledText className="text-md text-gray mb-1">Balance: {selectedBalance.balance}</StyledText>
+              <StyledText className="text-md text-gray mb-1">Balance: {selectedBalance?.balance}</StyledText>
             </StyledView>
           )}
           <StyledView className="mb-6">
-            <StyledText className="text-lg mb-1">Rate: 1 USD = 5BRL</StyledText>
+            <StyledText className="text-lg mb-1">Rate: {currency === 'USDC' ? '1 USD = 5 BRL' : null}</StyledText>
             <StyledText className="text-lg mb-1">Markup: 0%</StyledText>
             <StyledText className="text-lg mb-1">Fee: 0 USD</StyledText>
-            <StyledText className="text-lg mb-1 font-bold">
-              Total: <StyledText>{transactionValue}</StyledText> BRL
-            </StyledText>
+            {typeof transactionValue === 'object' ? (
+              <StyledText className="text-lg mb-1 text-red">{transactionValue.message}</StyledText>
+            ) : (
+              <StyledText className="text-lg mb-1 font-bold">
+                Total: <StyledText>{transactionValue}</StyledText>
+                {currency === 'USDC' ? ' BRL' : ' USD'}
+              </StyledText>
+            )}
           </StyledView>
           <StyledView>
             <Button
@@ -141,7 +115,7 @@ const ConfirmPayment = () => {
               bg="red"
               textColor="white"
             >
-              <StyledText>Confirm payment</StyledText>
+              Confirm payment
             </Button>
           </StyledView>
           <CustomModal isVisible={isModalVisible} title="Confirm Payment" onClose={() => setIsModalVisible(false)}>
@@ -162,8 +136,8 @@ const ConfirmPayment = () => {
               </StyledView>
 
               <StyledView className="my-4">
-                <Button bg="red" textColor="white" onPress={handleConfirmPayment}>
-                  CONFIRM
+                <Button bg="red" textColor="white" onPress={handleConfirmPayment} disabled={isTransactionLoading}>
+                  {isTransactionLoading ? <ActivityIndicator size="large" color="white" /> : 'CONFIRM'}
                 </Button>
               </StyledView>
               <StyledView>
@@ -175,6 +149,15 @@ const ConfirmPayment = () => {
           </CustomModal>
         </StyledView>
       </StyledView>
+      {isTransactionCompletedModalVisible && (
+        <CustomModal isVisible={isTransactionCompletedModalVisible} title="Transaction completed sucesfully!">
+          <StyledView className="flex w-full px-4">
+            <Button bg="red" textColor="white" onPress={handleNavigateWallet}>
+              Accept
+            </Button>
+          </StyledView>
+        </CustomModal>
+      )}
     </KeyboardAvoidingView>
   );
 };
