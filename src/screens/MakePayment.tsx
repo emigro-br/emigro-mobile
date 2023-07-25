@@ -5,7 +5,6 @@ import { Image, View } from 'react-native';
 import qrImage from '../assets/images/qr-code.png';
 
 import Button from '@components/Button';
-import Header from '@components/Header';
 import QRCodeScanner from '@components/QRCodeScanner';
 
 const StyledView = styled(View);
@@ -32,11 +31,10 @@ const MakePayment = () => {
 
   return (
     <>
-      <Header children />
-      <StyledView className="flex items-center h-[80vh] justify-around m-2">
+      <StyledView className="flex items-center h-[100vh] justify-around p-2 bg-white">
         <StyledImage source={qrImage} className="h-[200px] w-[200px] mt-10" />
-        <StyledView className="flex w-full px-4">
-          <Button bg="blue" textColor="white" onPress={handleScanPress}>
+        <StyledView className="flex w-full px-4 mb-20">
+          <Button backgroundColor="red" textColor="white" onPress={handleScanPress}>
             Make a Payment
           </Button>
         </StyledView>
