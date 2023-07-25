@@ -2,7 +2,7 @@ import { styled } from 'nativewind';
 import React, { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import SignUp from '@api/auth/signUp';
+import signUp from '@api/auth/signUp';
 
 type SignUpProps = {
   navigation: any;
@@ -20,9 +20,9 @@ const CreateAccount = ({ navigation }: SignUpProps) => {
   const [location, setLocation] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     try {
-      await SignUp(email, password, firstName, lastName, location);
+      signUp(email, password, firstName, lastName, location);
       navigation.navigate('Login');
     } catch (error) {
       console.error(error);

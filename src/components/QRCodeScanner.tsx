@@ -15,6 +15,13 @@ type QRCodeScannerProps = {
   onCancel: () => void;
 };
 
+interface Vendor {
+  name: string;
+  vendorId: string;
+  address: string;
+  publicKey: string;
+}
+
 const StyledView = styled(View);
 
 const StyledText = styled(Text);

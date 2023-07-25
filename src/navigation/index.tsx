@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { BottomTabNavigator } from './BottomTabNavigator';
+import BottomTabNavigator from './BottomTabNavigator';
 
 import ConfirmPayment from '@screens/ConfirmPayment';
 import CreateAccount from '@screens/welcome/CreateAccount';
@@ -18,7 +18,7 @@ type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export default function RootNavigator() {
+function RootNavigator() {
   return (
     <Stack.Navigator initialRouteName={'Welcome'}>
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
@@ -29,3 +29,5 @@ export default function RootNavigator() {
     </Stack.Navigator>
   );
 }
+
+export default RootNavigator;

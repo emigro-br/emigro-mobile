@@ -11,17 +11,17 @@ const StyledView = styled(View);
 const StyledImage = styled(Image);
 
 const MakePayment = () => {
-  const [showScanner, setShowScanner] = useState(false);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   const handleScanPress = () => {
-    setShowScanner(true);
+    setIsScannerOpen(true);
   };
 
   const handleCancelPress = () => {
-    setShowScanner(false);
+    setIsScannerOpen(false);
   };
 
-  if (showScanner) {
+  if (isScannerOpen) {
     return (
       <>
         <QRCodeScanner onCancel={handleCancelPress} />

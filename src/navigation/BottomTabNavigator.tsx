@@ -15,7 +15,7 @@ const BottomTab = createBottomTabNavigator<any>();
 
 const StyledView = styled(View);
 
-export function BottomTabNavigator() {
+const BottomTabNavigator = () => {
   return (
     <BottomTab.Navigator
       initialRouteName="Wallet"
@@ -106,4 +106,6 @@ export function BottomTabNavigator() {
       />
     </BottomTab.Navigator>
   );
-}
+};
+
+export default BottomTabNavigator;
