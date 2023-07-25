@@ -1,6 +1,6 @@
 import { styled } from 'nativewind';
 import React, { useState } from 'react';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import signIn from '@/api/auth/signIn';
 
@@ -10,43 +10,58 @@ type LoginProps = {
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
+const StyledTextInput = styled(TextInput);
 
 const Login = ({ navigation }: LoginProps) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const handleSignIn = async () => {
+    setIsLoggingIn(true);
     try {
       const accessToken = signIn(username, password);
       (await accessToken) && navigation?.navigate('Root');
     } catch (error) {
       console.error(error);
       setError('Error to sign in, please check your credentials');
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
   return (
-    <StyledView className="gap-2 m-0">
-      <TextInput placeholder="Email" value={username} onChangeText={(value) => setUsername(value)} />
-      <TextInput
+    <StyledView className="gap-4 p-6 mt-6">
+      <StyledTextInput
+        className="text-lg bg-white h-10 p-2 rounded-sm mb-2"
+        placeholder="Email"
+        value={username}
+        onChangeText={(value) => setUsername(value)}
+      />
+      <StyledTextInput
+        className="text-lg bg-white h-10 p-2 rounded-sm mb-2"
         placeholder="Password"
         value={password}
         onChangeText={(value) => setPassword(value)}
         secureTextEntry={true}
       />
       <TouchableOpacity onPress={handleSignIn}>
-        <StyledView className="bg-red rounded-md mx-6 h-10 justify-center">
-          <StyledText className="text-white text-center text-md">Log in</StyledText>
+        <StyledView className="bg-red rounded-md h-12 justify-center">
+          {isLoggingIn ? (
+            <ActivityIndicator color="white" size="small" />
+          ) : (
+            <StyledText className="text-white text-center text-lg">Log in</StyledText>
+          )}
         </StyledView>
       </TouchableOpacity>
-      <TouchableOpacity onPress={handleSignIn}>
-        <StyledView className="bg-blue rounded-md mx-6 h-10 justify-center">
-          <StyledText className="text-white text-center text-md" onPress={() => navigation.navigate('SignUp')}>
-            Don't have an account? Sign up
-          </StyledText>
-        </StyledView>
-      </TouchableOpacity>
+      <StyledView className="flex-row justify-center items-center gap-2">
+        <StyledText className="text-lg">Don't have an account?</StyledText>
+        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+          <StyledText className="text-blue text-xl font-bold">Sign up</StyledText>
+        </TouchableOpacity>
+      </StyledView>
+
       {error ? <Text>{error}</Text> : null}
     </StyledView>
   );
