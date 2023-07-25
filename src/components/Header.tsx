@@ -2,32 +2,32 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
 import React, { FunctionComponent, ReactNode } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Image, Text, TouchableOpacity, View } from 'react-native';
+
+import emigroLogo from '@assets/images/emigro-logo.png';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
+const StyledImage = styled(Image);
 
-interface IHeader {
-  children: ReactNode;
-}
-
-const Header: FunctionComponent<IHeader> = (props) => {
+const Header: FunctionComponent = () => {
   const navigation = useNavigation();
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('authToken');
-    navigation.navigate('LogIn' as never);
+    navigation.navigate('Login' as never);
   };
 
   return (
     <StyledView className="flex-row items-center justify-center bg-red pt-8">
-      <TouchableOpacity onPress={() => navigation.navigate('Root' as never)}>
-        <StyledText className="text-white text-xl py-2">Logo</StyledText>
+      <TouchableOpacity onPress={() => navigation.navigate('Wallet' as never)}>
+        <StyledView className="h-14 w-40">
+          <StyledImage className="h-full w-full object-contain" source={emigroLogo}></StyledImage>
+        </StyledView>
       </TouchableOpacity>
       <StyledText className="text-white text-lg py-2 absolute right-4 top-8" onPress={handleLogout}>
         Logout
       </StyledText>
-      <StyledView>{props.children}</StyledView>
     </StyledView>
   );
 };
