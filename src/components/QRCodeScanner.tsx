@@ -1,11 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { BarCodeEvent, BarCodeScanner } from 'expo-barcode-scanner';
 import { styled } from 'nativewind';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import Button from './Button';
+
+import { useVendor } from '@/contexts/VendorContext';
+
+import { RootStackParamList } from '@screens/ConfirmPayment';
 
 type QRCodeScannerProps = {
   onCancel: () => void;
@@ -18,43 +22,41 @@ const StyledText = styled(Text);
 const StyledTouchableOpacity = styled(TouchableOpacity);
 
 const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
+  const { scannedVendor, setScannedVendor } = useVendor();
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [scanned, setScanned] = useState(false);
-  const [text, setText] = useState({ name: '', vendorId: '', address: '', publicKey: '' });
+  const [isScanned, setIsScanned] = useState(false);
   const [error, setError] = useState('');
 
-  const navigation = useNavigation();
-
-  const askForCameraPermission = () => {
-    (async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-  };
+  const navigation: NavigationProp<RootStackParamList> = useNavigation();
 
   useEffect(() => {
-    askForCameraPermission();
+    const getBarCodeScannerPermissions = async () => {
+      const { status } = await BarCodeScanner.requestPermissionsAsync();
+      setHasPermission(status === 'granted');
+    };
+    getBarCodeScannerPermissions();
   }, []);
 
-  const handleBarCodeScanned = ({ data }: any) => {
-    setScanned(true);
+  const handleBarCodeScanned = (vendor: BarCodeEvent) => {
+    setIsScanned(true);
     try {
-      const qrObject = JSON.parse(data);
-      setText(qrObject);
+      const qrObject = JSON.parse(vendor.data);
+      setScannedVendor(qrObject);
     } catch (error) {
-      !text.name;
       setError('Invalid QR code, try another one');
-      setScanned(false);
+      setIsScanned(false);
     }
+  };
+
+  const handleProceedToPayment = () => {
+    navigation.navigate('ConfirmPayment' as never);
+    onCancel();
   };
 
   if (hasPermission === false) {
     return (
       <StyledView className="flex items-center justify-center h-full">
         <StyledText className="text-lg m-4">No access to camera</StyledText>
-        <Button onPress={() => askForCameraPermission()} bg="red" textColor="white">
-          Allow camera
-        </Button>
       </StyledView>
     );
   }
@@ -63,7 +65,7 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
     <StyledView className="flex items-center justify-center h-full">
       <StyledView className="items-center justify-center h-96 w-full rounded-3xl">
         <BarCodeScanner
-          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+          onBarCodeScanned={isScanned ? undefined : handleBarCodeScanned}
           style={[StyleSheet.absoluteFill, styles.container]}
           barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
         >
@@ -75,23 +77,19 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
           </StyledView>
         </BarCodeScanner>
       </StyledView>
-      {scanned && text.name ? (
+      {isScanned && scannedVendor?.name ? (
         <StyledView className="flex flex-col p-4 mt-4 w-full shadow-lg shadow-black">
           <StyledText className="text-xl mb-4 font-bold">Confirm the information below:</StyledText>
           <StyledView className="flex flex-row mb-4">
             <StyledText className="text-lg font-bold">Vendor: </StyledText>
-            <StyledText className="text-lg">{text.name}</StyledText>
+            <StyledText className="text-lg">{scannedVendor.name}</StyledText>
           </StyledView>
           <StyledView className="flex flex-row mb-4">
             <StyledText className="text-lg font-bold">Address: </StyledText>
-            <StyledText className="text-lg">{text.address}</StyledText>
+            <StyledText className="text-lg">{scannedVendor.address}</StyledText>
           </StyledView>
           <StyledView className="flex justify-center">
-            <Button
-              bg="red"
-              textColor="white"
-              onPress={() => navigation.navigate('ConfirmPayment', { scannedData: text })}
-            >
+            <Button backgroundColor="red" textColor="white" onPress={handleProceedToPayment}>
               Proceed to payment
             </Button>
           </StyledView>
