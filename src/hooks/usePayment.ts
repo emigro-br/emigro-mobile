@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react';
 
 import { handleQuote, sendTransaction } from '@/services/emigro';
+import { Vendor } from '@/types/vendor.type';
 
-const usePayment = (paymentAmount: any, scannedData: any) => {
-  const [transactionValue, setTransactionValue] = useState('');
+interface TransactionValue {
+  message: string;
+}
+
+const usePayment = (paymentAmount: string, scannedVendor: Vendor) => {
+  const [transactionValue, setTransactionValue] = useState<number | TransactionValue>(0);
   const [isTransactionLoading, setTransactionLoading] = useState(false);
   const [isTransactionCompletedModalVisible, setTransactionCompletedModalVisible] = useState(false);
 
@@ -16,8 +21,7 @@ const usePayment = (paymentAmount: any, scannedData: any) => {
         const from = `USDC:${process.env.FROM_PUBLIC_KEY}`;
         const to = `BRL:${process.env.TO_PUBLIC_KEY}`;
         const quoteResponse = await handleQuote(from, to, paymentAmount);
-
-        setTransactionValue(quoteResponse > 0 ? quoteResponse.toString() : '0');
+        setTransactionValue(quoteResponse);
       } catch (error) {
         console.error(error);
       }
@@ -28,7 +32,7 @@ const usePayment = (paymentAmount: any, scannedData: any) => {
   const handleConfirmPayment = async () => {
     try {
       setTransactionLoading(true);
-      const paymentResponse = await sendTransaction(transactionValue.toString(), scannedData.publicKey);
+      const paymentResponse = await sendTransaction(transactionValue.toString(), scannedVendor.publicKey);
       setTransactionLoading(false);
       setTransactionCompletedModalVisible(true);
       return paymentResponse;
