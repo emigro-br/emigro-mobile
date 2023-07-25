@@ -1,15 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthenticationDetails, CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
+import { AuthenticationDetails, CognitoUser, CognitoUserSession } from 'amazon-cognito-identity-js';
 
-const userPool = new CognitoUserPool({
-  UserPoolId: process.env.AWS_COGNITO_USER_POOL_ID || '',
-  ClientId: process.env.AWS_COGNITO_CLIENT_ID || '',
-  // endpoint: process.env.AWS_ENDPOINT || '',
-});
+import userPool from '@api/userPool';
+
+type UserInformation = {
+  [key: string]: any;
+};
 
 export default async function signIn(email: string, password: string) {
   const user = new CognitoUser({ Username: email, Pool: userPool });
-  /*   user.setAuthenticationFlowType('USER_PASSWORD_AUTH'); */
 
   const authenticationDetails = new AuthenticationDetails({
     Username: email,
@@ -17,14 +16,31 @@ export default async function signIn(email: string, password: string) {
   });
 
   try {
-    const accessToken = await new Promise((resolve, reject) => {
+    const session: CognitoUserSession = await new Promise((resolve, reject) => {
       user.authenticateUser(authenticationDetails, {
-        onSuccess: (result) => resolve(result.getAccessToken().getJwtToken()),
+        onSuccess: (result) => resolve(result),
         onFailure: (error) => reject(error),
       });
     });
-    await AsyncStorage.setItem('authToken', accessToken as string);
-    console.log(accessToken);
+
+    const accessToken = session.getAccessToken().getJwtToken();
+    console.log(accessToken)
+    await AsyncStorage.setItem('authToken', accessToken);
+
+    user.getUserAttributes(async (error, attributes) => {
+      if (error) {
+        console.error(error);
+      } else {
+        const userInformation: UserInformation = {};
+        attributes?.forEach((attribute) => {
+          const attributeName = attribute.getName();
+          const attributeValue = attribute.getValue();
+          userInformation[attributeName] = attributeValue;
+        });
+        await AsyncStorage.setItem('userInformation', JSON.stringify(userInformation));
+      }
+    });
+
     return accessToken;
   } catch (error) {
     console.error(error);

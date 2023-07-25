@@ -2,11 +2,23 @@ import { CognitoUserAttribute } from 'amazon-cognito-identity-js';
 
 import userPool from '../userPool';
 
-export function SignUp(email: string, password: string) {
+export function SignUp(email: string, password: string, firstName: string, lastName: string, address: string) {
   const userAttributes = [
     new CognitoUserAttribute({
       Name: 'email',
       Value: email,
+    }),
+    new CognitoUserAttribute({
+      Name: 'given_name',
+      Value: firstName,
+    }),
+    new CognitoUserAttribute({
+      Name: 'family_name',
+      Value: lastName,
+    }),
+    new CognitoUserAttribute({
+      Name: 'address',
+      Value: address,
     }),
   ];
 
@@ -14,7 +26,7 @@ export function SignUp(email: string, password: string) {
     if (error) {
       console.error(error);
     } else {
-      console.log(result?.user, 'usuario creado');
+      console.log(result?.user, 'Created user');
     }
   });
 }
