@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { getUserBalance } from '@/services/emigro';
-import { Balance } from '@/types/balance.types';
+import { Balance } from '@/types/balance.type';
 
 const useGetUserBalance = () => {
   const [items, setItems] = useState<Balance[]>([]);
