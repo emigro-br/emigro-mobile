@@ -1,4 +1,4 @@
-import AsyncStorage, { useAsyncStorage } from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const BACKEND_URL = process.env.BACKEND_URL;
 
@@ -12,12 +12,8 @@ export const getUserBalance = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
-
-    if (!response.ok) {
-      throw new Error('Request failed');
-    }
-    const responseData = await response.json();
-    console.log(responseData, 'data balance');
+    const userBalance = await response.json();
+    return userBalance;
   } catch (error) {
     console.error(error);
   }
@@ -25,7 +21,7 @@ export const getUserBalance = async () => {
 
 export const handleQuote = async (fromValue: string, toValue: string, amount: string) => {
   const url = `${BACKEND_URL}/quote`;
-  const data = {
+  const quoteRequest = {
     from: fromValue,
     to: toValue,
     amount: amount,
@@ -36,24 +32,19 @@ export const handleQuote = async (fromValue: string, toValue: string, amount: st
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(quoteRequest),
     });
-
-    if (!response.ok) {
-      throw new Error('Request failed');
-    }
-    const responseData = await response.json();
-    console.log(responseData, 'data emigro');
-    return responseData;
+    const quoteResponse = await response.json();
+    return quoteResponse;
   } catch (error) {
-    console.error(error, 'error de emigro');
+    console.error(error, 'Error to get quote');
   }
 };
 
 export const sendTransaction = async (destinationAmount: string, detination: string) => {
   const url = `${BACKEND_URL}/transaction`;
   const token = await AsyncStorage.getItem('authToken');
-  const data = {
+  const transactionRequest = {
     maxAmountToSend: '500',
     destinationAmount,
     detination,
@@ -65,14 +56,10 @@ export const sendTransaction = async (destinationAmount: string, detination: str
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify(transactionRequest),
     });
-
-    if (!response.ok) {
-      throw new Error('Request failed');
-    }
-    const responseData = await response.json();
-    return responseData;
+    const transactionResponse = await response.json();
+    return transactionResponse;
   } catch (error) {
     console.error(error);
   }
