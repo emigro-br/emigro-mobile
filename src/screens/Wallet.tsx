@@ -1,41 +1,71 @@
+import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
 import React, { useEffect, useState } from 'react';
 import { Image, Text, View } from 'react-native';
 
 import { getUserBalance } from '@/services/emigro';
 
-import { balances } from '@api/balance';
-
 import brLogo from '@assets/images/br.png';
 import usdLogo from '@assets/images/usd.png';
-
-import Header from '@components/Header';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
 
-const Wallet = () => {
-  const [userData, setUserData] = useState([]);
+interface Balance {
+  assetCode: string;
+  balance: number;
+  assetType: string;
+}
 
-  const handleGetUser = async () => {
+const Wallet = () => {
+  const [userBalance, setUserBalance] = useState<Balance[]>([]);
+
+  const navigation = useNavigation();
+
+  const handleGetUserBalance = async () => {
     try {
-      const user = await getUserBalance();
-      console.log(user, 'user en wallet');
+      const userBalance = await getUserBalance();
+      setUserBalance(userBalance.balances);
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
-    handleGetUser();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      handleGetUserBalance();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <>
-      <Header children />
-      <StyledView className="flex justify-center items-center">
-        <StyledText className="text-center font-bold text-xl my-4">Balances:</StyledText>
-        {userData}
+      <StyledView className="flex items-center h-full">
+        <StyledText className="text-center font-black text-2xl my-6">Balance</StyledText>
+        {userBalance?.map((balances, index) => {
+          if (balances.balance > 0) {
+            return (
+              <StyledView
+                key={index}
+                className="flex-row h-20 items-center justify-between m-1 px-6 w-full bg-white rounded"
+              >
+                <StyledView className="flex-row gap-2">
+                  {balances.assetCode === 'BRL' && <Image source={brLogo} style={{ width: 30, height: 30 }} />}
+                  {balances.assetCode === 'USDC' && <Image source={usdLogo} style={{ width: 30, height: 30 }} />}
+                  <StyledText className="font-bold text-xl">
+                    {balances.assetCode === 'USDC'
+                      ? 'USD'
+                      : balances.assetCode
+                      ? balances.assetCode
+                      : balances.assetType}
+                  </StyledText>
+                </StyledView>
+                <StyledText className="text-xl">{Number(balances.balance).toFixed(2)}</StyledText>
+              </StyledView>
+            );
+          }
+          return null;
+        })}
       </StyledView>
     </>
   );
