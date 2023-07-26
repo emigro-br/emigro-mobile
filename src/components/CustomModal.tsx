@@ -5,7 +5,13 @@ import { Modal, Text, View } from 'react-native';
 const StyledView = styled(View);
 const StyledText = styled(Text);
 
-const CustomModal = ({ isVisible, title, children }: any) => {
+type CustomModalProps = {
+  isVisible: boolean;
+  title: string;
+  children: React.ReactNode;
+};
+
+const CustomModal = ({ isVisible, title, children }: CustomModalProps) => {
   return (
     <Modal animationType="fade" visible={isVisible} transparent={true}>
       <StyledView className="flex-1">
