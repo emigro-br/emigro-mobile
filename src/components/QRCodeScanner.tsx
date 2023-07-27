@@ -9,6 +9,8 @@ import Button from './Button';
 
 import { useVendor } from '@/contexts/VendorContext';
 
+import { GRANTED_STATUS, INVALID_QR_CODE } from '@constants/errorMessages';
+
 import { RootStackParamList } from '@screens/ConfirmPayment';
 
 type QRCodeScannerProps = {
@@ -32,7 +34,7 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === 'granted');
+      setHasPermission(status === GRANTED_STATUS);
     };
     getBarCodeScannerPermissions();
   }, []);
@@ -43,8 +45,9 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
       const qrObject = JSON.parse(vendor.data);
       setScannedVendor(qrObject);
     } catch (error) {
-      setError('Invalid QR code, try another one');
+      setError(INVALID_QR_CODE);
       setIsScanned(false);
+      console.error(error, INVALID_QR_CODE);
     }
   };
 
