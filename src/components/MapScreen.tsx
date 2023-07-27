@@ -19,7 +19,7 @@ const MapScreen = () => {
 
   const [address, setAddress] = useState<string | undefined>();
 
-  const nominatinBaseURL = 'https://nominatim.openstreetmap.org/search';
+  const geocodeBaseURL = process.env.GEOCODE_BASE_URL;
 
   useEffect(() => {
     if (scannedVendor && scannedVendor.address !== address) {
@@ -32,7 +32,7 @@ const MapScreen = () => {
   const geocodeAddress = async (address: string) => {
     try {
       const response = await fetch(
-        `${nominatinBaseURL}/?q=${encodeURIComponent(address)}&format=json&addressdetails=1&limit=1`,
+        `${geocodeBaseURL}/?q=${encodeURIComponent(address)}&format=json&addressdetails=1&limit=1`,
       );
       const geocodedLocation = await response.json();
       if (geocodedLocation.length > 0) {
