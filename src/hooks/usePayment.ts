@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 
 import { handleQuote, sendTransaction } from '@/services/emigro';
-import { Vendor } from '@/types/vendor.type';
+import { IVendor } from '@/types/IVendor';
 
 interface TransactionValue {
   message: string;
 }
 
-const usePayment = (paymentAmount: string, scannedVendor: Vendor) => {
+const usePayment = (paymentAmount: string, scannedVendor: IVendor) => {
   const [transactionValue, setTransactionValue] = useState<number | TransactionValue>(0);
   const [isTransactionLoading, setTransactionLoading] = useState(false);
   const [isTransactionCompletedModalVisible, setTransactionCompletedModalVisible] = useState(false);

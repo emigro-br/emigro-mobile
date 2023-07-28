@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 
 import { getUserBalance } from '@/services/emigro';
-import { Balance } from '@/types/balance.type';
+import { IBalance } from '@/types/IBalance';
 
 const useGetUserBalance = () => {
-  const [items, setItems] = useState<Balance[]>([]);
+  const [items, setItems] = useState<IBalance[]>([]);
 
   const handleGetUserBalance = async () => {
     try {

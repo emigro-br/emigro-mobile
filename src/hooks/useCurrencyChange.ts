@@ -1,10 +1,10 @@
 import { useState } from 'react';
 
-import { Balance } from '@/types/balance.type';
+import { IBalance } from '@/types/IBalance';
 
-const useCurrencyChange = (items: Balance[]) => {
+const useCurrencyChange = (items: IBalance[]) => {
   const [currency, setCurrency] = useState('');
-  const [selectedBalance, setSelectedBalance] = useState<Balance | null>(null);
+  const [selectedBalance, setSelectedBalance] = useState<IBalance | null>(null);
 
   const handleCurrencyChange = (value: any) => {
     setCurrency(value);

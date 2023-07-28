@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Image, Text, View } from 'react-native';
 
 import { getUserBalance } from '@/services/emigro';
+import { IBalance } from '@/types/IBalance';
 
 import brLogo from '@assets/images/br.png';
 import usdLogo from '@assets/images/usd.png';
@@ -11,14 +12,8 @@ import usdLogo from '@assets/images/usd.png';
 const StyledView = styled(View);
 const StyledText = styled(Text);
 
-interface Balance {
-  assetCode: string;
-  balance: number;
-  assetType: string;
-}
-
 const Wallet = () => {
-  const [userBalance, setUserBalance] = useState<Balance[]>([]);
+  const [userBalance, setUserBalance] = useState<IBalance[]>([]);
 
   const navigation = useNavigation();
 
@@ -53,11 +48,7 @@ const Wallet = () => {
                   {balances.assetCode === 'BRL' && <Image source={brLogo} style={{ width: 30, height: 30 }} />}
                   {balances.assetCode === 'USDC' && <Image source={usdLogo} style={{ width: 30, height: 30 }} />}
                   <StyledText className="font-bold text-xl">
-                    {balances.assetCode === 'USDC'
-                      ? 'USD'
-                      : balances.assetCode
-                      ? balances.assetCode
-                      : balances.assetType}
+                    {balances.assetCode === 'USDC' ? 'USD' : balances.assetCode}
                   </StyledText>
                 </StyledView>
                 <StyledText className="text-xl">{Number(balances.balance).toFixed(2)}</StyledText>

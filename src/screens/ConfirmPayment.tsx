@@ -5,7 +5,7 @@ import { ActivityIndicator, KeyboardAvoidingView, Text, TextInput, View } from '
 import DropDownPicker from 'react-native-dropdown-picker';
 
 import { useVendor } from '@/contexts/VendorContext';
-import { Vendor } from '@/types/vendor.type';
+import { IVendor } from '@/types/IVendor';
 
 import Button from '@components/Button';
 import CustomModal from '@components/CustomModal';
@@ -20,7 +20,7 @@ const StyledText = styled(Text);
 const StyledTextInput = styled(TextInput);
 
 export type RootStackParamList = {
-  ConfirmPayment: { scannedVendor: Vendor };
+  ConfirmPayment: { scannedVendor: IVendor };
 };
 
 const ConfirmPayment = () => {
@@ -40,7 +40,7 @@ const ConfirmPayment = () => {
     isTransactionCompletedModalVisible,
     setTransactionCompletedModalVisible,
     handleConfirmPayment,
-  } = usePayment(paymentAmount, scannedVendor as Vendor);
+  } = usePayment(paymentAmount, scannedVendor as IVendor);
 
   const { items, setItems } = useGetUserBalance();
 
