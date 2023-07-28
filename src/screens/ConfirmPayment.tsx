@@ -11,6 +11,8 @@ import Button from '@components/Button';
 import CustomModal from '@components/CustomModal';
 import Header from '@components/Header';
 
+import { AssetCode } from '@constants/assetCode';
+
 import useCurrencyChange from '@hooks/useCurrencyChange';
 import useGetUserBalance from '@hooks/useGetUserBalance';
 import usePayment from '@hooks/usePayment';
@@ -104,7 +106,9 @@ const ConfirmPayment = () => {
             </StyledView>
           )}
           <StyledView className="mb-6">
-            <StyledText className="text-lg mb-1">Rate: {currency === 'USDC' ? '1 USD = 5 BRL' : null}</StyledText>
+            <StyledText className="text-lg mb-1">
+              Rate: {currency === AssetCode.USDC ? `1 ${AssetCode.USD} = 5 ${AssetCode.BRL}` : null}
+            </StyledText>
             <StyledText className="text-lg mb-1">Markup: 0%</StyledText>
             <StyledText className="text-lg mb-1">Fee: 0 USD</StyledText>
             {typeof transactionValue === 'object' ? (
@@ -114,7 +118,7 @@ const ConfirmPayment = () => {
             ) : (
               <StyledText className="text-lg mb-1 font-bold">
                 Total: <StyledText>{transactionValue}</StyledText>
-                {currency === 'USDC' ? ' BRL' : ' USD'}
+                {currency === AssetCode.USDC ? ` ${AssetCode.BRL}` : ` ${AssetCode.USD}`}
               </StyledText>
             )}
           </StyledView>
@@ -138,12 +142,13 @@ const ConfirmPayment = () => {
                 <StyledView className="mb-2">
                   <StyledText>VENDOR WILL RECEIVE:</StyledText>
                   <StyledText className="font-bold text-lg text-green">
-                    {String(transactionValue)} {currency === 'USDC' ? ' BRL' : ' USD'}
+                    {String(transactionValue)}
+                    {currency === AssetCode.USDC ? AssetCode.BRL : AssetCode.USD}
                   </StyledText>
                 </StyledView>
                 <StyledText>TRANSACTION AMOUNT:</StyledText>
                 <StyledText className="font-bold text-lg text-red">
-                  {paymentAmount} {currency === 'USDC' ? ' USD' : 'BRL'}
+                  {paymentAmount} {currency === AssetCode.USDC ? AssetCode.USD : AssetCode.BRL}
                 </StyledText>
               </StyledView>
 

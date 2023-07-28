@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { handleQuote, sendTransaction } from '@/services/emigro';
 import { IVendor } from '@/types/IVendor';
 
+import { AssetCode } from '@constants/assetCode';
+
 interface TransactionValue {
   message: string;
 }
@@ -18,8 +20,8 @@ const usePayment = (paymentAmount: string, scannedVendor: IVendor) => {
     }
     const handlePayment = async () => {
       try {
-        const from = `USDC:${process.env.FROM_PUBLIC_KEY}`;
-        const to = `BRL:${process.env.TO_PUBLIC_KEY}`;
+        const from = `${AssetCode.USDC}:${process.env.FROM_PUBLIC_KEY}`;
+        const to = `${AssetCode.BRL}:${process.env.TO_PUBLIC_KEY}`;
         const quoteResponse = await handleQuote(from, to, paymentAmount);
         setTransactionValue(quoteResponse);
       } catch (error) {
