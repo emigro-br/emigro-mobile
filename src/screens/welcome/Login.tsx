@@ -4,6 +4,8 @@ import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'reac
 
 import signIn from '@/api/auth/signIn';
 
+import { SIGNIN_ERROR_MESSAGE } from '@constants/errorMessages';
+
 type LoginProps = {
   navigation: any;
 };
@@ -24,8 +26,8 @@ const Login = ({ navigation }: LoginProps) => {
       const accessToken = signIn(username, password);
       (await accessToken) && navigation?.navigate('Root');
     } catch (error) {
-      console.error(error);
-      setError('Error to sign in, please check your credentials');
+      console.error(error, SIGNIN_ERROR_MESSAGE);
+      setError(SIGNIN_ERROR_MESSAGE);
     } finally {
       setIsLoggingIn(false);
     }

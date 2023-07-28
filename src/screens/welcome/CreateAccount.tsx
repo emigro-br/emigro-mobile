@@ -4,6 +4,8 @@ import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import signUp from '@api/auth/signUp';
 
+import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
+
 type SignUpProps = {
   navigation: any;
 };
@@ -25,8 +27,8 @@ const CreateAccount = ({ navigation }: SignUpProps) => {
       signUp(email, password, firstName, lastName, location);
       navigation.navigate('Login');
     } catch (error) {
-      console.error(error);
-      setError('Error during sign up. Please try again.');
+      console.error(error, SIGNUP_ERROR_MESSAGE);
+      setError(SIGNUP_ERROR_MESSAGE);
     }
   };
 

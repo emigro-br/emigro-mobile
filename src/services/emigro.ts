@@ -1,5 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
+
 const BACKEND_URL = process.env.BACKEND_URL;
 
 export const getUserBalance = async () => {
@@ -12,10 +14,9 @@ export const getUserBalance = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
-    const userBalance = await response.json();
-    return userBalance;
+    return await response.json();
   } catch (error) {
-    console.error(error);
+    console.error(error, GET_USER_BALANCE_ERROR);
   }
 };
 
@@ -34,10 +35,9 @@ export const handleQuote = async (fromValue: string, toValue: string, amount: st
       },
       body: JSON.stringify(quoteRequest),
     });
-    const quoteResponse = await response.json();
-    return quoteResponse;
+    return await response.json();
   } catch (error) {
-    console.error(error, 'Error to get quote');
+    console.error(error, QUOTE_NOT_AVAILABLE_ERROR);
   }
 };
 
@@ -58,9 +58,8 @@ export const sendTransaction = async (destinationAmount: string, detination: str
       },
       body: JSON.stringify(transactionRequest),
     });
-    const transactionResponse = await response.json();
-    return transactionResponse;
+    return await response.json();
   } catch (error) {
-    console.error(error);
+    console.error(error, TRANSACTION_ERROR_MESSAGE);
   }
 };
