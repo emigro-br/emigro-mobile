@@ -14,17 +14,38 @@ const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledTextInput = styled(TextInput);
 
+type FormField = {
+  name: string;
+  placeholder: string;
+  secureTextEntry?: boolean;
+};
+
+const formFields: FormField[] = [
+  { name: 'email', placeholder: 'Email' },
+  { name: 'password', placeholder: 'Password', secureTextEntry: true },
+  { name: 'firstName', placeholder: 'First Name' },
+  { name: 'lastName', placeholder: 'Last Name' },
+  { name: 'location', placeholder: 'Location' },
+];
+
 const CreateAccount = ({ navigation }: SignUpProps) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [location, setLocation] = useState('');
+  const [formData, setFormData] = useState<Record<string, string>>({
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    location: '',
+  });
+
   const [error, setError] = useState('');
+
+  const handleChange = (name: string, value: string) => {
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
 
   const handleSubmit = () => {
     try {
-      signUp(email, password, firstName, lastName, location);
+      signUp(formData.email, formData.password, formData.firstName, formData.lastName, formData.location);
       navigation.navigate('Login');
     } catch (error) {
       console.error(error, SIGNUP_ERROR_MESSAGE);
@@ -34,37 +55,17 @@ const CreateAccount = ({ navigation }: SignUpProps) => {
 
   return (
     <StyledView className="gap-4 p-6 mt-6">
-      <StyledTextInput
-        className="text-lg bg-white h-10 p-2 rounded-sm mb-2"
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <StyledTextInput
-        className="text-lg bg-white h-10 p-2 rounded-sm mb-2"
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <StyledTextInput
-        className="text-lg bg-white h-10 p-2 rounded-sm mb-2"
-        placeholder="First Name"
-        value={firstName}
-        onChangeText={setFirstName}
-      />
-      <StyledTextInput
-        className="text-lg bg-white h-10 p-2 rounded-sm mb-2"
-        placeholder="Last Name"
-        value={lastName}
-        onChangeText={setLastName}
-      />
-      <StyledTextInput
-        className="text-lg bg-white h-10 p-2 rounded-sm mb-2"
-        placeholder="Location"
-        value={location}
-        onChangeText={setLocation}
-      />
+      {formFields.map((field) => (
+        <StyledTextInput
+          key={field.name}
+          className="text-lg bg-white h-10 p-2 rounded-sm mb-2"
+          placeholder={field.placeholder}
+          value={formData[field.name]}
+          onChangeText={(text) => handleChange(field.name, text)}
+          secureTextEntry={field.secureTextEntry}
+        />
+      ))}
+
       <TouchableOpacity onPress={handleSubmit}>
         <StyledView className="bg-red rounded-md h-12 justify-center">
           <StyledText className="text-white text-center text-lg">Sign Up</StyledText>
