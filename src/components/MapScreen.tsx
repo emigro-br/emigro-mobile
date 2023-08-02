@@ -25,11 +25,11 @@ const MapScreen = () => {
     if (scannedVendor && scannedVendor.address !== address) {
       const scannedData = scannedVendor;
       setAddress(scannedData.address);
-      geocodeAddress(scannedData.address);
+      fetchGeocodeAddress(scannedData.address);
     }
   }, []);
 
-  const geocodeAddress = async (address: string) => {
+  const fetchGeocodeAddress = async (address: string) => {
     try {
       const response = await fetch(
         `${geocodeBaseURL}/?q=${encodeURIComponent(address)}&format=json&addressdetails=1&limit=1`,
