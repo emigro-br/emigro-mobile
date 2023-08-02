@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { handleQuote, sendTransaction } from '@/services/emigro';
+import { ITransactionRequest } from '@/types/IQuote';
 import { IVendor } from '@/types/IVendor';
 
 import { AssetCode } from '@constants/assetCode';
@@ -15,26 +16,32 @@ const usePayment = (paymentAmount: string, scannedVendor: IVendor) => {
   const [isTransactionCompletedModalVisible, setTransactionCompletedModalVisible] = useState(false);
 
   useEffect(() => {
-    if (!paymentAmount) {
-      return;
-    }
     const handlePayment = async () => {
       try {
-        const from = `${AssetCode.USDC}:${process.env.FROM_PUBLIC_KEY}`;
-        const to = `${AssetCode.BRL}:${process.env.TO_PUBLIC_KEY}`;
-        const quoteResponse = await handleQuote(from, to, paymentAmount);
-        setTransactionValue(quoteResponse);
+        if (paymentAmount) {
+          const from = `${AssetCode.USDC}:${process.env.FROM_PUBLIC_KEY}`;
+          const to = `${AssetCode.BRL}:${process.env.TO_PUBLIC_KEY}`;
+          const transactionQuote = { from, to, amount: paymentAmount };
+          const calculatedTransactionValue = await handleQuote(transactionQuote);
+          setTransactionValue(calculatedTransactionValue);
+        }
       } catch (error) {
         console.error(error);
       }
     };
+
     handlePayment();
   }, [paymentAmount]);
 
   const handleConfirmPayment = async () => {
     try {
       setTransactionLoading(true);
-      const paymentResponse = await sendTransaction(transactionValue.toString(), scannedVendor.publicKey);
+      const transactionRequest: ITransactionRequest = {
+        maxAmountToSend: '500',
+        destinationAmount: transactionValue.toString(),
+        destination: scannedVendor.publicKey,
+      };
+      const paymentResponse = await sendTransaction(transactionRequest);
       setTransactionLoading(false);
       setTransactionCompletedModalVisible(true);
       return paymentResponse;
