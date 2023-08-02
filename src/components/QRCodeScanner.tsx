@@ -9,7 +9,8 @@ import Button from './Button';
 
 import { useVendor } from '@/contexts/VendorContext';
 
-import { GRANTED_STATUS, INVALID_QR_CODE } from '@constants/errorMessages';
+import { INVALID_QR_CODE } from '@constants/errorMessages';
+import { GRANTED_STATUS } from '@constants/statusMessages';
 
 import { RootStackParamList } from '@screens/ConfirmPayment';
 
@@ -55,6 +56,7 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
     navigation.navigate('ConfirmPayment' as never);
     onCancel();
   };
+  
 
   if (hasPermission === false) {
     return (
