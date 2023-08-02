@@ -29,10 +29,9 @@ const Wallet = () => {
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    return navigation.addListener('focus', () => {
       handleGetUserBalance();
     });
-    return unsubscribe;
   }, [navigation]);
 
   return (
