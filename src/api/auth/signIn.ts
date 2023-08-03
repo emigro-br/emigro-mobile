@@ -24,7 +24,6 @@ export default async function signIn(email: string, password: string) {
     });
 
     const accessToken = session.getAccessToken().getJwtToken();
-    console.log(accessToken)
     await AsyncStorage.setItem('authToken', accessToken);
 
     user.getUserAttributes(async (error, attributes) => {
