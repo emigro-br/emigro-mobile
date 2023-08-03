@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { IQuote, ITransactionRequest } from '@/types/IQuote';
+import { IQuote } from '@/types/IQuote';
+import { ITransactionRequest } from '@/types/ITransactionRequest';
 
 import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
 

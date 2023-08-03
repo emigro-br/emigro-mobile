@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { handleQuote, sendTransaction } from '@/services/emigro';
-import { ITransactionRequest } from '@/types/IQuote';
+import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IVendor } from '@/types/IVendor';
 
 import { AssetCode } from '@constants/assetCode';

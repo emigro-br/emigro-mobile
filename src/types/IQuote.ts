@@ -3,9 +3,3 @@ export interface IQuote {
   to: string;
   amount: string;
 }
-
-export interface ITransactionRequest {
-  maxAmountToSend: string | undefined;
-  destinationAmount: string;
-  destination: string;
-}
