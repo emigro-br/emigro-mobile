@@ -52,14 +52,14 @@ const Login = () => {
 
   return (
     <StyledView className="gap-4 p-6 mt-6">
-      {formFields.map((field) => (
+      {formFields.map(({ name, placeholder, secureTextEntry }) => (
         <StyledTextInput
-          key={field.name}
+          key={name}
           className="text-lg bg-white h-10 p-2 rounded-sm mb-2"
-          placeholder={field.placeholder}
-          value={formData[field.name]}
-          onChangeText={(text) => handleChange(field.name, text)}
-          secureTextEntry={field.secureTextEntry}
+          placeholder={placeholder}
+          value={formData[name]}
+          onChangeText={(text) => handleChange(name, text)}
+          secureTextEntry={secureTextEntry}
         />
       ))}
 
