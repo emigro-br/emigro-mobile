@@ -38,23 +38,21 @@ const Wallet = () => {
     <>
       <StyledView className="flex items-center h-full">
         <StyledText className="text-center font-black text-2xl my-6">Balance</StyledText>
-        {userBalance?.map((balances, index) => {
-          if (balances.balance > 0) {
+        {userBalance?.map(({ balance, assetCode }, index) => {
+          if (balance > 0) {
             return (
               <StyledView
                 key={index}
                 className="flex-row h-20 items-center justify-between m-1 px-6 w-full bg-white rounded"
               >
                 <StyledView className="flex-row gap-2">
-                  {balances.assetCode === AssetCode.BRL && <Image source={brLogo} style={{ width: 30, height: 30 }} />}
-                  {balances.assetCode === AssetCode.USDC && (
-                    <Image source={usdLogo} style={{ width: 30, height: 30 }} />
-                  )}
+                  {assetCode === AssetCode.BRL && <Image source={brLogo} style={{ width: 30, height: 30 }} />}
+                  {assetCode === AssetCode.USDC && <Image source={usdLogo} style={{ width: 30, height: 30 }} />}
                   <StyledText className="font-bold text-xl">
-                    {balances.assetCode === AssetCode.USDC ? AssetCode.USD : balances.assetCode}
+                    {assetCode === AssetCode.USDC ? AssetCode.USD : assetCode}
                   </StyledText>
                 </StyledView>
-                <StyledText className="text-xl">{Number(balances.balance).toFixed(2)}</StyledText>
+                <StyledText className="text-xl">{Number(balance).toFixed(2)}</StyledText>
               </StyledView>
             );
           }
