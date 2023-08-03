@@ -1,12 +1,14 @@
 import { styled } from 'nativewind';
 import React, { useState } from 'react';
-import { Button, Text, View } from 'react-native';
+import { Image, View } from 'react-native';
 
-import Header from '@components/Header';
+import qrImage from '../assets/images/qr-code.png';
+
+import Button from '@components/Button';
 import QRCodeScanner from '@components/QRCodeScanner';
 
-const StyledText = styled(Text);
 const StyledView = styled(View);
+const StyledImage = styled(Image);
 
 const MakePayment = () => {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -29,10 +31,13 @@ const MakePayment = () => {
 
   return (
     <>
-      <Header children />
-      <StyledView>
-        <StyledText>Made a payment</StyledText>
-        <Button title="Scan QR" onPress={handleScanPress} />
+      <StyledView className="flex items-center h-[100vh] justify-around p-2 bg-white">
+        <StyledImage source={qrImage} className="h-[200px] w-[200px] mt-10" />
+        <StyledView className="flex w-full px-4 mb-20">
+          <Button backgroundColor="red" textColor="white" onPress={handleScanPress}>
+            Make a Payment
+          </Button>
+        </StyledView>
       </StyledView>
     </>
   );

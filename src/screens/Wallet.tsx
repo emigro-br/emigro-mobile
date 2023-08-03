@@ -1,37 +1,63 @@
+import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, Text, View } from 'react-native';
 
-import { balances } from '@api/balance';
+import { getUserBalance } from '@/services/emigro';
+import { IBalance } from '@/types/IBalance';
 
-import arsLogo from '@assets/images/ars.png';
 import brLogo from '@assets/images/br.png';
 import usdLogo from '@assets/images/usd.png';
 
-import Header from '@components/Header';
+import { AssetCode } from '@constants/assetCode';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
 
 const Wallet = () => {
+  const [userBalance, setUserBalance] = useState<IBalance[]>([]);
+
+  const navigation = useNavigation();
+
+  const handleGetUserBalance = async () => {
+    try {
+      const userBalance = await getUserBalance();
+      setUserBalance(userBalance.balances);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      handleGetUserBalance();
+    });
+  }, [navigation]);
+
   return (
     <>
-      <Header children />
-      <StyledView className="flex justify-center items-center">
-        <StyledText className="text-center font-bold text-xl my-4">Balances:</StyledText>
-        {balances.map((balance, index) => (
-          <StyledView key={index} className="flex-row justify-between m-1 p-3 w-[200px] border-gray border-2 rounded">
-            <StyledView className="flex-row">
-              {balance.asset_code === 'BRL' && <Image source={brLogo} style={{ width: 20, height: 20 }} />}
-              {balance.asset_code === 'USDC' && <Image source={usdLogo} style={{ width: 20, height: 20 }} />}
-              {balance.asset_code === 'ARS' && <Image source={arsLogo} style={{ width: 20, height: 20 }} />}
-              <StyledText className="font-bold">
-                {balance.asset_code ? balance.asset_code : balance.asset_type}:
-              </StyledText>
-            </StyledView>
-            <StyledText>{balance.balance}</StyledText>
-          </StyledView>
-        ))}
+      <StyledView className="flex items-center h-full">
+        <StyledText className="text-center font-black text-2xl my-6">Balance</StyledText>
+        {userBalance?.map(({ balance, assetCode }, index) => {
+          if (balance > 0) {
+            return (
+              <StyledView
+                key={index}
+                className="flex-row h-20 items-center justify-between m-1 px-6 w-full bg-white rounded"
+              >
+                <StyledView className="flex-row gap-2">
+                  {assetCode === AssetCode.BRL && <Image source={brLogo} style={{ width: 30, height: 30 }} />}
+                  {assetCode === AssetCode.USDC && <Image source={usdLogo} style={{ width: 30, height: 30 }} />}
+                  <StyledText className="font-bold text-xl">
+                    {assetCode === AssetCode.USDC ? AssetCode.USD : assetCode}
+                  </StyledText>
+                </StyledView>
+                <StyledText className="text-xl">{Number(balance).toFixed(2)}</StyledText>
+              </StyledView>
+            );
+          }
+          return null;
+        })}
       </StyledView>
     </>
   );

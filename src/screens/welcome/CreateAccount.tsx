@@ -4,40 +4,77 @@ import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import signUp from '@api/auth/signUp';
 
+import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
+
 type SignUpProps = {
   navigation: any;
 };
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
+const StyledTextInput = styled(TextInput);
+
+type FormField = {
+  name: string;
+  placeholder: string;
+  secureTextEntry?: boolean;
+};
+
+const formFields: FormField[] = [
+  { name: 'email', placeholder: 'Email' },
+  { name: 'password', placeholder: 'Password', secureTextEntry: true },
+  { name: 'firstName', placeholder: 'First Name' },
+  { name: 'lastName', placeholder: 'Last Name' },
+  { name: 'location', placeholder: 'Location' },
+];
 
 const CreateAccount = ({ navigation }: SignUpProps) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState<Record<string, string>>({
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    location: '',
+  });
+
   const [error, setError] = useState('');
+
+  const handleChange = (name: string, value: string) => {
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
 
   const handleSubmit = () => {
     try {
-      signUp(email, password);
+      signUp(formData.email, formData.password, formData.firstName, formData.lastName, formData.location);
+      navigation.navigate('Login');
     } catch (error) {
-      console.error(error);
+      console.error(error, SIGNUP_ERROR_MESSAGE);
+      setError(SIGNUP_ERROR_MESSAGE);
     }
   };
 
   return (
-    <StyledView className="gap-2 m-0">
-      <StyledView className="gap-2">
-        <TextInput placeholder="Email" value={email} onChangeText={setEmail} />
-        <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
-      </StyledView>
-      <StyledView className="bg-red rounded-md mx-6 h-10 justify-center">
-        <TouchableOpacity onPress={handleSubmit}>
-          <StyledText className="text-white text-center text-md">Sign Up</StyledText>
-        </TouchableOpacity>
-      </StyledView>
-      <StyledView className="bg-blue rounded-md mx-6 h-10 justify-center">
-        <TouchableOpacity onPress={() => navigation.navigate('LogIn')}>
-          <StyledText className="text-white text-center text-md">Already have an account? Log in</StyledText>
+    <StyledView className="gap-4 p-6 mt-6">
+      {formFields.map((field) => (
+        <StyledTextInput
+          key={field.name}
+          className="text-lg bg-white h-10 p-2 rounded-sm mb-2"
+          placeholder={field.placeholder}
+          value={formData[field.name]}
+          onChangeText={(text) => handleChange(field.name, text)}
+          secureTextEntry={field.secureTextEntry}
+        />
+      ))}
+
+      <TouchableOpacity onPress={handleSubmit}>
+        <StyledView className="bg-red rounded-md h-12 justify-center">
+          <StyledText className="text-white text-center text-lg">Sign Up</StyledText>
+        </StyledView>
+      </TouchableOpacity>
+      <StyledView className="flex-row justify-center items-center gap-2">
+        <StyledText className="text-lg">Already have an account?</StyledText>
+        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <StyledText className="text-blue text-xl font-bold">Log in</StyledText>
         </TouchableOpacity>
       </StyledView>
       {error ? <Text>{error}</Text> : null}
