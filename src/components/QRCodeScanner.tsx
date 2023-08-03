@@ -56,9 +56,8 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
     navigation.navigate('ConfirmPayment' as never);
     onCancel();
   };
-  
 
-  if (hasPermission === false) {
+  if (!hasPermission) {
     return (
       <StyledView className="flex items-center justify-center h-full">
         <StyledText className="text-lg m-4">No access to camera</StyledText>
