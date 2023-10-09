@@ -1,15 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import { IQuote } from '@/types/IQuote';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
-
 import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
 
 const BACKEND_URL = process.env.BACKEND_URL;
 
 export const getUserBalance = async () => {
   const url = `${BACKEND_URL}/user`;
-  const token = await AsyncStorage.getItem('authToken');
+  const session = await AsyncStorage.getItem('session');
+  const parsedSession = session ? JSON.parse(session) : null;
+  const token = parsedSession?.accessToken;
+  
   try {
     const response = await fetch(url, {
       method: 'GET',
@@ -41,7 +42,10 @@ export const handleQuote = async (quote: IQuote) => {
 
 export const sendTransaction = async (transactionRequest: ITransactionRequest) => {
   const url = `${BACKEND_URL}/transaction`;
-  const token = await AsyncStorage.getItem('authToken');
+  const session = await AsyncStorage.getItem('session');
+  const parsedSession = session ? JSON.parse(session) : null;
+  const token = parsedSession?.accessToken;
+  
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -56,3 +60,23 @@ export const sendTransaction = async (transactionRequest: ITransactionRequest) =
     console.error(error, TRANSACTION_ERROR_MESSAGE);
   }
 };
+
+export const getUserProfile = async () => {
+  const url = `${BACKEND_URL}/user/profile`;
+  const session = await AsyncStorage.getItem('session');
+  const parsedSession = session ? JSON.parse(session) : null;
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${parsedSession?.accessToken}`,
+      },
+      body: JSON.stringify(parsedSession),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+  }
+}
