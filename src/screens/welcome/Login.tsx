@@ -1,33 +1,30 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
 import React, { useState } from 'react';
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import signIn from '@/api/auth/signIn';
-
-import { SIGNIN_ERROR_MESSAGE } from '@constants/errorMessages';
+import { SIGNIN_ERROR_MESSAGE } from '@/constants/errorMessages';
+import { signIn } from '@/services/cognito';
+import { FormField } from '@/types/FormField';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledTextInput = styled(TextInput);
 
-type FormField = {
-  name: string;
-  placeholder: string;
-  secureTextEntry?: boolean;
-};
-
 const formFields: FormField[] = [
-  { name: 'username', placeholder: 'Email' },
+  { name: 'email', placeholder: 'yourEmail@example.com' },
   { name: 'password', placeholder: 'Password', secureTextEntry: true },
+  { name: 'role', placeholder: 'Vendor or Customer', secureTextEntry: false },
 ];
 
 const Login = () => {
   const navigation = useNavigation();
 
   const [formData, setFormData] = useState<Record<string, string>>({
-    username: '',
-    password: '',
+    email: 'testNewRole@gmail.com',
+    password: 'password123',
+    role: 'vendor',
   });
 
   const [error, setError] = useState('');
@@ -40,7 +37,12 @@ const Login = () => {
   const handleSignIn = async () => {
     setIsLoggingIn(true);
     try {
-      const accessToken = await signIn(formData.username, formData.password);
+      await signIn(formData.email, formData.password, formData.role);
+
+      const session = await AsyncStorage.getItem('session');
+      const parsedSession = session ? JSON.parse(session) : null;
+      const accessToken = parsedSession?.accessToken;
+
       accessToken && navigation?.navigate('Root' as never);
     } catch (error) {
       console.error(error, SIGNIN_ERROR_MESSAGE);
@@ -52,14 +54,14 @@ const Login = () => {
 
   return (
     <StyledView className="gap-4 p-6 mt-6">
-      {formFields.map(({ name, placeholder, secureTextEntry }) => (
+      {formFields.map((field) => (
         <StyledTextInput
-          key={name}
+          key={field.name}
           className="text-lg bg-white h-10 p-2 rounded-sm mb-2"
-          placeholder={placeholder}
-          value={formData[name]}
-          onChangeText={(text) => handleChange(name, text)}
-          secureTextEntry={secureTextEntry}
+          placeholder={field.placeholder}
+          value={formData[field.name]}
+          onChangeText={(text) => handleChange(field.name, text)}
+          secureTextEntry={field.secureTextEntry}
         />
       ))}
 
