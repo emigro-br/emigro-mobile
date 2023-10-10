@@ -22,9 +22,9 @@ const Login = () => {
   const navigation = useNavigation();
 
   const [formData, setFormData] = useState<Record<string, string>>({
-    email: 'testNewRole@gmail.com',
-    password: 'password123',
-    role: 'vendor',
+    email: '',
+    password: '',
+    role: '',
   });
 
   const [error, setError] = useState('');
