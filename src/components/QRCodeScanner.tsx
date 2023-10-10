@@ -7,12 +7,10 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import Button from './Button';
 
+import { INVALID_QR_CODE } from '@/constants/errorMessages';
+import { GRANTED_STATUS } from '@/constants/statusMessages';
 import { useVendor } from '@/contexts/VendorContext';
-
-import { INVALID_QR_CODE } from '@constants/errorMessages';
-import { GRANTED_STATUS } from '@constants/statusMessages';
-
-import { RootStackParamList } from '@screens/ConfirmPayment';
+import { RootStackParamList } from '@/screens/ConfirmPayment';
 
 type QRCodeScannerProps = {
   onCancel: () => void;

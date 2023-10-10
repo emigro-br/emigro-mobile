@@ -16,50 +16,49 @@ const StyledText = styled(Text);
 
 const Wallet = () => {
   const [userBalance, setUserBalance] = useState<IBalance[]>([]);
-
   const navigation = useNavigation();
 
-  const handleGetUserBalance = async () => {
+  const fetchUserBalance = async () => {
     try {
-      const userBalance = await getUserBalance();
-      setUserBalance(userBalance.balances);
+      const { balances } = await getUserBalance();
+      setUserBalance(balances);
     } catch (error) {
       console.error(error);
+      throw new Error();
     }
   };
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
-      handleGetUserBalance();
+      fetchUserBalance();
     });
   }, [navigation]);
 
   return (
-    <>
-      <StyledView className="flex items-center h-full">
-        <StyledText className="text-center font-black text-2xl my-6">Balance</StyledText>
-        {userBalance?.map(({ balance, assetCode }, index) => {
-          if (balance > 0) {
-            return (
-              <StyledView
-                key={index}
-                className="flex-row h-20 items-center justify-between m-1 px-6 w-full bg-white rounded"
-              >
-                <StyledView className="flex-row gap-2">
-                  {assetCode === AssetCode.BRL && <Image source={brLogo} style={{ width: 30, height: 30 }} />}
-                  {assetCode === AssetCode.USDC && <Image source={usdLogo} style={{ width: 30, height: 30 }} />}
-                  <StyledText className="font-bold text-xl">
-                    {assetCode === AssetCode.USDC ? AssetCode.USD : assetCode}
-                  </StyledText>
-                </StyledView>
-                <StyledText className="text-xl">{Number(balance).toFixed(2)}</StyledText>
-              </StyledView>
-            );
-          }
-          return null;
-        })}
-      </StyledView>
-    </>
+    <StyledView className="flex items-center h-full">
+      <StyledText className="text-center font-black text-2xl my-6">Balance</StyledText>
+      {userBalance?.map(({ balance, assetCode }, index) => {
+        return (
+          <StyledView
+            key={index}
+            className="flex-row h-20 items-center justify-between m-1 px-6 w-full bg-white rounded"
+          >
+            <StyledView className="flex-row gap-2">
+              {assetCode === AssetCode.BRL && <Image source={brLogo} style={{ width: 30, height: 30 }} />}
+              {assetCode === AssetCode.USDC && <Image source={usdLogo} style={{ width: 30, height: 30 }} />}
+              <StyledText className="font-bold text-xl">
+                {assetCode === AssetCode.USDC ? AssetCode.USD : assetCode}
+              </StyledText>
+            </StyledView>
+            {balance > 0 ? (
+              <StyledText className="text-xl">{Number(balance).toFixed(2)}</StyledText>
+            ) : (
+              <StyledText className="font-bold text-xl">No funds</StyledText>
+            )}
+          </StyledView>
+        );
+      })}
+    </StyledView>
   );
 };
 

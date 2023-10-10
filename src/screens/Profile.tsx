@@ -1,7 +1,8 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styled } from 'nativewind';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Text, View } from 'react-native';
+
+import { getUserProfile } from '@/services/emigro';
 
 import profileLogo from '@assets/images/profile-icon.png';
 
@@ -15,10 +16,10 @@ const Profile = () => {
   useEffect(() => {
     const fetchUserInformation = async () => {
       try {
-        const userInformationString = await AsyncStorage.getItem('userInformation');
-        if (userInformationString) {
-          const userInformationObject = JSON.parse(userInformationString);
-          setUserInformation(userInformationObject);
+        const userProfile = await getUserProfile();
+
+        if (userProfile) {
+          setUserInformation(userProfile);
         }
       } catch (error) {
         console.error(error);
@@ -40,6 +41,7 @@ const Profile = () => {
       <StyledView className="mb-10">
         <StyledImage source={profileLogo} className="h-32 w-32" />
       </StyledView>
+
       <StyledView className="flex gap-2 w-full">
         <StyledText className="text-lightGray">Username</StyledText>
         <StyledView className="flex flex-row items-center mb-2">
@@ -47,11 +49,13 @@ const Profile = () => {
             {userInformation.given_name} {userInformation.family_name}
           </StyledText>
         </StyledView>
+
         <StyledView className="border-b-[2px] border-lightGray w-full" />
         <StyledText className="text-lightGray">Address</StyledText>
         <StyledView className="flex flex-row items-center mb-2">
           <StyledText className="font-black">{userInformation.address}</StyledText>
         </StyledView>
+
         <StyledView className="border-b-[2px] border-lightGray w-full" />
         <StyledText className="text-lightGray">Email</StyledText>
         <StyledView className="flex flex-row items-center mb-2">

@@ -125,7 +125,7 @@ const ConfirmPayment = () => {
           <StyledView>
             <Button
               onPress={handleOpenModal}
-              disabled={selectedBalance && selectedBalance.balance < Number(paymentAmount) ? true : false}
+              disabled={!!(selectedBalance && selectedBalance.balance < Number(paymentAmount))}
               backgroundColor="red"
               textColor="white"
             >
