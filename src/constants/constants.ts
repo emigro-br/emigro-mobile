@@ -4,15 +4,15 @@ const AUTH_ID_TOKEN_KEY = 'idToken';
 const AUTH_EMAIL_KEY = 'email';
 
 const enum QRCodeSize {
-  Small = 200,
-  Medium = 250,
-  Large = 300,
+  SMALL = 200,
+  MEDIUM = 250,
+  LARGE = 300,
 }
 
 const enum IconSize {
-  Small = 24,
-  Medium = 32,
-  Large = 48,
+  SMALL = 24,
+  MEDIUM = 32,
+  LARGE = 48,
 }
 
 const enum AssetCode {
@@ -22,13 +22,13 @@ const enum AssetCode {
 }
 
 const enum PaymentType {
-  PathPaymentStrictReceive = 'path_payment_strict_receive',
-  Payment = 'payment',
+  PATH_PAYMENT_STRICT_RECEIVE = 'path_payment_strict_receive',
+  PAYMENT = 'payment',
 }
 
 const enum TransactionDirection {
-  Sent = 'sent',
-  Received = 'received',
+  SENT = 'sent',
+  RECEIVED = 'received',
 }
 
 export {
