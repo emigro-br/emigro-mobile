@@ -4,4 +4,5 @@ interface IRegisterUser {
   firstName: string;
   lastName: string;
   address: string;
+  role: string;
 }

@@ -17,7 +17,6 @@ const Profile = () => {
     const fetchUserInformation = async () => {
       try {
         const userProfile = await getUserProfile();
-
         if (userProfile) {
           setUserInformation(userProfile);
         }

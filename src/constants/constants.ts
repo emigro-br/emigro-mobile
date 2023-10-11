@@ -31,6 +31,11 @@ const enum TransactionDirection {
   RECEIVED = 'received',
 }
 
+const enum Role {
+  Vendor = 'VENDOR',
+  Customer = 'CUSTOMER',
+}
+
 export {
   AUTH_ACCESS_TOKEN_KEY,
   AUTH_REFRESH_TOKEN_KEY,
@@ -41,4 +46,5 @@ export {
   AssetCode,
   PaymentType,
   TransactionDirection,
+  Role,
 };
