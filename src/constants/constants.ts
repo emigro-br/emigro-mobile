@@ -26,10 +26,16 @@ const enum TransactionDirection {
   RECEIVED = 'received',
 }
 
+const enum Role {
+  Vendor = 'VENDOR',
+  Customer = 'CUSTOMER',
+}
+
 export {
   IconSize,
   QRCodeSize,
   AssetCode,
   PaymentType,
   TransactionDirection,
+  Role,
 };

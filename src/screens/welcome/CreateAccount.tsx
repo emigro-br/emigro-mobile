@@ -2,8 +2,9 @@ import { styled } from 'nativewind';
 import React, { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import signUp from '@api/auth/signUp';
+import { signUp } from '@/services/cognito';
 
+import { Role } from '@constants/constants';
 import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 
 type SignUpProps = {
@@ -25,16 +26,17 @@ const formFields: FormField[] = [
   { name: 'password', placeholder: 'Password', secureTextEntry: true },
   { name: 'firstName', placeholder: 'First Name' },
   { name: 'lastName', placeholder: 'Last Name' },
-  { name: 'location', placeholder: 'Location' },
+  { name: 'address', placeholder: 'Address' },
 ];
 
 const CreateAccount = ({ navigation }: SignUpProps) => {
-  const [formData, setFormData] = useState<Record<string, string>>({
+  const [formData, setFormData] = useState<IRegisterUser>({
     email: '',
     password: '',
     firstName: '',
     lastName: '',
-    location: '',
+    address: '',
+    role: Role.Customer,
   });
 
   const [error, setError] = useState('');
@@ -45,7 +47,7 @@ const CreateAccount = ({ navigation }: SignUpProps) => {
 
   const handleSubmit = () => {
     try {
-      signUp(formData.email, formData.password, formData.firstName, formData.lastName, formData.location);
+      signUp(formData);
       navigation.navigate('Login');
     } catch (error) {
       console.error(error, SIGNUP_ERROR_MESSAGE);

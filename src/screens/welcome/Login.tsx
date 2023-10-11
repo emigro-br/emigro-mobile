@@ -15,7 +15,6 @@ const StyledTextInput = styled(TextInput);
 const formFields: FormField[] = [
   { name: 'email', placeholder: 'yourEmail@example.com' },
   { name: 'password', placeholder: 'Password', secureTextEntry: true },
-  { name: 'role', placeholder: 'Vendor or Customer', secureTextEntry: false },
 ];
 
 const Login = () => {
@@ -24,7 +23,6 @@ const Login = () => {
   const [formData, setFormData] = useState<Record<string, string>>({
     email: '',
     password: '',
-    role: '',
   });
 
   const [error, setError] = useState('');
@@ -37,7 +35,7 @@ const Login = () => {
   const handleSignIn = async () => {
     setIsLoggingIn(true);
     try {
-      await signIn(formData.email, formData.password, formData.role);
+      await signIn(formData.email, formData.password);
       const accessToken = await getAccessToken();
 
       accessToken && navigation?.navigate('Root' as never);

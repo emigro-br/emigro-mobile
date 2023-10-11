@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { IQuote } from '@/types/IQuote';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
+
 import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
 import { getAccessToken } from './helpers';
 import { IUserProfile } from '@/types/IUserProfile';
@@ -10,7 +12,6 @@ const BACKEND_URL = process.env.BACKEND_URL;
 export const getUserBalance = async () => {
   const url = `${BACKEND_URL}/user`;
   const accessToken = await getAccessToken();
-  
   try {
     const response = await fetch(url, {
       method: 'GET',
@@ -43,7 +44,6 @@ export const handleQuote = async (quote: IQuote) => {
 export const sendTransaction = async (transactionRequest: ITransactionRequest) => {
   const url = `${BACKEND_URL}/transaction`;
   const accessToken = await getAccessToken();
-  
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -63,7 +63,6 @@ export const getUserProfile = async (): Promise<IUserProfile> => {
   const url = `${BACKEND_URL}/user/profile`;
   const session = await AsyncStorage.getItem('session');
   const parsedSession = session ? JSON.parse(session) : null;
-
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -78,4 +77,4 @@ export const getUserProfile = async (): Promise<IUserProfile> => {
     console.error(error);
     throw new Error();
   }
-}
+};

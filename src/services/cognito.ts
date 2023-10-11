@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { Role } from '@constants/constants';
 import { SIGNIN_ERROR_MESSAGE, SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 
 const BACKEND_URL = process.env.BACKEND_URL;
 
-export const signIn = async (email: string, password: string, role: string) => {
+export const signIn = async (email: string, password: string) => {
   const signInUrl = `${BACKEND_URL}/auth/login`;
-
   try {
     const response = await fetch(signInUrl, {
       method: 'POST',
@@ -16,10 +16,9 @@ export const signIn = async (email: string, password: string, role: string) => {
       body: JSON.stringify({
         email,
         password,
-        role,
+        role: Role.Customer,
       }),
     });
-
     const signInResponse = await response.json();
     const { accessToken, refreshToken, idToken } = signInResponse;
 
@@ -29,6 +28,7 @@ export const signIn = async (email: string, password: string, role: string) => {
       idToken,
       email,
     };
+
     await AsyncStorage.setItem('session', JSON.stringify(session));
   } catch (error) {
     console.error(SIGNIN_ERROR_MESSAGE, error);
