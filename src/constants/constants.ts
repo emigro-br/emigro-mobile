@@ -1,8 +1,3 @@
-const AUTH_ACCESS_TOKEN_KEY = 'accessToken';
-const AUTH_REFRESH_TOKEN_KEY = 'refreshToken';
-const AUTH_ID_TOKEN_KEY = 'idToken';
-const AUTH_EMAIL_KEY = 'email';
-
 const enum QRCodeSize {
   SMALL = 200,
   MEDIUM = 250,
@@ -37,10 +32,6 @@ const enum Role {
 }
 
 export {
-  AUTH_ACCESS_TOKEN_KEY,
-  AUTH_REFRESH_TOKEN_KEY,
-  AUTH_ID_TOKEN_KEY,
-  AUTH_EMAIL_KEY,
   IconSize,
   QRCodeSize,
   AssetCode,
