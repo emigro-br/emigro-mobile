@@ -2,20 +2,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IQuote } from '@/types/IQuote';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
+import { getAccessToken } from './helpers';
+import { IUserProfile } from '@/types/IUserProfile';
 
 const BACKEND_URL = process.env.BACKEND_URL;
 
 export const getUserBalance = async () => {
   const url = `${BACKEND_URL}/user`;
-  const session = await AsyncStorage.getItem('session');
-  const parsedSession = session ? JSON.parse(session) : null;
-  const token = parsedSession?.accessToken;
+  const accessToken = await getAccessToken();
   
   try {
     const response = await fetch(url, {
       method: 'GET',
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
     return await response.json();
@@ -42,16 +42,14 @@ export const handleQuote = async (quote: IQuote) => {
 
 export const sendTransaction = async (transactionRequest: ITransactionRequest) => {
   const url = `${BACKEND_URL}/transaction`;
-  const session = await AsyncStorage.getItem('session');
-  const parsedSession = session ? JSON.parse(session) : null;
-  const token = parsedSession?.accessToken;
+  const accessToken = await getAccessToken();
   
   try {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(transactionRequest),
     });
@@ -61,7 +59,7 @@ export const sendTransaction = async (transactionRequest: ITransactionRequest) =
   }
 };
 
-export const getUserProfile = async () => {
+export const getUserProfile = async (): Promise<IUserProfile> => {
   const url = `${BACKEND_URL}/user/profile`;
   const session = await AsyncStorage.getItem('session');
   const parsedSession = session ? JSON.parse(session) : null;
@@ -78,5 +76,6 @@ export const getUserProfile = async () => {
     return await response.json();
   } catch (error) {
     console.error(error);
+    throw new Error();
   }
 }

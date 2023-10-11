@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
 import React, { useState } from 'react';
@@ -7,6 +6,7 @@ import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'reac
 import { SIGNIN_ERROR_MESSAGE } from '@/constants/errorMessages';
 import { signIn } from '@/services/cognito';
 import { FormField } from '@/types/FormField';
+import { getAccessToken } from '@/services/helpers';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -38,10 +38,7 @@ const Login = () => {
     setIsLoggingIn(true);
     try {
       await signIn(formData.email, formData.password, formData.role);
-
-      const session = await AsyncStorage.getItem('session');
-      const parsedSession = session ? JSON.parse(session) : null;
-      const accessToken = parsedSession?.accessToken;
+      const accessToken = await getAccessToken();
 
       accessToken && navigation?.navigate('Root' as never);
     } catch (error) {
