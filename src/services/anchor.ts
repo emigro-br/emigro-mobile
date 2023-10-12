@@ -1,6 +1,7 @@
 import { IAnchorParams } from '@/types/IAnchorParams';
+import { IAnchorResponse } from '@/types/IAnchorResponse';
 
-export const getInteractiveUrl = async (anchorParams: IAnchorParams) => {
+export const getInteractiveUrl = async (anchorParams: IAnchorParams): Promise<IAnchorResponse> => {
   const anchorUrl = `${process.env.BACKEND_URL}/anchor/${anchorParams.operation}`;
 
   try {
@@ -15,5 +16,6 @@ export const getInteractiveUrl = async (anchorParams: IAnchorParams) => {
     return await response.json();
   } catch (error) {
     console.error(error);
+    throw new Error();
   }
 };

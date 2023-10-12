@@ -6,4 +6,4 @@ export interface ITransaction {
     sourceAssetCode: string;
     sourceAmount: string;
     type: string;
-  }  
+  } 

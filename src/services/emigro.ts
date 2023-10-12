@@ -6,10 +6,11 @@ import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
 import { getAccessToken } from './helpers';
 import { IUserProfile } from '@/types/IUserProfile';
+import { ITransaction } from '@/types/ITransaction';
 
 const BACKEND_URL = process.env.BACKEND_URL;
 
-export const getTransactions = async () => {
+export const getTransactions = async (): Promise<ITransaction[]> => {
   const transactionsUrl = `${BACKEND_URL}/transaction/all`; 
   const accessToken = await getAccessToken();
   
@@ -24,6 +25,7 @@ export const getTransactions = async () => {
     return await response.json();
   } catch (error) {
     console.error(error);
+    throw new Error();
   }
 };
 

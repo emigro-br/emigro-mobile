@@ -24,7 +24,7 @@ const Wallet = () => {
   const [withdrawLoading, setWithdrawLoading] = useState<boolean>(false);
   const navigation = useNavigation();
 
-  const fetchUserBalance = async () => {
+  const fetchUserBalance = async (): Promise<void> => {
     try {
       const { balances } = await getUserBalance();
       setUserBalance(balances);
@@ -34,7 +34,7 @@ const Wallet = () => {
     }
   };
 
-  const handleAnchorButtonPress = async (operation: string) => {
+  const handleAnchorButtonPress = async (operation: string): Promise<void> => {
     const isOperationLoading = operation === OperationType.DEPOSIT ? setDepositLoading : setWithdrawLoading;
     isOperationLoading(true);
 
