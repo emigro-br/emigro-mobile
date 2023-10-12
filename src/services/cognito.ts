@@ -35,7 +35,7 @@ export const signIn = async (email: string, password: string): Promise<void> => 
   }
 };
 
-export const signUp = async (registerUser: IRegisterUser): Promise<void> => {
+export const signUp = async (registerUser: IRegisterUser): Promise<number> => {
   const registerUrl = `${BACKEND_URL}/auth/register`;
   try {
     const response = await fetch(registerUrl, {
@@ -45,8 +45,9 @@ export const signUp = async (registerUser: IRegisterUser): Promise<void> => {
       },
       body: JSON.stringify(registerUser),
     });
-    await response.json();
+    return await response.json();
   } catch (error) {
     console.error(SIGNUP_ERROR_MESSAGE, error);
+    throw new Error();
   }
 };
