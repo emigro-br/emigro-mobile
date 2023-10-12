@@ -3,10 +3,10 @@ import { styled } from 'nativewind';
 import React, { useState } from 'react';
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import { SIGNIN_ERROR_MESSAGE } from '@/constants/errorMessages';
+import { SIGNIN_ERROR_MESSAGE, SIGN_IN_FIELDS_ERROR } from '@/constants/errorMessages';
 import { signIn } from '@/services/cognito';
-import { FormField } from '@/types/FormField';
 import { getAccessToken } from '@/services/helpers';
+import { FormField } from '@/types/FormField';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -35,9 +35,14 @@ const Login = () => {
   const handleSignIn = async () => {
     setIsLoggingIn(true);
     try {
+      if (!formData.email || !formData.password) {
+        setError(SIGN_IN_FIELDS_ERROR);
+        setIsLoggingIn(false);
+        return;
+      }
       await signIn(formData.email, formData.password);
+      setError('');
       const accessToken = await getAccessToken();
-
       accessToken && navigation?.navigate('Root' as never);
     } catch (error) {
       console.error(error, SIGNIN_ERROR_MESSAGE);
@@ -76,7 +81,7 @@ const Login = () => {
         </TouchableOpacity>
       </StyledView>
 
-      {error ? <Text>{error}</Text> : null}
+      {error ? <StyledText className="text-red text-center text-lg">{error}</StyledText> : null}
     </StyledView>
   );
 };
