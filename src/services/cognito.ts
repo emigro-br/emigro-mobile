@@ -16,7 +16,7 @@ export const signIn = async (email: string, password: string) => {
       body: JSON.stringify({
         email,
         password,
-        role: Role.Customer,
+        role: Role.CUSTOMER,
       }),
     });
     const signInResponse = await response.json();

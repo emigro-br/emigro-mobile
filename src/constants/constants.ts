@@ -22,18 +22,18 @@ const enum PaymentType {
 }
 
 const enum TransactionDirection {
-  SENT = 'sent',
-  RECEIVED = 'received',
+  SENT = 'SENT',
+  RECEIVED = 'RECEIVED',
 }
 
 const enum OperationType {
-  Deposit = 'deposit',
-  Withdraw = 'withdraw',
+  DEPOSIT = 'DEPOSIT',
+  WITHDRAW = 'WITHDRAW',
 }
 
 const enum Role {
-  Vendor = 'VENDOR',
-  Customer = 'CUSTOMER',
+  VENDOR = 'VENDOR',
+  CUSTOMER = 'CUSTOMER',
 }
 
 export {

@@ -21,16 +21,16 @@ const AnchorButton: FunctionComponent<AnchorButtonProps> = ({ onPress, depositLo
       <Button
         textColor="white"
         backgroundColor="red"
-        onPress={() => handleOnPress(OperationType.Deposit)}
+        onPress={() => handleOnPress(OperationType.DEPOSIT)}
         disabled={depositLoading}>
-          {depositLoading ? <ActivityIndicator size="large" color="red" /> : OperationType.Deposit.toUpperCase()}
+          {depositLoading ? <ActivityIndicator size="large" color="red" /> : OperationType.DEPOSIT}
       </Button>
       <Button
         textColor="white"
         backgroundColor="red"
-        onPress={() => handleOnPress(OperationType.Withdraw)}
+        onPress={() => handleOnPress(OperationType.WITHDRAW)}
         disabled={withdrawLoading}>
-          {withdrawLoading ? <ActivityIndicator size="large" color="red" /> : OperationType.Withdraw.toUpperCase()}
+          {withdrawLoading ? <ActivityIndicator size="large" color="red" /> : OperationType.WITHDRAW}
       </Button>
     </StyledView>
   );

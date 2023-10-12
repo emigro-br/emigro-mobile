@@ -35,7 +35,7 @@ const Wallet = () => {
   };
 
   const handleAnchorButtonPress = async (operation: string) => {
-    const isOperationLoading = operation === OperationType.Deposit ? setDepositLoading : setWithdrawLoading;
+    const isOperationLoading = operation === OperationType.DEPOSIT ? setDepositLoading : setWithdrawLoading;
     isOperationLoading(true);
 
       const publicKey = await getUserPublicKey();
