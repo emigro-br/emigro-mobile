@@ -5,7 +5,7 @@ import { SIGNIN_ERROR_MESSAGE, SIGNUP_ERROR_MESSAGE } from '@constants/errorMess
 
 const BACKEND_URL = process.env.BACKEND_URL;
 
-export const signIn = async (email: string, password: string) => {
+export const signIn = async (email: string, password: string): Promise<void> => {
   const signInUrl = `${BACKEND_URL}/auth/login`;
   try {
     const response = await fetch(signInUrl, {
@@ -35,7 +35,7 @@ export const signIn = async (email: string, password: string) => {
   }
 };
 
-export const signUp = async (registerUser: IRegisterUser) => {
+export const signUp = async (registerUser: IRegisterUser): Promise<void> => {
   const registerUrl = `${BACKEND_URL}/auth/register`;
   try {
     const response = await fetch(registerUrl, {
@@ -45,7 +45,7 @@ export const signUp = async (registerUser: IRegisterUser) => {
       },
       body: JSON.stringify(registerUser),
     });
-    return await response.json();
+    await response.json();
   } catch (error) {
     console.error(SIGNUP_ERROR_MESSAGE, error);
   }
