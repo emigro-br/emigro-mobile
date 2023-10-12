@@ -9,6 +9,24 @@ import { IUserProfile } from '@/types/IUserProfile';
 
 const BACKEND_URL = process.env.BACKEND_URL;
 
+export const getTransactions = async () => {
+  const transactionsUrl = `${BACKEND_URL}/transaction/all`; 
+  const accessToken = await getAccessToken();
+  
+  try {
+    const response = await fetch(transactionsUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const getUserBalance = async () => {
   const url = `${BACKEND_URL}/user`;
   const accessToken = await getAccessToken();
@@ -56,6 +74,25 @@ export const sendTransaction = async (transactionRequest: ITransactionRequest) =
     return await response.json();
   } catch (error) {
     console.error(error, TRANSACTION_ERROR_MESSAGE);
+  }
+};
+
+export const getUserPublicKey = async (): Promise<string> => {
+  const url = `${BACKEND_URL}/user`;
+  const accessToken = await getAccessToken();
+  
+  try {
+    const request = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const { publicKey } = await request.json();
+    return publicKey;
+  } catch (error) {
+    console.error(error, GET_USER_BALANCE_ERROR);
+    throw error;
   }
 };
 
