@@ -9,7 +9,7 @@ import Header from '@components/Header';
 import Location from '@screens/Location';
 import MakePayment from '@screens/MakePayment';
 import Profile from '@screens/Profile';
-import Wallet from '@screens/Wallet';
+import Wallet from '@screens/wallet/Wallet';
 
 const BottomTab = createBottomTabNavigator<any>();
 

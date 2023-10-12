@@ -13,7 +13,7 @@ import { AssetCode } from '@constants/assetCode';
 import { OperationType } from '@constants/constants';
 import { getAccessToken } from '@/services/helpers';
 import { getInteractiveUrl } from '@/services/anchor';
-import AnchorButton from '../components/AnchorButton';
+import AnchorButton from '../../components/AnchorButton';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
