@@ -36,7 +36,7 @@ const CreateAccount = ({ navigation }: SignUpProps) => {
     firstName: '',
     lastName: '',
     address: '',
-    role: Role.Customer,
+    role: Role.CUSTOMER,
   });
 
   const [error, setError] = useState('');

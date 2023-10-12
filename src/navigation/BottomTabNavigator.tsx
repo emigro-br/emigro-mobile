@@ -9,7 +9,7 @@ import Header from '@components/Header';
 import Location from '@screens/Location';
 import MakePayment from '@screens/MakePayment';
 import Profile from '@screens/Profile';
-import Wallet from '@screens/Wallet';
+import Wallet from '@screens/wallet/Wallet';
 
 const BottomTab = createBottomTabNavigator<any>();
 
@@ -44,11 +44,12 @@ const BottomTabNavigator = () => {
           header: () => <Header />,
         })}
       />
+
       <BottomTab.Screen
         name="MakePayment"
         component={MakePayment}
         options={() => ({
-          title: 'Transaction',
+          title: 'Payment',
           tabBarIcon: ({ focused }) =>
             focused ? (
               <StyledView className="h-full border-t-2 border-artic-500 w-full justify-center items-center">

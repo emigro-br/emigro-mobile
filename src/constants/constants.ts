@@ -22,13 +22,18 @@ const enum PaymentType {
 }
 
 const enum TransactionDirection {
-  SENT = 'sent',
-  RECEIVED = 'received',
+  SENT = 'SENT',
+  RECEIVED = 'RECEIVED',
+}
+
+const enum OperationType {
+  DEPOSIT = 'DEPOSIT',
+  WITHDRAW = 'WITHDRAW',
 }
 
 const enum Role {
-  Vendor = 'VENDOR',
-  Customer = 'CUSTOMER',
+  VENDOR = 'VENDOR',
+  CUSTOMER = 'CUSTOMER',
 }
 
 export {
@@ -37,5 +42,6 @@ export {
   AssetCode,
   PaymentType,
   TransactionDirection,
+  OperationType,
   Role,
 };

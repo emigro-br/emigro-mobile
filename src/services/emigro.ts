@@ -6,10 +6,32 @@ import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
 import { getAccessToken } from './helpers';
 import { IUserProfile } from '@/types/IUserProfile';
+import { ITransaction } from '@/types/ITransaction';
+import { IUserBalances } from '@/types/IUserBalances';
+import { IPaymentResponse } from '@/types/IPaymentResponse';
 
 const BACKEND_URL = process.env.BACKEND_URL;
 
-export const getUserBalance = async () => {
+export const getTransactions = async (): Promise<ITransaction[]> => {
+  const transactionsUrl = `${BACKEND_URL}/transaction/all`; 
+  const accessToken = await getAccessToken();
+  
+  try {
+    const response = await fetch(transactionsUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    throw new Error();
+  }
+};
+
+export const getUserBalance = async (): Promise<IUserBalances> => {
   const url = `${BACKEND_URL}/user`;
   const accessToken = await getAccessToken();
   try {
@@ -22,10 +44,11 @@ export const getUserBalance = async () => {
     return await response.json();
   } catch (error) {
     console.error(error, GET_USER_BALANCE_ERROR);
+    throw new Error();
   }
 };
 
-export const handleQuote = async (quote: IQuote) => {
+export const handleQuote = async (quote: IQuote): Promise<number> => {
   const url = `${BACKEND_URL}/quote`;
   try {
     const response = await fetch(url, {
@@ -38,10 +61,11 @@ export const handleQuote = async (quote: IQuote) => {
     return await response.json();
   } catch (error) {
     console.error(error, QUOTE_NOT_AVAILABLE_ERROR);
+    throw new Error();
   }
 };
 
-export const sendTransaction = async (transactionRequest: ITransactionRequest) => {
+export const sendTransaction = async (transactionRequest: ITransactionRequest): Promise<IPaymentResponse> => {
   const url = `${BACKEND_URL}/transaction`;
   const accessToken = await getAccessToken();
   try {
@@ -56,6 +80,26 @@ export const sendTransaction = async (transactionRequest: ITransactionRequest) =
     return await response.json();
   } catch (error) {
     console.error(error, TRANSACTION_ERROR_MESSAGE);
+    throw new Error();
+  }
+};
+
+export const getUserPublicKey = async (): Promise<string> => {
+  const url = `${BACKEND_URL}/user`;
+  const accessToken = await getAccessToken();
+  
+  try {
+    const request = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const { publicKey } = await request.json();
+    return publicKey;
+  } catch (error) {
+    console.error(error, GET_USER_BALANCE_ERROR);
+    throw error;
   }
 };
 

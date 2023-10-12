@@ -1,24 +1,30 @@
 import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
 import React, { useEffect, useState } from 'react';
-import { Image, Text, View } from 'react-native';
+import { Image, Linking, Text, View } from 'react-native';
 
-import { getUserBalance } from '@/services/emigro';
+import { getUserBalance, getUserPublicKey } from '@/services/emigro';
 import { IBalance } from '@/types/IBalance';
 
 import brLogo from '@assets/images/br.png';
 import usdLogo from '@assets/images/usd.png';
 
 import { AssetCode } from '@constants/assetCode';
+import { OperationType } from '@constants/constants';
+import { getAccessToken } from '@/services/helpers';
+import { getInteractiveUrl } from '@/services/anchor';
+import AnchorButton from '../../components/AnchorButton';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
 
 const Wallet = () => {
   const [userBalance, setUserBalance] = useState<IBalance[]>([]);
+  const [depositLoading, setDepositLoading] = useState<boolean>(false);
+  const [withdrawLoading, setWithdrawLoading] = useState<boolean>(false);
   const navigation = useNavigation();
 
-  const fetchUserBalance = async () => {
+  const fetchUserBalance = async (): Promise<void> => {
     try {
       const { balances } = await getUserBalance();
       setUserBalance(balances);
@@ -27,6 +33,32 @@ const Wallet = () => {
       throw new Error();
     }
   };
+
+  const handleAnchorButtonPress = async (operation: string): Promise<void> => {
+    const isOperationLoading = operation === OperationType.DEPOSIT ? setDepositLoading : setWithdrawLoading;
+    isOperationLoading(true);
+
+      const publicKey = await getUserPublicKey();
+      const cognitoToken = await getAccessToken();
+
+      const anchorParams = {
+        account: publicKey,
+        operation,
+        asset_code: AssetCode.USDC,
+        cognito_token: cognitoToken,
+      };
+  
+      try {
+        const { url } = await getInteractiveUrl(anchorParams);
+        if (url) {
+          Linking.openURL(url);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        isOperationLoading(false);
+      }
+  }
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
@@ -58,6 +90,7 @@ const Wallet = () => {
           </StyledView>
         );
       })}
+      <AnchorButton onPress={handleAnchorButtonPress} depositLoading={depositLoading} withdrawLoading={withdrawLoading}/>
     </StyledView>
   );
 };
