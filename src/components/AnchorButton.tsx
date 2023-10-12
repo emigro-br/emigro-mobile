@@ -14,7 +14,7 @@ export interface AnchorButtonProps {
 }
 
 const AnchorButton: FunctionComponent<AnchorButtonProps> = ({ onPress, depositLoading, withdrawLoading }) => {
-  const handleOnPress =  async (operationType: OperationType) => { onPress(operationType) }
+  const handleOnPress = (operationType: OperationType) => { onPress(operationType) }
   
   return (
     <StyledView className="flex-row justify-around items-center mb-4">
