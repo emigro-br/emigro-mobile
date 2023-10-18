@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Text, TextInput, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 
@@ -36,18 +36,17 @@ const ConfirmPayment = () => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const { items, setItems } = useGetUserBalance();
+
+  const { currency, setCurrency, selectedBalance, handleCurrencyChange } = useCurrencyChange(items);
+
   const {
     transactionValue,
     isTransactionLoading,
     isTransactionCompletedModalVisible,
     setTransactionCompletedModalVisible,
     handleConfirmPayment,
-  } = usePayment(paymentAmount, scannedVendor as IVendor);
-
-  const { items, setItems } = useGetUserBalance();
-
-  const { currency, setCurrency, selectedBalance, handleCurrencyChange } = useCurrencyChange(items);
-
+  } = usePayment(paymentAmount, scannedVendor as IVendor, currency, currency === AssetCode.USDC ? 'BRL' : 'USDC');
   const handleOpenModal = () => {
     setIsModalVisible(true);
   };
@@ -56,6 +55,12 @@ const ConfirmPayment = () => {
     navigation.navigate('Wallet' as never);
     setTransactionCompletedModalVisible(false);
   };
+
+  const insuficcientBalance = Number(selectedBalance.balance) < Number(paymentAmount);
+
+  useEffect(() => {
+    setPaymentAmount(scannedVendor ? scannedVendor?.amount.toString() : '');
+  }, [scannedVendor]);
 
   return (
     <KeyboardAvoidingView>
@@ -74,7 +79,9 @@ const ConfirmPayment = () => {
               <DropDownPicker
                 open={open}
                 value={currency}
-                items={items}
+                items={items.filter((item, index, self) => {
+                  return self.findIndex((otherItem) => otherItem.value === item.value) === index;
+                })}
                 setOpen={setOpen}
                 setValue={setCurrency}
                 setItems={setItems}
@@ -97,12 +104,10 @@ const ConfirmPayment = () => {
               />
             </StyledView>
           </StyledView>
-          {selectedBalance && selectedBalance.balance < Number(paymentAmount) && (
-            <StyledText className="text-red">Insufficient funds</StyledText>
-          )}
+          {insuficcientBalance && <StyledText className="text-red">Insufficient funds</StyledText>}
           {selectedBalance && (
             <StyledView className="mb-6">
-              <StyledText className="text-md text-gray mb-1">Balance: {selectedBalance?.balance}</StyledText>
+              <StyledText className="text-md text-gray mb-1">Balance: {selectedBalance.balance}</StyledText>
             </StyledView>
           )}
           <StyledView className="mb-6">
@@ -123,12 +128,7 @@ const ConfirmPayment = () => {
             )}
           </StyledView>
           <StyledView>
-            <Button
-              onPress={handleOpenModal}
-              disabled={!!(selectedBalance && selectedBalance.balance < Number(paymentAmount))}
-              backgroundColor="red"
-              textColor="white"
-            >
+            <Button onPress={handleOpenModal} disabled={insuficcientBalance} backgroundColor="red" textColor="white">
               Confirm payment
             </Button>
           </StyledView>

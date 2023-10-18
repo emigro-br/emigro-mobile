@@ -1,22 +1,17 @@
 import { useEffect, useState } from 'react';
 
 import { getUserBalance } from '@/services/emigro';
-import { IBalance } from '@/types/IBalance';
+import { IFilteredBalance } from '@/types/IFilteredBalance';
 
 import { AssetCode } from '@constants/assetCode';
 
-interface Asset {
-  assetCode: AssetCode;
-  balance: number;
-}
-
 const useGetUserBalance = () => {
-  const [items, setItems] = useState<IBalance[]>([]);
+  const [items, setItems] = useState<IFilteredBalance[]>([]);
 
   const handleGetUserBalance = async () => {
     try {
-      const user = await getUserBalance();
-      const balances = user.balances.map((bal: Asset) => ({
+      const userBalance = await getUserBalance();
+      const balances = userBalance.map((bal) => ({
         label: bal.assetCode === AssetCode.USDC ? AssetCode.USD : bal.assetCode,
         value: bal.assetCode,
         balance: bal.balance,

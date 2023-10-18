@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { handleQuote, sendTransaction } from '@/services/emigro';
+import { getUserBalance, handleQuote, sendTransaction } from '@/services/emigro';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IVendor } from '@/types/IVendor';
 
@@ -10,7 +10,12 @@ interface TransactionValue {
   message: string;
 }
 
-const usePayment = (paymentAmount: string, scannedVendor: IVendor) => {
+const usePayment = (
+  paymentAmount: string,
+  scannedVendor: IVendor,
+  sourceAssetCode: string,
+  destinationAssetCode: string,
+) => {
   const [transactionValue, setTransactionValue] = useState<number | TransactionValue>(0);
   const [isTransactionLoading, setTransactionLoading] = useState(false);
   const [isTransactionCompletedModalVisible, setTransactionCompletedModalVisible] = useState(false);
@@ -37,9 +42,11 @@ const usePayment = (paymentAmount: string, scannedVendor: IVendor) => {
     try {
       setTransactionLoading(true);
       const transactionRequest: ITransactionRequest = {
-        maxAmountToSend: '500',
+        maxAmountToSend: '10000',
         destinationAmount: transactionValue.toString(),
         destination: scannedVendor.publicKey,
+        sourceAssetCode: sourceAssetCode,
+        destinationAssetCode: destinationAssetCode,
       };
       const paymentResponse = await sendTransaction(transactionRequest);
       setTransactionLoading(false);
