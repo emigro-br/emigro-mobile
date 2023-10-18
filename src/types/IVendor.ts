@@ -3,4 +3,5 @@ export interface IVendor {
   vendorId: string;
   address: string;
   publicKey: string;
+  amount: string;
 }
