@@ -9,6 +9,7 @@ type CustomModalProps = {
   isVisible: boolean;
   title: string;
   children: React.ReactNode;
+  onClose ?: () => void;
 };
 
 const CustomModal = ({ isVisible, title, children }: CustomModalProps) => {
