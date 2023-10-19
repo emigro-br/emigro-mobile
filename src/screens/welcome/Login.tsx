@@ -81,7 +81,7 @@ const Login = () => {
         </TouchableOpacity>
       </StyledView>
 
-      {error ? <StyledText className="text-red text-center text-lg">{error}</StyledText> : null}
+      {error ? <StyledText className="text-red text-center text-lg">{error}</StyledText> : ""}
     </StyledView>
   );
 };
