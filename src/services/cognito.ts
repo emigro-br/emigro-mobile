@@ -5,7 +5,7 @@ import { SIGNIN_ERROR_MESSAGE, SIGNUP_ERROR_MESSAGE } from '@constants/errorMess
 
 const BACKEND_URL = process.env.BACKEND_URL;
 
-export const signIn = async (email: string, password: string) => {
+export const signIn = async (email: string, password: string): Promise<void> => {
   const signInUrl = `${BACKEND_URL}/auth/login`;
 
   try {
