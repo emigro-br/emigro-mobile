@@ -9,7 +9,7 @@ import Header from '@components/Header';
 import Location from '@screens/Location';
 import MakePayment from '@screens/MakePayment';
 import Profile from '@screens/Profile';
-import Wallet from '@screens/wallet/Wallet';
+import Balance from '@screens/wallet/Balance';
 
 const BottomTab = createBottomTabNavigator<any>();
 
@@ -26,7 +26,7 @@ const BottomTabNavigator = () => {
     >
       <BottomTab.Screen
         name="Wallet"
-        component={Wallet}
+        component={Balance}
         options={() => ({
           title: 'Wallet',
           tabBarIcon: ({ focused }) =>
