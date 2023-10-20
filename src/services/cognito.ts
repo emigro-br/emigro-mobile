@@ -7,6 +7,7 @@ const BACKEND_URL = process.env.BACKEND_URL;
 
 export const signIn = async (email: string, password: string): Promise<void> => {
   const signInUrl = `${BACKEND_URL}/auth/login`;
+
   try {
     const response = await fetch(signInUrl, {
       method: 'POST',
@@ -19,8 +20,12 @@ export const signIn = async (email: string, password: string): Promise<void> => 
         role: Role.CUSTOMER,
       }),
     });
-    const signInResponse = await response.json();
-    const { accessToken, refreshToken, idToken } = signInResponse;
+
+    const { accessToken, refreshToken, idToken, message } = await response.json();
+
+    if (message) {
+      throw new Error(message);
+    }
 
     const session = {
       accessToken,
@@ -28,10 +33,10 @@ export const signIn = async (email: string, password: string): Promise<void> => 
       idToken,
       email,
     };
-
     await AsyncStorage.setItem('session', JSON.stringify(session));
   } catch (error) {
     console.error(SIGNIN_ERROR_MESSAGE, error);
+    throw error;
   }
 };
 
