@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { signUp } from '@/services/cognito';
+import { FormField } from '@/types/FormField';
 
 import { Role } from '@constants/constants';
 import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
@@ -15,12 +16,6 @@ const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledTextInput = styled(TextInput);
 
-type FormField = {
-  name: string;
-  placeholder: string;
-  secureTextEntry?: boolean;
-};
-
 const formFields: FormField[] = [
   { name: 'email', placeholder: 'Email' },
   { name: 'password', placeholder: 'Password', secureTextEntry: true },
@@ -29,7 +24,7 @@ const formFields: FormField[] = [
   { name: 'address', placeholder: 'Address' },
 ];
 
-const CreateAccount = ({ navigation }: SignUpProps) => {
+const CreateAccount: React.FunctionComponent<SignUpProps> = ({ navigation }) => {
   const [formData, setFormData] = useState<IRegisterUser>({
     email: '',
     password: '',
@@ -39,7 +34,7 @@ const CreateAccount = ({ navigation }: SignUpProps) => {
     role: Role.CUSTOMER,
   });
 
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string>('');
 
   const handleChange = (name: string, value: string) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));

@@ -13,20 +13,24 @@ const StyledText = styled(Text);
 const StyledTextInput = styled(TextInput);
 
 const formFields: FormField[] = [
-  { name: 'email', placeholder: 'yourEmail@example.com' },
+  { name: 'email', placeholder: 'Email' },
   { name: 'password', placeholder: 'Password', secureTextEntry: true },
 ];
 
-const Login = () => {
+type FormData = {
+  [key in FormField['name']]: string;
+};
+
+const Login: React.FunctionComponent = () => {
   const navigation = useNavigation();
 
-  const [formData, setFormData] = useState<Record<string, string>>({
+  const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
   });
 
-  const [error, setError] = useState('');
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [error, setError] = useState<string>('');
+  const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
 
   const handleChange = (name: string, value: string) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
@@ -81,7 +85,7 @@ const Login = () => {
         </TouchableOpacity>
       </StyledView>
 
-      {error ? <StyledText className="text-red text-center text-lg">{error}</StyledText> : null}
+      {error ? <StyledText className="text-red text-center text-lg">{error}</StyledText> : ''}
     </StyledView>
   );
 };

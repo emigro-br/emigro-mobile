@@ -19,7 +19,7 @@ import { OperationType } from '@constants/constants';
 const StyledView = styled(View);
 const StyledText = styled(Text);
 
-const Balance = () => {
+const Balance: React.FunctionComponent = () => {
   const [userBalance, setUserBalance] = useState<IBalance[]>([]);
   const [depositLoading, setDepositLoading] = useState<boolean>(false);
   const [withdrawLoading, setWithdrawLoading] = useState<boolean>(false);
@@ -94,6 +94,11 @@ const Balance = () => {
           return null;
         }
       })}
+      <AnchorButton
+        onPress={handleAnchorButtonPress}
+        depositLoading={depositLoading}
+        withdrawLoading={withdrawLoading}
+      />
     </StyledView>
   );
 };

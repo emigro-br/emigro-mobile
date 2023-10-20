@@ -1,6 +1,6 @@
 {
   "name": "emigro-mobile",
-  "description": "Template for building mobile apps with React Native.",
+  "description": "Mobile App for Customers.",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
