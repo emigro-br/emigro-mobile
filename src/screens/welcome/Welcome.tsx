@@ -9,7 +9,7 @@ const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledImage = styled(Image);
 
-export const Welcome = () => {
+export const Welcome: React.FunctionComponent = () => {
   const navigation = useNavigation();
   return (
     <StyledView className="flex justify-center">
