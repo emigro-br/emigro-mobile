@@ -6,7 +6,7 @@ import { IFilteredBalance } from '@/types/IFilteredBalance';
 import { AssetCode } from '@constants/assetCode';
 
 const useGetUserBalance = () => {
-  const [items, setItems] = useState<IFilteredBalance[]>([]);
+  const [userBalance, setUserBalance] = useState<IFilteredBalance[]>([]);
 
   const handleGetUserBalance = async () => {
     try {
@@ -16,7 +16,7 @@ const useGetUserBalance = () => {
         value: bal.assetCode,
         balance: bal.balance,
       }));
-      setItems(balances);
+      setUserBalance(balances);
     } catch (error) {
       console.error(error);
     }
@@ -26,7 +26,7 @@ const useGetUserBalance = () => {
     handleGetUserBalance();
   }, []);
 
-  return { items, setItems };
+  return { userBalance, setUserBalance };
 };
 
 export default useGetUserBalance;

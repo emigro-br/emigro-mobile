@@ -36,9 +36,9 @@ const ConfirmPayment = () => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const { items, setItems } = useGetUserBalance();
+  const { userBalance, setUserBalance } = useGetUserBalance();
 
-  const { currency, setCurrency, selectedBalance, handleCurrencyChange } = useCurrencyChange(items);
+  const { currency, setCurrency, selectedBalance, handleCurrencyChange } = useCurrencyChange(userBalance);
 
   const {
     transactionValue,
@@ -79,12 +79,10 @@ const ConfirmPayment = () => {
               <DropDownPicker
                 open={open}
                 value={currency}
-                items={items.filter((item, index, self) => {
-                  return self.findIndex((otherItem) => otherItem.value === item.value) === index;
-                })}
+                items={userBalance}
                 setOpen={setOpen}
                 setValue={setCurrency}
-                setItems={setItems}
+                setItems={setUserBalance}
                 placeholder="Type"
                 style={{
                   borderTopRightRadius: 0,
