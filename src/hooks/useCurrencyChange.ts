@@ -3,9 +3,9 @@ import { useState } from 'react';
 import { IFilteredBalance } from '@/types/IFilteredBalance';
 
 const initialSelectedBalance: IFilteredBalance = {
-  balance: '',
   label: '',
   value: '',
+  balance: '',
 };
 
 const useCurrencyChange = (items: IFilteredBalance[]) => {
@@ -13,10 +13,10 @@ const useCurrencyChange = (items: IFilteredBalance[]) => {
   const [selectedBalance, setSelectedBalance] = useState<IFilteredBalance>(initialSelectedBalance);
 
   const handleCurrencyChange = (value: string | null) => {
-    if (value !== null) {
+    if (value) {
       setCurrency(value);
       const balance = items.find((bal) => bal.value === value);
-      if (balance !== undefined) {
+      if (balance) {
         setSelectedBalance(balance);
       }
     }

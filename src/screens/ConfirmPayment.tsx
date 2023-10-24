@@ -46,7 +46,7 @@ const ConfirmPayment = () => {
     isTransactionCompletedModalVisible,
     setTransactionCompletedModalVisible,
     handleConfirmPayment,
-  } = usePayment(paymentAmount, scannedVendor as IVendor, currency, currency === AssetCode.USDC ? 'BRL' : 'USDC');
+  } = usePayment(paymentAmount, scannedVendor, currency, currency === AssetCode.USDC ? AssetCode.BRL : AssetCode.USDC);
   const handleOpenModal = () => {
     setIsModalVisible(true);
   };
@@ -59,7 +59,7 @@ const ConfirmPayment = () => {
   const insuficcientBalance = Number(selectedBalance.balance) < Number(paymentAmount);
 
   useEffect(() => {
-    setPaymentAmount(scannedVendor ? scannedVendor?.amount.toString() : '');
+    setPaymentAmount(scannedVendor.amount);
   }, [scannedVendor]);
 
   return (
@@ -69,7 +69,7 @@ const ConfirmPayment = () => {
         <StyledView className="flex-row px-4 mt-10">
           <StyledText className="text-xl font-bold">Vendor: </StyledText>
           <StyledText className="text-xl">
-            {scannedVendor?.name}, {scannedVendor?.address}
+            {scannedVendor.name}, {scannedVendor.address}
           </StyledText>
         </StyledView>
         <StyledView className="w-full flex justify-center p-6 gap-4 mt-6">

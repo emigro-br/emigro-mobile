@@ -94,11 +94,6 @@ const Balance: React.FunctionComponent = () => {
           return null;
         }
       })}
-      <AnchorButton
-        onPress={handleAnchorButtonPress}
-        depositLoading={depositLoading}
-        withdrawLoading={withdrawLoading}
-      />
     </StyledView>
   );
 };
