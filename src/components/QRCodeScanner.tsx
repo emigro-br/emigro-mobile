@@ -22,7 +22,7 @@ const StyledText = styled(Text);
 
 const StyledTouchableOpacity = styled(TouchableOpacity);
 
-const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
+const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel }) => {
   const { scannedVendor, setScannedVendor } = useVendor();
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [isScanned, setIsScanned] = useState(false);
