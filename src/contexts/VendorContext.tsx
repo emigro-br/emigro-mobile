@@ -7,19 +7,27 @@ type VendorContextProviderProps = {
 };
 
 type VendorContextType = {
-  scannedVendor: IVendor | null;
-  setScannedVendor: (vendor: IVendor | null) => void;
+  scannedVendor: IVendor;
+  setScannedVendor: (vendor: IVendor) => void;
+};
+
+const initialVendor: IVendor = {
+  name: '',
+  vendorId: '',
+  address: '',
+  publicKey: '',
+  amount: '',
 };
 
 const VendorContext = createContext<VendorContextType>({
-  scannedVendor: null,
+  scannedVendor: initialVendor,
   setScannedVendor: () => {},
 });
 
 export const useVendor = (): VendorContextType => useContext(VendorContext);
 
 export const VendorContextProvider = ({ children }: VendorContextProviderProps) => {
-  const [scannedVendor, setScannedVendor] = useState<IVendor | null>(null);
+  const [scannedVendor, setScannedVendor] = useState<IVendor>(initialVendor);
 
   return <VendorContext.Provider value={{ scannedVendor, setScannedVendor }}>{children}</VendorContext.Provider>;
 };

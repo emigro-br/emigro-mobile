@@ -1,17 +1,26 @@
 import { useState } from 'react';
 
-import { IBalance } from '@/types/IBalance';
+import { IFilteredBalance } from '@/types/IFilteredBalance';
 
-const useCurrencyChange = (items: IBalance[]) => {
-  const [currency, setCurrency] = useState('');
-  const [selectedBalance, setSelectedBalance] = useState<IBalance | null>(null);
+const initialSelectedBalance: IFilteredBalance = {
+  label: '',
+  value: '',
+  balance: '',
+};
 
-  const handleCurrencyChange = (value: any) => {
-    setCurrency(value);
-    const balance = items.find((bal: any) => bal.value === value);
-    setSelectedBalance(balance as any);
+const useCurrencyChange = (items: IFilteredBalance[]) => {
+  const [currency, setCurrency] = useState<string>('');
+  const [selectedBalance, setSelectedBalance] = useState<IFilteredBalance>(initialSelectedBalance);
+
+  const handleCurrencyChange = (value: string | null) => {
+    if (value) {
+      setCurrency(value);
+      const balance = items.find((bal) => bal.value === value);
+      if (balance) {
+        setSelectedBalance(balance);
+      }
+    }
   };
-
   return { currency, selectedBalance, setCurrency, handleCurrencyChange };
 };
 

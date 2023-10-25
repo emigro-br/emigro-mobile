@@ -1,7 +1,6 @@
-export interface IBalance {
-  label: string;
-  value: string;
-  balance: number;
+import { IFilteredBalance } from './IFilteredBalance';
+
+export interface IBalance extends IFilteredBalance {
   assetType: string;
   assetCode: string;
 }

@@ -20,9 +20,7 @@ export const signIn = async (email: string, password: string): Promise<void> => 
         role: Role.CUSTOMER,
       }),
     });
-
     const { accessToken, refreshToken, idToken, message } = await response.json();
-
     if (message) {
       throw new Error(message);
     }

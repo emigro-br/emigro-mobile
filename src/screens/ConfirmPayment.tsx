@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Text, TextInput, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 
@@ -25,7 +25,7 @@ export type RootStackParamList = {
   ConfirmPayment: { scannedVendor: IVendor };
 };
 
-const ConfirmPayment = () => {
+const ConfirmPayment: React.FunctionComponent = () => {
   const navigation = useNavigation();
 
   const { scannedVendor } = useVendor();
@@ -36,18 +36,17 @@ const ConfirmPayment = () => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const { userBalance, setUserBalance } = useGetUserBalance();
+
+  const { currency, setCurrency, selectedBalance, handleCurrencyChange } = useCurrencyChange(userBalance);
+
   const {
     transactionValue,
     isTransactionLoading,
     isTransactionCompletedModalVisible,
     setTransactionCompletedModalVisible,
     handleConfirmPayment,
-  } = usePayment(paymentAmount, scannedVendor as IVendor);
-
-  const { items, setItems } = useGetUserBalance();
-
-  const { currency, setCurrency, selectedBalance, handleCurrencyChange } = useCurrencyChange(items);
-
+  } = usePayment(paymentAmount, scannedVendor, currency, currency === AssetCode.USDC ? AssetCode.BRL : AssetCode.USDC);
   const handleOpenModal = () => {
     setIsModalVisible(true);
   };
@@ -57,6 +56,12 @@ const ConfirmPayment = () => {
     setTransactionCompletedModalVisible(false);
   };
 
+  const insuficcientBalance = Number(selectedBalance.balance) < Number(paymentAmount);
+
+  useEffect(() => {
+    setPaymentAmount(scannedVendor.amount);
+  }, [scannedVendor]);
+
   return (
     <KeyboardAvoidingView>
       <Header />
@@ -64,7 +69,7 @@ const ConfirmPayment = () => {
         <StyledView className="flex-row px-4 mt-10">
           <StyledText className="text-xl font-bold">Vendor: </StyledText>
           <StyledText className="text-xl">
-            {scannedVendor?.name}, {scannedVendor?.address}
+            {scannedVendor.name}, {scannedVendor.address}
           </StyledText>
         </StyledView>
         <StyledView className="w-full flex justify-center p-6 gap-4 mt-6">
@@ -74,10 +79,10 @@ const ConfirmPayment = () => {
               <DropDownPicker
                 open={open}
                 value={currency}
-                items={items}
+                items={userBalance}
                 setOpen={setOpen}
                 setValue={setCurrency}
-                setItems={setItems}
+                setItems={setUserBalance}
                 placeholder="Type"
                 style={{
                   borderTopRightRadius: 0,
@@ -97,12 +102,10 @@ const ConfirmPayment = () => {
               />
             </StyledView>
           </StyledView>
-          {selectedBalance && selectedBalance.balance < Number(paymentAmount) && (
-            <StyledText className="text-red">Insufficient funds</StyledText>
-          )}
+          {insuficcientBalance && <StyledText className="text-red">Insufficient funds</StyledText>}
           {selectedBalance && (
             <StyledView className="mb-6">
-              <StyledText className="text-md text-gray mb-1">Balance: {selectedBalance?.balance}</StyledText>
+              <StyledText className="text-md text-gray mb-1">Balance: {selectedBalance.balance}</StyledText>
             </StyledView>
           )}
           <StyledView className="mb-6">
@@ -123,12 +126,7 @@ const ConfirmPayment = () => {
             )}
           </StyledView>
           <StyledView>
-            <Button
-              onPress={handleOpenModal}
-              disabled={!!(selectedBalance && selectedBalance.balance < Number(paymentAmount))}
-              backgroundColor="red"
-              textColor="white"
-            >
+            <Button onPress={handleOpenModal} disabled={insuficcientBalance} backgroundColor="red" textColor="white">
               Confirm payment
             </Button>
           </StyledView>

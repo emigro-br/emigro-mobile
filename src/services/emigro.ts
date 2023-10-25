@@ -1,21 +1,22 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { getAccessToken } from './helpers';
+
+import { IBalance } from '@/types/IBalance';
+import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { IQuote } from '@/types/IQuote';
+import { ITransaction } from '@/types/ITransaction';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
+import { IUserProfile } from '@/types/IUserProfile';
 
 import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
-import { getAccessToken } from './helpers';
-import { IUserProfile } from '@/types/IUserProfile';
-import { ITransaction } from '@/types/ITransaction';
-import { IUserBalances } from '@/types/IUserBalances';
-import { IPaymentResponse } from '@/types/IPaymentResponse';
 
 const BACKEND_URL = process.env.BACKEND_URL;
 
 export const getTransactions = async (): Promise<ITransaction[]> => {
-  const transactionsUrl = `${BACKEND_URL}/transaction/all`; 
+  const transactionsUrl = `${BACKEND_URL}/transaction/all`;
   const accessToken = await getAccessToken();
-  
+
   try {
     const response = await fetch(transactionsUrl, {
       method: 'GET',
@@ -24,14 +25,15 @@ export const getTransactions = async (): Promise<ITransaction[]> => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return await response.json();
+    const { transactions } = await response.json();
+    return transactions;
   } catch (error) {
     console.error(error);
     throw new Error();
   }
 };
 
-export const getUserBalance = async (): Promise<IUserBalances> => {
+export const getUserBalance = async (): Promise<IBalance[]> => {
   const url = `${BACKEND_URL}/user`;
   const accessToken = await getAccessToken();
   try {
@@ -41,7 +43,8 @@ export const getUserBalance = async (): Promise<IUserBalances> => {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return await response.json();
+    const { balances } = await response.json();
+    return balances;
   } catch (error) {
     console.error(error, GET_USER_BALANCE_ERROR);
     throw new Error();
@@ -87,7 +90,7 @@ export const sendTransaction = async (transactionRequest: ITransactionRequest): 
 export const getUserPublicKey = async (): Promise<string> => {
   const url = `${BACKEND_URL}/user`;
   const accessToken = await getAccessToken();
-  
+
   try {
     const request = await fetch(url, {
       method: 'GET',

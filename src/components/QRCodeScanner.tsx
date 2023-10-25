@@ -22,7 +22,7 @@ const StyledText = styled(Text);
 
 const StyledTouchableOpacity = styled(TouchableOpacity);
 
-const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
+const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel }) => {
   const { scannedVendor, setScannedVendor } = useVendor();
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [isScanned, setIsScanned] = useState(false);
@@ -65,7 +65,7 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
 
   return (
     <StyledView className="flex items-center justify-center h-full">
-      <StyledView className="items-center justify-center h-96 w-full rounded-3xl">
+      <StyledView className="items-center justify-center h-60 w-full rounded-3xl">
         <BarCodeScanner
           onBarCodeScanned={isScanned ? undefined : handleBarCodeScanned}
           style={[StyleSheet.absoluteFill, styles.container]}
@@ -89,6 +89,10 @@ const QRCodeScanner = ({ onCancel }: QRCodeScannerProps) => {
           <StyledView className="flex flex-row mb-4">
             <StyledText className="text-lg font-bold">Address: </StyledText>
             <StyledText className="text-lg">{scannedVendor.address}</StyledText>
+          </StyledView>
+          <StyledView className="flex flex-row mb-4">
+            <StyledText className="text-lg font-bold">Amount: </StyledText>
+            <StyledText className="text-lg">{scannedVendor.amount}</StyledText>
           </StyledView>
           <StyledView className="flex justify-center">
             <Button backgroundColor="red" textColor="white" onPress={handleProceedToPayment}>
