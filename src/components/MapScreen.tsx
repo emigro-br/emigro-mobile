@@ -7,7 +7,7 @@ import { useVendor } from '@/contexts/VendorContext';
 
 const StyledView = styled(View);
 
-const MapScreen = () => {
+const MapScreen: React.FunctionComponent = () => {
   const { scannedVendor } = useVendor();
 
   const [region, setRegion] = useState({

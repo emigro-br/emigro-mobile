@@ -25,7 +25,7 @@ export type RootStackParamList = {
   ConfirmPayment: { scannedVendor: IVendor };
 };
 
-const ConfirmPayment = () => {
+const ConfirmPayment: React.FunctionComponent = () => {
   const navigation = useNavigation();
 
   const { scannedVendor } = useVendor();

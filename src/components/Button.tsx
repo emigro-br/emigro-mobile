@@ -13,7 +13,7 @@ interface ButtonProps {
 const StyledTouchableOpacity = styled(TouchableOpacity);
 const StyledText = styled(Text);
 
-const Button: React.FC<ButtonProps> = ({ onPress, backgroundColor, children, textColor, disabled }) => {
+const Button: React.FunctionComponent<ButtonProps> = ({ onPress, backgroundColor, children, textColor, disabled }) => {
   return (
     <StyledTouchableOpacity
       disabled={disabled}

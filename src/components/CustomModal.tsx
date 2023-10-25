@@ -9,10 +9,10 @@ type CustomModalProps = {
   isVisible: boolean;
   title: string;
   children: React.ReactNode;
-  onClose ?: () => void;
+  onClose?: () => void;
 };
 
-const CustomModal = ({ isVisible, title, children }: CustomModalProps) => {
+const CustomModal: React.FunctionComponent<CustomModalProps> = ({ isVisible, title, children }) => {
   return (
     <Modal animationType="fade" visible={isVisible} transparent>
       <StyledView className="flex-1">
