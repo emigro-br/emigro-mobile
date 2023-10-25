@@ -13,7 +13,6 @@ type VendorContextType = {
 
 const initialVendor: IVendor = {
   name: '',
-  vendorId: '',
   address: '',
   publicKey: '',
   amount: '',
