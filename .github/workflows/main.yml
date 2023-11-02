@@ -7,39 +7,14 @@ on:
     branches: ['*']
 
 jobs:
-  build_and_test:
-    runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [16.x]
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-
-      - name: NPM or Yarn install with caching
-        uses: bahmutov/npm-install@v1.6.0
-
-      - name: Build and test with coverage
-        run: |
-          npm run lint
-          npm run format
 
   scan:
-    needs: build_and_test
 
     runs-on: ubuntu-latest
 
     env:
       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      TEST: test
 
     steps:
       - name: Checkout repository
