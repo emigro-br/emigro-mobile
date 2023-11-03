@@ -10,12 +10,6 @@ const enum IconSize {
   LARGE = 48,
 }
 
-const enum AssetCode {
-  USDC = 'USDC',
-  USD = 'USD',
-  BRL = 'BRL',
-}
-
 const enum PaymentType {
   PATH_PAYMENT_STRICT_RECEIVE = 'path_payment_strict_receive',
   PAYMENT = 'payment',
@@ -39,7 +33,6 @@ const enum Role {
 export {
   IconSize,
   QRCodeSize,
-  AssetCode,
   PaymentType,
   TransactionDirection,
   OperationType,
