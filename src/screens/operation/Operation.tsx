@@ -54,7 +54,7 @@ const Operation: React.FunctionComponent = () => {
                     key={asset}
                 >
                     <Button 
-                    onPress={() => handleOnPress(asset as AssetCode)}
+                    onPress={() => handleOnPress(asset)}
                     disabled={operationLoading}
                     >
                         <StyledView className="flex-row gap-2">
