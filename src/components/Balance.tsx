@@ -5,8 +5,10 @@ import { Image, Text, View } from 'react-native';
 
 import { getUserBalance } from '@/services/emigro';
 import { IBalance } from '@/types/IBalance';
+
 import brlLogo from '@assets/images/br.png';
 import usdLogo from '@assets/images/usd.png';
+
 import { AssetCode } from '@constants/assetCode';
 
 const StyledView = styled(View);

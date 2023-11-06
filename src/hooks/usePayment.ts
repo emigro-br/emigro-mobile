@@ -45,8 +45,8 @@ const usePayment = (
         maxAmountToSend: '10000',
         destinationAmount: transactionValue.toString(),
         destination: scannedVendor.publicKey,
-        sourceAssetCode: sourceAssetCode,
-        destinationAssetCode: destinationAssetCode,
+        sourceAssetCode,
+        destinationAssetCode,
       };
       const paymentResponse = await sendTransaction(transactionRequest);
       setTransactionLoading(false);

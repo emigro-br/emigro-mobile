@@ -30,11 +30,4 @@ const enum Role {
   CUSTOMER = 'CUSTOMER',
 }
 
-export {
-  IconSize,
-  QRCodeSize,
-  PaymentType,
-  TransactionDirection,
-  OperationType,
-  Role,
-};
+export { IconSize, QRCodeSize, PaymentType, TransactionDirection, OperationType, Role };

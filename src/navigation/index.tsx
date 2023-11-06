@@ -3,10 +3,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import BottomTabNavigator from './BottomTabNavigator';
 
 import ConfirmPayment from '@screens/ConfirmPayment';
+import Operation from '@screens/operation/Operation';
 import CreateAccount from '@screens/welcome/CreateAccount';
 import Login from '@screens/welcome/Login';
 import { Welcome } from '@screens/welcome/Welcome';
-import Operation from '@screens/operation/Operation';
 
 type RootStackParamList = {
   Welcome: undefined;
