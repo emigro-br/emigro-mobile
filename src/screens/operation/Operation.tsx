@@ -17,6 +17,7 @@ const StyledText = styled(Text);
 const Operation: React.FunctionComponent = () => {
   const { operation } = useOperationStore();
   const [operationLoading, setOperationLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<boolean>(false);
   const [selectedAsset, setSelectedAsset] = useState<AssetCode | null>(null);
   const assets = Object.values(AssetCode);
   const filteredAssets = assets.filter((asset) => asset !== 'USDC' && asset !== 'EURC');
@@ -38,11 +39,16 @@ const Operation: React.FunctionComponent = () => {
 
     try {
       const { url } = await getInteractiveUrl(anchorParams);
+      console.log('url', url);
       if (url) {
         Linking.openURL(url);
       }
+      if (!url) {
+        setErrorMessage(true);
+      }
     } catch (error) {
       console.error(error);
+      setErrorMessage(true);
     } finally {
       setOperationLoading(false);
     }
@@ -62,6 +68,7 @@ const Operation: React.FunctionComponent = () => {
           </Button>
         </StyledView>
       ))}
+      {errorMessage && <StyledText className="text-red">'Something went wrong. Please try again'</StyledText>}
     </StyledView>
   );
 };
