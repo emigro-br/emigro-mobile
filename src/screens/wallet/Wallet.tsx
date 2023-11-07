@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
 import { View } from 'react-native';
 
-import { useOperationStore } from '@/store/operation.store';
+import { useOperationStore } from '@/store/operationStore';
 
 import Balance from '@components/Balance';
 import OperationButton from '@components/OperationButton';
