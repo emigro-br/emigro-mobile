@@ -4,7 +4,7 @@ import React from 'react';
 import Operation from '../operation/Operation';
 
 describe('Operation', () => {
-  it('Calls handleOnPress when a button is pressed', async () => {
+  it('Should call handleOnPress when a button is pressed', () => {
     const { getByText } = render(<Operation />);
     const button = getByText('USD');
     fireEvent.press(button);
@@ -12,7 +12,7 @@ describe('Operation', () => {
     expect(button).toBeTruthy();
   });
 
-  it('Calls handleOnPress when a button is pressed', async () => {
+  it('Should call handleOnPress when a button is pressed', () => {
     const { getByText } = render(<Operation />);
     const button = getByText('BRL');
     fireEvent.press(button);
@@ -20,7 +20,7 @@ describe('Operation', () => {
     expect(button).toBeTruthy();
   });
 
-  it('Calls handleOnPress when a button is pressed', async () => {
+  it('Should call handleOnPress when a button is pressed', () => {
     const { getByText } = render(<Operation />);
     const button = getByText('EUR');
     fireEvent.press(button);
