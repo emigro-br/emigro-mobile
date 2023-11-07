@@ -1,5 +1,7 @@
 import { create } from 'zustand';
+
 import { IOperation } from '@/types/IOperation';
+
 import { OperationType } from '@constants/constants';
 
 interface IOperationStore {
@@ -12,10 +14,11 @@ export const useOperationStore = create<IOperationStore>((set) => ({
     type: undefined,
     assetCode: undefined,
   },
-  setOperationType: (operationType: OperationType) => set(state => ({ 
-    operation: {
-      ...state.operation,
-      type: operationType,
-    }
+  setOperationType: (operationType: OperationType) =>
+    set(({ operation }) => ({
+      operation: {
+        ...operation,
+        type: operationType,
+      },
     })),
 }));
