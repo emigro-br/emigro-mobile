@@ -4,7 +4,7 @@ import { ActivityIndicator, Linking, Text, View } from 'react-native';
 
 import { getInteractiveUrl } from '@/services/anchor';
 import { getUserPublicKey } from '@/services/emigro';
-import { getAccessToken, getCriptoCode } from '@/services/helpers';
+import { getAccessToken, getCriptoCode } from '@/storage/helpers';
 import { useOperationStore } from '@/store/operation.store';
 
 import Button from '@components/Button';
