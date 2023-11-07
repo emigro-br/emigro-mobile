@@ -4,7 +4,7 @@ import { ActivityIndicator, Linking, Text, View } from 'react-native';
 
 import { getInteractiveUrl } from '@/services/anchor';
 import { getUserPublicKey } from '@/services/emigro';
-import { getAccessToken, getCriptoCode } from '@/storage/helpers';
+import { getAccessToken, getAssetCode } from '@/storage/helpers';
 import { useOperationStore } from '@/store/operation.store';
 
 import Button from '@components/Button';
@@ -22,10 +22,10 @@ const Operation: React.FunctionComponent = () => {
   const assets = Object.values(AssetCode);
   const filteredAssets = assets.filter((asset) => asset !== 'USDC' && asset !== 'EURC');
 
-  const handleOnPress = async (assetCode: AssetCode) => {
+  const handleOnPress = async (asset: AssetCode) => {
     setOperationLoading(true);
-    setSelectedAsset(assetCode);
-    const criptoCode = getCriptoCode(assetCode);
+    setSelectedAsset(asset);
+    const assetCodeSelected = getAssetCode(asset);
 
     const publicKey = await getUserPublicKey();
     const cognitoToken = await getAccessToken();
@@ -33,13 +33,12 @@ const Operation: React.FunctionComponent = () => {
     const anchorParams = {
       account: publicKey,
       operation: operation.type as string,
-      asset_code: criptoCode,
+      asset_code: assetCodeSelected,
       cognito_token: cognitoToken,
     };
 
     try {
       const { url } = await getInteractiveUrl(anchorParams);
-      console.log('url', url);
       if (url) {
         Linking.openURL(url);
       }
