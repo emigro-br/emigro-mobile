@@ -11,7 +11,7 @@ describe('Balance component', () => {
     expect(balanceElement).toBeTruthy();
   });
 
-  it('Should display the correct asset code and balance', () => {
+  it('Should display the correct asset codes and balances', () => {
     render(<Balance userBalance={userBalance} />);
     const brlAssetCodeElement = screen.getByText('BRL');
     const usdcAssetCodeElement = screen.getByText('USD');
