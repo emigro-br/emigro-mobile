@@ -1,9 +1,6 @@
-import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
-import React, { useEffect, useState } from 'react';
 import { Image, Text, View } from 'react-native';
 
-import { getUserBalance } from '@/services/emigro';
 import { IBalance } from '@/types/IBalance';
 
 import brlLogo from '@assets/images/br.png';
@@ -14,26 +11,11 @@ import { AssetCode } from '@constants/assetCode';
 const StyledView = styled(View);
 const StyledText = styled(Text);
 
-const Balance: React.FunctionComponent = () => {
-  const [userBalance, setUserBalance] = useState<IBalance[]>([]);
-  const navigation = useNavigation();
+interface BalanceProps {
+  userBalance: IBalance[];
+}
 
-  const fetchUserBalance = async (): Promise<void> => {
-    try {
-      const balances = await getUserBalance();
-      setUserBalance(balances);
-    } catch (error) {
-      console.error(error);
-      throw new Error();
-    }
-  };
-
-  useEffect(() => {
-    return navigation.addListener('focus', () => {
-      fetchUserBalance();
-    });
-  }, [navigation]);
-
+const Balance: React.FunctionComponent<BalanceProps> = ({ userBalance }) => {
   return (
     <StyledView className="flex items-center h-full">
       <StyledText className="text-center font-black text-2xl my-6">Balance</StyledText>
