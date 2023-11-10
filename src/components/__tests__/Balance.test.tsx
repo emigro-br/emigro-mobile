@@ -1,35 +1,26 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { render, waitFor } from '@testing-library/react-native';
+import { render, screen } from '@testing-library/react-native';
 
-import { mockBalanceUsd, mockNoFunds } from '@/__mocks__/mock-balance';
-import * as emigroService from '@/services/emigro';
-import { IBalance } from '@/types/IBalance';
+import { userBalance } from '../../__mocks__/mock-balance';
+import Balance from '../Balance';
 
-import Balance from '@components/Balance';
+describe('Balance component', () => {
+  it('Should renders the balance component correctly', () => {
+    render(<Balance userBalance={userBalance} />);
+    const balanceElement = screen.getByText('Balance');
 
-const Stack = createNativeStackNavigator();
-const TestNavigator = () => (
-  <NavigationContainer>
-    <Stack.Navigator initialRouteName="Wallet">
-      <Stack.Screen name="Balance" component={Balance} />
-    </Stack.Navigator>
-  </NavigationContainer>
-);
-
-describe('Balance', () => {
-  it('Should fetches and renders user balance', async () => {
-    jest.spyOn(emigroService, 'getUserBalance').mockResolvedValue(Promise.resolve<IBalance[]>([mockBalanceUsd]));
-
-    const { getByText } = render(<TestNavigator />);
-    const text = await waitFor(() => getByText('USD'));
-    expect(text).toBeTruthy();
+    expect(balanceElement).toBeTruthy();
   });
-  it('Should fetches and renders a message if there is no balance', async () => {
-    jest.spyOn(emigroService, 'getUserBalance').mockResolvedValue(Promise.resolve<IBalance[]>([mockNoFunds]));
 
-    const { getByText } = render(<TestNavigator />);
-    const text = await waitFor(() => getByText('No funds'));
-    expect(text).toBeTruthy();
+  it('Should displays the correct asset code and balance', () => {
+    render(<Balance userBalance={userBalance} />);
+    const brlAssetCodeElement = screen.getByText('BRL');
+    const usdcAssetCodeElement = screen.getByText('USD');
+    const balanceElement = screen.getByText('10');
+    const noFundsElement = screen.getByText('No funds');
+
+    expect(brlAssetCodeElement).toBeTruthy();
+    expect(usdcAssetCodeElement).toBeTruthy();
+    expect(balanceElement).toBeTruthy();
+    expect(noFundsElement).toBeTruthy();
   });
 });
