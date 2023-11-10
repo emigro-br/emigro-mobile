@@ -4,14 +4,14 @@ import { userBalance } from '../../__mocks__/mock-balance';
 import Balance from '../Balance';
 
 describe('Balance component', () => {
-  it('Should renders the balance component correctly', () => {
+  it('Should render the balance component correctly', () => {
     render(<Balance userBalance={userBalance} />);
     const balanceElement = screen.getByText('Balance');
 
     expect(balanceElement).toBeTruthy();
   });
 
-  it('Should displays the correct asset code and balance', () => {
+  it('Should display the correct asset code and balance', () => {
     render(<Balance userBalance={userBalance} />);
     const brlAssetCodeElement = screen.getByText('BRL');
     const usdcAssetCodeElement = screen.getByText('USD');

@@ -30,6 +30,7 @@ describe('Operation', () => {
   it('Should call handleOnPress when a button is pressed', () => {
     const { getByText } = render(<Operation />);
     const button = getByText('USD');
+
     fireEvent.press(button);
 
     expect(button).toBeTruthy();
@@ -38,6 +39,7 @@ describe('Operation', () => {
   it('Should call handleOnPress when a button is pressed', () => {
     const { getByText } = render(<Operation />);
     const button = getByText('BRL');
+
     fireEvent.press(button);
 
     expect(button).toBeTruthy();
@@ -46,6 +48,7 @@ describe('Operation', () => {
   it('Should call handleOnPress when a button is pressed', () => {
     const { getByText } = render(<Operation />);
     const button = getByText('EUR');
+
     fireEvent.press(button);
 
     expect(button).toBeTruthy();
