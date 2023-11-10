@@ -24,6 +24,7 @@
   "compilerOptions": {
     "strict": true,
     "module": "es6",
+    "types":["@testing-library/jest-native", "jest"],
     "paths": {
       "@api/*": [
         "./src/api/*"

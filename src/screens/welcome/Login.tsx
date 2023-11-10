@@ -5,7 +5,7 @@ import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'reac
 
 import { SIGNIN_ERROR_MESSAGE, SIGN_IN_FIELDS_ERROR } from '@/constants/errorMessages';
 import { signIn } from '@/services/cognito';
-import { getAccessToken } from '@/services/helpers';
+import { getAccessToken } from '@/storage/helpers';
 import { FormField } from '@/types/FormField';
 
 const StyledView = styled(View);

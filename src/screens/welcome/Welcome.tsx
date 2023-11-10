@@ -15,7 +15,7 @@ export const Welcome: React.FunctionComponent = () => {
     <StyledView className="flex justify-center">
       <StyledView className="flex-row items-center justify-center bg-red pt-8">
         <StyledView className="h-14 w-40">
-          <StyledImage className="h-full w-full object-contain" source={emigroLogo}></StyledImage>
+          <StyledImage className="h-full w-full object-contain" source={emigroLogo} />
         </StyledView>
       </StyledView>
       <StyledView className="px-16 my-12">

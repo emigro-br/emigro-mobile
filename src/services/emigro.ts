@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { getAccessToken } from './helpers';
+import { getAccessToken } from '../storage/helpers';
 
 import { IBalance } from '@/types/IBalance';
 import { IPaymentResponse } from '@/types/IPaymentResponse';
