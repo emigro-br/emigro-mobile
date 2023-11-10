@@ -15,12 +15,12 @@ const StyledView = styled(View);
 const StyledText = styled(Text);
 
 const Operation: React.FunctionComponent = () => {
-  const { operation } = useOperationStore();
+  const { type } = useOperationStore().operation;
   const [operationLoading, setOperationLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<boolean>(false);
   const [selectedAsset, setSelectedAsset] = useState<AssetCode | null>(null);
   const assets = Object.values(AssetCode);
-  const filteredAssets = assets.filter((asset) => asset !== 'USDC' && asset !== 'EURC');
+  const filteredAssets = assets.filter((asset) => !['USDC', 'EURC'].includes(asset));
 
   const handleOnPress = async (asset: AssetCode) => {
     setOperationLoading(true);
@@ -32,7 +32,7 @@ const Operation: React.FunctionComponent = () => {
 
     const anchorParams = {
       account: publicKey,
-      operation: operation.type as string,
+      operation: type as string,
       asset_code: assetCodeSelected,
       cognito_token: cognitoToken,
     };
@@ -55,7 +55,7 @@ const Operation: React.FunctionComponent = () => {
 
   return (
     <StyledView className="flex items-center h-full">
-      <StyledText className="text-center font-black text-2xl my-6">{operation.type}</StyledText>
+      <StyledText className="text-center font-black text-2xl my-6">{type}</StyledText>
       {filteredAssets.map((asset) => (
         <StyledView className="flex-row h-20 items-center justify-between m-1 px-6 w-full bg-white rounded" key={asset}>
           <Button onPress={() => handleOnPress(asset)} disabled={operationLoading}>
@@ -67,7 +67,7 @@ const Operation: React.FunctionComponent = () => {
           </Button>
         </StyledView>
       ))}
-      {errorMessage && <StyledText className="text-red">'Something went wrong. Please try again'</StyledText>}
+      {errorMessage && <StyledText className="text-red">Something went wrong. Please try again</StyledText>}
     </StyledView>
   );
 };
