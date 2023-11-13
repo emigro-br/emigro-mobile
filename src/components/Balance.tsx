@@ -2,9 +2,7 @@ import { styled } from 'nativewind';
 import { Image, Text, View } from 'react-native';
 
 import { IBalance } from '@/types/IBalance';
-
-import brlLogo from '@assets/images/br.png';
-import usdLogo from '@assets/images/usd.png';
+import { getAssetIcon } from '@/utils/getAssetIcon';
 
 import { AssetCode } from '@constants/assetCode';
 
@@ -26,8 +24,7 @@ const Balance: React.FunctionComponent<BalanceProps> = ({ userBalance }) => {
             className="flex-row h-20 items-center justify-between m-1 px-6 w-full bg-white rounded"
           >
             <StyledView className="flex-row gap-2">
-              {assetCode === AssetCode.BRL && <Image source={brlLogo} style={{ width: 30, height: 30 }} />}
-              {assetCode === AssetCode.USDC && <Image source={usdLogo} style={{ width: 30, height: 30 }} />}
+              <Image source={getAssetIcon(assetCode)} style={{ width: 30, height: 30 }} />
               <StyledText className="font-bold text-xl">
                 {assetCode === AssetCode.USDC ? AssetCode.USD : assetCode}
               </StyledText>

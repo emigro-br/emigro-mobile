@@ -40,10 +40,10 @@ const Wallet: React.FunctionComponent = () => {
 
   return (
     <StyledView className="flex items-center h-full">
-      <StyledView className="gap-2 m-1 px-6 w-full flex-row justify-around">
+      <StyledView className="p-4 mt-12">
         <OperationButton onPress={handleOnPress} />
       </StyledView>
-      <StyledView className="gap-2 m-1 px-6 w-full">
+      <StyledView className="m-1 px-6 w-full">
         <Balance userBalance={userBalance} />
       </StyledView>
     </StyledView>

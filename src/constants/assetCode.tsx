@@ -4,4 +4,5 @@ export enum AssetCode {
   EUR = 'EUR',
   USD = 'USD',
   BRL = 'BRL',
+  ARS = 'ARS',
 }
