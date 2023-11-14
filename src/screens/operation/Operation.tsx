@@ -1,14 +1,13 @@
 import { styled } from 'nativewind';
 import React, { useState } from 'react';
-import { ActivityIndicator, Linking, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Linking, Text, TouchableOpacity, View } from 'react-native';
 
 import { getInteractiveUrl } from '@/services/anchor';
 import { getUserPublicKey } from '@/services/emigro';
 import { getAssetCode } from '@/stellar/utils';
 import { getAccessToken } from '@/storage/helpers';
 import { useOperationStore } from '@/store/operationStore';
-
-import Button from '@components/Button';
+import { getAssetIcon } from '@/utils/getAssetIcon';
 
 import { AssetCode } from '@constants/assetCode';
 
@@ -57,16 +56,20 @@ const Operation: React.FunctionComponent = () => {
   return (
     <StyledView className="flex items-center h-full">
       <StyledText className="text-center font-black text-2xl my-6">{type}</StyledText>
+      <StyledText className="text-lg p-6 text-center">Select the type of currency you want to {type}</StyledText>
       {filteredAssets.map((asset) => (
-        <StyledView className="flex-row h-20 items-center justify-between m-1 px-6 w-full bg-white rounded" key={asset}>
-          <Button onPress={() => handleOnPress(asset)} disabled={operationLoading}>
-            <StyledView className="flex-row gap-2">
-              <StyledText className="text-center font-black text-2xl my-6">
-                {operationLoading && asset === selectedAsset ? <ActivityIndicator size="large" /> : asset}
+        <TouchableOpacity key={`asset_${asset}`} onPress={() => handleOnPress(asset)} disabled={operationLoading}>
+          <StyledView className="flex-row w-32 h-20 items-center justify-center m-1 px-6 bg-white rounded shadow-xl">
+            {operationLoading && asset === selectedAsset ? (
+              <ActivityIndicator size="large" />
+            ) : (
+              <StyledText className="font-bold text-2xl">
+                <Image source={getAssetIcon(asset)} style={{ width: 30, height: 30 }} />
+                {asset}
               </StyledText>
-            </StyledView>
-          </Button>
-        </StyledView>
+            )}
+          </StyledView>
+        </TouchableOpacity>
       ))}
       {errorMessage && <StyledText className="text-red">Something went wrong. Please try again</StyledText>}
     </StyledView>
