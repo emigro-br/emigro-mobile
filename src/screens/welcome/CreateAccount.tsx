@@ -1,9 +1,13 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styled } from 'nativewind';
 import React, { useState } from 'react';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { signUp } from '@/services/cognito';
 import { FormField } from '@/types/FormField';
+
+import Button from '@components/Button';
+import CustomModal from '@components/CustomModal';
 
 import { Role } from '@constants/constants';
 import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
@@ -33,21 +37,44 @@ const CreateAccount: React.FunctionComponent<SignUpProps> = ({ navigation }) => 
     address: '',
     role: Role.CUSTOMER,
   });
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState('');
 
   const handleChange = (name: string, value: string) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     try {
-      signUp(formData);
-      navigation.navigate('Login');
+      setIsLoading(true);
+      setError('');
+      const { username } = await signUp(formData);
+      await AsyncStorage.multiSet([
+        ['email', formData.email],
+        ['username', username],
+      ]);
+      setShowConfirmationModal(true);
+      setFormData({
+        email: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+        address: '',
+        role: Role.CUSTOMER,
+      });
     } catch (error) {
       console.error(error, SIGNUP_ERROR_MESSAGE);
       setError(SIGNUP_ERROR_MESSAGE);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleCloseConfirmationModal = () => {
+    setShowConfirmationModal(false);
+    navigation.navigate('ConfirmAccount');
   };
 
   return (
@@ -64,9 +91,9 @@ const CreateAccount: React.FunctionComponent<SignUpProps> = ({ navigation }) => 
       ))}
 
       <TouchableOpacity onPress={handleSubmit}>
-        <StyledView className="bg-red rounded-md h-12 justify-center">
-          <StyledText className="text-white text-center text-lg">Sign Up</StyledText>
-        </StyledView>
+        <Button backgroundColor="blue" textColor="white" disabled={isLoading} onPress={handleSubmit}>
+          {isLoading ? <ActivityIndicator size="large" color="gray" /> : 'Sign Up'}
+        </Button>
       </TouchableOpacity>
       <StyledView className="flex-row justify-center items-center gap-2">
         <StyledText className="text-lg">Already have an account?</StyledText>
@@ -74,7 +101,13 @@ const CreateAccount: React.FunctionComponent<SignUpProps> = ({ navigation }) => 
           <StyledText className="text-blue text-xl font-bold">Log in</StyledText>
         </TouchableOpacity>
       </StyledView>
-      {error ? <Text>{error}</Text> : null}
+      <StyledText className="text-red text-center text-lg">{error}</StyledText>
+      <CustomModal isVisible={showConfirmationModal} title="Complete registration">
+        <StyledText className="text-lg p-4">We have sent you a confirmation code to your email address.</StyledText>
+        <Button backgroundColor="blue" textColor="white" onPress={handleCloseConfirmationModal}>
+          Accept
+        </Button>
+      </CustomModal>
     </StyledView>
   );
 };

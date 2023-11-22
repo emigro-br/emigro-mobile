@@ -1,13 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { IConfirmUser } from '@/types/IConfirmUser';
+import { IRegisterResponse } from '@/types/IRegisterResponse';
+
 import { Role } from '@constants/constants';
-import { SIGNIN_ERROR_MESSAGE, SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
+import { CONFIRM_ACCOUNT_ERROR, SIGNIN_ERROR_MESSAGE, SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 
 const BACKEND_URL = process.env.BACKEND_URL;
 
 export const signIn = async (email: string, password: string): Promise<void> => {
   const signInUrl = `${BACKEND_URL}/auth/login`;
-
   try {
     const response = await fetch(signInUrl, {
       method: 'POST',
@@ -38,7 +40,7 @@ export const signIn = async (email: string, password: string): Promise<void> => 
   }
 };
 
-export const signUp = async (registerUser: IRegisterUser): Promise<number> => {
+export const signUp = async (registerUser: IRegisterUser): Promise<IRegisterResponse> => {
   const registerUrl = `${BACKEND_URL}/auth/register`;
   try {
     const response = await fetch(registerUrl, {
@@ -52,5 +54,21 @@ export const signUp = async (registerUser: IRegisterUser): Promise<number> => {
   } catch (error) {
     console.error(SIGNUP_ERROR_MESSAGE, error);
     throw new Error();
+  }
+};
+
+export const confirmAccount = async (confirmUser: IConfirmUser): Promise<IRegisterResponse | undefined> => {
+  const confirmUrl = `${BACKEND_URL}/auth/confirm`;
+  try {
+    const response = await fetch(confirmUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(confirmUser),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error(CONFIRM_ACCOUNT_ERROR, error);
   }
 };

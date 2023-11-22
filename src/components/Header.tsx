@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 import emigroLogo from '@assets/images/emigro-logo.png';
@@ -10,11 +10,11 @@ const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledImage = styled(Image);
 
-const Header: FunctionComponent = () => {
+const Header: React.FunctionComponent = () => {
   const navigation = useNavigation();
 
   const handleLogout = async () => {
-    await AsyncStorage.removeItem('session');
+    await AsyncStorage.clear();
     navigation.navigate('Login' as never);
   };
 
