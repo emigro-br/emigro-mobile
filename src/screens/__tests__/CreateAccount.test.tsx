@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import * as cognito from '@/services/cognito';
 
@@ -15,7 +15,7 @@ jest.mock('@react-navigation/native', () => ({
 }));
 
 describe('CreateAccount component', () => {
-  test('Should call signUp with correct information', () => {
+  test('Should call signUp with correct information', async () => {
     const signUpMock = jest.spyOn(cognito, 'signUp');
     const mockResponse = {
       id: 1,
@@ -55,7 +55,9 @@ describe('CreateAccount component', () => {
       role: 'CUSTOMER',
     };
 
-    expect(signUpMock).toHaveBeenCalledWith(signUpBodyMock);
+    await waitFor(() => {
+      expect(signUpMock).toHaveBeenCalledWith(signUpBodyMock);
+    });
   });
 
   test('Should display an error message if signUp fails', () => {

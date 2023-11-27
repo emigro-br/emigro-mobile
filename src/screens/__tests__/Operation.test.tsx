@@ -27,31 +27,37 @@ describe('Operation', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-  it('Should call handleOnPress when a button is pressed', () => {
+  it('Should call handleOnPress when a button is pressed', async () => {
     const { getByText } = render(<Operation />);
     const button = getByText('USD');
 
     fireEvent.press(button);
 
-    expect(button).toBeTruthy();
+    await waitFor(() => {
+      expect(button).toBeTruthy();
+    });
   });
 
-  it('Should call handleOnPress when a button is pressed', () => {
+  it('Should call handleOnPress when a button is pressed', async () => {
     const { getByText } = render(<Operation />);
     const button = getByText('BRL');
 
     fireEvent.press(button);
 
-    expect(button).toBeTruthy();
+    await waitFor(() => {
+      expect(button).toBeTruthy();
+    });
   });
 
-  it('Should call handleOnPress when a button is pressed', () => {
+  it('Should call handleOnPress when a button is pressed', async () => {
     const { getByText } = render(<Operation />);
     const button = getByText('EUR');
 
     fireEvent.press(button);
 
-    expect(button).toBeTruthy();
+    await waitFor(() => {
+      expect(button).toBeTruthy();
+    });
   });
 
   it('Should handle the operation correctly', async () => {

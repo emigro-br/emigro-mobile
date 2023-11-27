@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 
 import Header from '@components/Header';
@@ -15,12 +15,14 @@ jest.mock('@react-navigation/native', () => ({
 }));
 
 describe('Header component', () => {
-  test('Should trigger the Logout action and clear AsyncStorage', () => {
+  test('Should trigger the Logout action and clear AsyncStorage', async () => {
     const { getByText } = render(<Header />);
     const logoutButton = getByText('Logout');
 
     fireEvent.press(logoutButton);
 
-    expect(AsyncStorage.clear).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(AsyncStorage.clear).toHaveBeenCalled();
+    });
   });
 });

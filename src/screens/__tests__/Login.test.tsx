@@ -1,4 +1,4 @@
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import * as cognito from '@/services/cognito';
 
@@ -13,7 +13,7 @@ jest.mock('@react-navigation/native', () => ({
 }));
 
 describe('Login screen', () => {
-  test('Should call signIn with correct credentials', () => {
+  test('Should call signIn with correct credentials', async () => {
     const signInMock = jest.spyOn(cognito, 'signIn');
     signInMock.mockResolvedValue(Promise.resolve());
 
@@ -27,6 +27,8 @@ describe('Login screen', () => {
 
     fireEvent.press(getByText('Log in'));
 
-    expect(signInMock).toHaveBeenCalledWith('test@example.com', 'password123');
+    await waitFor(() => {
+      expect(signInMock).toHaveBeenCalledWith('test@example.com', 'password123');
+    });
   });
 });
