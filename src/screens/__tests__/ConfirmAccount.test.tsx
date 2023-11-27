@@ -41,7 +41,7 @@ it('Should handle confirmation with success', async () => {
 
   await waitFor(() => {
     expect(confirmAccount).toHaveBeenCalled();
-    const { children } = getByTestId('error');
+    const { children } = getByTestId('confirm-account-error');
     expect(children[0]).toBeUndefined();
   });
 });
@@ -58,7 +58,7 @@ it('Should handle error from confirmAccount', async () => {
   fireEvent.press(confirmButton);
 
   await waitFor(() => {
-    const { children } = getByTestId('error');
+    const { children } = getByTestId('confirm-account-error');
     expect(children[0]).toEqual(CONFIRM_ACCOUNT_ERROR);
   });
 });
