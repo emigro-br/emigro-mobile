@@ -72,7 +72,7 @@ const ConfirmAccount = ({ navigation }: ConfirmAccountProps) => {
           <StyledText className="text-blue text-xl font-bold">Resend Code</StyledText>
         </TouchableOpacity>
       </StyledView>
-      <StyledText testID="error" className="text-red text-lg text-center">
+      <StyledText testID="confirm-account-error" className="text-red text-lg text-center">
         {error}
       </StyledText>
       <CustomModal isVisible={isConfirmationModalVisible} title="Confirmation successful">
