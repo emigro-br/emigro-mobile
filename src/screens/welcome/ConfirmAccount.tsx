@@ -32,7 +32,7 @@ const ConfirmAccount = ({ navigation }: ConfirmAccountProps) => {
       const [[, email], [, username]] = await AsyncStorage.multiGet(['email', 'username']);
       if (email && username) {
         const response = await confirmAccount({ email, username, code: confirmationCode });
-        if (response && response.status) {
+        if (response?.status) {
           setIsConfirmationSuccessful(true);
           setIsConfirmationModalVisible(true);
         } else {
