@@ -66,11 +66,9 @@ const ConfirmPayment: React.FunctionComponent = () => {
     <KeyboardAvoidingView>
       <Header />
       <StyledView className="flex justify-center items-center p-4">
-        <StyledView className="flex-row px-4 mt-10">
-          <StyledText className="text-xl font-bold">Vendor: </StyledText>
-          <StyledText className="text-xl">
-            {scannedVendor.name}, {scannedVendor.address}
-          </StyledText>
+        <StyledView className="flex px-4 mt-10">
+          <StyledText className="text-xl font-bold mb-2">Send Money</StyledText>
+          <StyledText>To {scannedVendor.name}</StyledText>
         </StyledView>
         <StyledView className="w-full flex justify-center p-6 gap-4 mt-6">
           <StyledText className="font-bold text-xl my-2">Select an amount:</StyledText>
@@ -109,11 +107,6 @@ const ConfirmPayment: React.FunctionComponent = () => {
             </StyledView>
           )}
           <StyledView className="mb-6">
-            <StyledText className="text-lg mb-1">
-              Rate: {currency === AssetCode.USDC ? `1 ${AssetCode.USD} = 5 ${AssetCode.BRL}` : null}
-            </StyledText>
-            <StyledText className="text-lg mb-1">Markup: 0%</StyledText>
-            <StyledText className="text-lg mb-1">Fee: 0 USD</StyledText>
             {typeof transactionValue === 'object' ? (
               <StyledText className="text-lg mb-1 text-red">
                 {transactionValue.message && 'No offers available'}
@@ -126,8 +119,8 @@ const ConfirmPayment: React.FunctionComponent = () => {
             )}
           </StyledView>
           <StyledView>
-            <Button onPress={handleOpenModal} disabled={insuficcientBalance} backgroundColor="red" textColor="white">
-              Confirm payment
+            <Button onPress={handleOpenModal} disabled={insuficcientBalance} backgroundColor="black" textColor="white">
+              Send Money
             </Button>
           </StyledView>
           <CustomModal isVisible={isModalVisible} title="Confirm Payment" onClose={() => setIsModalVisible(false)}>

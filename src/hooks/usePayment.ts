@@ -17,6 +17,7 @@ const usePayment = (
   destinationAssetCode: string,
 ) => {
   const [transactionValue, setTransactionValue] = useState<number | TransactionValue>(0);
+  const [maxAmountToSend, setMaxAmountToSend] = useState<string>('0');
   const [isTransactionLoading, setTransactionLoading] = useState(false);
   const [isTransactionCompletedModalVisible, setTransactionCompletedModalVisible] = useState(false);
 
@@ -35,14 +36,28 @@ const usePayment = (
       }
     };
 
+    const fetchUserBalance = async () => {
+      try {
+        const userBalances = await getUserBalance();
+        const sourceAssetBalance = userBalances.find((balance) => balance.assetCode === sourceAssetCode);
+
+        if (sourceAssetBalance) {
+          setMaxAmountToSend(sourceAssetBalance.balance);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
     handlePayment();
-  }, [paymentAmount]);
+    fetchUserBalance();
+  }, [paymentAmount, sourceAssetCode]);
 
   const handleConfirmPayment = async () => {
     try {
       setTransactionLoading(true);
       const transactionRequest: ITransactionRequest = {
-        maxAmountToSend: '10000',
+        maxAmountToSend,
         destinationAmount: transactionValue.toString(),
         destination: scannedVendor.publicKey,
         sourceAssetCode,
