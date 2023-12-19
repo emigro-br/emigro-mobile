@@ -19,17 +19,17 @@ const usePayment = (
   const [transactionValue, setTransactionValue] = useState<number | TransactionValue>(0);
   const [maxAmountToSend, setMaxAmountToSend] = useState<string>('0');
   const [isTransactionLoading, setTransactionLoading] = useState(false);
-  const [isTransactionCompletedModalVisible, setTransactionCompletedModalVisible] = useState(false);
+  const [isTransactionCompletedModalVisible, setIsTransactionCompletedModalVisible] = useState(false);
 
   useEffect(() => {
     const handlePayment = async () => {
       try {
         if (paymentAmount) {
-          const from = `${AssetCode.USDC}:${process.env.FROM_PUBLIC_KEY}`;
-          const to = `${AssetCode.BRL}:${process.env.TO_PUBLIC_KEY}`;
+          const from = `${AssetCode.BRL}`;
+          const to = `${AssetCode.USDC}`;
           const transactionQuote = { from, to, amount: paymentAmount };
           const calculatedTransactionValue = await handleQuote(transactionQuote);
-          setTransactionValue(calculatedTransactionValue);
+          setTransactionValue(Number(calculatedTransactionValue));
         }
       } catch (error) {
         console.error(error);
@@ -58,14 +58,14 @@ const usePayment = (
       setTransactionLoading(true);
       const transactionRequest: ITransactionRequest = {
         maxAmountToSend,
-        destinationAmount: transactionValue.toString(),
+        destinationAmount: paymentAmount,
         destination: scannedVendor.publicKey,
         sourceAssetCode,
         destinationAssetCode,
       };
       const paymentResponse = await sendTransaction(transactionRequest);
       setTransactionLoading(false);
-      setTransactionCompletedModalVisible(true);
+      setIsTransactionCompletedModalVisible(true);
       return paymentResponse;
     } catch (error) {
       console.error(error);
@@ -77,7 +77,7 @@ const usePayment = (
     transactionValue,
     isTransactionLoading,
     isTransactionCompletedModalVisible,
-    setTransactionCompletedModalVisible,
+    setIsTransactionCompletedModalVisible,
     handleConfirmPayment,
   };
 };

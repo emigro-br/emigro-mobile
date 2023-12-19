@@ -44,16 +44,15 @@ const ConfirmPayment: React.FunctionComponent = () => {
     transactionValue,
     isTransactionLoading,
     isTransactionCompletedModalVisible,
-    setTransactionCompletedModalVisible,
+    setIsTransactionCompletedModalVisible,
     handleConfirmPayment,
   } = usePayment(paymentAmount, scannedVendor, currency, currency === AssetCode.USDC ? AssetCode.BRL : AssetCode.USDC);
   const handleOpenModal = () => {
     setIsModalVisible(true);
   };
-
   const handleNavigateWallet = () => {
     navigation.navigate('Wallet' as never);
-    setTransactionCompletedModalVisible(false);
+    setIsTransactionCompletedModalVisible(false);
   };
 
   const insuficcientBalance = Number(selectedBalance.balance) < Number(paymentAmount);
@@ -71,7 +70,10 @@ const ConfirmPayment: React.FunctionComponent = () => {
           <StyledText>To {scannedVendor.name}</StyledText>
         </StyledView>
         <StyledView className="w-full flex justify-center p-6 gap-4 mt-6">
-          <StyledText className="font-bold text-xl my-2">Select an amount:</StyledText>
+          <StyledText className="font-bold text-xl my-2">
+            So that the seller receives exactly the price he set, the quantity to be sent will be automatically
+            selected.
+          </StyledText>
           <StyledView className="flex-row justify-center align-middle">
             <StyledView className="flex flex-row w-1/2">
               <DropDownPicker
@@ -93,7 +95,7 @@ const ConfirmPayment: React.FunctionComponent = () => {
             <StyledView className="flex-row items-center bg-white rounded-md w-1/2 rounded-l-none  mb-6  h-[50px] border-[1px] border-black border-l-0">
               <StyledTextInput
                 className="w-full"
-                value={paymentAmount}
+                value={transactionValue.toString()}
                 onChangeText={setPaymentAmount}
                 placeholder="Amount"
                 keyboardType="numeric"
@@ -113,7 +115,9 @@ const ConfirmPayment: React.FunctionComponent = () => {
               </StyledText>
             ) : (
               <StyledText className="text-lg mb-1 font-bold">
-                Total: <StyledText>{transactionValue}</StyledText>
+                <StyledText>
+                  {scannedVendor.name} will receive {paymentAmount}
+                </StyledText>
                 {currency === AssetCode.USDC ? ` ${AssetCode.BRL}` : ` ${AssetCode.USD}`}
               </StyledText>
             )}
@@ -126,20 +130,15 @@ const ConfirmPayment: React.FunctionComponent = () => {
           <CustomModal isVisible={isModalVisible} title="Confirm Payment" onClose={() => setIsModalVisible(false)}>
             <StyledView className="flex w-full px-4">
               <StyledView>
-                <StyledText>FOR:</StyledText>
-                <StyledText className="font-bold text-lg mb-2">
-                  {scannedVendor?.name} {scannedVendor?.address}
-                </StyledText>
                 <StyledView className="mb-2">
-                  <StyledText>VENDOR WILL RECEIVE:</StyledText>
+                  <StyledText> {scannedVendor?.name} WILL RECEIVE:</StyledText>
                   <StyledText className="font-bold text-lg text-green">
-                    {String(transactionValue)}
-                    {currency === AssetCode.USDC ? AssetCode.BRL : AssetCode.USD}
+                    {paymentAmount} {currency === AssetCode.USDC ? AssetCode.BRL : AssetCode.USD}
                   </StyledText>
                 </StyledView>
                 <StyledText>TRANSACTION AMOUNT:</StyledText>
                 <StyledText className="font-bold text-lg text-red">
-                  {paymentAmount} {currency === AssetCode.USDC ? AssetCode.USD : AssetCode.BRL}
+                  {String(transactionValue)} {currency === AssetCode.USDC ? AssetCode.USD : AssetCode.BRL}
                 </StyledText>
               </StyledView>
 
