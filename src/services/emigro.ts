@@ -2,10 +2,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { getAccessToken } from '../storage/helpers';
 
-import { IAlgo } from '@/types/IAlgo';
 import { IBalance } from '@/types/IBalance';
 import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { IQuote } from '@/types/IQuote';
+import { IQuoteRequest } from '@/types/IQuoteRequest';
 import { ITransaction } from '@/types/ITransaction';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IUserProfile } from '@/types/IUserProfile';
@@ -53,7 +53,7 @@ export const getUserBalance = async (): Promise<IBalance[]> => {
   }
 };
 
-export const handleQuote = async (body: IQuote): Promise<IAlgo> => {
+export const handleQuote = async (body: IQuoteRequest): Promise<IQuote> => {
   const url = `${BACKEND_URL}/quote`;
 
   try {
