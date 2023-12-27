@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { getUserBalance } from '@/services/emigro';
 import { IFilteredBalance } from '@/types/IFilteredBalance';
-
-import { AssetCode } from '@constants/assetCode';
+import { formatAssetCode } from '@/utils/formatAssetCode';
 
 const useGetUserBalance = () => {
   const [userBalance, setUserBalance] = useState<IFilteredBalance[]>([]);
@@ -11,11 +10,15 @@ const useGetUserBalance = () => {
   const handleGetUserBalance = async () => {
     try {
       const userBalance = await getUserBalance();
-      const balances = userBalance.map((bal) => ({
-        label: bal.assetCode === AssetCode.USDC ? AssetCode.USD : bal.assetCode,
-        value: bal.assetCode,
-        balance: bal.balance,
-      }));
+      const balances = userBalance.map((bal) => {
+        const label = formatAssetCode(bal.assetCode);
+
+        return {
+          label,
+          value: bal.assetCode,
+          balance: bal.balance,
+        };
+      });
       setUserBalance(balances);
     } catch (error) {
       console.error(error);

@@ -6,12 +6,11 @@ import DropDownPicker from 'react-native-dropdown-picker';
 
 import { useVendor } from '@/contexts/VendorContext';
 import { IVendor } from '@/types/IVendor';
+import { formatAssetCode } from '@/utils/formatAssetCode';
 
 import Button from '@components/Button';
 import CustomModal from '@components/CustomModal';
 import Header from '@components/Header';
-
-import { AssetCode } from '@constants/assetCode';
 
 import useCurrencyChange from '@hooks/useCurrencyChange';
 import useGetUserBalance from '@hooks/useGetUserBalance';
@@ -40,13 +39,15 @@ const ConfirmPayment: React.FunctionComponent = () => {
 
   const { currency, setCurrency, selectedBalance, handleCurrencyChange } = useCurrencyChange(userBalance);
 
+  const destinationAssetCode = scannedVendor.assetCode;
+
   const {
     transactionValue,
     isTransactionLoading,
     isTransactionCompletedModalVisible,
     setIsTransactionCompletedModalVisible,
     handleConfirmPayment,
-  } = usePayment(paymentAmount, scannedVendor, currency, currency === AssetCode.USDC ? AssetCode.BRL : AssetCode.USDC);
+  } = usePayment(paymentAmount, scannedVendor, currency, destinationAssetCode);
   const handleOpenModal = () => {
     setIsModalVisible(true);
   };
@@ -116,9 +117,9 @@ const ConfirmPayment: React.FunctionComponent = () => {
             ) : (
               <StyledText className="text-lg mb-1 font-bold">
                 <StyledText>
-                  {scannedVendor.name} will receive {paymentAmount}
+                  {scannedVendor.name} will receive {paymentAmount} {formatAssetCode(destinationAssetCode)}
                 </StyledText>
-                {currency === AssetCode.USDC ? ` ${AssetCode.BRL}` : ` ${AssetCode.USD}`}
+                {currency === scannedVendor.assetCode}
               </StyledText>
             )}
           </StyledView>
@@ -133,12 +134,12 @@ const ConfirmPayment: React.FunctionComponent = () => {
                 <StyledView className="mb-2">
                   <StyledText> {scannedVendor?.name} WILL RECEIVE:</StyledText>
                   <StyledText className="font-bold text-lg text-green">
-                    {paymentAmount} {currency === AssetCode.USDC ? AssetCode.BRL : AssetCode.USD}
+                    {paymentAmount} {formatAssetCode(destinationAssetCode)}
                   </StyledText>
                 </StyledView>
                 <StyledText>TRANSACTION AMOUNT:</StyledText>
                 <StyledText className="font-bold text-lg text-red">
-                  {String(transactionValue)} {currency === AssetCode.USDC ? AssetCode.USD : AssetCode.BRL}
+                  {String(transactionValue)} {formatAssetCode(currency)}
                 </StyledText>
               </StyledView>
 
