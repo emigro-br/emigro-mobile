@@ -4,8 +4,6 @@ import { getUserBalance, handleQuote, sendTransaction } from '@/services/emigro'
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IVendor } from '@/types/IVendor';
 
-import { AssetCode } from '@constants/assetCode';
-
 interface TransactionValue {
   message: string;
 }
@@ -18,15 +16,15 @@ const usePayment = (
 ) => {
   const [transactionValue, setTransactionValue] = useState<number | TransactionValue>(0);
   const [maxAmountToSend, setMaxAmountToSend] = useState<string>('0');
-  const [isTransactionLoading, setTransactionLoading] = useState(false);
+  const [isTransactionLoading, setIsTransactionLoading] = useState(false);
   const [isTransactionCompletedModalVisible, setIsTransactionCompletedModalVisible] = useState(false);
 
   useEffect(() => {
     const handlePayment = async () => {
       try {
         if (paymentAmount) {
-          const from = `${AssetCode.BRL}`;
-          const to = `${AssetCode.USDC}`;
+          const from = destinationAssetCode;
+          const to = sourceAssetCode;
           const transactionQuote = { from, to, amount: paymentAmount };
           const calculatedTransactionValue = await handleQuote(transactionQuote);
           setTransactionValue(Number(calculatedTransactionValue));
@@ -55,7 +53,7 @@ const usePayment = (
 
   const handleConfirmPayment = async () => {
     try {
-      setTransactionLoading(true);
+      setIsTransactionLoading(true);
       const transactionRequest: ITransactionRequest = {
         maxAmountToSend,
         destinationAmount: paymentAmount,
@@ -64,12 +62,12 @@ const usePayment = (
         destinationAssetCode,
       };
       const paymentResponse = await sendTransaction(transactionRequest);
-      setTransactionLoading(false);
+      setIsTransactionLoading(false);
       setIsTransactionCompletedModalVisible(true);
       return paymentResponse;
     } catch (error) {
       console.error(error);
-      setTransactionLoading(false);
+      setIsTransactionLoading(false);
     }
   };
 
