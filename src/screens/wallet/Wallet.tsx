@@ -1,7 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Image, TouchableOpacity, View } from 'react-native';
+
+import refreshLogo from '../../assets/images/refresh.png';
 
 import { getUserBalance } from '@/services/emigro';
 import { useOperationStore } from '@/store/operationStore';
@@ -13,6 +15,7 @@ import OperationButton from '@components/OperationButton';
 import { OperationType } from '@constants/constants';
 
 const StyledView = styled(View);
+const StyledImage = styled(Image);
 
 const Wallet: React.FunctionComponent = () => {
   const [userBalance, setUserBalance] = useState<IBalance[]>([]);
@@ -34,6 +37,10 @@ const Wallet: React.FunctionComponent = () => {
     navigation.navigate('Operation' as never);
   };
 
+  const handleRefreshBalance = () => {
+    fetchUserBalance();
+  };
+
   useEffect(() => {
     fetchUserBalance();
   }, []);
@@ -43,6 +50,11 @@ const Wallet: React.FunctionComponent = () => {
       <StyledView className="p-4 mt-12">
         <OperationButton onPress={handleOnPress} />
       </StyledView>
+      <TouchableOpacity onPress={handleRefreshBalance}>
+        <StyledView className="h-14 w-40 flex items-center">
+          <StyledImage source={refreshLogo} />
+        </StyledView>
+      </TouchableOpacity>
       <StyledView className="m-1 px-6 w-full">
         <Balance userBalance={userBalance} />
       </StyledView>

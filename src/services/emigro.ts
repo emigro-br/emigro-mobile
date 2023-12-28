@@ -5,6 +5,7 @@ import { getAccessToken } from '../storage/helpers';
 import { IBalance } from '@/types/IBalance';
 import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { IQuote } from '@/types/IQuote';
+import { IQuoteRequest } from '@/types/IQuoteRequest';
 import { ITransaction } from '@/types/ITransaction';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IUserProfile } from '@/types/IUserProfile';
@@ -44,6 +45,7 @@ export const getUserBalance = async (): Promise<IBalance[]> => {
       },
     });
     const { balances } = await response.json();
+
     return balances;
   } catch (error) {
     console.error(error, GET_USER_BALANCE_ERROR);
@@ -51,17 +53,19 @@ export const getUserBalance = async (): Promise<IBalance[]> => {
   }
 };
 
-export const handleQuote = async (quote: IQuote): Promise<number> => {
+export const handleQuote = async (body: IQuoteRequest): Promise<IQuote> => {
   const url = `${BACKEND_URL}/quote`;
+
   try {
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(quote),
+      body: JSON.stringify(body),
     });
-    return await response.json();
+    const { quote } = await response.json();
+    return quote;
   } catch (error) {
     console.error(error, QUOTE_NOT_AVAILABLE_ERROR);
     throw new Error();

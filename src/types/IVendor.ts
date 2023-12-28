@@ -3,4 +3,5 @@ export interface IVendor {
   address: string;
   publicKey: string;
   amount: string;
+  assetCode: string;
 }

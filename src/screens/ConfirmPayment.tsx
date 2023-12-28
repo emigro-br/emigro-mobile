@@ -6,12 +6,11 @@ import DropDownPicker from 'react-native-dropdown-picker';
 
 import { useVendor } from '@/contexts/VendorContext';
 import { IVendor } from '@/types/IVendor';
+import { formatAssetCode } from '@/utils/formatAssetCode';
 
 import Button from '@components/Button';
 import CustomModal from '@components/CustomModal';
 import Header from '@components/Header';
-
-import { AssetCode } from '@constants/assetCode';
 
 import useCurrencyChange from '@hooks/useCurrencyChange';
 import useGetUserBalance from '@hooks/useGetUserBalance';
@@ -40,20 +39,21 @@ const ConfirmPayment: React.FunctionComponent = () => {
 
   const { currency, setCurrency, selectedBalance, handleCurrencyChange } = useCurrencyChange(userBalance);
 
+  const destinationAssetCode = scannedVendor.assetCode;
+
   const {
     transactionValue,
     isTransactionLoading,
     isTransactionCompletedModalVisible,
-    setTransactionCompletedModalVisible,
+    setIsTransactionCompletedModalVisible,
     handleConfirmPayment,
-  } = usePayment(paymentAmount, scannedVendor, currency, currency === AssetCode.USDC ? AssetCode.BRL : AssetCode.USDC);
+  } = usePayment(paymentAmount, scannedVendor, currency, destinationAssetCode);
   const handleOpenModal = () => {
     setIsModalVisible(true);
   };
-
   const handleNavigateWallet = () => {
     navigation.navigate('Wallet' as never);
-    setTransactionCompletedModalVisible(false);
+    setIsTransactionCompletedModalVisible(false);
   };
 
   const insuficcientBalance = Number(selectedBalance.balance) < Number(paymentAmount);
@@ -66,14 +66,15 @@ const ConfirmPayment: React.FunctionComponent = () => {
     <KeyboardAvoidingView>
       <Header />
       <StyledView className="flex justify-center items-center p-4">
-        <StyledView className="flex-row px-4 mt-10">
-          <StyledText className="text-xl font-bold">Vendor: </StyledText>
-          <StyledText className="text-xl">
-            {scannedVendor.name}, {scannedVendor.address}
-          </StyledText>
+        <StyledView className="flex px-4 mt-10">
+          <StyledText className="text-xl font-bold mb-2">Send Money</StyledText>
+          <StyledText>To {scannedVendor.name}</StyledText>
         </StyledView>
         <StyledView className="w-full flex justify-center p-6 gap-4 mt-6">
-          <StyledText className="font-bold text-xl my-2">Select an amount:</StyledText>
+          <StyledText className="font-bold text-xl my-2">
+            So that the seller receives exactly the price he set, the quantity to be sent will be automatically
+            selected.
+          </StyledText>
           <StyledView className="flex-row justify-center align-middle">
             <StyledView className="flex flex-row w-1/2">
               <DropDownPicker
@@ -95,7 +96,7 @@ const ConfirmPayment: React.FunctionComponent = () => {
             <StyledView className="flex-row items-center bg-white rounded-md w-1/2 rounded-l-none  mb-6  h-[50px] border-[1px] border-black border-l-0">
               <StyledTextInput
                 className="w-full"
-                value={paymentAmount}
+                value={transactionValue.toString()}
                 onChangeText={setPaymentAmount}
                 placeholder="Amount"
                 keyboardType="numeric"
@@ -109,44 +110,36 @@ const ConfirmPayment: React.FunctionComponent = () => {
             </StyledView>
           )}
           <StyledView className="mb-6">
-            <StyledText className="text-lg mb-1">
-              Rate: {currency === AssetCode.USDC ? `1 ${AssetCode.USD} = 5 ${AssetCode.BRL}` : null}
-            </StyledText>
-            <StyledText className="text-lg mb-1">Markup: 0%</StyledText>
-            <StyledText className="text-lg mb-1">Fee: 0 USD</StyledText>
             {typeof transactionValue === 'object' ? (
               <StyledText className="text-lg mb-1 text-red">
                 {transactionValue.message && 'No offers available'}
               </StyledText>
             ) : (
               <StyledText className="text-lg mb-1 font-bold">
-                Total: <StyledText>{transactionValue}</StyledText>
-                {currency === AssetCode.USDC ? ` ${AssetCode.BRL}` : ` ${AssetCode.USD}`}
+                <StyledText>
+                  {scannedVendor.name} will receive {paymentAmount} {formatAssetCode(destinationAssetCode)}
+                </StyledText>
+                {currency === scannedVendor.assetCode}
               </StyledText>
             )}
           </StyledView>
           <StyledView>
-            <Button onPress={handleOpenModal} disabled={insuficcientBalance} backgroundColor="red" textColor="white">
-              Confirm payment
+            <Button onPress={handleOpenModal} disabled={insuficcientBalance} backgroundColor="black" textColor="white">
+              Send Money
             </Button>
           </StyledView>
           <CustomModal isVisible={isModalVisible} title="Confirm Payment" onClose={() => setIsModalVisible(false)}>
             <StyledView className="flex w-full px-4">
               <StyledView>
-                <StyledText>FOR:</StyledText>
-                <StyledText className="font-bold text-lg mb-2">
-                  {scannedVendor?.name} {scannedVendor?.address}
-                </StyledText>
                 <StyledView className="mb-2">
-                  <StyledText>VENDOR WILL RECEIVE:</StyledText>
+                  <StyledText> {scannedVendor?.name} WILL RECEIVE:</StyledText>
                   <StyledText className="font-bold text-lg text-green">
-                    {String(transactionValue)}
-                    {currency === AssetCode.USDC ? AssetCode.BRL : AssetCode.USD}
+                    {paymentAmount} {formatAssetCode(destinationAssetCode)}
                   </StyledText>
                 </StyledView>
                 <StyledText>TRANSACTION AMOUNT:</StyledText>
                 <StyledText className="font-bold text-lg text-red">
-                  {paymentAmount} {currency === AssetCode.USDC ? AssetCode.USD : AssetCode.BRL}
+                  {String(transactionValue)} {formatAssetCode(currency)}
                 </StyledText>
               </StyledView>
 

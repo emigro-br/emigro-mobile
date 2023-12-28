@@ -11,6 +11,7 @@ import { INVALID_QR_CODE } from '@/constants/errorMessages';
 import { GRANTED_STATUS } from '@/constants/statusMessages';
 import { useVendor } from '@/contexts/VendorContext';
 import { RootStackParamList } from '@/screens/ConfirmPayment';
+import { formatAssetCode } from '@/utils/formatAssetCode';
 
 type QRCodeScannerProps = {
   onCancel: () => void;
@@ -79,7 +80,7 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel }
           </StyledView>
         </BarCodeScanner>
       </StyledView>
-      {isScanned && scannedVendor?.name ? (
+      {isScanned && scannedVendor.name ? (
         <StyledView className="flex flex-col p-4 mt-4 w-full shadow-lg shadow-black">
           <StyledText className="text-xl mb-4 font-bold">Confirm the information below:</StyledText>
           <StyledView className="flex flex-row mb-4">
@@ -92,7 +93,10 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel }
           </StyledView>
           <StyledView className="flex flex-row mb-4">
             <StyledText className="text-lg font-bold">Amount: </StyledText>
-            <StyledText className="text-lg">{scannedVendor.amount}</StyledText>
+            <StyledText className="text-lg">
+              {scannedVendor.amount}
+              {formatAssetCode(scannedVendor.assetCode)}
+            </StyledText>
           </StyledView>
           <StyledView className="flex justify-center">
             <Button backgroundColor="red" textColor="white" onPress={handleProceedToPayment}>

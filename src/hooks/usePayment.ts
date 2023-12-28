@@ -4,8 +4,6 @@ import { getUserBalance, handleQuote, sendTransaction } from '@/services/emigro'
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IVendor } from '@/types/IVendor';
 
-import { AssetCode } from '@constants/assetCode';
-
 interface TransactionValue {
   message: string;
 }
@@ -17,18 +15,32 @@ const usePayment = (
   destinationAssetCode: string,
 ) => {
   const [transactionValue, setTransactionValue] = useState<number | TransactionValue>(0);
-  const [isTransactionLoading, setTransactionLoading] = useState(false);
-  const [isTransactionCompletedModalVisible, setTransactionCompletedModalVisible] = useState(false);
+  const [maxAmountToSend, setMaxAmountToSend] = useState<string>('0');
+  const [isTransactionLoading, setIsTransactionLoading] = useState(false);
+  const [isTransactionCompletedModalVisible, setIsTransactionCompletedModalVisible] = useState(false);
 
   useEffect(() => {
     const handlePayment = async () => {
       try {
         if (paymentAmount) {
-          const from = `${AssetCode.USDC}:${process.env.FROM_PUBLIC_KEY}`;
-          const to = `${AssetCode.BRL}:${process.env.TO_PUBLIC_KEY}`;
+          const from = destinationAssetCode;
+          const to = sourceAssetCode;
           const transactionQuote = { from, to, amount: paymentAmount };
           const calculatedTransactionValue = await handleQuote(transactionQuote);
-          setTransactionValue(calculatedTransactionValue);
+          setTransactionValue(Number(calculatedTransactionValue));
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const fetchUserBalance = async () => {
+      try {
+        const userBalances = await getUserBalance();
+        const sourceAssetBalance = userBalances.find((balance) => balance.assetCode === sourceAssetCode);
+
+        if (sourceAssetBalance) {
+          setMaxAmountToSend(sourceAssetBalance.balance);
         }
       } catch (error) {
         console.error(error);
@@ -36,25 +48,26 @@ const usePayment = (
     };
 
     handlePayment();
-  }, [paymentAmount]);
+    fetchUserBalance();
+  }, [paymentAmount, sourceAssetCode]);
 
   const handleConfirmPayment = async () => {
     try {
-      setTransactionLoading(true);
+      setIsTransactionLoading(true);
       const transactionRequest: ITransactionRequest = {
-        maxAmountToSend: '10000',
-        destinationAmount: transactionValue.toString(),
+        maxAmountToSend,
+        destinationAmount: paymentAmount,
         destination: scannedVendor.publicKey,
         sourceAssetCode,
         destinationAssetCode,
       };
       const paymentResponse = await sendTransaction(transactionRequest);
-      setTransactionLoading(false);
-      setTransactionCompletedModalVisible(true);
+      setIsTransactionLoading(false);
+      setIsTransactionCompletedModalVisible(true);
       return paymentResponse;
     } catch (error) {
       console.error(error);
-      setTransactionLoading(false);
+      setIsTransactionLoading(false);
     }
   };
 
@@ -62,7 +75,7 @@ const usePayment = (
     transactionValue,
     isTransactionLoading,
     isTransactionCompletedModalVisible,
-    setTransactionCompletedModalVisible,
+    setIsTransactionCompletedModalVisible,
     handleConfirmPayment,
   };
 };
