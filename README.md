@@ -26,6 +26,6 @@ Jest: Execute `npm run test`
 #### Database
 
 | Variable              | Description                                 | URL
-| -------------         | ---------------------                       |
-| `BACKEND_URL`         | Backend Url where Emigro API is consumed.   |
-| `GEOCODE_BASE_URL`    | Base URL for geocoding requests.            | [https://nominatim.openstreetmap.org/search](https:nominatim.openstreetmap.org/search)
+| -------------         | ---------------------                       | ---------------------
+| `BACKEND_URL`         | Backend Url where Emigro API is consumed.   | 
+| `GEOCODE_BASE_URL`    | Base URL for geocoding requests.            | [https://nominatim.openstreetmap.org/search](https://nominatim.openstreetmap.org/search)
