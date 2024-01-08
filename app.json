@@ -27,7 +27,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.expo.plaid"
+      "bundleIdentifier": "com.emigro.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -38,14 +38,14 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.expo.plaid"
+      "package": "com.emigro.app"
     },
     "web": {
       "favicon": "./src/assets/images/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": ""
+        "projectId": "d84d8915-cdac-448c-bf38-fc1ebcbe8eac"
       }
     }
   }

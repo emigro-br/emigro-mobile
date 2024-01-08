@@ -14,3 +14,8 @@ coverage/
 
 # macOS
 .DS_Store
+
+# build
+android/
+ios/
+*.aab
