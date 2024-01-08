@@ -12,6 +12,20 @@
         {
           "camerapermissions": "Allow Emigro to access your camera"
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "buildToolsVersion": "33.0.0",
+            "minSdkVersion": 33,
+            "compileSdkVersion": 33,
+            "targetSdkVersion": 33
+          },
+          "ios": {
+            "deploymentTarget": "13.0"
+          }
+        }
       ]
     ],
     "splash": {
