@@ -42,7 +42,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.emigro.app"
+      "bundleIdentifier": "co.emigro.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -53,7 +53,7 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.emigro.app"
+      "package": "co.emigro.app"
     },
     "web": {
       "favicon": "./src/assets/images/favicon.png"
