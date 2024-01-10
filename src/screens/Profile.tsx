@@ -1,6 +1,7 @@
 import { styled } from 'nativewind';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Text, View } from 'react-native';
+import * as Application from 'expo-application';
 
 import { getUserProfile } from '@/services/emigro';
 
@@ -60,6 +61,9 @@ const Profile = () => {
         <StyledView className="flex flex-row items-center mb-2">
           <StyledText className="font-black">{userInformation.email}</StyledText>
         </StyledView>
+      </StyledView>
+      <StyledView className="flex flex-row items-center mt-8">
+        <StyledText className="text-lightGray">version: {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})</StyledText>
       </StyledView>
     </StyledView>
   );
