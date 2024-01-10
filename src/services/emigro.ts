@@ -12,10 +12,10 @@ import { IUserProfile } from '@/types/IUserProfile';
 
 import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
 
-const BACKEND_URL = process.env.BACKEND_URL;
+const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 
 export const getTransactions = async (): Promise<ITransaction[]> => {
-  const transactionsUrl = `${BACKEND_URL}/transaction/all`;
+  const transactionsUrl = `${backendUrl}/transaction/all`;
   const accessToken = await getAccessToken();
 
   try {
@@ -35,7 +35,7 @@ export const getTransactions = async (): Promise<ITransaction[]> => {
 };
 
 export const getUserBalance = async (): Promise<IBalance[]> => {
-  const url = `${BACKEND_URL}/user`;
+  const url = `${backendUrl}/user`;
   const accessToken = await getAccessToken();
   try {
     const response = await fetch(url, {
@@ -54,7 +54,7 @@ export const getUserBalance = async (): Promise<IBalance[]> => {
 };
 
 export const handleQuote = async (body: IQuoteRequest): Promise<IQuote> => {
-  const url = `${BACKEND_URL}/quote`;
+  const url = `${backendUrl}/quote`;
 
   try {
     const response = await fetch(url, {
@@ -73,7 +73,7 @@ export const handleQuote = async (body: IQuoteRequest): Promise<IQuote> => {
 };
 
 export const sendTransaction = async (transactionRequest: ITransactionRequest): Promise<IPaymentResponse> => {
-  const url = `${BACKEND_URL}/transaction`;
+  const url = `${backendUrl}/transaction`;
   const accessToken = await getAccessToken();
   try {
     const response = await fetch(url, {
@@ -92,7 +92,7 @@ export const sendTransaction = async (transactionRequest: ITransactionRequest): 
 };
 
 export const getUserPublicKey = async (): Promise<string> => {
-  const url = `${BACKEND_URL}/user`;
+  const url = `${backendUrl}/user`;
   const accessToken = await getAccessToken();
 
   try {
@@ -111,7 +111,7 @@ export const getUserPublicKey = async (): Promise<string> => {
 };
 
 export const getUserProfile = async (): Promise<IUserProfile> => {
-  const url = `${BACKEND_URL}/user/profile`;
+  const url = `${backendUrl}/user/profile`;
   const session = await AsyncStorage.getItem('session');
   const parsedSession = session ? JSON.parse(session) : null;
   try {

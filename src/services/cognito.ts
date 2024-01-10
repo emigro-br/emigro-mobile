@@ -6,10 +6,10 @@ import { IRegisterResponse } from '@/types/IRegisterResponse';
 import { Role } from '@constants/constants';
 import { CONFIRM_ACCOUNT_ERROR, SIGNIN_ERROR_MESSAGE, SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 
-const BACKEND_URL = process.env.BACKEND_URL;
+const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 
 export const signIn = async (email: string, password: string): Promise<void> => {
-  const signInUrl = `${BACKEND_URL}/auth/login`;
+  const signInUrl = `${backendUrl}/auth/login`;
   try {
     const response = await fetch(signInUrl, {
       method: 'POST',
@@ -41,7 +41,7 @@ export const signIn = async (email: string, password: string): Promise<void> => 
 };
 
 export const signUp = async (registerUser: IRegisterUser): Promise<IRegisterResponse> => {
-  const registerUrl = `${BACKEND_URL}/auth/register`;
+  const registerUrl = `${backendUrl}/auth/register`;
   try {
     const response = await fetch(registerUrl, {
       method: 'POST',
@@ -58,7 +58,7 @@ export const signUp = async (registerUser: IRegisterUser): Promise<IRegisterResp
 };
 
 export const confirmAccount = async (confirmUser: IConfirmUser): Promise<IRegisterResponse | undefined> => {
-  const confirmUrl = `${BACKEND_URL}/auth/confirm`;
+  const confirmUrl = `${backendUrl}/auth/confirm`;
   try {
     const response = await fetch(confirmUrl, {
       method: 'POST',

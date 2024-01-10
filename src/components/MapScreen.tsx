@@ -19,7 +19,7 @@ const MapScreen: React.FunctionComponent = () => {
 
   const [address, setAddress] = useState<string | undefined>();
 
-  const geocodeBaseURL = process.env.GEOCODE_BASE_URL;
+  const geocodeBaseURL = process.env.EXPO_PUBLIC_GEOCODE_BASE_URL;
 
   useEffect(() => {
     if (scannedVendor && scannedVendor.address !== address) {
