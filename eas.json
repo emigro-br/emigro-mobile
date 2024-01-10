@@ -18,7 +18,7 @@
     "production": {
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_BACKEND_URL": "https://4qfexgninx.us-east-1.awsapprunner.com",
+        "EXPO_PUBLIC_BACKEND_URL": "https://api.emigro.co",
         "EXPO_PUBLIC_GEOCODE_BASE_URL": "https://nominatim.openstreetmap.org/search"
       }
     }
