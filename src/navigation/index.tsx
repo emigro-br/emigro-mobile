@@ -22,21 +22,26 @@ type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-function RootNavigator() {
+type RootNavigatorProps = {
+  isSignedIn: boolean;
+};
+
+function RootNavigator(props: RootNavigatorProps) {
+  // TODO: improve the navigation with https://reactnavigation.org/docs/auth-flow/
   return (
-    <Stack.Navigator 
-      initialRouteName="Welcome" 
+    <Stack.Navigator
+      initialRouteName={props.isSignedIn ? 'Root' : 'Welcome'}
       screenOptions={{
         headerTintColor: 'red',
       }}
     >
+      <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="ConfirmPayment" component={ConfirmPayment} options={{ headerShown: false }} />
-      <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
+      <Stack.Screen name="Operation" component={Operation} />
       <Stack.Screen name="SignUp" component={CreateAccount} options={{ headerTitle: 'Create Account' }} />
       <Stack.Screen name="Login" component={Login} options={{ headerTitle: 'Login' }} />
       <Stack.Screen name="ConfirmAccount" component={ConfirmAccount} options={{ headerTitle: 'Confirm Account' }} />
-      <Stack.Screen name="Operation" component={Operation} />
     </Stack.Navigator>
   );
 }

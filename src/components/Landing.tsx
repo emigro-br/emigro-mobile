@@ -2,12 +2,15 @@ import { NavigationContainer } from '@react-navigation/native';
 
 import RootNavigator from '@navigation/index';
 
-export const Landing = () => {
+
+type LandingProps = {
+  isSignedIn: boolean;
+};
+
+export const Landing = (props: LandingProps) => {
   return (
-    <>
-      <NavigationContainer>
-        <RootNavigator />
-      </NavigationContainer>
-    </>
+    <NavigationContainer>
+      <RootNavigator isSignedIn={props.isSignedIn} />
+    </NavigationContainer>
   );
 };
