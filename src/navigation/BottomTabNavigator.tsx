@@ -20,7 +20,7 @@ const BottomTabNavigator = () => {
     <BottomTab.Navigator
       initialRouteName="Wallet"
       screenOptions={{
-        tabBarActiveTintColor: 'black',
+        tabBarActiveTintColor: 'red',
         tabBarInactiveTintColor: 'grey',
       }}
     >
@@ -31,9 +31,9 @@ const BottomTabNavigator = () => {
           title: 'Wallet',
           tabBarIcon: ({ focused }) =>
             focused ? (
-              <StyledView className="h-full border-t-2 border-artic-500 w-full justify-center items-center">
+              <StyledView className="h-full border-t-2 border-red w-full justify-center items-center">
                 <StyledView className="mt-1">
-                  <IconsSolid.WalletIcon size={24} color="black" />
+                  <IconsSolid.WalletIcon size={24} color="red" />
                 </StyledView>
               </StyledView>
             ) : (
@@ -52,9 +52,9 @@ const BottomTabNavigator = () => {
           title: 'Payment',
           tabBarIcon: ({ focused }) =>
             focused ? (
-              <StyledView className="h-full border-t-2 border-artic-500 w-full justify-center items-center">
+              <StyledView className="h-full border-t-2 border-red w-full justify-center items-center">
                 <StyledView className="mt-1">
-                  <IconsSolid.QrCodeIcon size={24} color="black" />
+                  <IconsSolid.QrCodeIcon size={24} color="red" />
                 </StyledView>
               </StyledView>
             ) : (
@@ -72,9 +72,9 @@ const BottomTabNavigator = () => {
           title: 'Location',
           tabBarIcon: ({ focused }) =>
             focused ? (
-              <StyledView className="h-full border-t-2 border-artic-500 w-full justify-center items-center">
+              <StyledView className="h-full border-t-2 border-red w-full justify-center items-center">
                 <StyledView className="mt-1">
-                  <IconsSolid.MapIcon size={24} color="black" />
+                  <IconsSolid.MapIcon size={24} color="red" />
                 </StyledView>
               </StyledView>
             ) : (
@@ -92,9 +92,9 @@ const BottomTabNavigator = () => {
           title: 'Profile',
           tabBarIcon: ({ focused }) =>
             focused ? (
-              <StyledView className="h-full border-t-2 border-artic-500 w-full justify-center items-center">
+              <StyledView className="h-full border-t-2 border-red w-full justify-center items-center">
                 <StyledView className="mt-1">
-                  <IconsSolid.UserCircleIcon size={24} color="black" />
+                  <IconsSolid.UserCircleIcon size={24} color="red" />
                 </StyledView>
               </StyledView>
             ) : (
