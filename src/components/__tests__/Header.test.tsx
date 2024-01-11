@@ -3,9 +3,14 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 
 import Header from '@components/Header';
+import { clearSession } from '@/storage/helpers';
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
   clear: jest.fn(),
+}));
+
+jest.mock('@/storage/helpers', () => ({
+  clearSession: jest.fn(),
 }));
 
 jest.mock('@react-navigation/native', () => ({
@@ -23,6 +28,7 @@ describe('Header component', () => {
 
     await waitFor(() => {
       expect(AsyncStorage.clear).toHaveBeenCalled();
+      expect(clearSession).toHaveBeenCalled();
     });
   });
 });

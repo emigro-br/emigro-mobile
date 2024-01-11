@@ -1,5 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { saveSession } from '@/storage/helpers';
 import { IConfirmUser } from '@/types/IConfirmUser';
 import { IRegisterResponse } from '@/types/IRegisterResponse';
 
@@ -33,7 +33,7 @@ export const signIn = async (email: string, password: string): Promise<void> => 
       idToken,
       email,
     };
-    await AsyncStorage.setItem('session', JSON.stringify(session));
+    await saveSession(session)
   } catch (error) {
     console.error(SIGNIN_ERROR_MESSAGE, error);
     throw error;

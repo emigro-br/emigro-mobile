@@ -1,6 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
-import { getAccessToken } from '../storage/helpers';
+import { getAccessToken, getSession } from '../storage/helpers';
 
 import { IBalance } from '@/types/IBalance';
 import { IPaymentResponse } from '@/types/IPaymentResponse';
@@ -112,20 +112,20 @@ export const getUserPublicKey = async (): Promise<string> => {
 
 export const getUserProfile = async (): Promise<IUserProfile> => {
   const url = `${backendUrl}/user/profile`;
-  const session = await AsyncStorage.getItem('session');
-  const parsedSession = session ? JSON.parse(session) : null;
   try {
+    const accessToken = await getAccessToken();
+    const session = await getSession();
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${parsedSession?.accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
-      body: JSON.stringify(parsedSession),
+      body: JSON.stringify(session),
     });
     return await response.json();
   } catch (error) {
     console.error(error);
-    throw new Error();
+    throw error;
   }
 };
