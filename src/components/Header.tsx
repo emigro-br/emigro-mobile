@@ -15,8 +15,13 @@ const Header: React.FunctionComponent = () => {
   const navigation = useNavigation();
 
   const handleLogout = async () => {
-    await AsyncStorage.clear();
     await clearSession();
+    try {
+      //FIXME: https://stackoverflow.com/questions/46736268/react-native-asyncstorage-clear-is-failing-on-ios
+      await AsyncStorage.clear();
+    } catch (error) {
+      console.error(error);
+    }
     navigation.navigate('Login' as never);
   };
 
