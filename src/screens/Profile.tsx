@@ -1,7 +1,10 @@
 import { styled } from 'nativewind';
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Text, View } from 'react-native';
 import * as Application from 'expo-application';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { clearSession } from '@/storage/helpers';
 
 import { getUserProfile } from '@/services/emigro';
 
@@ -12,7 +15,20 @@ const StyledText = styled(Text);
 const StyledImage = styled(Image);
 
 const Profile = () => {
+  const navigation = useNavigation();
   const [userInformation, setUserInformation] = useState<any>(null);
+
+  const handleLogout = async () => {
+    await clearSession();
+    try {
+      //FIXME: https://stackoverflow.com/questions/46736268/react-native-asyncstorage-clear-is-failing-on-ios
+      await AsyncStorage.clear();
+    } catch (error) {
+      console.error(error);
+    }
+    navigation.navigate('Login' as never);
+  };
+
 
   useEffect(() => {
     const fetchUserInformation = async () => {
@@ -62,9 +78,15 @@ const Profile = () => {
           <StyledText className="font-black">{userInformation.email}</StyledText>
         </StyledView>
       </StyledView>
-      <StyledView className="flex flex-row items-center mt-8">
-        <StyledText className="text-lightGray">version: {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})</StyledText>
+
+      
+      <StyledView className="flex items-center pt-20">
+        <StyledText className="text-red text-lg py-2" onPress={handleLogout}>
+          Log out
+        </StyledText>
+        <StyledText className="text-lightGray">ver. {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})</StyledText>
       </StyledView>
+
     </StyledView>
   );
 };
