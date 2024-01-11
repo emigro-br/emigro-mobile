@@ -24,12 +24,17 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   return (
-    <Stack.Navigator initialRouteName="Welcome">
+    <Stack.Navigator 
+      initialRouteName="Welcome" 
+      screenOptions={{
+        headerTintColor: 'red',
+      }}
+    >
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="ConfirmPayment" component={ConfirmPayment} options={{ headerShown: false }} />
       <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
-      <Stack.Screen name="SignUp" component={CreateAccount} options={{ headerTitle: 'Sign Up' }} />
-      <Stack.Screen name="Login" component={Login} options={{ headerTitle: 'Log In' }} />
+      <Stack.Screen name="SignUp" component={CreateAccount} options={{ headerTitle: 'Create Account' }} />
+      <Stack.Screen name="Login" component={Login} options={{ headerTitle: 'Login' }} />
       <Stack.Screen name="ConfirmAccount" component={ConfirmAccount} options={{ headerTitle: 'Confirm Account' }} />
       <Stack.Screen name="Operation" component={Operation} />
     </Stack.Navigator>
