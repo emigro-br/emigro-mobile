@@ -42,7 +42,10 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "co.emigro.app"
+      "bundleIdentifier": "co.emigro.app",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
