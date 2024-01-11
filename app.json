@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "emigro-mobile",
+    "name": "Emigro",
     "slug": "emigro-mobile",
     "owner": "emigro",
     "version": "1.0.0",
+    "descriptio": "The traveler's digital wallet",
     "orientation": "portrait",
-    "icon": "./src/assets/images/emigro-apk-icon.png",
+    "icon":"./src/assets/images/icon.png",
     "userInterfaceStyle": "light",
     "plugins": [
       [
@@ -48,10 +49,6 @@
       }
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./src/assets/images/emigro-apk-icon.png",
-        "backgroundColor": "#FFFFFF"
-      },
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
