@@ -12,25 +12,25 @@ const StyledImage = styled(Image);
 export const Welcome: React.FunctionComponent = () => {
   const navigation = useNavigation();
   return (
-    <StyledView className="flex justify-center">
-      <StyledView className="flex-row items-center justify-center bg-red pt-8">
-        <StyledView className="h-14 w-40">
+    <StyledView className="flex">
+      <StyledView className="items-center justify-center bg-red pt-40 pb-20">
+        <StyledView className="h-20 w-80 mb-10">
           <StyledImage className="h-full w-full object-contain" source={emigroLogo} />
         </StyledView>
+        <StyledText className="text-2xl text-center text-white font-bold mb-2">The Travellers Digital Wallet</StyledText>
+        <StyledText className="text-lg text-white text-center">Instant cross-border retail payments</StyledText>
       </StyledView>
-      <StyledView className="px-16 my-12">
-        <StyledText className="text-[24px] text-center mb-12">THE TRAVELLERS DIGITAL WALLET</StyledText>
-        <StyledText className="text-[23px] text-center">Instant cross-border retail payments</StyledText>
-      </StyledView>
-      <StyledView className="bg-blue mx-2 rounded-md mt-20">
-        <TouchableOpacity onPress={() => navigation.navigate('SignUp' as never)}>
-          <StyledText className="text-[23px] text-center py-2 text-white">Create an Account</StyledText>
+
+
+      <StyledView className="bg-transparent border border-red rounded-md mx-4 mt-10 mb-4">
+        <TouchableOpacity onPress={() => navigation.navigate('Login' as never)}>
+          <StyledText className="text-red text-lg font-semibold text-center py-2">Access your account</StyledText>
         </TouchableOpacity>
       </StyledView>
-      <StyledText className="text-lg text-center my-8">Already have an account?</StyledText>
-      <StyledView className="bg-red mx-2 rounded-md">
-        <TouchableOpacity onPress={() => navigation.navigate('Login' as never)}>
-          <StyledText className="text-[23px] text-center py-2 text-white">Log In</StyledText>
+
+      <StyledView className="bg-red rounded-md mx-4">
+        <TouchableOpacity onPress={() => navigation.navigate('SignUp' as never)}>
+          <StyledText className="text-lg text-center font-semibold py-2 text-white">Create an Account</StyledText>
         </TouchableOpacity>
       </StyledView>
     </StyledView>

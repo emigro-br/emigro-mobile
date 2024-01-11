@@ -61,7 +61,7 @@ const Login: React.FunctionComponent = () => {
       {formFields.map((field) => (
         <StyledTextInput
           key={field.name}
-          className="text-lg bg-white h-10 p-2 rounded-sm mb-2"
+          className="text-lg bg-white py-2 px-3 rounded-md mb-2"
           placeholder={field.placeholder}
           value={formData[field.name]}
           onChangeText={(text) => handleChange(field.name, text)}
@@ -74,14 +74,14 @@ const Login: React.FunctionComponent = () => {
           {isLoggingIn ? (
             <ActivityIndicator color="white" size="small" />
           ) : (
-            <StyledText className="text-white text-center text-lg">Log in</StyledText>
+            <StyledText className="text-white font-bold text-center text-lg">Sign in</StyledText>
           )}
         </StyledView>
       </TouchableOpacity>
       <StyledView className="flex-row justify-center items-center gap-2">
         <StyledText className="text-lg">Don't have an account?</StyledText>
         <TouchableOpacity onPress={() => navigation.navigate('SignUp' as never)}>
-          <StyledText className="text-blue text-xl font-bold">Sign up</StyledText>
+          <StyledText className="text-red text-lg font-bold">Sign up</StyledText>
         </TouchableOpacity>
       </StyledView>
 

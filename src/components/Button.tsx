@@ -18,11 +18,11 @@ const Button: React.FunctionComponent<ButtonProps> = ({ onPress, backgroundColor
     <StyledTouchableOpacity
       disabled={disabled}
       onPress={onPress}
-      className={`bg-${backgroundColor} h-12 flex justify-center rounded-md shadow-md shadow-black ${
+      className={`bg-${backgroundColor} h-12 flex justify-center py-2 rounded-lg  ${
         disabled ? 'opacity-50' : ''
       }`}
     >
-      <StyledText className={`text-${textColor} text-center px-4`}>{children}</StyledText>
+      <StyledText className={`text-${textColor} font-bold text-center px-4`}>{children}</StyledText>
     </StyledTouchableOpacity>
   );
 };

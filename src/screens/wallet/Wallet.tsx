@@ -46,7 +46,7 @@ const Wallet: React.FunctionComponent = () => {
   }, []);
 
   return (
-    <StyledView className="flex items-center h-full">
+    <StyledView className="flex items-center bg-white h-full">
       <StyledView className="p-4 mt-12">
         <OperationButton onPress={handleOnPress} />
       </StyledView>

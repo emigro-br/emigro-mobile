@@ -13,7 +13,7 @@ describe('Landing component', () => {
         <RootNavigator />
       </NavigationContainer>,
     );
-    const welcomeScreen = getByText('THE TRAVELLERS DIGITAL WALLET');
+    const welcomeScreen = getByText('The Travellers Digital Wallet');
 
     expect(welcomeScreen).toBeDefined();
   });
