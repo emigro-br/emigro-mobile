@@ -16,23 +16,23 @@ interface BalanceProps {
 const Balance: React.FunctionComponent<BalanceProps> = ({ userBalance }) => {
   return (
     <StyledView className="flex items-center h-full">
-      <StyledText className="text-center font-black text-2xl my-6">Balance</StyledText>
+      <StyledText className="w-full text-left text-xl font-medium mb-2">Accounts</StyledText>
       {userBalance?.map(({ balance, assetCode }, index) => {
         return (
           <StyledView
             key={index}
-            className="flex-row h-20 items-center justify-between m-1 px-6 w-full bg-white rounded"
+            className="flex-row h-20 items-center justify-between m-1 px-4 w-full border border-slate-300 bg-white rounded-xl"
           >
             <StyledView className="flex-row gap-2">
               <Image source={getAssetIcon(assetCode)} style={{ width: 30, height: 30 }} />
-              <StyledText className="font-bold text-xl">
+              <StyledText className="font-bold text-lg">
                 {assetCode === AssetCode.USDC ? AssetCode.USD : assetCode}
               </StyledText>
             </StyledView>
             {Number(balance) > 0 ? (
-              <StyledText className="text-xl">{Number(balance)}</StyledText>
+              <StyledText className="text-base">{Number(balance)}</StyledText>
             ) : (
-              <StyledText className="font-bold text-xl">No funds</StyledText>
+              <StyledText className="font-bold text-lg">No funds</StyledText>
             )}
           </StyledView>
         );

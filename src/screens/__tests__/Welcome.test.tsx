@@ -24,10 +24,10 @@ describe('Welcome screen', () => {
   test('Should navigates to Login when "Log In" is pressed', () => {
     const { getByText } = render(<TestNavigator />);
 
-    const logInButton = getByText('Log In');
+    const logInButton = getByText('Access your account');
     fireEvent.press(logInButton);
 
-    const loginText = getByText('Log in');
+    const loginText = getByText('Sign in');
     expect(loginText).toBeOnTheScreen();
   });
 

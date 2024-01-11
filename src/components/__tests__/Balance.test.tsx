@@ -6,7 +6,7 @@ import Balance from '../Balance';
 describe('Balance component', () => {
   it('Should render the balance component correctly', () => {
     render(<Balance userBalance={userBalance} />);
-    const balanceElement = screen.getByText('Balance');
+    const balanceElement = screen.getByText('Accounts');
 
     expect(balanceElement).toBeTruthy();
   });

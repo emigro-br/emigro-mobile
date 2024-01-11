@@ -25,7 +25,7 @@ describe('Login screen', () => {
     fireEvent.changeText(emailInput, 'test@example.com');
     fireEvent.changeText(passwordInput, 'password123');
 
-    fireEvent.press(getByText('Log in'));
+    fireEvent.press(getByText('Sign in'));
 
     await waitFor(() => {
       expect(signInMock).toHaveBeenCalledWith('test@example.com', 'password123');
