@@ -26,7 +26,7 @@ const Profile = () => {
     } catch (error) {
       console.error(error);
     }
-    navigation.navigate('Login' as never);
+    navigation.navigate('Welcome' as never);
   };
 
 
@@ -53,30 +53,33 @@ const Profile = () => {
   }
 
   return (
-    <StyledView className="flex items-center p-8 bg-white h-full">
+    <StyledView className="flex items-center pt-10 px-4 bg-white h-full">
       <StyledView className="mb-10">
         <StyledImage source={profileLogo} className="h-32 w-32" />
       </StyledView>
 
       <StyledView className="flex gap-2 w-full">
-        <StyledText className="text-lightGray">Username</StyledText>
-        <StyledView className="flex flex-row items-center mb-2">
-          <StyledText className="font-black">
+        <StyledText className="text-lightGray">Full name</StyledText>
+        <StyledView className="flex flex-row items-center">
+          <StyledText className="text-lg">
             {userInformation.given_name} {userInformation.family_name}
           </StyledText>
         </StyledView>
 
-        <StyledView className="border-b-[2px] border-lightGray w-full" />
-        <StyledText className="text-lightGray">Address</StyledText>
-        <StyledView className="flex flex-row items-center mb-2">
-          <StyledText className="font-black">{userInformation.address}</StyledText>
+        <StyledView className="border-b-[1px] border-slate-200 w-full pt-4 mb-4" />
+
+        <StyledText className="text-lightGray">Email address</StyledText>
+        <StyledView className="flex flex-row items-center">
+          <StyledText className="text-lg">{userInformation.email}</StyledText>
         </StyledView>
 
-        <StyledView className="border-b-[2px] border-lightGray w-full" />
-        <StyledText className="text-lightGray">Email</StyledText>
-        <StyledView className="flex flex-row items-center mb-2">
-          <StyledText className="font-black">{userInformation.email}</StyledText>
+        <StyledView className="border-b-[1px] border-slate-200 w-full pt-4 mb-4" />
+
+        <StyledText className="text-lightGray">Address</StyledText>
+        <StyledView className="flex flex-row items-center">
+          <StyledText className="text-lg">{userInformation.address}</StyledText>
         </StyledView>
+
       </StyledView>
 
       
