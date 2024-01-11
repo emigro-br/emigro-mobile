@@ -91,14 +91,14 @@ const CreateAccount: React.FunctionComponent<SignUpProps> = ({ navigation }) => 
       ))}
 
       <TouchableOpacity onPress={handleSubmit}>
-        <Button backgroundColor="blue" textColor="white" disabled={isLoading} onPress={handleSubmit}>
+        <Button backgroundColor="red" textColor="white" disabled={isLoading} onPress={handleSubmit}>
           {isLoading ? <ActivityIndicator size="large" color="gray" /> : 'Sign Up'}
         </Button>
       </TouchableOpacity>
       <StyledView className="flex-row justify-center items-center gap-2">
         <StyledText className="text-lg">Already have an account?</StyledText>
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <StyledText className="text-blue text-xl font-bold">Log in</StyledText>
+          <StyledText className="text-red text-lg font-bold">Log in</StyledText>
         </TouchableOpacity>
       </StyledView>
       <StyledText className="text-red text-center text-lg">{error}</StyledText>
