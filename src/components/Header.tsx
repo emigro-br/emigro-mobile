@@ -5,6 +5,7 @@ import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 import emigroLogo from '@assets/images/emigro-logo.png';
+import { clearSession } from '@/storage/helpers';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -15,6 +16,7 @@ const Header: React.FunctionComponent = () => {
 
   const handleLogout = async () => {
     await AsyncStorage.clear();
+    await clearSession();
     navigation.navigate('Login' as never);
   };
 
