@@ -14,6 +14,12 @@ import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_ME
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 
+class NotAuhtorized extends Error {
+  constructor() {
+    super('Not authorized');
+  }
+}
+
 export const getTransactions = async (): Promise<ITransaction[]> => {
   const transactionsUrl = `${backendUrl}/transaction/all`;
   const accessToken = await getAccessToken();
@@ -45,7 +51,6 @@ export const getUserBalance = async (): Promise<IBalance[]> => {
       },
     });
     const { balances } = await response.json();
-
     return balances;
   } catch (error) {
     console.error(error, GET_USER_BALANCE_ERROR);
@@ -123,7 +128,11 @@ export const getUserProfile = async (): Promise<IUserProfile> => {
       },
       body: JSON.stringify(session),
     });
-    return await response.json();
+    const userProfile = await response.json();
+    if (userProfile.statusCode === 401) {
+      throw new NotAuhtorized();
+    }
+    return userProfile
   } catch (error) {
     console.error(error);
     throw error;

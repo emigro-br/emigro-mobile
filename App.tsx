@@ -6,7 +6,8 @@ import { VendorContextProvider } from '@/contexts/VendorContext';
 import { SplashScreen } from '@screens/Splash';
 import { Landing } from '@components/Landing';
 import { useEffect, useState } from 'react';
-import { getAccessToken } from '@/storage/helpers';
+import { clearSession, getAccessToken } from '@/storage/helpers';
+import { getUserProfile } from '@/services/emigro';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -15,8 +16,20 @@ export default function App() {
   const getUserToken = async () => {
     try {
       const token = await getAccessToken();
-      setUserToken(token);
-    } finally {
+      if (token) {
+        try {
+          // FIXME: this is a workaround to check if token is valid. 
+          const userProfile = await getUserProfile();
+          if (userProfile) {
+            setUserToken(token);
+          }
+        } catch (error) {     
+          // TODO: regresh token if it is expired
+          clearSession();
+        }
+      }
+    }
+     finally {
       setIsLoading(false);
     }
   };
