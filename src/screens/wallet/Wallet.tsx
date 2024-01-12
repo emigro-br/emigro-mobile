@@ -1,9 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
 import React, { useEffect, useState } from 'react';
-import { Image, ScrollView, TouchableOpacity, View } from 'react-native';
-
-import refreshLogo from '../../assets/images/refresh.png';
+import { Image, RefreshControl, ScrollView, TouchableOpacity, View } from 'react-native';
 
 import { getUserBalance } from '@/services/emigro';
 import { useOperationStore } from '@/store/operationStore';
@@ -19,6 +17,7 @@ const StyledView = styled(View);
 const StyledImage = styled(Image);
 
 const Wallet: React.FunctionComponent = () => {
+  const [refreshing, setRefreshing] = useState(false);
   const [userBalance, setUserBalance] = useState<IBalance[]>([]);
   const { setOperationType } = useOperationStore();
   const navigation = useNavigation();
@@ -38,26 +37,29 @@ const Wallet: React.FunctionComponent = () => {
     navigation.navigate('Operation' as never);
   };
 
-  const handleRefreshBalance = () => {
-    fetchUserBalance();
-  };
-
   useEffect(() => {
     fetchUserBalance();
   }, []);
 
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await fetchUserBalance();
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
+
   return (
-    <StyledScrollView>
-      <StyledView className="flex items-center bg-white h-full">
-        <StyledView className="p-4 mt-12">
+    <StyledScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} title='Refreshing...' />
+      }>
+      <StyledView className="flex items-center bg-white">
+        <StyledView className="px-4 py-8">
           <OperationButton onPress={handleOnPress} />
         </StyledView>
-        <TouchableOpacity onPress={handleRefreshBalance}>
-          <StyledView className="h-14 w-40 flex items-center">
-            <StyledImage source={refreshLogo} />
-          </StyledView>
-        </TouchableOpacity>
-        <StyledView className="m-1 px-6 w-full">
+        <StyledView className="px-4 w-full">
           <Balance userBalance={userBalance} />
         </StyledView>
       </StyledView>
