@@ -21,11 +21,11 @@ const StyledText = styled(Text);
 const StyledTextInput = styled(TextInput);
 
 const formFields: FormField[] = [
-  { name: 'email', placeholder: 'Email' },
-  { name: 'password', placeholder: 'Password', secureTextEntry: true },
-  { name: 'firstName', placeholder: 'First Name' },
-  { name: 'lastName', placeholder: 'Last Name' },
-  { name: 'address', placeholder: 'Address' },
+  { name: 'email', placeholder: 'Email', keyboardType: 'email-address' },
+  { name: 'password', placeholder: 'Password', secureTextEntry: true, keyboardType: 'default' },
+  { name: 'firstName', placeholder: 'First Name', keyboardType: 'default' },
+  { name: 'lastName', placeholder: 'Last Name', keyboardType: 'default' },
+  { name: 'address', placeholder: 'Address', keyboardType: 'default' },
 ];
 
 const CreateAccount: React.FunctionComponent<SignUpProps> = ({ navigation }) => {
