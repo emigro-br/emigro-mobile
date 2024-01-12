@@ -93,14 +93,15 @@ const Operation: React.FunctionComponent = () => {
             </StyledView>
         </TouchableOpacity>
       } 
-      <StyledText className="text-lg text-center mb-2">Select the currency you want to {type}</StyledText>
+      <StyledText className="text-lg text-center mb-4">Select the currency you want to {type}</StyledText>
+      <StyledView className='flex flex-row flex-wrap px-4 gap-4'>
       {filteredAssets.map((asset) => (
         <TouchableOpacity key={`asset_${asset}`} onPress={() => handleOnPress(asset)} disabled={operationLoading}>
-          <StyledView className="flex flex-row w-32 h-20 items-center justify-center m-1 px-6 bg-white rounded shadow-xl">
+          <StyledView className="flex-row w-32 h-20 items-center justify-center bg-white rounded-lg shadow">
             {operationLoading && asset === selectedAsset ? (
               <ActivityIndicator size="large" />
-            ) : (
-              <>
+              ) : (
+                <>
                 <Image source={getAssetIcon(asset)} style={{ width: 30, height: 30 }} />
                 <StyledText className="ml-1 flex-row font-bold text-xl">
                   {asset}
@@ -110,6 +111,7 @@ const Operation: React.FunctionComponent = () => {
           </StyledView>
         </TouchableOpacity>
       ))}
+      </StyledView>
       {errorMessage && <StyledText className="text-red">Something went wrong. Please try again</StyledText>}
     </StyledView>
   );
