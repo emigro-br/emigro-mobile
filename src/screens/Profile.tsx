@@ -1,7 +1,7 @@
 import { styled } from 'nativewind';
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Text, View } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, Text, View } from 'react-native';
 import * as Application from 'expo-application';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { clearSession } from '@/storage/helpers';
@@ -10,6 +10,7 @@ import { getUserProfile } from '@/services/emigro';
 
 import profileLogo from '@assets/images/profile-icon.png';
 
+const StyledScrollView = styled(ScrollView);
 const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledImage = styled(Image);
@@ -53,44 +54,46 @@ const Profile = () => {
   }
 
   return (
-    <StyledView className="flex items-center pt-10 px-4 bg-white h-full">
-      <StyledView className="mb-10">
-        <StyledImage source={profileLogo} className="h-32 w-32" />
-      </StyledView>
+    <StyledScrollView>
+      <StyledView className="flex items-center pt-8 px-4 bg-white h-full">
+        <StyledView className="mb-8">
+          <StyledImage source={profileLogo} className="h-32 w-32" />
+        </StyledView>
 
-      <StyledView className="flex gap-2 w-full">
-        <StyledText className="text-lightGray">Full name</StyledText>
-        <StyledView className="flex flex-row items-center">
-          <StyledText className="text-lg">
-            {userInformation.given_name} {userInformation.family_name}
+        <StyledView className="flex gap-2 w-full">
+          <StyledText className="text-lightGray">Full name</StyledText>
+          <StyledView className="flex flex-row items-center">
+            <StyledText className="text-lg">
+              {userInformation.given_name} {userInformation.family_name}
+            </StyledText>
+          </StyledView>
+
+          <StyledView className="border-b-[1px] border-slate-200 w-full pt-4 mb-4" />
+
+          <StyledText className="text-lightGray">Email address</StyledText>
+          <StyledView className="flex flex-row items-center">
+            <StyledText className="text-lg">{userInformation.email}</StyledText>
+          </StyledView>
+
+          <StyledView className="border-b-[1px] border-slate-200 w-full pt-4 mb-4" />
+
+          <StyledText className="text-lightGray">Address</StyledText>
+          <StyledView className="flex flex-row items-center">
+            <StyledText className="text-lg">{userInformation.address}</StyledText>
+          </StyledView>
+
+        </StyledView>
+
+        
+        <StyledView className="flex items-center pt-8 mb-2">
+          <StyledText className="text-red text-lg py-2" onPress={handleLogout}>
+            Log out
           </StyledText>
-        </StyledView>
-
-        <StyledView className="border-b-[1px] border-slate-200 w-full pt-4 mb-4" />
-
-        <StyledText className="text-lightGray">Email address</StyledText>
-        <StyledView className="flex flex-row items-center">
-          <StyledText className="text-lg">{userInformation.email}</StyledText>
-        </StyledView>
-
-        <StyledView className="border-b-[1px] border-slate-200 w-full pt-4 mb-4" />
-
-        <StyledText className="text-lightGray">Address</StyledText>
-        <StyledView className="flex flex-row items-center">
-          <StyledText className="text-lg">{userInformation.address}</StyledText>
+          <StyledText className="text-lightGray">ver. {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})</StyledText>
         </StyledView>
 
       </StyledView>
-
-      
-      <StyledView className="flex items-center pt-20">
-        <StyledText className="text-red text-lg py-2" onPress={handleLogout}>
-          Log out
-        </StyledText>
-        <StyledText className="text-lightGray">ver. {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})</StyledText>
-      </StyledView>
-
-    </StyledView>
+    </StyledScrollView>
   );
 };
 

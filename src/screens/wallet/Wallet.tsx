@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
 import React, { useEffect, useState } from 'react';
-import { Image, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, TouchableOpacity, View } from 'react-native';
 
 import refreshLogo from '../../assets/images/refresh.png';
 
@@ -14,6 +14,7 @@ import OperationButton from '@components/OperationButton';
 
 import { OperationType } from '@constants/constants';
 
+const StyledScrollView = styled(ScrollView);
 const StyledView = styled(View);
 const StyledImage = styled(Image);
 
@@ -46,19 +47,21 @@ const Wallet: React.FunctionComponent = () => {
   }, []);
 
   return (
-    <StyledView className="flex items-center bg-white h-full">
-      <StyledView className="p-4 mt-12">
-        <OperationButton onPress={handleOnPress} />
-      </StyledView>
-      <TouchableOpacity onPress={handleRefreshBalance}>
-        <StyledView className="h-14 w-40 flex items-center">
-          <StyledImage source={refreshLogo} />
+    <StyledScrollView>
+      <StyledView className="flex items-center bg-white h-full">
+        <StyledView className="p-4 mt-12">
+          <OperationButton onPress={handleOnPress} />
         </StyledView>
-      </TouchableOpacity>
-      <StyledView className="m-1 px-6 w-full">
-        <Balance userBalance={userBalance} />
+        <TouchableOpacity onPress={handleRefreshBalance}>
+          <StyledView className="h-14 w-40 flex items-center">
+            <StyledImage source={refreshLogo} />
+          </StyledView>
+        </TouchableOpacity>
+        <StyledView className="m-1 px-6 w-full">
+          <Balance userBalance={userBalance} />
+        </StyledView>
       </StyledView>
-    </StyledView>
+    </StyledScrollView>
   );
 };
 
