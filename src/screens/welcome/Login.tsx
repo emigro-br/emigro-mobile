@@ -13,8 +13,8 @@ const StyledText = styled(Text);
 const StyledTextInput = styled(TextInput);
 
 const formFields: FormField[] = [
-  { name: 'email', placeholder: 'Email' },
-  { name: 'password', placeholder: 'Password', secureTextEntry: true },
+  { name: 'email', placeholder: 'Email', keyboardType: 'email-address', autoCapitalize: 'none' },
+  { name: 'password', placeholder: 'Password', secureTextEntry: true, keyboardType: 'default' },
 ];
 
 type FormData = {
@@ -66,6 +66,8 @@ const Login: React.FunctionComponent = () => {
           value={formData[field.name]}
           onChangeText={(text) => handleChange(field.name, text)}
           secureTextEntry={field.secureTextEntry}
+          keyboardType={field.keyboardType}
+          autoCapitalize={field.autoCapitalize}
         />
       ))}
 
