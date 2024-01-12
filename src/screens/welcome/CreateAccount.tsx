@@ -104,7 +104,7 @@ const CreateAccount: React.FunctionComponent<SignUpProps> = ({ navigation }) => 
       <StyledText className="text-red text-center text-lg">{error}</StyledText>
       <CustomModal isVisible={showConfirmationModal} title="Complete registration">
         <StyledText className="text-lg p-4">We have sent you a confirmation code to your email address.</StyledText>
-        <Button backgroundColor="blue" textColor="white" onPress={handleCloseConfirmationModal}>
+        <Button backgroundColor="red" textColor="white" onPress={handleCloseConfirmationModal}>
           Accept
         </Button>
       </CustomModal>

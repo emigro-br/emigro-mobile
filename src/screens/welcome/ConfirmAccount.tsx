@@ -63,13 +63,13 @@ const ConfirmAccount = ({ navigation }: ConfirmAccountProps) => {
         value={confirmationCode}
         onChangeText={(text) => setConfirmationCode(text)}
       />
-      <Button onPress={handleConfirmation} disabled={isLoading} backgroundColor="blue" textColor="white">
+      <Button onPress={handleConfirmation} disabled={isLoading} backgroundColor="red" textColor="white">
         {isLoading ? <ActivityIndicator size="large" color="gray" /> : 'Confirm Account'}
       </Button>
       <StyledView className="flex-row justify-center items-center gap-2">
         <StyledText className="text-lg">Didn't receive the code?</StyledText>
         <TouchableOpacity>
-          <StyledText className="text-blue text-xl font-bold">Resend Code</StyledText>
+          <StyledText className="text-red text-lg font-bold">Resend Code</StyledText>
         </TouchableOpacity>
       </StyledView>
       <StyledText testID="confirm-account-error" className="text-red text-lg text-center">
@@ -77,7 +77,7 @@ const ConfirmAccount = ({ navigation }: ConfirmAccountProps) => {
       </StyledText>
       <CustomModal isVisible={isConfirmationModalVisible} title="Confirmation successful">
         <StyledText className="text-lg p-4">Your account has been successfully confirmed.</StyledText>
-        <Button onPress={handleCloseConfirmationModal} backgroundColor="blue" textColor="white">
+        <Button onPress={handleCloseConfirmationModal} backgroundColor="red" textColor="white">
           Accept
         </Button>
       </CustomModal>
