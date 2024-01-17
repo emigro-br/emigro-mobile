@@ -9,11 +9,12 @@ import CreateAccount from '@screens/welcome/CreateAccount';
 import Login from '@screens/welcome/Login';
 import { Welcome } from '@screens/welcome/Welcome';
 
-type RootStackParamList = {
+export type RootStackParamList = {
   Welcome: undefined;
   SignUp: undefined;
   Login: undefined;
   Root: undefined;
+  MakePayment: undefined;
   ConfirmPayment: undefined;
   Wallet: undefined;
   ConfirmAccount: undefined;
@@ -37,7 +38,8 @@ function RootNavigator(props: RootNavigatorProps) {
     >
       <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
-      <Stack.Screen name="ConfirmPayment" component={ConfirmPayment} options={{ headerShown: false }} />
+      <Stack.Screen name="MakePayment" component={BottomTabNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="ConfirmPayment" component={ConfirmPayment} options={{ headerTitle: 'Confirm Payment' }} />
       <Stack.Screen name="Operation" component={Operation} />
       <Stack.Screen name="SignUp" component={CreateAccount} options={{ headerTitle: 'Create Account' }} />
       <Stack.Screen name="Login" component={Login} options={{ headerTitle: 'Login' }} />

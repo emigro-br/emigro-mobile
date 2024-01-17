@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { BarCodeEvent, BarCodeScanner } from 'expo-barcode-scanner';
 import { styled } from 'nativewind';
 import React, { useEffect, useState } from 'react';
@@ -10,11 +9,11 @@ import Button from './Button';
 import { INVALID_QR_CODE } from '@/constants/errorMessages';
 import { GRANTED_STATUS } from '@/constants/statusMessages';
 import { useVendor } from '@/contexts/VendorContext';
-import { RootStackParamList } from '@/screens/ConfirmPayment';
 import { formatAssetCode } from '@/utils/formatAssetCode';
 
 type QRCodeScannerProps = {
   onCancel: () => void;
+  onProceedToPayment: () => void;
 };
 
 const StyledView = styled(View);
@@ -23,13 +22,11 @@ const StyledText = styled(Text);
 
 const StyledTouchableOpacity = styled(TouchableOpacity);
 
-const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel }) => {
+const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, onProceedToPayment }) => {
   const { scannedVendor, setScannedVendor } = useVendor();
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   const [isScanned, setIsScanned] = useState(false);
   const [error, setError] = useState('');
-
-  const navigation: NavigationProp<RootStackParamList> = useNavigation();
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
@@ -52,7 +49,7 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel }
   };
 
   const handleProceedToPayment = () => {
-    navigation.navigate('ConfirmPayment' as never);
+    onProceedToPayment()
     onCancel();
   };
 
@@ -65,7 +62,7 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel }
   }
 
   return (
-    <StyledView className="flex items-center justify-center h-full">
+    <StyledView className="flex items-center h-full bg-white">
       <StyledView className="items-center justify-center h-60 w-full rounded-3xl">
         <BarCodeScanner
           onBarCodeScanned={isScanned ? undefined : handleBarCodeScanned}
@@ -74,28 +71,27 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel }
         >
           <StyledView style={styles.rectangleContainer}>
             <StyledTouchableOpacity className="absolute right-0 top-8 mr-8" onPress={onCancel}>
-              <Ionicons name="close" size={32} color="white" />
+              <Ionicons name="close" size={24} color="white" />
             </StyledTouchableOpacity>
             <StyledView style={styles.rectangle} />
           </StyledView>
         </BarCodeScanner>
       </StyledView>
       {isScanned && scannedVendor.name ? (
-        <StyledView className="flex flex-col p-4 mt-4 w-full shadow-lg shadow-black">
-          <StyledText className="text-xl mb-4 font-bold">Confirm the information below:</StyledText>
-          <StyledView className="flex flex-row mb-4">
+        <StyledView className="flex flex-col p-4 mt-4 w-full gap-2">
+          <StyledText className="text-xl font-bold">Confirm the information below:</StyledText>
+          <StyledView className="flex-row">
             <StyledText className="text-lg font-bold">Vendor: </StyledText>
             <StyledText className="text-lg">{scannedVendor.name}</StyledText>
           </StyledView>
-          <StyledView className="flex flex-row mb-4">
+          <StyledView className="flex-row">
             <StyledText className="text-lg font-bold">Address: </StyledText>
             <StyledText className="text-lg">{scannedVendor.address}</StyledText>
           </StyledView>
-          <StyledView className="flex flex-row mb-4">
+          <StyledView className="flex-row">
             <StyledText className="text-lg font-bold">Amount: </StyledText>
             <StyledText className="text-lg">
-              {scannedVendor.amount}
-              {formatAssetCode(scannedVendor.assetCode)}
+              {scannedVendor.amount} {formatAssetCode(scannedVendor.assetCode)}
             </StyledText>
           </StyledView>
           <StyledView className="flex justify-center">
@@ -122,8 +118,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   rectangle: {
-    height: 250,
-    width: 215,
+    height: 200,
+    width: 200,
     borderWidth: 2,
     borderColor: '#FFFFFF',
     backgroundColor: 'transparent',
