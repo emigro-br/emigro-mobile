@@ -18,6 +18,7 @@ const usePayment = (
   const [maxAmountToSend, setMaxAmountToSend] = useState<string>('0');
   const [isTransactionLoading, setIsTransactionLoading] = useState(false);
   const [isTransactionCompletedModalVisible, setIsTransactionCompletedModalVisible] = useState(false);
+  const [transactionError, setTransactionError] = useState<Error | unknown>(null);
 
   useEffect(() => {
     const handlePayment = async () => {
@@ -27,7 +28,9 @@ const usePayment = (
           const to = sourceAssetCode;
           const transactionQuote = { from, to, amount: paymentAmount };
           const calculatedTransactionValue = await handleQuote(transactionQuote);
-          setTransactionValue(Number(calculatedTransactionValue));
+          if (calculatedTransactionValue) {
+            setTransactionValue(Number(calculatedTransactionValue));
+          }
         }
       } catch (error) {
         console.error(error);
@@ -62,12 +65,13 @@ const usePayment = (
         destinationAssetCode,
       };
       const paymentResponse = await sendTransaction(transactionRequest);
-      setIsTransactionLoading(false);
-      setIsTransactionCompletedModalVisible(true);
       return paymentResponse;
     } catch (error) {
+      setTransactionError(error);
       console.error(error);
+    } finally {
       setIsTransactionLoading(false);
+      setIsTransactionCompletedModalVisible(true);
     }
   };
 
@@ -75,6 +79,7 @@ const usePayment = (
     transactionValue,
     isTransactionLoading,
     isTransactionCompletedModalVisible,
+    transactionError,
     setIsTransactionCompletedModalVisible,
     handleConfirmPayment,
   };

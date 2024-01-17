@@ -18,7 +18,7 @@ const CustomModal: React.FunctionComponent<CustomModalProps> = ({ isVisible, tit
       <StyledView className="flex-1">
         <StyledView className="absolute top-0 left-0 w-full h-full bg-black opacity-70" />
         <StyledView className="bg-white shadow-lg  p-4 w-[80%] rounded-md my-auto flex justify-center items-center mx-auto">
-          <StyledText className="text-lg py-2">{title}</StyledText>
+          <StyledText className="text-lg font-bold py-2">{title}</StyledText>
           {children}
         </StyledView>
       </StyledView>
