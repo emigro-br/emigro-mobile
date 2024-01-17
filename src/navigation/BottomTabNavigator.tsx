@@ -11,7 +11,15 @@ import MakePayment from '@screens/MakePayment';
 import Profile from '@screens/Profile';
 import Wallet from '@screens/wallet/Wallet';
 
-const BottomTab = createBottomTabNavigator<any>();
+export type TabNavParamList = {
+  Wallet: undefined;
+  MakePayment: undefined;
+  Location: undefined;
+  Profile: undefined;
+};
+
+
+const BottomTab = createBottomTabNavigator<TabNavParamList>();
 
 const StyledView = styled(View);
 
