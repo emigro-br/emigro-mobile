@@ -1,15 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
-import { BarCodeEvent, BarCodeScanner } from 'expo-barcode-scanner';
 import { styled } from 'nativewind';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera/next';
+import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
 
 import Button from './Button';
 
 import { INVALID_QR_CODE } from '@/constants/errorMessages';
-import { GRANTED_STATUS } from '@/constants/statusMessages';
 import { useVendor } from '@/contexts/VendorContext';
 import { formatAssetCode } from '@/utils/formatAssetCode';
+import { useFocusEffect } from '@react-navigation/native';
+import { BarCodeScanner } from 'expo-barcode-scanner';
+
 
 type QRCodeScannerProps = {
   onCancel: () => void;
@@ -24,22 +27,30 @@ const StyledTouchableOpacity = styled(TouchableOpacity);
 
 const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, onProceedToPayment }) => {
   const { scannedVendor, setScannedVendor } = useVendor();
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  const [permission, requestPermission] = useCameraPermissions();
   const [isScanned, setIsScanned] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const getBarCodeScannerPermissions = async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
-      setHasPermission(status === GRANTED_STATUS);
-    };
-    getBarCodeScannerPermissions();
+    requestPermission()
   }, []);
 
-  const handleBarCodeScanned = (vendor: BarCodeEvent) => {
+  useFocusEffect(
+    useCallback(() => {
+      // reset the scanner when the user comes back to the screen
+      setIsScanned(false);
+      setError('');
+      return () => {
+        // dismiss the scanner when the user leaves the screen
+        onCancel();
+      }
+    }, [])
+  );
+
+  const handleBarCodeScanned = (result: BarCodeScanningResult) => {
     setIsScanned(true);
     try {
-      const qrObject = JSON.parse(vendor.data);
+      const qrObject = JSON.parse(result.data);
       setScannedVendor(qrObject);
     } catch (error) {
       setError(INVALID_QR_CODE);
@@ -53,7 +64,7 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
     onCancel();
   };
 
-  if (!hasPermission) {
+  if (!permission?.granted) {
     return (
       <StyledView className="flex items-center justify-center h-full">
         <StyledText className="text-lg m-4">No access to camera</StyledText>
@@ -64,10 +75,12 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
   return (
     <StyledView className="flex items-center h-full bg-white">
       <StyledView className="items-center justify-center h-60 w-full rounded-3xl">
-        <BarCodeScanner
-          onBarCodeScanned={isScanned ? undefined : handleBarCodeScanned}
-          style={[StyleSheet.absoluteFill, styles.container]}
-          barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+        <CameraView
+          onBarcodeScanned={isScanned ? undefined : handleBarCodeScanned}
+          style={[StyleSheet.absoluteFillObject]}
+          barcodeScannerSettings={{
+            barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],  // FIXME: "qr" string is not working
+          }}
         >
           <StyledView style={styles.rectangleContainer}>
             <StyledTouchableOpacity className="absolute right-0 top-8 mr-8" onPress={onCancel}>
@@ -75,7 +88,7 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
             </StyledTouchableOpacity>
             <StyledView style={styles.rectangle} />
           </StyledView>
-        </BarCodeScanner>
+        </CameraView>
       </StyledView>
       {isScanned && scannedVendor.name ? (
         <StyledView className="flex flex-col p-4 mt-4 w-full gap-2">
