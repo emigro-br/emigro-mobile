@@ -10,7 +10,9 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }));
 
 jest.mock('@/storage/helpers', () => ({
+  getSession: jest.fn(),
   clearSession: jest.fn(),
+  getAccessToken: jest.fn(),
 }));
 
 jest.mock('@react-navigation/native', () => ({
