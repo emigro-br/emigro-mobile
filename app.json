@@ -8,6 +8,10 @@
     "orientation": "portrait",
     "icon":"./src/assets/images/icon.png",
     "userInterfaceStyle": "light",
+    "platforms": [
+      "ios",
+      "android"
+    ],  
     "plugins": [
       [
         "expo-camera",
@@ -25,7 +29,7 @@
             "targetSdkVersion": 33
           },
           "ios": {
-            "deploymentTarget": "13.0"
+            "deploymentTarget": "13.4"
           }
         }
       ]
@@ -54,9 +58,6 @@
         "android.permission.RECORD_AUDIO"
       ],
       "package": "co.emigro.app"
-    },
-    "web": {
-      "favicon": "./src/assets/images/favicon.png"
     },
     "extra": {
       "eas": {
