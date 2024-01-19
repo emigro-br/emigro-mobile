@@ -76,7 +76,7 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
     <StyledView className="flex items-center h-full bg-white">
       <StyledView className="items-center justify-center h-60 w-full rounded-3xl">
         <CameraView
-          onBarcodeScanned={isScanned ? undefined : handleBarCodeScanned}
+          onBarcodeScanned={handleBarCodeScanned}
           style={[StyleSheet.absoluteFillObject]}
           barcodeScannerSettings={{
             barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],  // FIXME: "qr" string is not working
@@ -90,6 +90,11 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
           </StyledView>
         </CameraView>
       </StyledView>
+      {!isScanned && (
+        <StyledView className="flex flex-col items-center justify-center w-full mt-4">
+          <StyledText className="text-lg font-bold">Scan the QR code</StyledText>
+          <StyledText className="text-lg font-bold">to pay the vendor</StyledText>
+        </StyledView>)}
       {isScanned && scannedVendor.name ? (
         <StyledView className="flex flex-col p-4 mt-4 w-full gap-2">
           <StyledText className="text-xl font-bold">Confirm the information below:</StyledText>
