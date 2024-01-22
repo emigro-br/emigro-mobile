@@ -3,7 +3,7 @@ import { styled } from 'nativewind';
 import React, { useState } from 'react';
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import { signUp } from '@/services/cognito';
+import { signUp } from '@/services/auth';
 import { FormField } from '@/types/FormField';
 
 import Button from '@components/Button';

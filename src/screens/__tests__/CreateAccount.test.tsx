@@ -1,6 +1,6 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import * as cognito from '@/services/cognito';
+import * as auth from '@/services/auth';
 
 import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 
@@ -16,7 +16,7 @@ jest.mock('@react-navigation/native', () => ({
 
 describe('CreateAccount component', () => {
   test('Should call signUp with correct information', async () => {
-    const signUpMock = jest.spyOn(cognito, 'signUp');
+    const signUpMock = jest.spyOn(auth, 'signUp');
     const mockResponse = {
       id: 1,
       username: 'example_username',

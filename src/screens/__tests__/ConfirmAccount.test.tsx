@@ -3,7 +3,7 @@ import React from 'react';
 
 import ConfirmAccount from '../welcome/ConfirmAccount';
 
-import * as cognito from '@/services/cognito';
+import * as auth from '@/services/auth';
 
 import { CONFIRM_ACCOUNT_ERROR } from '@constants/errorMessages';
 
@@ -28,7 +28,7 @@ const mockResponse = {
 };
 
 it('Should handle confirmation with success', async () => {
-  const confirmAccount = jest.spyOn(cognito, 'confirmAccount');
+  const confirmAccount = jest.spyOn(auth, 'confirmAccount');
   confirmAccount.mockResolvedValue(mockResponse);
 
   const { getByPlaceholderText, getByText, getByTestId } = render(<ConfirmAccount navigation={{}} />);
@@ -47,7 +47,7 @@ it('Should handle confirmation with success', async () => {
 });
 
 it('Should handle error from confirmAccount', async () => {
-  jest.spyOn(cognito, 'confirmAccount').mockRejectedValue(CONFIRM_ACCOUNT_ERROR);
+  jest.spyOn(auth, 'confirmAccount').mockRejectedValue(CONFIRM_ACCOUNT_ERROR);
 
   const { getByPlaceholderText, getByText, getByTestId } = render(<ConfirmAccount navigation={{}} />);
 

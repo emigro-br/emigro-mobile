@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { SIGNIN_ERROR_MESSAGE, SIGN_IN_FIELDS_ERROR } from '@/constants/errorMessages';
-import { signIn } from '@/services/cognito';
-import { getAccessToken } from '@/storage/helpers';
+import { signIn } from '@/services/auth';
+import { getAccessToken, saveSession } from '@/storage/helpers';
 import { FormField } from '@/types/FormField';
 
 const StyledView = styled(View);
@@ -44,7 +44,8 @@ const Login: React.FunctionComponent = () => {
         setIsLoggingIn(false);
         return;
       }
-      await signIn(formData.email, formData.password);
+      const authSession = await signIn(formData.email, formData.password);
+      await saveSession(authSession)
       setError('');
       const accessToken = await getAccessToken();
       accessToken && navigation?.navigate('Root' as never);
