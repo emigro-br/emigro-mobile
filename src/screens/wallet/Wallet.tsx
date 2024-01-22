@@ -1,7 +1,7 @@
-import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
-import React, { useEffect, useState } from 'react';
-import { Image, RefreshControl, ScrollView, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { RefreshControl, ScrollView, View } from 'react-native';
 
 import { getUserBalance } from '@/services/emigro';
 import { useOperationStore } from '@/store/operationStore';
@@ -14,7 +14,6 @@ import { OperationType } from '@constants/constants';
 
 const StyledScrollView = styled(ScrollView);
 const StyledView = styled(View);
-const StyledImage = styled(Image);
 
 const Wallet: React.FunctionComponent = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -24,6 +23,7 @@ const Wallet: React.FunctionComponent = () => {
 
   const fetchUserBalance = async (): Promise<void> => {
     try {
+      console.debug('Fetching user balance...');
       const balances = await getUserBalance();
       setUserBalance(balances);
     } catch (error) {
@@ -37,9 +37,11 @@ const Wallet: React.FunctionComponent = () => {
     navigation.navigate('Operation' as never);
   };
 
-  useEffect(() => {
-    fetchUserBalance();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchUserBalance();
+    }, [])
+  );
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
@@ -52,10 +54,11 @@ const Wallet: React.FunctionComponent = () => {
 
   return (
     <StyledScrollView
+      className='flex-1 bg-white'
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} title='Refreshing...' />
       }>
-      <StyledView className="flex items-center bg-white">
+      <StyledView className="flex items-center">
         <StyledView className="px-4 py-8">
           <OperationButton onPress={handleOnPress} />
         </StyledView>
