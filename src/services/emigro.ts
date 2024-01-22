@@ -1,7 +1,3 @@
-import * as SecureStore from 'expo-secure-store';
-
-import { getAccessToken, getSession } from '../storage/helpers';
-
 import { IBalance } from '@/types/IBalance';
 import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { IQuote } from '@/types/IQuote';
@@ -9,6 +5,8 @@ import { IQuoteRequest } from '@/types/IQuoteRequest';
 import { ITransaction } from '@/types/ITransaction';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IUserProfile } from '@/types/IUserProfile';
+import { refresh as refreshSession } from '@/services/auth';
+import { getSession, saveSession } from '@/storage/helpers';
 
 import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
 
@@ -20,16 +18,45 @@ class NotAuhtorized extends Error {
   }
 }
 
+const fetchWithTokenCheck = async (url: string, options: RequestInit): Promise<Response> => {
+
+  let session = await getSession();
+  if (!session) {
+    throw new NotAuhtorized();
+  }
+
+  const { tokenExpirationDate } = session;
+  const now = new Date();
+  const isTokenExpired = !tokenExpirationDate || tokenExpirationDate < now;
+  
+  if (isTokenExpired) {
+    console.debug('Token expired, refreshing...');
+    const newSession = await refreshSession(session);
+    if (newSession) {
+      saveSession(newSession);
+      session = newSession;
+    } else {
+      throw new Error('Could not refresh session');
+    }
+  }
+
+  const { accessToken } = session;
+  options.headers = {
+    ...options.headers,
+    Authorization: `Bearer ${accessToken}`,
+  };
+
+  return fetch(url, options);
+}
+
 export const getTransactions = async (): Promise<ITransaction[]> => {
   const transactionsUrl = `${backendUrl}/transaction/all`;
-  const accessToken = await getAccessToken();
 
   try {
-    const response = await fetch(transactionsUrl, {
+    const response = await fetchWithTokenCheck(transactionsUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
       },
     });
     const { transactions } = await response.json();
@@ -42,15 +69,17 @@ export const getTransactions = async (): Promise<ITransaction[]> => {
 
 export const getUserBalance = async (): Promise<IBalance[]> => {
   const url = `${backendUrl}/user`;
-  const accessToken = await getAccessToken();
   try {
-    const response = await fetch(url, {
+    const response = await fetchWithTokenCheck(url, {
       method: 'GET',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
     });
-    const { balances } = await response.json();
+    const json = await response.json();
+
+    if (json.statusCode === 401) {
+      throw new NotAuhtorized();
+    }
+
+    const { balances } = json;
     return balances;
   } catch (error) {
     console.error(error, GET_USER_BALANCE_ERROR);
@@ -79,13 +108,11 @@ export const handleQuote = async (body: IQuoteRequest): Promise<IQuote> => {
 
 export const sendTransaction = async (transactionRequest: ITransactionRequest): Promise<IPaymentResponse> => {
   const url = `${backendUrl}/transaction`;
-  const accessToken = await getAccessToken();
   try {
-    const response = await fetch(url, {
+    const response = await fetchWithTokenCheck(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(transactionRequest),
     });
@@ -98,14 +125,10 @@ export const sendTransaction = async (transactionRequest: ITransactionRequest): 
 
 export const getUserPublicKey = async (): Promise<string> => {
   const url = `${backendUrl}/user`;
-  const accessToken = await getAccessToken();
 
   try {
-    const request = await fetch(url, {
+    const request = await fetchWithTokenCheck(url, {
       method: 'GET',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
     });
     const { publicKey } = await request.json();
     return publicKey;
@@ -118,21 +141,19 @@ export const getUserPublicKey = async (): Promise<string> => {
 export const getUserProfile = async (): Promise<IUserProfile> => {
   const url = `${backendUrl}/user/profile`;
   try {
-    const accessToken = await getAccessToken();
     const session = await getSession();
-    const response = await fetch(url, {
+    const response = await fetchWithTokenCheck(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(session),
     });
-    const userProfile = await response.json();
-    if (userProfile.statusCode === 401) {
+    const json = await response.json();
+    if (json.statusCode === 401) {
       throw new NotAuhtorized();
     }
-    return userProfile
+    return json
   } catch (error) {
     console.error(error);
     throw error;

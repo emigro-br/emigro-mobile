@@ -6,4 +6,5 @@ export const TRANSACTION_ERROR_MESSAGE = 'Error while sending the transaction. P
 export const GET_USER_BALANCE_ERROR = 'Error fetching user balance. Please try again later.';
 export const SIGN_IN_FIELDS_ERROR = 'Email and password are required';
 export const CONFIRM_ACCOUNT_ERROR = 'Error during confirmation. Please try again.';
+export const REFRESH_SESSION_ERROR = 'Error during session refresh. Try to log in again.';
 export const WRONG_CODE_ERROR = 'Wrong code, please try again';

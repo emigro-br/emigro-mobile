@@ -6,43 +6,45 @@ import { VendorContextProvider } from '@/contexts/VendorContext';
 import { SplashScreen } from '@screens/Splash';
 import { Landing } from '@components/Landing';
 import { useEffect, useState } from 'react';
-import { clearSession, getAccessToken } from '@/storage/helpers';
-import { getUserProfile } from '@/services/emigro';
+import { clearSession, getSession, saveSession } from '@/storage/helpers';
+import { refresh as refreshSession } from '@/services/auth';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [userToken, setUserToken] = useState<string | null>(null); // Update the type of userToken
 
-  const getUserToken = async () => {
+  const bootstrapAsync = async () => {
     try {
-      const token = await getAccessToken();
-      if (token) {
-        try {
-          // FIXME: this is a workaround to check if token is valid. 
-          const userProfile = await getUserProfile();
-          if (userProfile) {
-            setUserToken(token);
+      let authSession = await getSession();
+      if (authSession) {
+        if (!authSession.tokenExpirationDate || new Date(authSession.tokenExpirationDate) < new Date()) {
+          console.debug('Refreshing session...');
+          const newSession = await refreshSession(authSession);
+          if (!newSession) {
+            throw new Error('Can not refresh session');
           }
-        } catch (error) {     
-          // TODO: regresh token if it is expired
-          clearSession();
-        }
+          saveSession(newSession);
+          authSession = newSession;
+        } 
+        setUserToken(authSession.accessToken);
       }
-    }
-     finally {
+    } catch (error) {
+      console.warn('Can not load the token, cleaning session', error);
+      await clearSession();
+    } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    getUserToken();
+    bootstrapAsync();
   }, []);
 
   if (isLoading) {
     // We haven't finished checking for the token yet
     return <SplashScreen />;
   }
-  
+
   return (
     <SafeAreaProvider>
       <VendorContextProvider>
