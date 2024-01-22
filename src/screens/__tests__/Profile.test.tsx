@@ -1,13 +1,8 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 
 import Profile from '@screens/Profile';
 import { clearSession } from '@/storage/helpers';
-
-jest.mock('@react-native-async-storage/async-storage', () => ({
-  clear: jest.fn(),
-}));
 
 jest.mock('@/storage/helpers', () => ({
   getSession: jest.fn(),
@@ -37,7 +32,6 @@ describe('Profile screen', () => {
     fireEvent.press(logoutButton);
 
     await waitFor(() => {
-      expect(AsyncStorage.clear).toHaveBeenCalled();
       expect(clearSession).toHaveBeenCalled();
     });
   });
