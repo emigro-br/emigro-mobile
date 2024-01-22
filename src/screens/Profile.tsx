@@ -3,7 +3,6 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, ScrollView, Text, View } from 'react-native';
 import * as Application from 'expo-application';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { clearSession } from '@/storage/helpers';
 
 import { getUserProfile } from '@/services/emigro';
@@ -21,12 +20,6 @@ const Profile = () => {
 
   const handleLogout = async () => {
     await clearSession();
-    try {
-      //FIXME: https://stackoverflow.com/questions/46736268/react-native-asyncstorage-clear-is-failing-on-ios
-      await AsyncStorage.clear();
-    } catch (error) {
-      console.error(error);
-    }
     navigation.navigate('Welcome' as never);
   };
 

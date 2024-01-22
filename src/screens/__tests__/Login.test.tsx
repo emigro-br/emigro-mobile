@@ -1,8 +1,9 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import * as cognito from '@/services/cognito';
+import * as auth from '@/services/auth';
 
 import Login from '@screens/welcome/Login';
+import { IAuthSession } from '@/types/IAuthSession';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
@@ -14,8 +15,16 @@ jest.mock('@react-navigation/native', () => ({
 
 describe('Login screen', () => {
   test('Should call signIn with correct credentials', async () => {
-    const signInMock = jest.spyOn(cognito, 'signIn');
-    signInMock.mockResolvedValue(Promise.resolve());
+    const signInMock = jest.spyOn(auth, 'signIn');
+    const authSession: IAuthSession = {
+      accessToken: 'accessToken',
+      refreshToken: 'refreshToken',
+      idToken: 'idToken',
+      tokenExpirationDate: new Date(),
+      email: '',
+    }
+
+    signInMock.mockResolvedValue(Promise.resolve(authSession));
 
     const { getByPlaceholderText, getByText } = render(<Login />);
 

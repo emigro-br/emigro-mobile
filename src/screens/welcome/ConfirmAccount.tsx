@@ -3,7 +3,7 @@ import { styled } from 'nativewind';
 import React, { useState } from 'react';
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import { confirmAccount } from '@/services/cognito';
+import { confirmAccount } from '@/services/auth';
 
 import Button from '@components/Button';
 import CustomModal from '@components/CustomModal';
