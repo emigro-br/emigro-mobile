@@ -50,8 +50,8 @@ const Profile = () => {
   }
 
   return (
-    <StyledScrollView>
-      <StyledView className="flex items-center pt-8 px-4 bg-white h-full">
+    <StyledScrollView className='bg-white h-full'>
+      <StyledView className="flex items-center pt-8 px-4">
         <StyledView className="mb-8">
           <StyledImage source={profileLogo} className="h-32 w-32" />
         </StyledView>
