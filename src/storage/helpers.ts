@@ -15,17 +15,23 @@ export const saveSession = async (session: IAuthSession): Promise<void> => {
   if (session.tokenExpirationDate) {
     await SecureStore.setItemAsync('tokenExpirationDate', session.tokenExpirationDate.toString());
   }
-  await SecureStore.setItemAsync('email', session.email);
+  if (session.email) {
+    await SecureStore.setItemAsync('email', session.email);
+  }
 }
 
-export const getSession = async (): Promise<IAuthSession> => {
+export const getSession = async (): Promise<IAuthSession | null> => {
   const accessToken = await SecureStore.getItemAsync('accessToken');
+  if (!accessToken) {
+    return null;
+  }
+
   const refreshToken = await SecureStore.getItemAsync('refreshToken');
   const idToken = await SecureStore.getItemAsync('idToken');
   const tokenExpirationDate = await SecureStore.getItemAsync('tokenExpirationDate');
   const email = await SecureStore.getItemAsync('email');
 
-  if (!accessToken || !refreshToken || !idToken || !email) {
+  if (!refreshToken || !idToken || !tokenExpirationDate) {
     throw new Error('Invalid session');
   }
 
@@ -33,7 +39,7 @@ export const getSession = async (): Promise<IAuthSession> => {
     accessToken,
     refreshToken,
     idToken,
-    tokenExpirationDate: tokenExpirationDate ? new Date(tokenExpirationDate) : undefined,
+    tokenExpirationDate: new Date(tokenExpirationDate),
     email,
   }
   return authSession;

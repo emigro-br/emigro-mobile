@@ -12,7 +12,8 @@ import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_ME
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 
-class NotAuhtorized extends Error {
+
+export class NotAuhtorized extends Error {
   constructor() {
     super('Not authorized');
   }
@@ -26,9 +27,8 @@ const fetchWithTokenCheck = async (url: string, options: RequestInit): Promise<R
   }
 
   const { tokenExpirationDate } = session;
-  const now = new Date();
-  const isTokenExpired = !tokenExpirationDate || tokenExpirationDate < now;
-  
+  const isTokenExpired = tokenExpirationDate < new Date();
+
   if (isTokenExpired) {
     console.debug('Token expired, refreshing...');
     const newSession = await refreshSession(session);

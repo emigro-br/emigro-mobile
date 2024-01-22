@@ -94,12 +94,18 @@ export const refresh = async (authSession: IAuthSession): Promise<IAuthSession> 
       },
       body: JSON.stringify(authSession),
     });
+    const json = await response.json();
+
+    if (json.message) {
+      throw new Error(json.message);
+    }
+
     const { 
       accessToken,
       refreshToken,
       idToken,
       tokenExpirationDate,
-     } = await response.json();
+     } = json;
 
     const session: IAuthSession = {
       accessToken,

@@ -5,7 +5,7 @@ import { ActivityIndicator, Image, ScrollView, Text, View } from 'react-native';
 import * as Application from 'expo-application';
 import { clearSession } from '@/storage/helpers';
 
-import { getUserProfile } from '@/services/emigro';
+import { NotAuhtorized, getUserProfile } from '@/services/emigro';
 
 import profileLogo from '@assets/images/profile-icon.png';
 
@@ -32,7 +32,10 @@ const Profile = () => {
           setUserInformation(userProfile);
         }
       } catch (error) {
-        console.error(error);
+        console.warn('Can not load the profile', error);
+        if (error instanceof NotAuhtorized) {
+          handleLogout();
+        }
       }
     };
     fetchUserInformation();
