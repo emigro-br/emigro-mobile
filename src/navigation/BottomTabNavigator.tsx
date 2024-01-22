@@ -20,6 +20,7 @@ export type TabNavParamList = {
 
 
 const BottomTab = createBottomTabNavigator<TabNavParamList>();
+const enableLocation = false;
 
 const StyledView = styled(View);
 
@@ -73,14 +74,15 @@ const BottomTabNavigator = () => {
           header: () => <Header />,
         })}
       />
-      <BottomTab.Screen
+      {enableLocation && (
+        <BottomTab.Screen
         name="Location"
         component={Location}
         options={() => ({
           title: 'Location',
           tabBarIcon: ({ focused }) =>
-            focused ? (
-              <StyledView className="h-full border-t-2 border-red w-full justify-center items-center">
+          focused ? (
+            <StyledView className="h-full border-t-2 border-red w-full justify-center items-center">
                 <StyledView className="mt-1">
                   <IconsSolid.MapIcon size={24} color="red" />
                 </StyledView>
@@ -90,9 +92,10 @@ const BottomTabNavigator = () => {
                 <IconsOutline.MapIcon size={24} color="grey" />
               </StyledView>
             ),
-          header: () => <Header />,
-        })}
-      />
+            header: () => <Header />,
+          })}
+          />
+      )}
       <BottomTab.Screen
         name="Profile"
         component={Profile}
