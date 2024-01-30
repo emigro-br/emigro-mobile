@@ -19,7 +19,7 @@ export const ErrorModal: React.FunctionComponent<ErrorModalProps> = ({ isVisible
       <StyledView className="flex flex-col justify-center items-center">
         <StyledText className="text-2xl font-bold text-center mb-4">Transaction Failed</StyledText>
         <StyledText className="text-center mb-4">
-          Failed message: {errorMessage}
+          Failed message: <Text>{errorMessage}</Text>
         </StyledText>
         <Button onPress={onClose} backgroundColor="red" textColor="white">
           <Text>Close</Text>

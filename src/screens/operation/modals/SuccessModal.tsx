@@ -9,13 +9,13 @@ const StyledText = styled(Text);
 
 
 type SuccessModalProps = {
-  isVisisble: boolean;
+  isVisible: boolean;
   onClose: () => void;
   publicKey: string;
 };
 
-export const SuccessModal: React.FunctionComponent<SuccessModalProps> = ({ isVisisble, onClose, publicKey }) => (
-  <CustomModal isVisible={isVisisble}>
+export const SuccessModal: React.FunctionComponent<SuccessModalProps> = ({ isVisible, onClose, publicKey }) => (
+  <CustomModal isVisible={isVisible}>
     <StyledView className="container h-max flex justify-between">
       <StyledView className="flex flex-col justify-center items-center">
         <StyledText className="text-2xl font-bold text-center mb-4">Transaction successful!</StyledText>

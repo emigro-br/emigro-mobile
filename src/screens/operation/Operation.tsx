@@ -89,6 +89,7 @@ const Operation: React.FunctionComponent = () => {
     try {
       //TODO: naviigation changing with error for invalid callback url
       const { url, id } = await getInteractiveUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
+
       if (url) {
         setTransactionId(id);
 
@@ -152,9 +153,7 @@ const Operation: React.FunctionComponent = () => {
 
     try {
       const transaction = await getTransaction(transactionId, assetCode);
-      console.debug('transaction', transaction);
       const currentStatus = transaction.status;
-      console.debug('Current status', currentStatus);
 
       if (endStatuses.includes(currentStatus)) {
         console.debug('Finished with current status:', currentStatus);
@@ -228,7 +227,7 @@ const Operation: React.FunctionComponent = () => {
 
       {transaction &&
         <ConfirmationModal
-          isVisisble={step === TransactionStep.CONFIRM_TRANSFER}
+          isVisible={step === TransactionStep.CONFIRM_TRANSFER}
           transaction={transaction!}
           assetCode={getAssetCode(selectedAsset!)}
           onPress={() => handleConfirmTransaction(transactionId!, getAssetCode(selectedAsset!))}
@@ -237,7 +236,7 @@ const Operation: React.FunctionComponent = () => {
       }
 
       <SuccessModal
-        isVisisble={step === TransactionStep.SUCCESS}
+        isVisible={step === TransactionStep.SUCCESS}
         onClose={() => setStep(TransactionStep.NONE)}
         publicKey={publicKey!}
       />

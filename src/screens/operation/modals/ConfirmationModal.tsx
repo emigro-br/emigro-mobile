@@ -10,14 +10,14 @@ const StyledView = styled(View);
 const StyledText = styled(Text);
 
 type ConfirmationModalProps = {
-  isVisisble: boolean;
+  isVisible: boolean;
   assetCode: string;
   transaction: Sep24Transaction;
   onPress: () => void;
   onClose: () => void;
 };
 
-export const ConfirmationModal: React.FunctionComponent<ConfirmationModalProps> = ({ isVisisble, assetCode, transaction, onPress, onClose }) => {
+export const ConfirmationModal: React.FunctionComponent<ConfirmationModalProps> = ({ isVisible, assetCode, transaction, onPress, onClose }) => {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   const handleOnPress = async () => {
@@ -33,7 +33,7 @@ export const ConfirmationModal: React.FunctionComponent<ConfirmationModalProps> 
   }
 
   return (
-    <CustomModal isVisible={isVisisble}>
+    <CustomModal isVisible={isVisible}>
       <StyledView className="container h-max flex justify-between">
         <StyledView className="flex flex-col justify-center">
           <StyledText className="text-2xl font-bold text-center mb-4">Confirm the transaction</StyledText>
