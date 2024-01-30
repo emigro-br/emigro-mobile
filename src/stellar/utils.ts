@@ -6,8 +6,9 @@ export const assetCodes = {
   [AssetCode.USDC]: AssetCode.USDC,
   [AssetCode.EURC]: AssetCode.EURC,
   [AssetCode.BRL]: AssetCode.BRL,
+  [AssetCode.ARS]: AssetCode.ARS,
 };
 
-export const getAssetCode = (assetCode: AssetCode) => {
+export const getAssetCode = (assetCode: AssetCode): AssetCode => {
   return assetCodes[assetCode] || assetCode;
 };

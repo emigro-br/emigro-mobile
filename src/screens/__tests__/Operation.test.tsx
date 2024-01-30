@@ -3,13 +3,15 @@ import React from 'react';
 import { Linking } from 'react-native';
 
 import Operation from '../operation/Operation';
+import { CallbackType } from '@/services/anchor'; // avoid mocking the entire module
 
-import * as anchorService from '@/services/anchor';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
 jest.mock('@/services/anchor', () => ({
   getInteractiveUrl: jest.fn(),
+  getTransaction: jest.fn(),
+  CallbackType,
 }));
 
 jest.mock('@/services/emigro', () => ({
@@ -27,6 +29,7 @@ describe('Operation', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
+
   it('Should call handleOnPress when a button is pressed', async () => {
     const { getByText } = render(<Operation />);
     const button = getByText('USD');
@@ -61,7 +64,7 @@ describe('Operation', () => {
   });
 
   it('Should handle the operation correctly', async () => {
-    jest.spyOn(anchorService, 'getInteractiveUrl').mockResolvedValue({
+    jest.requireActual('@/services/anchor').getInteractiveUrl = jest.fn().mockResolvedValue({
       url: mockAnchorUrl,
       type: 'someType',
       id: 'someId',
