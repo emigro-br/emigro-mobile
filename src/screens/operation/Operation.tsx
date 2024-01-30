@@ -39,7 +39,6 @@ const maskWallet = (address: string): string => {
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
 const Operation: React.FunctionComponent = () => {
-  let timer: NodeJS.Timeout;
   const { type } = useOperationStore().operation;
   const [publicKey, setPublicKey] = useState<string | null>(null);
   // const [url, setUrl] = useState<string | null>(null);
@@ -51,6 +50,7 @@ const Operation: React.FunctionComponent = () => {
   const [selectedAsset, setSelectedAsset] = useState<AssetCode | null>(null);
   const assets = Object.values(AssetCode);
   const filteredAssets = assets.filter((asset) => !['USDC', 'EURC'].includes(asset));
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout>(); // see: https://code.pieces.app/blog/resolving-react-setinterval-conflicts
 
   useEffect(() => {
     const getUserPublicKeyAsync = async () => {
@@ -65,27 +65,27 @@ const Operation: React.FunctionComponent = () => {
   });
 
   const handleOnPress = async (asset: AssetCode) => {
-    
+
     setOperationLoading(true);
     setSelectedAsset(asset);
     setTransactionId(null);
-    
+
     const assetCodeSelected = getAssetCode(asset);
-    
+
     const cognitoToken = await getAccessToken();
-    
+
     let acccountId = publicKey;
     if (!publicKey) {
       acccountId = await getUserPublicKey();
     }
-    
+
     const anchorParams = {
       account: acccountId!,
       operation: type as string,
       asset_code: assetCodeSelected,
       cognito_token: cognitoToken,
     };
-    
+
     try {
       //TODO: naviigation changing with error for invalid callback url
       const { url, id } = await getInteractiveUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
@@ -145,6 +145,12 @@ const Operation: React.FunctionComponent = () => {
     }
   }
 
+  // Stopping the interval
+  const stopFetchingTransaction = (status: TransactionStatus) => {
+    console.debug('Stopping the fetch transaction. Status: ', status);
+    clearInterval(intervalId);
+  };
+
   const waitWithdrawOnAnchorComplete = async (transactionId: string, assetCode: AssetCode) => {
     const endStatuses = [
       TransactionStatus.COMPLETED,
@@ -157,20 +163,21 @@ const Operation: React.FunctionComponent = () => {
 
       if (endStatuses.includes(currentStatus)) {
         console.debug('Finished with current status:', currentStatus);
-        clearInterval(timer);
+        stopFetchingTransaction(currentStatus);
         return;
       }
 
       if (currentStatus == TransactionStatus.PENDING_USER_TRANSFER_START) {
         setTransaction(transaction);
         setStep(TransactionStep.CONFIRM_TRANSFER);
-        clearInterval(timer);
+        stopFetchingTransaction(currentStatus);
         return;
       }
 
       // check again in few seconds
       console.log('Sleeping...');
-      timer = setInterval(() => waitWithdrawOnAnchorComplete(transactionId, assetCode), 5000);
+      const intervalId = setInterval(() => waitWithdrawOnAnchorComplete(transactionId, assetCode), 5000);
+      setIntervalId(intervalId);
 
       // only for debugging
       switch (currentStatus) {
