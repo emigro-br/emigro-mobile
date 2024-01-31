@@ -16,6 +16,7 @@ const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 export class NotAuhtorized extends Error {
   constructor() {
     super('Not authorized');
+    this.name = 'NotAuhtorized';
   }
 }
 
@@ -75,6 +76,10 @@ export const getUserBalance = async (): Promise<IBalance[]> => {
     });
     const json = await response.json();
 
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+
     if (json.statusCode === 401) {
       throw new NotAuhtorized();
     }
@@ -83,7 +88,7 @@ export const getUserBalance = async (): Promise<IBalance[]> => {
     return balances;
   } catch (error) {
     console.error(error, GET_USER_BALANCE_ERROR);
-    throw new Error();
+    throw new Error(GET_USER_BALANCE_ERROR);
   }
 };
 
@@ -102,7 +107,7 @@ export const handleQuote = async (body: IQuoteRequest): Promise<IQuote> => {
     return quote;
   } catch (error) {
     console.error(error, QUOTE_NOT_AVAILABLE_ERROR);
-    throw new Error();
+    throw new Error(QUOTE_NOT_AVAILABLE_ERROR);
   }
 };
 
@@ -119,7 +124,7 @@ export const sendTransaction = async (transactionRequest: ITransactionRequest): 
     return await response.json();
   } catch (error) {
     console.error(error, TRANSACTION_ERROR_MESSAGE);
-    throw new Error();
+    throw new Error(TRANSACTION_ERROR_MESSAGE);
   }
 };
 
@@ -134,7 +139,7 @@ export const getUserPublicKey = async (): Promise<string> => {
     return publicKey;
   } catch (error) {
     console.error(error, GET_USER_BALANCE_ERROR);
-    throw error;
+    throw new Error(GET_USER_BALANCE_ERROR);
   }
 };
 
@@ -142,17 +147,18 @@ export const getUserProfile = async (): Promise<IUserProfile> => {
   const url = `${backendUrl}/user/profile`;
   try {
     const session = await getSession();
-    const response = await fetchWithTokenCheck(url, {
+    const res = await fetchWithTokenCheck(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(session),
     });
-    const json = await response.json();
-    if (json.statusCode === 401) {
-      throw new NotAuhtorized();
+    const json = await res.json();
+    if (!res.ok) {
+      throw new Error(res.statusText);
     }
+
     return json
   } catch (error) {
     console.error(error);
