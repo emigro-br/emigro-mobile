@@ -12,7 +12,7 @@ const mockTransaction: Sep24Transaction = {
   external_transaction_id: '123',
   from: 'test',
   id: '1',
-  kind: 'withdraw',
+  kind: 'withdrawal',
   status: TransactionStatus.COMPLETED,
   to: 'test',
   message: '',

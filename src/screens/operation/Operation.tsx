@@ -87,22 +87,23 @@ const Operation: React.FunctionComponent = () => {
     };
 
     try {
-      //TODO: naviigation changing with error for invalid callback url
+      //TODO: webview change navigation thwors error for CallbackType.CALLBACK_URL 
       const { url, id } = await getInteractiveUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
 
-      if (url) {
+      if (id) {
         setTransactionId(id);
+        setStep(TransactionStep.WAITING);
+        waitWithdrawOnAnchorComplete(id, assetCodeSelected);
+      }
 
+      if (url) {
         // with Modal
         // setUrl(url);
         // setStep(TransactionStep.STARTED);
 
         // without Modal
         Linking.openURL(url);
-        setStep(TransactionStep.WAITING);
-        waitWithdrawOnAnchorComplete(id, assetCodeSelected);
-      }
-      if (!url) {
+      } else if (!url && !id){
         setErrorMessage(defaultErrorMessage);
       }
     } catch (error) {
@@ -160,17 +161,17 @@ const Operation: React.FunctionComponent = () => {
     try {
       const transaction = await getTransaction(transactionId, assetCode);
       const currentStatus = transaction.status;
+      console.debug('Current status:', currentStatus);
 
       if (endStatuses.includes(currentStatus)) {
-        console.debug('Finished with current status:', currentStatus);
         stopFetchingTransaction(currentStatus);
         return;
       }
 
       if (currentStatus == TransactionStatus.PENDING_USER_TRANSFER_START) {
+        stopFetchingTransaction(currentStatus); // stop immediatelly to avoid multiple calls
         setTransaction(transaction);
         setStep(TransactionStep.CONFIRM_TRANSFER);
-        stopFetchingTransaction(currentStatus);
         return;
       }
 
@@ -178,45 +179,8 @@ const Operation: React.FunctionComponent = () => {
       console.log('Sleeping...');
       const intervalId = setInterval(() => waitWithdrawOnAnchorComplete(transactionId, assetCode), 5000);
       setIntervalId(intervalId);
-
-      // only for debugging
-      switch (currentStatus) {
-        case TransactionStatus.PENDING_ANCHOR: {
-          console.log({
-            title: "The anchor is processing the transaction",
-          });
-          break;
-        }
-        case TransactionStatus.PENDING_STELLAR: {
-          console.log({
-            title: "The Stellar network is processing the transaction",
-          });
-          break;
-        }
-        case TransactionStatus.PENDING_EXTERNAL: {
-          console.log({
-            title: "The transaction is being processed by an external system",
-          });
-          break;
-        }
-        case TransactionStatus.PENDING_USER: {
-          console.log({
-            title:
-              "The anchor is waiting for you to take the action described in the popup",
-          });
-          break;
-        }
-        case TransactionStatus.ERROR: {
-          console.log({
-            title: "There was a problem processing your transaction",
-          });
-          break;
-        }
-        default:
-        // do nothing
-      }
-
     } catch (error) {
+      stopFetchingTransaction(TransactionStatus.ERROR); // clean up
       console.error('Error getting transaction', error);
       if (error instanceof Error) {
         setErrorMessage(error.message);
