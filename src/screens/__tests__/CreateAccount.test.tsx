@@ -14,7 +14,21 @@ jest.mock('@react-navigation/native', () => ({
   }),
 }));
 
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  multiSet: jest.fn(),
+}));
+
 describe('CreateAccount component', () => {
+
+  beforeEach(() => {
+    jest.useFakeTimers(); 
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   test('Should call signUp with correct information', async () => {
     const signUpMock = jest.spyOn(auth, 'signUp');
     const mockResponse = {
@@ -60,7 +74,10 @@ describe('CreateAccount component', () => {
     });
   });
 
-  test('Should display an error message if signUp fails', () => {
+  test('Should display an error message if signUp fails', async () => {
+    const consoleMock = jest.spyOn(global.console, "error").mockImplementation(() => {});
+    const error = new Error();
+    jest.spyOn(auth, 'signUp').mockRejectedValue(error);
     const { getByPlaceholderText, getByText, findByText } = render(<CreateAccount navigation={{}} />);
 
     const emailInput = getByPlaceholderText('Email');
@@ -77,8 +94,10 @@ describe('CreateAccount component', () => {
 
     fireEvent.press(getByText('Sign Up'));
 
-    const errorElement = findByText(SIGNUP_ERROR_MESSAGE);
-
-    expect(errorElement).toBeTruthy();
+    await waitFor(() => {
+      const errorElement = findByText(SIGNUP_ERROR_MESSAGE);
+      expect(errorElement).toBeTruthy();
+      expect(consoleMock).toHaveBeenCalledWith(error, SIGNUP_ERROR_MESSAGE);
+    });
   });
 });

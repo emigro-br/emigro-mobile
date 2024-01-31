@@ -1,11 +1,10 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import React from 'react';
+import Operation from '../operation/Operation';
 import { Linking } from 'react-native';
 
-import Operation from '../operation/Operation';
-
+jest.mock('expo-clipboard');
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
-
 
 jest.mock('@/services/anchor', () => ({
   getInteractiveUrl: jest.fn().mockResolvedValue({
@@ -38,10 +37,16 @@ jest.mock('@/store/operationStore', () => ({
   }),
 }));
 
+
 describe('Operation', () => {
 
   beforeEach(() => {
+    jest.useFakeTimers(); // Please, keep this to avoid act() warning
     jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
   });
 
   it('Should call handleOnPress when a button is pressed', async () => {
@@ -51,7 +56,7 @@ describe('Operation', () => {
     fireEvent.press(button);
 
     await waitFor(() => {
-      expect(button).toBeTruthy();
+      expect(Linking.openURL).toHaveBeenCalledWith('http://mock.url');
     });
   });
 
@@ -62,7 +67,7 @@ describe('Operation', () => {
     fireEvent.press(button);
 
     await waitFor(() => {
-      expect(button).toBeTruthy();
+      expect(Linking.openURL).toHaveBeenCalledWith('http://mock.url');
     });
   });
 
@@ -73,7 +78,7 @@ describe('Operation', () => {
     fireEvent.press(button);
 
     await waitFor(() => {
-      expect(button).toBeTruthy();
+      expect(Linking.openURL).toHaveBeenCalledWith('http://mock.url');
     });
   });
 

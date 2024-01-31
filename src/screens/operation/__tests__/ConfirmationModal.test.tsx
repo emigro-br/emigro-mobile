@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { ConfirmationModal } from '../modals/ConfirmationModal';
 import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { TransactionStatus } from '@/types/TransactionStatus';
@@ -46,7 +46,7 @@ describe('ConfirmationModal', () => {
     expect(getByText('Cancel')).toBeTruthy();
   });
 
-  it('calls onPress when the Confirm button is pressed', () => {
+  it('calls onPress when the Confirm button is pressed', async () => {
     const onPress = jest.fn();
     const { getByText } = render(
       <ConfirmationModal
@@ -58,7 +58,10 @@ describe('ConfirmationModal', () => {
       />
     );
     fireEvent.press(getByText('Confirm'));
-    expect(onPress).toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(onPress).toHaveBeenCalled();
+    });
   });
 
   it('calls onClose when the Cancel button is pressed', () => {
@@ -87,6 +90,9 @@ describe('ConfirmationModal', () => {
       />
     );
     fireEvent.press(getByText('Confirm'));
-    expect(getByText('Processing...')).toBeTruthy();
+
+    waitFor(() => {
+      expect(getByText('Processing...')).toBeTruthy();
+    });
   });
 });

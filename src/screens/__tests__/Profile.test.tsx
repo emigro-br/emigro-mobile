@@ -3,6 +3,7 @@ import React from 'react';
 
 import Profile from '@screens/Profile';
 import { clearSession } from '@/storage/helpers';
+import { IUserProfile } from '@/types/IUserProfile';
 
 jest.mock('@/storage/helpers', () => ({
   getSession: jest.fn(),
@@ -14,6 +15,15 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: () => ({
     navigate: jest.fn(),
   }),
+}));
+
+jest.mock('@/services/emigro', () => ({
+  getUserProfile: jest.fn().mockResolvedValue({
+    given_name: 'Test Name',
+    family_name: 'Test Last Name',
+    email: 'test@email.com',
+    address: 'Test Address',
+  } as IUserProfile),
 }));
 
 jest.mock('react', () => ({
