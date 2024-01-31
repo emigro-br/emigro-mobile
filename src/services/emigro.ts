@@ -19,7 +19,7 @@ export class NotAuhtorized extends Error {
   }
 }
 
-const fetchWithTokenCheck = async (url: string, options: RequestInit): Promise<Response> => {
+export const fetchWithTokenCheck = async (url: string, options: RequestInit): Promise<Response> => {
 
   let session = await getSession();
   if (!session) {
