@@ -29,7 +29,7 @@ jest.mock('@/storage/helpers', () => ({
   getAssetCode: jest.fn(),
 }));
 
-jest.mock('@/store/operationStore', () => ({
+jest.mock('@/stores/operationStore', () => ({
   useOperationStore: jest.fn().mockReturnValue({
     operation: {
       type: 'withdraw',
