@@ -6,15 +6,10 @@ import { AssetCode } from '@constants/assetCode';
 import { styled } from 'nativewind';
 import { ArrowDownCircleIcon } from 'react-native-heroicons/solid';
 import { AssetSwap } from './AssetSwap';
+import { SwapType } from './types';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
-
-export enum SwapType {
-   SELL,
-   BUY,
-}
-
 
 export const Swap = () => {
    const [sellAsset, setSellAsset] = useState<AssetCode>(AssetCode.EURC);

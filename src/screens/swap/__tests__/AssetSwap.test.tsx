@@ -2,7 +2,7 @@ import { render, fireEvent } from '@testing-library/react-native';
 import React from 'react';
 import { AssetSwap } from '../AssetSwap';
 import { AssetCode } from '@constants/assetCode';
-import { SwapType } from '../Swap';
+import { SwapType } from '../types';
 
 describe('AssetSwap component', () => {
   test('Should render AssetSwap component correctly', () => {

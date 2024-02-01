@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from "react";
 import { TextInput, TouchableOpacity, View, Text } from "react-native";
 import { AssetCode, AssetCodeToSymbol } from "@constants/assetCode";
 import { Card } from "../../components/Card";
-import { SwapType } from './Swap';
+import { SwapType } from './types';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);

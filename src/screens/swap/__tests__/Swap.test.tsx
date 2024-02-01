@@ -1,6 +1,7 @@
 import { render, fireEvent } from '@testing-library/react-native';
 import React from 'react';
-import { Swap, SwapType } from '../Swap';
+import { Swap } from '../Swap';
+import { SwapType } from '../types';
 import { AssetCode } from '@constants/assetCode';
 
 describe('Swap component', () => {
