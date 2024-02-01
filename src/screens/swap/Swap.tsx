@@ -7,13 +7,14 @@ import { styled } from 'nativewind';
 import { ArrowDownCircleIcon } from 'react-native-heroicons/solid';
 import { AssetSwap } from './AssetSwap';
 import { SwapType } from './types';
+import BalanceStore from '@/stores/BalanceStore';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
 
 export const Swap = () => {
    const [sellAsset, setSellAsset] = useState<AssetCode>(AssetCode.EURC);
-   const [buyAsset, setBuyAsset] = useState<AssetCode>(AssetCode.USDC);
+   const [buyAsset, setBuyAsset] = useState<AssetCode>(AssetCode.BRL);
    const [sellValue, setSellValue] = useState(0);
    const [buyValue, setBuyValue] = useState(0);
    const rate = 1.0829;
@@ -35,11 +36,25 @@ export const Swap = () => {
    return (
       <StyledView className='h-full p-4'>
          <StyledText className='text-2xl font-bold mb-4'>Sell {sellAsset}</StyledText>
-         <AssetSwap asset={sellAsset} balance={30} setAsset={setSellAsset} sellOrBuy={SwapType.SELL} value={sellValue} onChangeValue={onChangeValue} />
+         <AssetSwap 
+            asset={sellAsset} 
+            balance={BalanceStore.get(sellAsset)} 
+            setAsset={setSellAsset} 
+            sellOrBuy={SwapType.SELL} 
+            value={sellValue} 
+            onChangeValue={onChangeValue} 
+         />
          <StyledView className='items-center mb-4' testID='arrowIcon'>
             <ArrowDownCircleIcon size={36} color='red' />
          </StyledView>
-         <AssetSwap asset={buyAsset} balance={10} setAsset={setBuyAsset} sellOrBuy={SwapType.BUY} value={buyValue} onChangeValue={onChangeValue} />
+         <AssetSwap 
+            asset={buyAsset} 
+            balance={BalanceStore.get(buyAsset)} 
+            setAsset={setBuyAsset} 
+            sellOrBuy={SwapType.BUY} 
+            value={buyValue} 
+            onChangeValue={onChangeValue} 
+         />
          <StyledText className='text-gray text-xs mb-4'>1 {sellAsset} ≈ {rate} {buyAsset}</StyledText>
          <Button backgroundColor='red' textColor='white' onPress={handlePress}>Review order</Button>
       </StyledView>

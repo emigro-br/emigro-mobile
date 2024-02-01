@@ -9,7 +9,7 @@ describe('Swap component', () => {
     const { getByText, getByTestId } = render(<Swap />);
 
     const sellText = getByText(`Sell ${AssetCode.EURC}`);
-    const buyText = getByText(`1 ${AssetCode.EURC} ≈ 1.0829 ${AssetCode.USDC}`);
+    const buyText = getByText(`1 ${AssetCode.EURC} ≈ 1.0829 ${AssetCode.BRL}`);
     // check arrow icon
     const arrowIcon = getByTestId('arrowIcon');
 

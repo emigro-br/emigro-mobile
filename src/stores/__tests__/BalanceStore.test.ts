@@ -49,4 +49,9 @@ describe('BalanceStore', () => {
     expect(BalanceModule.getUserBalance).toHaveBeenCalled();
     expect(balanceStore.setUserBalance).not.toHaveBeenCalled();
   });
+
+  it('should return user balance', () => {
+    balanceStore.setUserBalance(mockBalances);
+    expect(balanceStore.get('someAssetCode')).toBe(100);
+  });
 });

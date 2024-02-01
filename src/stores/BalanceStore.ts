@@ -9,18 +9,25 @@ export class BalanceStore {
     makeAutoObservable(this);
   }
 
-  setUserBalance(balance: IBalance[]) {
+  setUserBalance(balance: IBalance[]) : void {
     this.userBalance = balance;
   }
 
-  async fetchUserBalance() {
+  get(assetCode: string) : number {
+    const found = this.userBalance.find((balance) => balance.assetCode === assetCode);
+    if (found) return Number(found.balance); //TODO: change the balance to number
+    return 0;
+  }
+
+  async fetchUserBalance() : Promise<IBalance[]> {
     try {
       console.debug('Fetching user balance...');
       const balances = await getUserBalance();
       this.setUserBalance(balances);
+      return balances;
     } catch (error) {
       console.error(error);
-      throw new Error();
+      throw new Error('Failed to fetch user balance');
     }
   }
 }
