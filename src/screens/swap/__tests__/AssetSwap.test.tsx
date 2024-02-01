@@ -13,7 +13,7 @@ describe('AssetSwap component', () => {
       <AssetSwap 
         asset={AssetCode.BRL}
         balance={1.0}
-        setAsset={mockSetAsset}
+        onChangeAsset={mockSetAsset}
         sellOrBuy={SwapType.SELL}
         onChangeValue={mockOnChangeValue}
       />
@@ -35,7 +35,7 @@ describe('AssetSwap component', () => {
       <AssetSwap 
         asset={AssetCode.EURC}
         balance={1.0}
-        setAsset={mockSetAsset}
+        onChangeAsset={mockSetAsset}
         sellOrBuy={SwapType.SELL}
         onChangeValue={mockOnChangeValue}
       />

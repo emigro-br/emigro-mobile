@@ -39,9 +39,9 @@ export const Swap = () => {
          <AssetSwap 
             asset={sellAsset} 
             balance={BalanceStore.get(sellAsset)} 
-            setAsset={setSellAsset} 
             sellOrBuy={SwapType.SELL} 
             value={sellValue} 
+            onChangeAsset={setSellAsset} 
             onChangeValue={onChangeValue} 
          />
          <StyledView className='items-center mb-4' testID='arrowIcon'>
@@ -50,9 +50,9 @@ export const Swap = () => {
          <AssetSwap 
             asset={buyAsset} 
             balance={BalanceStore.get(buyAsset)} 
-            setAsset={setBuyAsset} 
             sellOrBuy={SwapType.BUY} 
             value={buyValue} 
+            onChangeAsset={setBuyAsset} 
             onChangeValue={onChangeValue} 
          />
          <StyledText className='text-gray text-xs mb-4'>1 {sellAsset} ≈ {rate} {buyAsset}</StyledText>

@@ -1,6 +1,7 @@
 import { styled } from "nativewind";
 import React, { useEffect, useRef } from "react";
 import { TextInput, TouchableOpacity, View, Text } from "react-native";
+import { Dropdown } from 'react-native-element-dropdown';
 import { AssetCode, AssetCodeToSymbol } from "@constants/assetCode";
 import { Card } from "../../components/Card";
 import { SwapType } from './types';
@@ -12,9 +13,9 @@ const StyledTextInput = styled(TextInput);
 type AssetSwapProps = {
   asset: AssetCode;
   balance: number;
-  setAsset: (asset: AssetCode) => void;
   sellOrBuy: SwapType;
   value?: number;
+  onChangeAsset: (asset: AssetCode) => void;
   onChangeValue: (value: number, type: SwapType) => void;
 };
 
@@ -80,14 +81,26 @@ export const AssetSwap = (props: AssetSwapProps) => {
     }
   };
 
+  const data = Object.values(AssetCode).map((asset) => ({
+    label: asset,
+    value: asset,
+  }));
+
   return (
     <TouchableOpacity onPress={() => inputRef.current?.focus()}>
       <Card>
         <StyledView className='flex-row justify-between'>
-          <StyledView className='flex-col w-1/3'>
-            <StyledText className='font-bold text-lg'>{props.asset}</StyledText>
+          <StyledView className='flex-col w-1/4'>
+            <Dropdown
+              selectedTextStyle={{ fontWeight: 'bold'}}
+              data={data}
+              value={asset}
+              labelField={'label'}
+              valueField={'value'}
+              onChange={(selectedItem) => props.onChangeAsset(selectedItem.value)}
+            />
           </StyledView>
-          <StyledView className='flex-row items-center justify-end w-2/3'>
+          <StyledView className='flex-row items-center justify-end w-3/4'>
             <StyledText className='font-bold text-slate-500'>{sign}{AssetCodeToSymbol[asset]}</StyledText>
             <StyledTextInput
               ref={inputRef}

@@ -53,6 +53,7 @@
     "react-native": "0.73.2",
     "react-native-dropdown-picker": "^5.4.6",
     "react-native-dropdown-select-list": "^2.0.4",
+    "react-native-element-dropdown": "^2.10.1",
     "react-native-geocoding": "^0.5.0",
     "react-native-heroicons": "^3.2.0",
     "react-native-maps": "1.8.0",
