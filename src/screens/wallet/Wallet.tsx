@@ -1,36 +1,22 @@
 import { styled } from 'nativewind';
 import React, { useState } from 'react';
+import { observer } from "mobx-react";
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { RefreshControl, ScrollView, View } from 'react-native';
 
-import { getUserBalance } from '@/services/emigro';
-import { useOperationStore } from '@/store/operationStore';
-import { IBalance } from '@/types/IBalance';
-
 import Balance from '@components/Balance';
 import OperationButton from '@components/OperationButton';
-
 import { OperationType } from '@constants/constants';
+import { useOperationStore } from '@/stores/operationStore';
+import BalanceStore from '@/stores/BalanceStore';
 
 const StyledScrollView = styled(ScrollView);
 const StyledView = styled(View);
 
-const Wallet: React.FunctionComponent = () => {
+const Wallet: React.FunctionComponent = observer(() => {
   const [refreshing, setRefreshing] = useState(false);
-  const [userBalance, setUserBalance] = useState<IBalance[]>([]);
   const { setOperationType } = useOperationStore();
   const navigation = useNavigation();
-
-  const fetchUserBalance = async (): Promise<void> => {
-    try {
-      console.debug('Fetching user balance...');
-      const balances = await getUserBalance();
-      setUserBalance(balances);
-    } catch (error) {
-      console.error(error);
-      throw new Error();
-    }
-  };
 
   const handleOnPress = (operationType: OperationType) => {
     setOperationType(operationType);
@@ -39,14 +25,14 @@ const Wallet: React.FunctionComponent = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchUserBalance();
+      BalanceStore.fetchUserBalance();
     }, [])
   );
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     try {
-      await fetchUserBalance();
+      await BalanceStore.fetchUserBalance();
     } finally {
       setRefreshing(false);
     }
@@ -63,11 +49,11 @@ const Wallet: React.FunctionComponent = () => {
           <OperationButton onPress={handleOnPress} />
         </StyledView>
         <StyledView className="px-4 w-full">
-          <Balance userBalance={userBalance} />
+          <Balance userBalance={BalanceStore.userBalance} />
         </StyledView>
       </StyledView>
     </StyledScrollView>
   );
-};
+});
 
 export default Wallet;
