@@ -1,5 +1,12 @@
 name: preview
-on: pull_request
+on: 
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'app.json'
+      - '**/*.js'
+      - '**/*.ts'
+      - '**/*.tsx'
 
 jobs:
   update:
@@ -19,6 +26,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Make envfile
+        uses: SpicyPizza/create-envfile@v2.0
+        with:
+          envkey_EXPO_PUBLIC_BACKEND_URL: "https://api.emigro.co"
+          
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -37,4 +49,4 @@ jobs:
       - name: Create preview
         uses: expo/expo-github-action/preview@v8
         with:
-          command: eas update --auto
+          command: eas update --auto --branch ${{ github.event.pull_request.head.ref }}
