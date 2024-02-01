@@ -1,0 +1,106 @@
+import { styled } from "nativewind";
+import React, { useEffect, useRef } from "react";
+import { TextInput, TouchableOpacity, View, Text } from "react-native";
+import { AssetCode, AssetCodeToSymbol } from "@constants/assetCode";
+import { Card } from "../../components/Card";
+import { SwapType } from './Swap';
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
+const StyledTextInput = styled(TextInput);
+
+type AssetSwapProps = {
+  asset: AssetCode;
+  balance: number;
+  setAsset: (asset: AssetCode) => void;
+  sellOrBuy: SwapType;
+  value?: number;
+  onChangeValue: (value: number, type: SwapType) => void;
+};
+
+
+export const AssetSwap = (props: AssetSwapProps) => {
+  const inputRef = useRef<TextInput>(null);
+  const [value, setValue] = React.useState('');
+
+  const { asset, balance } = props;
+  const sign = props.sellOrBuy === SwapType.SELL ? '-' : '+';
+
+  useEffect(() => {
+    if (props.value !== undefined) { // accept 0
+      if (parseFloat(value) !== props.value) {
+        if (props.value === 0) {
+          setValue('');
+        } else {
+          setValue(props.value.toFixed(2));
+        }
+      }
+    }
+  }, [props.value]);
+
+  const handleInputChange = (text: string) => {
+    // workaround for replaceAll is undefined
+    text = text.split(",").join(".");
+
+    // check if text has more than 1 dot
+    if (text.split(".").length > 2) {
+      return;
+    }
+
+    // remove leading zeros
+    text = text.replace(/^0+(?=\d)/, '');
+
+    // remove all non-numeric characters
+    text = text.replace(/[^0-9.]/g, '');
+
+    // check if decimal has more than 2 characters
+    if (text.split(".").length > 1) {
+      let [integer, decimal] = text.split(".");
+      if (decimal.length > 2) {
+        console.log('decimal has more than 2 characters');
+        return;
+      }
+    }
+
+    // now we can set the value
+    setValue(text);
+
+    let newValue = Number(text);
+    if (isNaN(newValue)) {
+      return;
+    }
+
+    const prevValue = Number(value);
+    if (newValue === prevValue) { // accept 2.
+      return;
+    }
+
+    if (props.onChangeValue) {
+      props.onChangeValue(newValue, props.sellOrBuy);
+    }
+  };
+
+  return (
+    <TouchableOpacity onPress={() => inputRef.current?.focus()}>
+      <Card>
+        <StyledView className='flex-row justify-between'>
+          <StyledView className='flex-col w-1/3'>
+            <StyledText className='font-bold text-lg'>{props.asset}</StyledText>
+          </StyledView>
+          <StyledView className='flex-row items-center justify-end w-2/3'>
+            <StyledText className='font-bold text-slate-500'>{sign}{AssetCodeToSymbol[asset]}</StyledText>
+            <StyledTextInput
+              ref={inputRef}
+              className='font-bold text-slate-500 text-right px-1 py-2'
+              autoFocus={props.sellOrBuy == SwapType.SELL}
+              placeholder='0'
+              value={value}
+              onChangeText={(text) => handleInputChange(text)}
+              keyboardType='numeric' />
+          </StyledView>
+        </StyledView>
+        <StyledText className='text-gray text-xs'>Balance: {AssetCodeToSymbol[asset]} {Number(balance).toFixed(2)}</StyledText>
+      </Card>
+    </TouchableOpacity>
+  );
+};

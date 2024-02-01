@@ -1,0 +1,52 @@
+
+import React, { useState } from 'react';
+import { View, Text } from 'react-native';
+import Button from '@/components/Button';
+import { AssetCode } from '@constants/assetCode';
+import { styled } from 'nativewind';
+import { ArrowDownCircleIcon } from 'react-native-heroicons/solid';
+import { AssetSwap } from './AssetSwap';
+
+const StyledView = styled(View);
+const StyledText = styled(Text);
+
+export enum SwapType {
+   SELL,
+   BUY,
+}
+
+
+export const Swap = () => {
+   const [sellAsset, setSellAsset] = useState<AssetCode>(AssetCode.EURC);
+   const [buyAsset, setBuyAsset] = useState<AssetCode>(AssetCode.USDC);
+   const [sellValue, setSellValue] = useState(0);
+   const [buyValue, setBuyValue] = useState(0);
+   const rate = 1.0829;
+
+   const onChangeValue = (value: number, type: SwapType) => {
+      if (type === SwapType.SELL) {
+         setSellValue(value);
+         setBuyValue(value * rate);
+      } else {
+         setBuyValue(value);
+         setSellValue(value / rate);
+      }
+   }
+
+   const handlePress = () => {
+      console.log('handlePress');
+   }
+
+   return (
+      <StyledView className='h-full p-4'>
+         <StyledText className='text-2xl font-bold mb-4'>Sell {sellAsset}</StyledText>
+         <AssetSwap asset={sellAsset} balance={30} setAsset={setSellAsset} sellOrBuy={SwapType.SELL} value={sellValue} onChangeValue={onChangeValue} />
+         <StyledView className='items-center mb-4' testID='arrowIcon'>
+            <ArrowDownCircleIcon size={36} color='red' />
+         </StyledView>
+         <AssetSwap asset={buyAsset} balance={10} setAsset={setBuyAsset} sellOrBuy={SwapType.BUY} value={buyValue} onChangeValue={onChangeValue} />
+         <StyledText className='text-gray text-xs mb-4'>1 {sellAsset} ≈ {rate} {buyAsset}</StyledText>
+         <Button backgroundColor='red' textColor='white' onPress={handlePress}>Review order</Button>
+      </StyledView>
+   );
+};
