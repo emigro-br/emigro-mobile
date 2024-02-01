@@ -40,6 +40,7 @@ describe('BalanceStore', () => {
   });
 
   it('should throw an error when fetching user balance fails', async () => {
+    const consoleMock = jest.spyOn(console, 'error').mockImplementation();
     const error = new Error('Failed to fetch user balance');
     (BalanceModule.getUserBalance as jest.Mock).mockRejectedValue(error);
     jest.spyOn(balanceStore, 'setUserBalance');
@@ -48,6 +49,7 @@ describe('BalanceStore', () => {
 
     expect(BalanceModule.getUserBalance).toHaveBeenCalled();
     expect(balanceStore.setUserBalance).not.toHaveBeenCalled();
+    expect(consoleMock).toHaveBeenCalledWith(error);
   });
 
   it('should return user balance', () => {
