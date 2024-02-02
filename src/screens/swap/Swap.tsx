@@ -95,7 +95,7 @@ export const Swap = () => {
    }
 
    return (
-      <StyledView className='h-full p-4'>
+      <StyledView className='bg-white h-full p-4'>
          <StyledText className='text-2xl font-bold mb-4'>Sell {sellAsset}</StyledText>
          <AssetSwap
             asset={sellAsset}

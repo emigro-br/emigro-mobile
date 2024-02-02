@@ -13,7 +13,7 @@ type CardProps = {
 export const Card = (props: CardProps) => {
   const { color = 'white' } = props;
   return (
-    <StyledView className={`bg-${color} p-4 mb-4 rounded-xl overflow-hidden`}>
+    <StyledView className={`bg-${color} p-4 mb-4 rounded-xl shadow shadow-sm`}>
       {props.children}
     </StyledView>
   );
