@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 import Button from '@/components/Button';
 import { AssetCode } from '@constants/assetCode';
@@ -8,6 +8,8 @@ import { ArrowDownCircleIcon } from 'react-native-heroicons/solid';
 import { AssetSwap } from './AssetSwap';
 import { SwapType } from './types';
 import BalanceStore from '@/stores/BalanceStore';
+import { IQuoteRequest } from '@/types/IQuoteRequest';
+import { handleQuote } from '@/services/emigro';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -17,14 +19,30 @@ export const Swap = () => {
    const [buyAsset, setBuyAsset] = useState<AssetCode>(AssetCode.BRL);
    const [sellValue, setSellValue] = useState(0);
    const [buyValue, setBuyValue] = useState(0);
-   const rate = 1.0829;
+   const [rate, setRate] = useState<number | null>(null);
+
+   const fetchRate = async () => {
+      const data: IQuoteRequest = {
+         from: sellAsset,
+         to: buyAsset,
+         amount: '1', // FIXME: we should use sell or buy values for restrictSend and restrictReceive
+      };
+      const quote = await handleQuote(data);
+      const rate = Number(quote);
+      if (isNaN(rate)) return;
+      setRate(rate);
+      return rate;
+   }
+
+   useEffect(() => {
+      fetchRate();
+   }, [sellAsset, buyAsset]); // will update the rate when the assets change
 
    const onChangeValue = (value: number, type: SwapType) => {
+      if (!rate) return;
       if (type === SwapType.SELL) {
-         setSellValue(value);
          setBuyValue(value * rate);
       } else {
-         setBuyValue(value);
          setSellValue(value / rate);
       }
    }

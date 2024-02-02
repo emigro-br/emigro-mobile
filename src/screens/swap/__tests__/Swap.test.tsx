@@ -1,21 +1,34 @@
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { Swap } from '../Swap';
-import { SwapType } from '../types';
 import { AssetCode } from '@constants/assetCode';
+import * as emigroService from '@/services/emigro';
+
+jest.mock('@/services/emigro', () => ({
+  handleQuote: jest.fn().mockResolvedValue('1.0829'),
+}));
+
 
 describe('Swap component', () => {
-  test('Should render Swap component correctly', () => {
+  
+  test('Should render Swap component correctly', async () => {
+
     const { getByText, getByTestId } = render(<Swap />);
 
+    // check title
     const sellText = getByText(`Sell ${AssetCode.EURC}`);
-    const buyText = getByText(`1 ${AssetCode.EURC} ≈ 1.0829 ${AssetCode.BRL}`);
+    expect(sellText).toBeDefined();
+    
     // check arrow icon
     const arrowIcon = getByTestId('arrowIcon');
-
-    expect(sellText).toBeDefined();
-    expect(buyText).toBeDefined();
     expect(arrowIcon).toBeDefined();
+    
+    await waitFor(() => {
+      expect(emigroService.handleQuote).toBeCalledTimes(1);
+      // check rate
+      const buyText = getByText(`1 ${AssetCode.EURC} ≈ 1.0829 ${AssetCode.BRL}`);
+      expect(buyText).toBeDefined();
+    });
   });
 
   test('Should update sellValue and buyValue when onChangeValue is called', async () => {
