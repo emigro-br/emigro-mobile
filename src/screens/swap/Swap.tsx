@@ -15,6 +15,7 @@ const StyledView = styled(View);
 const StyledText = styled(Text);
 
 export const Swap = () => {
+   const [active, setActive] = useState<SwapType>(SwapType.SELL);
    const [sellAsset, setSellAsset] = useState<AssetCode>(AssetCode.EURC);
    const [buyAsset, setBuyAsset] = useState<AssetCode>(AssetCode.BRL);
    const [sellValue, setSellValue] = useState(0);
@@ -61,6 +62,8 @@ export const Swap = () => {
             value={sellValue} 
             onChangeAsset={setSellAsset} 
             onChangeValue={onChangeValue} 
+            isActive={active === SwapType.SELL}
+            onPress={() => setActive(SwapType.SELL)}
          />
          <StyledView className='items-center mb-4' testID='arrowIcon'>
             <ArrowDownCircleIcon size={36} color='red' />
@@ -72,6 +75,8 @@ export const Swap = () => {
             value={buyValue} 
             onChangeAsset={setBuyAsset} 
             onChangeValue={onChangeValue} 
+            isActive={active === SwapType.BUY}
+            onPress={() => setActive(SwapType.BUY)}
          />
          <StyledText className='text-gray text-xs mb-4'>1 {sellAsset} ≈ {rate} {buyAsset}</StyledText>
          <Button backgroundColor='red' textColor='white' onPress={handlePress}>Review order</Button>

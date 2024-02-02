@@ -47,4 +47,25 @@ describe('AssetSwap component', () => {
     expect(mockOnChangeValue).toBeCalledWith(10.01, SwapType.SELL);
   });
 
+  it('calls onPress prop when pressed', () => {
+    const mockSetAsset = jest.fn();
+    const mockOnChangeValue = jest.fn();
+    const onPressMock = jest.fn();
+
+    const { getByTestId } = render(
+      <AssetSwap 
+        asset={AssetCode.EURC}
+        balance={1.0}
+        onChangeAsset={mockSetAsset}
+        sellOrBuy={SwapType.SELL}
+        onChangeValue={mockOnChangeValue}
+        onPress={onPressMock} 
+       />
+    );
+
+    const touchable = getByTestId('touchable');
+    fireEvent.press(touchable);
+
+    expect(onPressMock).toHaveBeenCalled();
+  });
 });

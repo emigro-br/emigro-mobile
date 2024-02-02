@@ -1,6 +1,6 @@
 import { styled } from "nativewind";
 import React, { useEffect, useRef } from "react";
-import { TextInput, TouchableOpacity, View, Text } from "react-native";
+import { TextInput, TouchableHighlight, View, Text } from "react-native";
 import { Dropdown } from 'react-native-element-dropdown';
 import { AssetCode, AssetCodeToSymbol } from "@constants/assetCode";
 import { Card } from "../../components/Card";
@@ -15,6 +15,8 @@ type AssetSwapProps = {
   balance: number;
   sellOrBuy: SwapType;
   value?: number;
+  isActive?: boolean;
+  onPress?: () => void;
   onChangeAsset: (asset: AssetCode) => void;
   onChangeValue: (value: number, type: SwapType) => void;
 };
@@ -24,7 +26,7 @@ export const AssetSwap = (props: AssetSwapProps) => {
   const inputRef = useRef<TextInput>(null);
   const [value, setValue] = React.useState('');
 
-  const { asset, balance } = props;
+  const { asset, balance, isActive } = props;
   const sign = props.sellOrBuy === SwapType.SELL ? '-' : '+';
 
   useEffect(() => {
@@ -81,18 +83,27 @@ export const AssetSwap = (props: AssetSwapProps) => {
     }
   };
 
+  const handlePress = () => {
+    inputRef.current?.focus()
+    if (props.onPress) {
+      props.onPress();
+    }
+  }
+
   const data = Object.values(AssetCode).map((asset) => ({
     label: asset,
     value: asset,
   }));
 
+  const fontColor = Number(value) > 0 ? 'text-black' : 'text-slate-500';
+
   return (
-    <TouchableOpacity onPress={() => inputRef.current?.focus()}>
-      <Card>
+    <TouchableHighlight onPress={handlePress} underlayColor="transparent" testID="touchable">
+      <Card color={isActive ? 'slate-200' : 'white'}>
         <StyledView className='flex-row justify-between'>
           <StyledView className='flex-col w-1/4'>
             <Dropdown
-              selectedTextStyle={{ fontWeight: 'bold'}}
+              selectedTextStyle={{ fontWeight: '500'}}
               data={data}
               value={asset}
               labelField={'label'}
@@ -101,19 +112,21 @@ export const AssetSwap = (props: AssetSwapProps) => {
             />
           </StyledView>
           <StyledView className='flex-row items-center justify-end w-3/4'>
-            <StyledText className='font-bold text-slate-500'>{sign}{AssetCodeToSymbol[asset]}</StyledText>
+            <StyledText className={`font-bold ${fontColor}`}>{sign}{AssetCodeToSymbol[asset]}</StyledText>
             <StyledTextInput
               ref={inputRef}
-              className='font-bold text-slate-500 text-right px-1 py-2'
+              className={`font-bold ${fontColor} text-right px-1 py-2`}
               autoFocus={props.sellOrBuy == SwapType.SELL}
               placeholder='0'
               value={value}
               onChangeText={(text) => handleInputChange(text)}
-              keyboardType='numeric' />
+              keyboardType='numeric'
+              onFocus={handlePress}
+            />
           </StyledView>
         </StyledView>
         <StyledText className='text-gray text-xs'>Balance: {AssetCodeToSymbol[asset]} {Number(balance).toFixed(2)}</StyledText>
       </Card>
-    </TouchableOpacity>
+    </TouchableHighlight>
   );
 };
