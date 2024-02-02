@@ -26,7 +26,7 @@ describe('Swap component', () => {
     await waitFor(() => {
       expect(emigroService.handleQuote).toBeCalledTimes(1);
       // check rate
-      const buyText = getByText(`1 ${AssetCode.EURC} ≈ 1.0829 ${AssetCode.BRL}`);
+      const buyText = getByText(`1 ${AssetCode.EURC} ≈ 1.082900 ${AssetCode.BRL}`);
       expect(buyText).toBeDefined();
     });
   });

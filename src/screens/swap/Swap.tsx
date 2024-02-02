@@ -72,14 +72,21 @@ export const Swap = () => {
    }, [sellValue, buyValue, rate]);
 
    const handleSwap = () => {
+      // swap assets
       const temp = sellAsset;
       setSellAsset(buyAsset);
       setBuyAsset(temp);
 
+      // swap values
       if (active === SwapType.SELL) {
          setSellValue(sellValue);
       } else {
          setBuyValue(buyValue);
+      }
+
+      // swap rate
+      if (rate) {
+         setRate(1 / rate);
       }
    }
 
@@ -115,7 +122,7 @@ export const Swap = () => {
             isActive={active === SwapType.BUY}
             onPress={() => setActive(SwapType.BUY)}
          />
-         <StyledText className='text-gray text-xs mb-4'>1 {sellAsset} ≈ {rate} {buyAsset}</StyledText>
+         <StyledText className='text-gray text-xs mb-4'>1 {sellAsset} ≈ {rate?.toFixed(6)} {buyAsset}</StyledText>
          <Button backgroundColor='red' textColor='white' onPress={handlePress}>Review order</Button>
       </StyledView>
    );
