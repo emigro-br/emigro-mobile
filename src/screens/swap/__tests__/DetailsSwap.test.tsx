@@ -1,4 +1,4 @@
-import { render, fireEvent } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { DetailsSwap } from '../DetailsSwap';
 import { NavigationContainer, NavigationProp, RouteProp } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -31,11 +31,18 @@ describe('DetailsSwap', () => {
     // add other properties and methods as needed
   } as unknown as NavigationProp<RootStackParamList, 'DetailsSwap'>;
 
+  // Create a separate component
+  const DetailsSwapScreen = () => <DetailsSwap route={route} navigation={navigation} />;
+
+  beforeAll(() => {
+    jest.useFakeTimers();
+  });
+
   it('renders correctly', () => {
     const { getByText } = render(
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="DetailsSwap" component={() => <DetailsSwap route={route} navigation={navigation} />} initialParams={route.params} />
+          <Stack.Screen name="DetailsSwap" component={DetailsSwapScreen} initialParams={route.params} />
         </Stack.Navigator>
       </NavigationContainer>
     );
@@ -66,16 +73,20 @@ describe('DetailsSwap', () => {
     expect(getByText('Swap EURC for BRL')).toBeTruthy();
   });
 
-  it('navigates on button press', () => {
+  it('navigates on button press', async () => {
     const { getByText } = render(
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="DetailsSwap" component={() => <DetailsSwap route={route} navigation={navigation} />} initialParams={route.params} />
+          <Stack.Screen name="DetailsSwap" component={DetailsSwapScreen} initialParams={route.params} />
         </Stack.Navigator>
       </NavigationContainer>
     );
 
     fireEvent.press(getByText('Swap EURC for BRL'));
-    expect(navigation.navigate).toBeCalledWith('Wallet');
+
+    await waitFor(() => {
+      jest.runAllTimers();
+      expect(navigation.navigate).toBeCalledWith('Wallet');
+    });
   });
 });

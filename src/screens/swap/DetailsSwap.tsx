@@ -21,14 +21,19 @@ interface DetailsSwapProps {
 }
 
 export const DetailsSwap = ({ route, navigation }: DetailsSwapProps) => {
+  const [isLoading, setIsLoading] = useState(false);
 
   const { from, fromValue, to, rate, fees } = route.params;
   const toValue = fromValue * rate;
   const estimated = toValue - fees;
 
   const handlePress = () => {
-    console.log('Swap confirmed');
-    navigation.navigate('Wallet');
+    setIsLoading(true);
+    console.log('Swapping...');
+    setTimeout(() => {
+      console.log('Swap confirmed');
+      navigation.navigate('Wallet');
+    }, 2000);
   }
 
   return (
@@ -41,8 +46,8 @@ export const DetailsSwap = ({ route, navigation }: DetailsSwapProps) => {
         <Row label='Fees' value={fees} />
         <Row label='Estimated' value={`${estimated.toFixed(2)} ${to}`} />
         <StyledText className="text-gray text-xs my-4">The final amount is estimated and may change.</StyledText>
-        <Button backgroundColor="red" textColor="white" onPress={handlePress}>
-          <StyledText>Swap {from} for {to}</StyledText>
+        <Button backgroundColor="red" textColor="white" onPress={handlePress} loading={isLoading}>
+          Swap {from} for {to}
         </Button>
       </Card>
     </StyledView>
