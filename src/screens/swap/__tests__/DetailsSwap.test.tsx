@@ -23,12 +23,6 @@ describe('DetailsSwap', () => {
 
   const navigation = {
     navigate: jest.fn(),
-    goBack: jest.fn(),
-    dispatch: jest.fn(),
-    reset: jest.fn(),
-    isFocused: jest.fn(),
-    canGoBack: jest.fn(),
-    // add other properties and methods as needed
   } as unknown as NavigationProp<RootStackParamList, 'DetailsSwap'>;
 
   // Create a separate component
