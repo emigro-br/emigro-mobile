@@ -17,7 +17,7 @@ type AssetSwapProps = {
   value?: number;
   isActive?: boolean;
   onPress?: () => void;
-  onChangeAsset: (asset: AssetCode) => void;
+  onChangeAsset: (asset: AssetCode, type: SwapType) => void;
   onChangeValue: (value: number, type: SwapType) => void;
 };
 
@@ -111,7 +111,7 @@ export const AssetSwap = (props: AssetSwapProps) => {
               value={asset}
               labelField={'label'}
               valueField={'value'}
-              onChange={(selectedItem) => props.onChangeAsset(selectedItem.value)}
+              onChange={(selectedItem) => props.onChangeAsset(selectedItem.value, props.sellOrBuy)}
             />
           </StyledView>
           <StyledView className='flex-row items-center justify-end w-3/4'>

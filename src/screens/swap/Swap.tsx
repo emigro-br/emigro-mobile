@@ -56,6 +56,20 @@ export const Swap = ({ navigation }: SwapProps) => {
     }
   }
 
+  const onChangeAsset = (asset: AssetCode, type: SwapType) => {
+    if (type === SwapType.SELL) {
+      if (asset === buyAsset) {
+        setBuyAsset(sellAsset);
+      }
+      setSellAsset(asset);
+    } else {
+      if (asset === sellAsset) {
+        setSellAsset(buyAsset);
+      }
+      setBuyAsset(asset);
+    }
+  }
+
   useEffect(() => {
     if (!rate) return;
 
@@ -118,7 +132,7 @@ export const Swap = ({ navigation }: SwapProps) => {
         balance={BalanceStore.get(sellAsset)}
         sellOrBuy={SwapType.SELL}
         value={sellValue}
-        onChangeAsset={setSellAsset}
+        onChangeAsset={onChangeAsset}
         onChangeValue={onChangeValue}
         isActive={active === SwapType.SELL}
         onPress={() => setActive(SwapType.SELL)}
@@ -133,7 +147,7 @@ export const Swap = ({ navigation }: SwapProps) => {
         balance={BalanceStore.get(buyAsset)}
         sellOrBuy={SwapType.BUY}
         value={buyValue}
-        onChangeAsset={setBuyAsset}
+        onChangeAsset={onChangeAsset}
         onChangeValue={onChangeValue}
         isActive={active === SwapType.BUY}
         onPress={() => setActive(SwapType.BUY)}
