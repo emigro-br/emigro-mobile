@@ -85,6 +85,9 @@ export const getUserBalance = async (): Promise<IBalance[]> => {
     }
 
     const { balances } = json;
+    if (!balances) {
+      throw new Error('No balances found');
+    }
     return balances;
   } catch (error) {
     console.error(error, GET_USER_BALANCE_ERROR);
@@ -96,14 +99,20 @@ export const handleQuote = async (body: IQuoteRequest): Promise<IQuote> => {
   const url = `${backendUrl}/quote`;
 
   try {
-    const response = await fetch(url, {
+    const res = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
     });
-    const { quote } = await response.json();
+
+    const json = await res.json();
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
+
+    const { quote } = json;
     return quote;
   } catch (error) {
     console.error(error, QUOTE_NOT_AVAILABLE_ERROR);
@@ -121,7 +130,17 @@ export const sendTransaction = async (transactionRequest: ITransactionRequest): 
       },
       body: JSON.stringify(transactionRequest),
     });
-    return await response.json();
+
+    const json = await response.json();
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+
+    if (json.message) {
+      throw new Error(json.message);
+    }
+
+    return json;
   } catch (error) {
     console.error(error, TRANSACTION_ERROR_MESSAGE);
     throw new Error(TRANSACTION_ERROR_MESSAGE);
