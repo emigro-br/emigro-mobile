@@ -23,13 +23,7 @@ export type RootStackParamList = {
   ConfirmAccount: undefined;
   Operation: undefined;
   Swap: undefined;
-  DetailsSwap: {
-    from: AssetCode;
-    fromValue: number;
-    to: AssetCode;
-    rate: number;
-    fees: number;
-  };
+  DetailsSwap: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();

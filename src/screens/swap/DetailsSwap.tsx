@@ -6,34 +6,28 @@ import { NavigationProp, RouteProp } from '@react-navigation/native';
 import Button from "@components/Button";
 import { Card } from "@components/Card";
 import { RootStackParamList } from "@navigation/index";
-import { SwapBloc } from "./bloc";
+import bloc from "./bloc";
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
 
-type DetailsSwapRouteProp = RouteProp<
-  RootStackParamList,
-  'DetailsSwap'
->;
 
 interface DetailsSwapProps {
-  route: DetailsSwapRouteProp;
   navigation: NavigationProp<RootStackParamList>;
 }
 
-export const DetailsSwap = ({ route, navigation }: DetailsSwapProps) => {
+export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const { from, fromValue, to, rate, fees } = route.params;
+  const { from, fromValue, to, rate, fees } = bloc.transaction!;
   const toValue = fromValue * rate;
   const estimated = toValue - fees;
-  const bloc = new SwapBloc();
 
   const handlePress = async () => {
     setIsLoading(true);
 
     try {
-      const result = await bloc.swap({ from, fromValue, to, toValue });
+      const result = await bloc.swap();
       if (result.transactionHash) {
         navigation.navigate('Wallet');
       }

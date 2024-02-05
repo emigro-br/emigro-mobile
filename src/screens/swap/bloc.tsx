@@ -2,18 +2,32 @@ import { sendTransaction } from "@/services/emigro";
 import { getSession } from "@/storage/helpers";
 import { ITransactionRequest } from "@/types/ITransactionRequest";
 import { AssetCode } from "@constants/assetCode";
+import { makeAutoObservable } from "mobx";
 
 export type SwapTransaction = {
   from: AssetCode;
   fromValue: number;
   to: AssetCode;
   toValue: number;
-  // rate: number;
-  // fees: number;
+  rate: number;
+  fees: number;
 }
 
 export class SwapBloc {
   _publicKey?: string;
+  transaction?: SwapTransaction;
+
+  constructor() {
+    makeAutoObservable(this);
+  }
+
+  setTransaction(transaction: SwapTransaction) {
+    this.transaction = transaction;
+  }
+
+  reset() {
+    this.transaction = undefined;
+  }
 
   private async publicKey() {
     if (this._publicKey) {
@@ -28,17 +42,18 @@ export class SwapBloc {
     throw new Error('User wallet address not found.');
   }
 
-  public async swap(transaction: SwapTransaction) {
+  public async swap() {
+    const { from, fromValue, to, toValue } = this.transaction!;
     const transactionRequest: ITransactionRequest = {
-      maxAmountToSend: transaction.fromValue.toString(), // cry
-      destinationAmount: transaction.toValue.toString(),
+      maxAmountToSend: fromValue.toString(), // cry
+      destinationAmount: toValue.toString(),
       destination: await this.publicKey(),
-      sourceAssetCode: transaction.from,
-      destinationAssetCode: transaction.to,
+      sourceAssetCode: from,
+      destinationAssetCode: to,
     };
     const res = await sendTransaction(transactionRequest);
     return res;
   }
 }
 
-// export default new SwapBloc();
+export default new SwapBloc();

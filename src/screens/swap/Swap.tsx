@@ -12,6 +12,7 @@ import BalanceStore from '@/stores/BalanceStore';
 import { IQuoteRequest } from '@/types/IQuoteRequest';
 import { handleQuote } from '@/services/emigro';
 import { RootStackParamList } from '@navigation/index';
+import bloc, { SwapTransaction } from './bloc';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -97,13 +98,16 @@ export const Swap = ({ navigation }: SwapProps) => {
   }
 
   const handlePress = () => {
-    navigation.navigate('DetailsSwap', {
+    const transaction: SwapTransaction = {
       from: sellAsset,
       fromValue: sellValue,
       to: buyAsset,
+      toValue: buyValue,
       rate: rate!,
       fees: 0, // TODO: add fees
-    });
+    };
+    bloc.setTransaction(transaction);
+    navigation.navigate('DetailsSwap');
   }
 
   return (

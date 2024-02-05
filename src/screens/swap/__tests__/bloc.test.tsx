@@ -21,10 +21,17 @@ describe('SwapBloc', () => {
     const emigro = jest.requireMock('@/services/emigro');
 
     const transaction: SwapTransaction = {
-      from: AssetCode.EURC, fromValue: 100, to: AssetCode.BRL, toValue: 120,
+      from: AssetCode.EURC,
+      fromValue: 100,
+      to: AssetCode.BRL,
+      toValue: 120,
+      rate: 1.2,
+      fees: 0,
     };
 
-    await swapBloc.swap(transaction);
+    swapBloc.setTransaction(transaction);
+
+    await swapBloc.swap();
 
     // check sendTransaction is called with correct parameters
     expect(emigro.sendTransaction).toHaveBeenCalledWith({

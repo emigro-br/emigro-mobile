@@ -5,6 +5,7 @@ import { AssetCode } from '@constants/assetCode';
 import * as emigroService from '@/services/emigro';
 import { NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '@navigation/index';
+import bloc from '../bloc';
 
 jest.mock('@/services/emigro', () => ({
   handleQuote: jest.fn().mockResolvedValue('1.0829'),
@@ -52,7 +53,9 @@ describe('Swap component', () => {
     });
   });
 
-  test('Should navigate to DetailsSwap when button is pressed', async () => {
+  test('Should update bloc and navigate to DetailsSwap when button is pressed', async () => {
+    const spy = jest.spyOn(bloc, 'setTransaction');
+
     const { getByText, findAllByPlaceholderText } = render(<Swap navigation={navigation} />);
 
     const [sellInput, buyInput] = await findAllByPlaceholderText('0');
@@ -65,14 +68,18 @@ describe('Swap component', () => {
     const button = getByText('Review order');
     fireEvent.press(button);
 
+    const transaction = {
+      from: AssetCode.EURC,
+      fromValue: 10,
+      to: AssetCode.BRL,
+      toValue: 10.829,
+      rate: 1.0829,
+      fees: 0,
+    };
+
     await waitFor(() => {
-      expect(navigation.navigate).toBeCalledWith('DetailsSwap', {
-        from: AssetCode.EURC,
-        fromValue: 10,
-        to: AssetCode.BRL,
-        rate: 1.0829,
-        fees: 0,
-      });
+      expect(spy).toBeCalledWith(transaction);
+      expect(navigation.navigate).toBeCalledWith('DetailsSwap');
     });
   });
 });

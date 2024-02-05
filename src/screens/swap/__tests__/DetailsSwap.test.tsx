@@ -4,7 +4,7 @@ import { NavigationContainer, NavigationProp, RouteProp } from '@react-navigatio
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AssetCode } from '@constants/assetCode';
 import { RootStackParamList } from '@navigation/index';
-import { SwapBloc } from '../bloc';
+import bloc from '../bloc';
 import { IPaymentResponse } from '@/types/IPaymentResponse';
 
 jest.mock('@/services/emigro', () => ({
@@ -17,36 +17,40 @@ describe('DetailsSwap', () => {
   const route: RouteProp<RootStackParamList, 'DetailsSwap'> = {
     key: 'DetailsSwap',
     name: 'DetailsSwap',
-    params: {
-      from: AssetCode.EURC,
-      fromValue: 100,
-      to: AssetCode.BRL,
-      rate: 1.2,
-      fees: 0.01,
-    },
   };
 
   const navigation = {
     navigate: jest.fn(),
   } as unknown as NavigationProp<RootStackParamList, 'DetailsSwap'>;
 
+  const transaction = {
+    from: AssetCode.EURC,
+    fromValue: 100,
+    to: AssetCode.BRL,
+    toValue: 120,
+    rate: 1.2,
+    fees: 0.01,
+  };
+
   // Create a separate component
-  const DetailsSwapScreen = () => <DetailsSwap route={route} navigation={navigation} />;
+  const DetailsSwapScreen = () => <DetailsSwap navigation={navigation} />;
 
   beforeAll(() => {
     jest.useFakeTimers();
-    jest.spyOn(SwapBloc.prototype, 'swap').mockResolvedValue({ transactionHash: 'hash' } as IPaymentResponse);
+    bloc.setTransaction(transaction);
+    jest.spyOn(bloc, 'swap').mockResolvedValue({ transactionHash: 'hash' } as IPaymentResponse);
   });
 
   afterAll(() => {
     jest.restoreAllMocks();
+    bloc.reset();
   });
 
   it('renders correctly', () => {
     const { getByText } = render(
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="DetailsSwap" component={DetailsSwapScreen} initialParams={route.params} />
+          <Stack.Screen name="DetailsSwap" component={DetailsSwapScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     );
@@ -82,22 +86,15 @@ describe('DetailsSwap', () => {
     const { getByText } = render(
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen name="DetailsSwap" component={DetailsSwapScreen} initialParams={route.params} />
+          <Stack.Screen name="DetailsSwap" component={DetailsSwapScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     );
 
     fireEvent.press(getByText('Swap EURC for BRL'));
 
-    const transaction = {
-      from: AssetCode.EURC,
-      fromValue: 100,
-      to: AssetCode.BRL,
-      toValue: 120,
-    };
-
     await waitFor(() => {
-      expect(SwapBloc.prototype.swap).toBeCalledWith(transaction);
+      expect(bloc.swap).toBeCalled();
     });
   });
 });
