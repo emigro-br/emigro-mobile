@@ -102,7 +102,7 @@ export const AssetSwap = (props: AssetSwapProps) => {
 
   return (
     <TouchableHighlight onPress={handlePress} underlayColor="transparent" testID="touchable">
-      <Card color={isActive ? 'slate-200' : 'white'}>
+      <Card borderColor={isActive ? 'red' : ''}>
         <StyledView className='flex-row justify-between'>
           <StyledView className='flex-col w-1/4'>
             <Dropdown
