@@ -157,8 +157,8 @@ export const getUserPublicKey = async (): Promise<string> => {
     const { publicKey } = await request.json();
     return publicKey;
   } catch (error) {
-    console.error(error, GET_USER_BALANCE_ERROR);
-    throw new Error(GET_USER_BALANCE_ERROR);
+    console.error(error);
+    throw error; // TODO: create new error message?
   }
 };
 
