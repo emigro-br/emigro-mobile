@@ -23,7 +23,9 @@ export class BalanceStore {
     try {
       console.debug('Fetching user balance...');
       const balances = await getUserBalance();
-      this.setUserBalance(balances);
+      if (balances) {
+        this.setUserBalance(balances);
+      }
       return balances;
     } catch (error) {
       console.error(error);
