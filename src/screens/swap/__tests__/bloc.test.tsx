@@ -1,13 +1,13 @@
 import { AssetCode } from '@constants/assetCode';
 import { SwapBloc, SwapTransaction } from '../bloc';
-import * as emigro from '@/services/emigro';
 
-
-jest.mock('@/services/emigro', () => ({
-  getUserPublicKey: jest.fn().mockResolvedValue('mockedPublicKey'),
-  sendTransaction: jest.fn().mockResolvedValue({ transactionHash: 'hash' }),
+jest.mock('@/storage/helpers', () => ({
+  getSession: jest.fn().mockResolvedValue({ publicKey: 'mockedPublicKey' }),
 }));
 
+jest.mock('@/services/emigro', () => ({
+  sendTransaction: jest.fn().mockResolvedValue({ transactionHash: 'hash' }),
+}));
 
 describe('SwapBloc', () => {
   let swapBloc: SwapBloc;
@@ -16,12 +16,15 @@ describe('SwapBloc', () => {
     swapBloc = new SwapBloc();
   });
 
-  it('should call swap with correct parameters', () => {
+  it('should call swap with correct parameters', async () => {
+
+    const emigro = jest.requireMock('@/services/emigro');
+
     const transaction: SwapTransaction = {
       from: AssetCode.EURC, fromValue: 100, to: AssetCode.BRL, toValue: 120,
     };
 
-    swapBloc.swap(transaction);
+    await swapBloc.swap(transaction);
 
     // check sendTransaction is called with correct parameters
     expect(emigro.sendTransaction).toHaveBeenCalledWith({

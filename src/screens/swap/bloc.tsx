@@ -1,4 +1,5 @@
-import { getUserPublicKey, sendTransaction } from "@/services/emigro";
+import { sendTransaction } from "@/services/emigro";
+import { getSession } from "@/storage/helpers";
 import { ITransactionRequest } from "@/types/ITransactionRequest";
 import { AssetCode } from "@constants/assetCode";
 
@@ -12,28 +13,26 @@ export type SwapTransaction = {
 }
 
 export class SwapBloc {
-  publicKey?: string;
+  _publicKey?: string;
 
-  constructor() {
-    this.init();
-  }
+  private async publicKey() {
+    if (this._publicKey) {
+      return this._publicKey;
+    }
 
-  private async init() {
-    // TODO: add to the user session
-    console.debug('Getting user public key...');
-    this.publicKey = await getUserPublicKey();
-    console.debug('User public key:', this.publicKey);
+    const session = await getSession();
+    if (session && session.publicKey) {
+      this._publicKey = session.publicKey;
+      return this._publicKey;
+    }
+    throw new Error('User wallet address not found.');
   }
 
   public async swap(transaction: SwapTransaction) {
-    if (!this.publicKey) {
-      throw new Error('User wallet address not found.');
-    }
-
     const transactionRequest: ITransactionRequest = {
       maxAmountToSend: transaction.fromValue.toString(), // cry
       destinationAmount: transaction.toValue.toString(),
-      destination: this.publicKey,
+      destination: await this.publicKey(),
       sourceAssetCode: transaction.from,
       destinationAssetCode: transaction.to,
     };

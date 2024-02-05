@@ -5,8 +5,9 @@ import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'reac
 
 import { SIGNIN_ERROR_MESSAGE, SIGN_IN_FIELDS_ERROR } from '@/constants/errorMessages';
 import { signIn } from '@/services/auth';
-import { getAccessToken, saveSession } from '@/storage/helpers';
+import { getAccessToken, getSession, saveSession } from '@/storage/helpers';
 import { FormField } from '@/types/FormField';
+import { getUserPublicKey } from '@/services/emigro';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -36,6 +37,22 @@ const Login: React.FunctionComponent = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  const triggerUpdateUserPublicKey = async () => {
+    try {
+      // TODO: improve this workaround to update the session with the user public key
+      const publicKey = await getUserPublicKey();
+      const authSession = await getSession();
+      if (authSession) {
+        authSession.publicKey = publicKey;
+        saveSession(authSession);
+      } else {
+        console.warn('Failed to update user public key');
+      }
+    } catch (error) {
+      console.warn('Failed to get user public key:', error);
+    }
+  }
+
   const handleSignIn = async () => {
     setIsLoggingIn(true);
     try {
@@ -45,8 +62,9 @@ const Login: React.FunctionComponent = () => {
         return;
       }
       const authSession = await signIn(formData.email, formData.password);
-      await saveSession(authSession)
+      saveSession(authSession)
       setError('');
+      triggerUpdateUserPublicKey();
       const accessToken = await getAccessToken();
       accessToken && navigation?.navigate('Root' as never);
     } catch (error) {

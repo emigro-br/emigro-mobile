@@ -8,15 +8,18 @@ export const getAccessToken = async (): Promise<string | null> => {
   return accessToken;
 };
 
-export const saveSession = async (session: IAuthSession): Promise<void> => {
-  await SecureStore.setItemAsync('accessToken', session.accessToken);
-  await SecureStore.setItemAsync('refreshToken', session.refreshToken);
-  await SecureStore.setItemAsync('idToken', session.idToken);
+export const saveSession = (session: IAuthSession) => {
+  SecureStore.setItem('accessToken', session.accessToken);
+  SecureStore.setItem('refreshToken', session.refreshToken);
+  SecureStore.setItem('idToken', session.idToken);
   if (session.tokenExpirationDate) {
-    await SecureStore.setItemAsync('tokenExpirationDate', session.tokenExpirationDate.toString());
+    SecureStore.setItem('tokenExpirationDate', session.tokenExpirationDate.toString());
   }
   if (session.email) {
-    await SecureStore.setItemAsync('email', session.email);
+    SecureStore.setItem('email', session.email);
+  }
+  if (session.publicKey) {
+    SecureStore.setItem('publicKey', session.publicKey);
   }
 }
 
@@ -30,6 +33,7 @@ export const getSession = async (): Promise<IAuthSession | null> => {
   const idToken = await SecureStore.getItemAsync('idToken');
   const tokenExpirationDate = await SecureStore.getItemAsync('tokenExpirationDate');
   const email = await SecureStore.getItemAsync('email');
+  const publicKey = await SecureStore.getItemAsync('publicKey');
 
   if (!refreshToken || !idToken || !tokenExpirationDate) {
     throw new Error('Invalid session');
@@ -41,6 +45,7 @@ export const getSession = async (): Promise<IAuthSession | null> => {
     idToken,
     tokenExpirationDate: new Date(tokenExpirationDate),
     email,
+    publicKey,
   }
   return authSession;
 }
@@ -51,6 +56,7 @@ export const clearSession = async (): Promise<void> => {
   await SecureStore.deleteItemAsync('idToken');
   await SecureStore.deleteItemAsync('tokenExpirationDate');
   await SecureStore.deleteItemAsync('email');
+  await SecureStore.deleteItemAsync('publicKey');
 
   // https://stackoverflow.com/questions/46736268/react-native-asyncstorage-clear-is-failing-on-ios
   const asyncStorageKeys = await AsyncStorage.getAllKeys();
