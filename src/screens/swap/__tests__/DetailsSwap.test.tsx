@@ -4,7 +4,12 @@ import { NavigationContainer, NavigationProp, RouteProp } from '@react-navigatio
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AssetCode } from '@constants/assetCode';
 import { RootStackParamList } from '@navigation/index';
+import { SwapBloc } from '../bloc';
+import { IPaymentResponse } from '@/types/IPaymentResponse';
 
+jest.mock('@/services/emigro', () => ({
+  getUserPublicKey: jest.fn().mockReturnValue('mockedPublicKey'),
+}));
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +35,11 @@ describe('DetailsSwap', () => {
 
   beforeAll(() => {
     jest.useFakeTimers();
+    jest.spyOn(SwapBloc.prototype, 'swap').mockResolvedValue({ transactionHash: 'hash' } as IPaymentResponse);
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
   });
 
   it('renders correctly', () => {
@@ -68,6 +78,7 @@ describe('DetailsSwap', () => {
   });
 
   it('navigates on button press', async () => {
+
     const { getByText } = render(
       <NavigationContainer>
         <Stack.Navigator>
@@ -78,9 +89,15 @@ describe('DetailsSwap', () => {
 
     fireEvent.press(getByText('Swap EURC for BRL'));
 
+    const transaction = {
+      from: AssetCode.EURC,
+      fromValue: 100,
+      to: AssetCode.BRL,
+      toValue: 120,
+    };
+
     await waitFor(() => {
-      jest.runAllTimers();
-      expect(navigation.navigate).toBeCalledWith('Wallet');
+      expect(SwapBloc.prototype.swap).toBeCalledWith(transaction);
     });
   });
 });
