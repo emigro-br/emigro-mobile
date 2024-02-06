@@ -46,7 +46,7 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
         <Row label='Rate' value={`1 ${from} ≈ ${rate.toFixed(6)} ${to}`} />
         <Row label='Exchanged' value={`${toValue.toFixed(2)} ${to}`} />
         <Row label='Fees' value={fees} />
-        <Row label='Estimated' value={`${estimated.toFixed(2)} ${to}`} />
+        <Row label='Final receive' value={`${estimated.toFixed(2)} ${to}`} />
         <StyledText className="text-gray text-xs my-4">The final amount is estimated and may change.</StyledText>
         <Button backgroundColor="red" textColor="white" onPress={handlePress} loading={isLoading}>
           Swap {from} for {to}

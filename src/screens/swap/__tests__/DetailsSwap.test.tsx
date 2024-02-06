@@ -74,7 +74,7 @@ describe('DetailsSwap', () => {
     expect(getByText('0.01')).toBeTruthy();
 
     // fees is 0.01, so 100 EURC = 120 BRL - 0.01 = 119.99 BRL
-    expect(getByText('Estimated')).toBeTruthy();
+    expect(getByText('Final receive')).toBeTruthy();
     expect(getByText('119.99 BRL')).toBeTruthy();
 
     expect(getByText('The final amount is estimated and may change.')).toBeTruthy();

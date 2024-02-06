@@ -127,6 +127,7 @@ export const Swap = ({ navigation }: SwapProps) => {
   return (
     <StyledView className='bg-white h-full p-4'>
       <StyledText className='text-2xl font-bold mb-4'>Sell {sellAsset}</StyledText>
+      <StyledText className='text-gray text-xs mb-1'>You sell</StyledText>
       <AssetSwap
         asset={sellAsset}
         balance={BalanceStore.get(sellAsset)}
@@ -138,10 +139,11 @@ export const Swap = ({ navigation }: SwapProps) => {
         onPress={() => setActive(SwapType.SELL)}
       />
       <TouchableOpacity onPress={handleSwap}>
-        <StyledView className='items-center mb-4' testID='arrowIcon'>
+        <StyledView className='items-center mb-1' testID='arrowIcon'>
           <ArrowPathIcon size={24} color='red' />
         </StyledView>
       </TouchableOpacity>
+      <StyledText className='text-gray text-xs mb-1'>You buy</StyledText>
       <AssetSwap
         asset={buyAsset}
         balance={BalanceStore.get(buyAsset)}
