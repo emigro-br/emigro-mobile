@@ -99,6 +99,7 @@ export const AssetSwap = (props: AssetSwapProps) => {
   }));
 
   const fontColor = Number(value) > 0 ? 'text-black' : 'text-slate-500';
+  const hasBalance = props.sellOrBuy == SwapType.SELL && Number(value) > balance;
 
   return (
     <TouchableHighlight onPress={handlePress} underlayColor="transparent" testID="touchable">
@@ -128,7 +129,10 @@ export const AssetSwap = (props: AssetSwapProps) => {
             />
           </StyledView>
         </StyledView>
-        <StyledText className='text-gray text-xs'>Balance: {AssetCodeToSymbol[asset]} {Number(balance).toFixed(2)}</StyledText>
+        <StyledView className='flex-row justify-between'>
+          <StyledText className={`${hasBalance ? 'text-red' : 'text-gray'} text-xs`}>Balance: {AssetCodeToSymbol[asset]} {Number(balance).toFixed(2)}</StyledText>
+          {hasBalance && <StyledText className='text-red text-xs'>exceeds balance</StyledText>}
+        </StyledView>
       </Card>
     </TouchableHighlight>
   );

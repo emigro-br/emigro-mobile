@@ -124,6 +124,8 @@ export const Swap = ({ navigation }: SwapProps) => {
     navigation.navigate('DetailsSwap');
   }
 
+  const isButtonEnabled = () => sellValue > 0 && sellValue <= BalanceStore.get(sellAsset) && buyValue > 0
+
   return (
     <StyledView className='bg-white h-full p-4'>
       <StyledText className='text-2xl font-bold mb-4'>Sell {sellAsset}</StyledText>
@@ -155,7 +157,7 @@ export const Swap = ({ navigation }: SwapProps) => {
         onPress={() => setActive(SwapType.BUY)}
       />
       <StyledText className='text-gray text-xs mb-4'>1 {sellAsset} ≈ {rate?.toFixed(6)} {buyAsset}</StyledText>
-      <Button backgroundColor='red' textColor='white' onPress={handlePress} disabled={!sellValue && !buyValue}>Review order</Button>
+      <Button backgroundColor='red' textColor='white' onPress={handlePress} disabled={!isButtonEnabled()}>Review order</Button>
     </StyledView>
   );
 };

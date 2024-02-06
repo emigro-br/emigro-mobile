@@ -5,6 +5,7 @@ import { AssetCode } from '@constants/assetCode';
 import * as emigroService from '@/services/emigro';
 import { NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '@navigation/index';
+import BalanceStore from '@/stores/BalanceStore';
 import bloc from '../bloc';
 
 jest.mock('@/services/emigro', () => ({
@@ -55,6 +56,7 @@ describe('Swap component', () => {
 
   test('Should update bloc and navigate to DetailsSwap when button is pressed', async () => {
     const spy = jest.spyOn(bloc, 'setTransaction');
+    jest.spyOn(BalanceStore, 'get').mockReturnValue(100); // enough balance
 
     const { getByText, findAllByPlaceholderText } = render(<Swap navigation={navigation} />);
 
