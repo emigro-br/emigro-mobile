@@ -50,7 +50,8 @@ const Operation: React.FunctionComponent = () => {
   const [selectedAsset, setSelectedAsset] = useState<AssetCode | null>(null);
   const assets = Object.values(AssetCode);
   const filteredAssets = assets.filter((asset) => !['USDC', 'EURC'].includes(asset));
-  const [intervalId, setIntervalId] = useState<NodeJS.Timeout>(); // see: https://code.pieces.app/blog/resolving-react-setinterval-conflicts
+  // TODO: replace by useRef: https://react.dev/reference/react/useRef
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>(); // see: https://code.pieces.app/blog/resolving-react-setinterval-conflicts
 
   useEffect(() => {
     const getUserPublicKeyAsync = async () => {
@@ -87,7 +88,7 @@ const Operation: React.FunctionComponent = () => {
     };
 
     try {
-      //TODO: webview change navigation thwors error for CallbackType.CALLBACK_URL 
+      //TODO: webview change navigation thwors error for CallbackType.CALLBACK_URL
       const { url, id } = await getInteractiveUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
 
       if (id) {
@@ -149,7 +150,7 @@ const Operation: React.FunctionComponent = () => {
   // Stopping the interval
   const stopFetchingTransaction = (status: TransactionStatus) => {
     console.debug('Stopping the fetch transaction. Status: ', status);
-    clearInterval(intervalId);
+    clearTimeout(timeoutId);
   };
 
   const waitWithdrawOnAnchorComplete = async (transactionId: string, assetCode: AssetCode) => {
@@ -177,8 +178,8 @@ const Operation: React.FunctionComponent = () => {
 
       // check again in few seconds
       console.log('Sleeping...');
-      const intervalId = setInterval(() => waitWithdrawOnAnchorComplete(transactionId, assetCode), 5000);
-      setIntervalId(intervalId);
+      const timeoutId = setTimeout(() => waitWithdrawOnAnchorComplete(transactionId, assetCode), 5000);
+      setTimeoutId(timeoutId);
     } catch (error) {
       stopFetchingTransaction(TransactionStatus.ERROR); // clean up
       console.error('Error getting transaction', error);
