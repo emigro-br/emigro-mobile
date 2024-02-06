@@ -1,10 +1,20 @@
-name: update
-# on: push
+name: Expo Pull Request Preview
+on:
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'app.json'
+      - '**/*.js'
+      - '**/*.ts'
+      - '**/*.tsx'
 
 jobs:
   update:
     name: EAS Update
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Check for EXPO_TOKEN
         run: |
@@ -15,6 +25,11 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Make envfile
+        uses: SpicyPizza/create-envfile@v2.0
+        with:
+          envkey_EXPO_PUBLIC_BACKEND_URL: "https://api.emigro.co"
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -31,5 +46,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Publish update
-        run: eas update --auto
+      - name: Create preview
+        uses: expo/expo-github-action/preview@v8
+        with:
+          command: eas update --auto --branch ${{ github.event.pull_request.head.ref }}

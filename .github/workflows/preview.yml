@@ -1,52 +1,26 @@
-name: preview
-on: 
-  pull_request:
-    paths:
-      - 'package.json'
-      - 'app.json'
-      - '**/*.js'
-      - '**/*.ts'
-      - '**/*.tsx'
+name: EAS Build
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - preview
 
 jobs:
-  update:
-    name: EAS Update
+  build:
+    name: Install and build
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
     steps:
-      - name: Check for EXPO_TOKEN
-        run: |
-          if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
-            echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
-            exit 1
-          fi
-
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Make envfile
-        uses: SpicyPizza/create-envfile@v2.0
-        with:
-          envkey_EXPO_PUBLIC_BACKEND_URL: "https://api.emigro.co"
-          
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: 18.x
           cache: npm
-
-      - name: Setup EAS
+      - name: Setup Expo and EAS
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
-
       - name: Install dependencies
         run: npm ci
-
-      - name: Create preview
-        uses: expo/expo-github-action/preview@v8
-        with:
-          command: eas update --auto --branch ${{ github.event.pull_request.head.ref }}
+      - name: Build on EAS
+        run: eas build --platform all --profile preview --non-interactive --no-wait --auto-submit
