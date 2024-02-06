@@ -97,4 +97,22 @@ describe('DetailsSwap', () => {
       expect(bloc.swap).toBeCalled();
     });
   });
+
+  it('shows error message', async () => {
+    jest.spyOn(bloc, 'swap').mockRejectedValue(new Error('error message'));
+
+    const { getByText } = render(
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="DetailsSwap" component={DetailsSwapScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+
+    fireEvent.press(getByText('Swap EURC for BRL'));
+
+    await waitFor(() => {
+      expect(getByText('error message')).toBeTruthy();
+    });
+  });
 });
