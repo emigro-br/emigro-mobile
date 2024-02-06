@@ -91,7 +91,7 @@ export const AssetSwap = (props: AssetSwapProps) => {
   }
 
 
-  const filteredAssets = Object.values(AssetCode).filter((asset) => !['USD', 'EUR'].includes(asset)); //FIXME: break up assets from curencies
+  const filteredAssets = Object.values(AssetCode).filter((asset) => !['XLM', 'USD', 'EUR'].includes(asset)); //FIXME: break up assets from curencies
 
   const data = filteredAssets.map((asset) => ({
     label: asset,
