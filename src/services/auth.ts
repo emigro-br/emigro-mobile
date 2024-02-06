@@ -3,10 +3,10 @@ import { IRegisterResponse } from '@/types/IRegisterResponse';
 import { IAuthSession } from '@/types/IAuthSession';
 
 import { Role } from '@constants/constants';
-import { 
-  CONFIRM_ACCOUNT_ERROR, 
-  REFRESH_SESSION_ERROR, 
-  SIGNIN_ERROR_MESSAGE, 
+import {
+  CONFIRM_ACCOUNT_ERROR,
+  REFRESH_SESSION_ERROR,
+  SIGNIN_ERROR_MESSAGE,
   SIGNUP_ERROR_MESSAGE,
 } from '@constants/errorMessages';
 
@@ -15,7 +15,7 @@ const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 export const signIn = async (email: string, password: string): Promise<IAuthSession> => {
   const signInUrl = `${backendUrl}/auth/login`;
   try {
-    const response = await fetch(signInUrl, {
+    const res = await fetch(signInUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -26,16 +26,22 @@ export const signIn = async (email: string, password: string): Promise<IAuthSess
         role: Role.CUSTOMER,
       }),
     });
-    const { 
-      accessToken, 
-      refreshToken, 
-      idToken, 
-      tokenExpirationDate, 
-      message 
-    } = await response.json();
-    if (message) {
-      throw new Error(message);
+
+    const json = await res.json();
+    if (!res.ok) {
+      throw new Error(res.statusText);
     }
+
+    if (json.message) {
+      throw new Error(json.message);
+    }
+
+    const {
+      accessToken,
+      refreshToken,
+      idToken,
+      tokenExpirationDate,
+    } = json;
 
     const session: IAuthSession = {
       accessToken,
@@ -96,16 +102,20 @@ export const refresh = async (authSession: IAuthSession): Promise<IAuthSession> 
     });
     const json = await response.json();
 
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+
     if (json.message) {
       throw new Error(json.message);
     }
 
-    const { 
+    const {
       accessToken,
       refreshToken,
       idToken,
       tokenExpirationDate,
-     } = json;
+    } = json;
 
     const session: IAuthSession = {
       accessToken,

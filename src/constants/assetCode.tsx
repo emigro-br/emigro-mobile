@@ -1,4 +1,5 @@
 export enum AssetCode {
+  XLM = 'XLM',
   USDC = 'USDC',
   EURC = 'EURC',
   EUR = 'EUR',
@@ -9,6 +10,7 @@ export enum AssetCode {
 
 // TODO: check formatAssetCode() function
 export const AssetCodeToName = {
+  [AssetCode.XLM]: 'Stellar Lumens',
   [AssetCode.USDC]: 'USD Coin',
   [AssetCode.EURC]: 'Euro Coin',
   [AssetCode.EUR]: 'Euro',
@@ -18,6 +20,7 @@ export const AssetCodeToName = {
 };
 
 export const AssetCodeToSymbol = {
+  [AssetCode.XLM]: 'XLM',
   [AssetCode.USDC]: '$',
   [AssetCode.EURC]: '€',
   [AssetCode.EUR]: '€',

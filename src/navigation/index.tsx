@@ -8,6 +8,9 @@ import ConfirmAccount from '@screens/welcome/ConfirmAccount';
 import CreateAccount from '@screens/welcome/CreateAccount';
 import Login from '@screens/welcome/Login';
 import { Welcome } from '@screens/welcome/Welcome';
+import { Swap } from '@screens/swap/Swap';
+import { DetailsSwap } from '@screens/swap/DetailsSwap';
+import { AssetCode } from '@constants/assetCode';
 
 export type RootStackParamList = {
   Welcome: undefined;
@@ -19,6 +22,8 @@ export type RootStackParamList = {
   Wallet: undefined;
   ConfirmAccount: undefined;
   Operation: undefined;
+  Swap: undefined;
+  DetailsSwap: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -44,6 +49,8 @@ function RootNavigator(props: RootNavigatorProps) {
       <Stack.Screen name="SignUp" component={CreateAccount} options={{ headerTitle: 'Create Account' }} />
       <Stack.Screen name="Login" component={Login} options={{ headerTitle: 'Login' }} />
       <Stack.Screen name="ConfirmAccount" component={ConfirmAccount} options={{ headerTitle: 'Confirm Account' }} />
+      <Stack.Screen name="Swap" component={Swap} options={{ headerShown: true }} />
+      <Stack.Screen name="DetailsSwap" component={DetailsSwap} options={{ headerTitle: 'Confirm Swap' }} />
     </Stack.Navigator>
   );
 }

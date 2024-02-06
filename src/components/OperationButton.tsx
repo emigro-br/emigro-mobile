@@ -5,6 +5,7 @@ import { View } from 'react-native';
 import Button from '@components/Button';
 
 import { OperationType } from '@constants/constants';
+import { useNavigation } from '@react-navigation/native';
 
 const StyledView = styled(View);
 
@@ -13,6 +14,7 @@ export interface OperationButtonProps {
 }
 
 const OperationButton: FunctionComponent<OperationButtonProps> = ({ onPress }) => {
+  const navigation = useNavigation();
   const handleOnPress = (operationType: OperationType) => {
     onPress(operationType);
   };
@@ -24,6 +26,9 @@ const OperationButton: FunctionComponent<OperationButtonProps> = ({ onPress }) =
       </Button>
       <Button textColor="white" backgroundColor="red" onPress={() => handleOnPress(OperationType.WITHDRAW)}>
         Withdraw
+      </Button>
+      <Button textColor="white" backgroundColor="red" onPress={() => navigation.navigate('Swap' as never)}>
+        Swap
       </Button>
     </StyledView>
   );

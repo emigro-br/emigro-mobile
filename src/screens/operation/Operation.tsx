@@ -8,7 +8,7 @@ import { getInteractiveUrl, confirmWithdraw, ConfirmWithdrawDto, CallbackType, g
 import { getUserPublicKey } from '@/services/emigro';
 import { getAssetCode } from '@/stellar/utils';
 import { getAccessToken } from '@/storage/helpers';
-import { useOperationStore } from '@/store/operationStore';
+import { useOperationStore } from '@/stores/operationStore';
 import { getAssetIcon } from '@/utils/getAssetIcon';
 import { AssetCode } from '@constants/assetCode';
 import { ErrorModal } from './modals/ErrorModal';
