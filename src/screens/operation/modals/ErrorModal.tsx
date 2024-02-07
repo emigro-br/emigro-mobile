@@ -1,8 +1,10 @@
-import { styled } from 'nativewind';
 import React from 'react';
 import { Text, View } from 'react-native';
-import CustomModal from '@components/CustomModal';
+
+import { styled } from 'nativewind';
+
 import Button from '@components/Button';
+import CustomModal from '@components/CustomModal';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);

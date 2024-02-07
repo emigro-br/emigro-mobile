@@ -1,11 +1,15 @@
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import { DetailsSwap } from '../DetailsSwap';
-import { NavigationContainer, NavigationProp, RouteProp } from '@react-navigation/native';
+import { NavigationContainer, NavigationProp } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { AssetCode } from '@constants/assetCode';
-import { RootStackParamList } from '@navigation/index';
-import bloc from '../bloc';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+
 import { IPaymentResponse } from '@/types/IPaymentResponse';
+
+import { AssetCode } from '@constants/assetCode';
+
+import { RootStackParamList } from '@navigation/index';
+
+import { DetailsSwap } from '../DetailsSwap';
+import bloc from '../bloc';
 
 jest.mock('@/services/emigro', () => ({
   getUserPublicKey: jest.fn().mockReturnValue('mockedPublicKey'),
@@ -14,11 +18,6 @@ jest.mock('@/services/emigro', () => ({
 const Stack = createNativeStackNavigator();
 
 describe('DetailsSwap', () => {
-  const route: RouteProp<RootStackParamList, 'DetailsSwap'> = {
-    key: 'DetailsSwap',
-    name: 'DetailsSwap',
-  };
-
   const navigation = {
     navigate: jest.fn(),
   } as unknown as NavigationProp<RootStackParamList, 'DetailsSwap'>;
@@ -52,7 +51,7 @@ describe('DetailsSwap', () => {
         <Stack.Navigator>
           <Stack.Screen name="DetailsSwap" component={DetailsSwapScreen} />
         </Stack.Navigator>
-      </NavigationContainer>
+      </NavigationContainer>,
     );
 
     expect(getByText('Confirm Swap')).toBeTruthy();
@@ -82,13 +81,12 @@ describe('DetailsSwap', () => {
   });
 
   it('navigates on button press', async () => {
-
     const { getByText } = render(
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen name="DetailsSwap" component={DetailsSwapScreen} />
         </Stack.Navigator>
-      </NavigationContainer>
+      </NavigationContainer>,
     );
 
     fireEvent.press(getByText('Swap EURC for BRL'));
@@ -106,7 +104,7 @@ describe('DetailsSwap', () => {
         <Stack.Navigator>
           <Stack.Screen name="DetailsSwap" component={DetailsSwapScreen} />
         </Stack.Navigator>
-      </NavigationContainer>
+      </NavigationContainer>,
     );
 
     fireEvent.press(getByText('Swap EURC for BRL'));

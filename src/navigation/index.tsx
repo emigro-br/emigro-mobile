@@ -1,16 +1,15 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import BottomTabNavigator from './BottomTabNavigator';
-
 import ConfirmPayment from '@screens/ConfirmPayment';
 import Operation from '@screens/operation/Operation';
+import { DetailsSwap } from '@screens/swap/DetailsSwap';
+import { Swap } from '@screens/swap/Swap';
 import ConfirmAccount from '@screens/welcome/ConfirmAccount';
 import CreateAccount from '@screens/welcome/CreateAccount';
 import Login from '@screens/welcome/Login';
 import { Welcome } from '@screens/welcome/Welcome';
-import { Swap } from '@screens/swap/Swap';
-import { DetailsSwap } from '@screens/swap/DetailsSwap';
-import { AssetCode } from '@constants/assetCode';
+
+import BottomTabNavigator from './BottomTabNavigator';
 
 export type RootStackParamList = {
   Welcome: undefined;

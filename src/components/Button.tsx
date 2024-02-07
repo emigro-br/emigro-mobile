@@ -1,6 +1,7 @@
-import { styled } from 'nativewind';
 import React from 'react';
 import { ActivityIndicator, Text, TouchableOpacity } from 'react-native';
+
+import { styled } from 'nativewind';
 
 interface ButtonProps {
   backgroundColor?: string;

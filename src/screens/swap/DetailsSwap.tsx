@@ -1,17 +1,19 @@
-import { styled } from "nativewind";
-import React, {useState } from 'react';
-import { View, Text } from 'react-native';
-import { NavigationProp } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { Text, View } from 'react-native';
 
-import Button from "@components/Button";
-import { Card } from "@components/Card";
-import { RootStackParamList } from "@navigation/index";
-import bloc from "./bloc";
-import { ErrorModal } from "@screens/operation/modals/ErrorModal";
+import { styled } from 'nativewind';
+
+import Button from '@components/Button';
+import { Card } from '@components/Card';
+
+import { RootStackParamList } from '@navigation/index';
+
+import { ErrorModal } from '@screens/operation/modals/ErrorModal';
+
+import bloc from './bloc';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
-
 
 interface DetailsSwapProps {
   navigation: NavigationProp<RootStackParamList>;
@@ -42,7 +44,7 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <>
@@ -50,11 +52,11 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
       <StyledView className="h-full p-4">
         <Card>
           <StyledText className="text-lg font-bold mb-6">Confirm Swap</StyledText>
-          <Row label='Amount' value={`${fromValue.toFixed(2)} ${from}`} />
-          <Row label='Rate' value={`1 ${from} ≈ ${rate.toFixed(6)} ${to}`} />
-          <Row label='Exchanged' value={`${toValue.toFixed(2)} ${to}`} />
-          <Row label='Fees' value={fees} />
-          <Row label='Final receive' value={`${estimated.toFixed(2)} ${to}`} />
+          <Row label="Amount" value={`${fromValue.toFixed(2)} ${from}`} />
+          <Row label="Rate" value={`1 ${from} ≈ ${rate.toFixed(6)} ${to}`} />
+          <Row label="Exchanged" value={`${toValue.toFixed(2)} ${to}`} />
+          <Row label="Fees" value={fees} />
+          <Row label="Final receive" value={`${estimated.toFixed(2)} ${to}`} />
           <StyledText className="text-gray text-xs my-4">The final amount is estimated and may change.</StyledText>
           <Button backgroundColor="red" textColor="white" onPress={handlePress} loading={isLoading}>
             Swap {from} for {to}
@@ -63,7 +65,7 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
       </StyledView>
     </>
   );
-}
+};
 
 interface RowProps {
   label: string;

@@ -1,7 +1,8 @@
-import { styled } from 'nativewind';
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+
+import { styled } from 'nativewind';
 
 import { useVendor } from '@/contexts/VendorContext';
 

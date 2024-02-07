@@ -1,5 +1,6 @@
-import { styled } from 'nativewind';
 import { Image, Text, View } from 'react-native';
+
+import { styled } from 'nativewind';
 
 import { IBalance } from '@/types/IBalance';
 import { getAssetIcon } from '@/utils/getAssetIcon';
@@ -18,7 +19,7 @@ const Balance: React.FunctionComponent<BalanceProps> = ({ userBalance }) => {
     <StyledView className="flex items-center h-full">
       <StyledText className="w-full text-left text-xl font-medium mb-2">Accounts</StyledText>
       {userBalance?.map(({ balance, assetCode }, index) => {
-        let asset: AssetCode = AssetCode[assetCode as keyof typeof AssetCode];
+        const asset: AssetCode = AssetCode[assetCode as keyof typeof AssetCode];
         return (
           <StyledView
             key={index}
@@ -26,12 +27,11 @@ const Balance: React.FunctionComponent<BalanceProps> = ({ userBalance }) => {
           >
             <StyledView className="flex-row gap-2">
               <Image source={getAssetIcon(assetCode)} style={{ width: 30, height: 30 }} />
-              <StyledText className="font-bold text-lg">
-                {AssetCodeToName[asset]}
-              </StyledText>
+              <StyledText className="font-bold text-lg">{AssetCodeToName[asset]}</StyledText>
             </StyledView>
-            <StyledText className="text-base">{AssetCodeToSymbol[asset]} {Number(balance).toFixed(2)}</StyledText>
-            
+            <StyledText className="text-base">
+              {AssetCodeToSymbol[asset]} {Number(balance).toFixed(2)}
+            </StyledText>
           </StyledView>
         );
       })}

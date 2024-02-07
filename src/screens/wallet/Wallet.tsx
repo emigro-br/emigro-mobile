@@ -1,14 +1,17 @@
-import { styled } from 'nativewind';
 import React, { useState } from 'react';
-import { observer } from "mobx-react";
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { RefreshControl, ScrollView, View } from 'react-native';
+
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { observer } from 'mobx-react-lite';
+import { styled } from 'nativewind';
+
+import BalanceStore from '@/stores/BalanceStore';
+import { useOperationStore } from '@/stores/operationStore';
 
 import Balance from '@components/Balance';
 import OperationButton from '@components/OperationButton';
+
 import { OperationType } from '@constants/constants';
-import { useOperationStore } from '@/stores/operationStore';
-import BalanceStore from '@/stores/BalanceStore';
 
 const StyledScrollView = styled(ScrollView);
 const StyledView = styled(View);
@@ -26,7 +29,7 @@ const Wallet: React.FunctionComponent = observer(() => {
   useFocusEffect(
     React.useCallback(() => {
       BalanceStore.fetchUserBalance();
-    }, [])
+    }, []),
   );
 
   const onRefresh = React.useCallback(async () => {
@@ -40,10 +43,9 @@ const Wallet: React.FunctionComponent = observer(() => {
 
   return (
     <StyledScrollView
-      className='flex-1 bg-white'
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} title='Refreshing...' />
-      }>
+      className="flex-1 bg-white"
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} title="Refreshing..." />}
+    >
       <StyledView className="flex items-center">
         <StyledView className="px-4 py-8">
           <OperationButton onPress={handleOnPress} />

@@ -1,12 +1,13 @@
-import { styled } from 'nativewind';
 import React from 'react';
 import { Linking, Text, View } from 'react-native';
-import CustomModal from '@components/CustomModal';
+
+import { styled } from 'nativewind';
+
 import Button from '@components/Button';
+import CustomModal from '@components/CustomModal';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
-
 
 type SuccessModalProps = {
   isVisible: boolean;
@@ -20,7 +21,13 @@ export const SuccessModal: React.FunctionComponent<SuccessModalProps> = ({ isVis
       <StyledView className="flex flex-col justify-center items-center">
         <StyledText className="text-2xl font-bold text-center mb-4">Transaction successful!</StyledText>
         <StyledText className="text-center mb-4">
-          You can check the status of your transaction in the <Text style={{ color: '#1D4ED8' }} onPress={() => Linking.openURL(`https://stellar.expert/explorer/public/account/${publicKey}`)}>Stellar explorer</Text>
+          You can check the status of your transaction in the{' '}
+          <Text
+            style={{ color: '#1D4ED8' }}
+            onPress={() => Linking.openURL(`https://stellar.expert/explorer/public/account/${publicKey}`)}
+          >
+            Stellar explorer
+          </Text>
         </StyledText>
         <Button onPress={onClose} backgroundColor="red" textColor="white">
           <Text>Close</Text>

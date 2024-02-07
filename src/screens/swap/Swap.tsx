@@ -1,25 +1,29 @@
-
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { NavigationProp } from '@react-navigation/native';
-import Button from '@/components/Button';
-import { AssetCode } from '@constants/assetCode';
-import { styled } from 'nativewind';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { ArrowPathIcon } from 'react-native-heroicons/solid';
-import { AssetSwap } from './AssetSwap';
-import { SwapType } from './types';
+
+import { NavigationProp } from '@react-navigation/native';
+import { styled } from 'nativewind';
+
+import Button from '@/components/Button';
+import { handleQuote } from '@/services/emigro';
 import BalanceStore from '@/stores/BalanceStore';
 import { IQuoteRequest } from '@/types/IQuoteRequest';
-import { handleQuote } from '@/services/emigro';
+
+import { AssetCode } from '@constants/assetCode';
+
 import { RootStackParamList } from '@navigation/index';
+
+import { AssetSwap } from './AssetSwap';
 import bloc, { SwapTransaction } from './bloc';
+import { SwapType } from './types';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
 
 type SwapProps = {
   navigation: NavigationProp<RootStackParamList>;
-}
+};
 
 export const Swap = ({ navigation }: SwapProps) => {
   const [active, setActive] = useState<SwapType>(SwapType.SELL);
@@ -41,7 +45,7 @@ export const Swap = ({ navigation }: SwapProps) => {
     if (isNaN(rate)) return;
     setRate(rate);
     return rate;
-  }
+  };
 
   useEffect(() => {
     fetchRate();
@@ -54,7 +58,7 @@ export const Swap = ({ navigation }: SwapProps) => {
     } else {
       setBuyValue(value);
     }
-  }
+  };
 
   const onChangeAsset = (asset: AssetCode, type: SwapType) => {
     if (type === SwapType.SELL) {
@@ -68,25 +72,27 @@ export const Swap = ({ navigation }: SwapProps) => {
       }
       setBuyAsset(asset);
     }
-  }
+  };
 
   useEffect(() => {
     if (!rate) return;
 
-    const calculateNewSellValue = (buyValue: number) => buyValue / rate
-    const calculateNewBuyValue = (sellValue: number) => sellValue * rate
+    const calculateNewSellValue = (buyValue: number) => buyValue / rate;
+    const calculateNewBuyValue = (sellValue: number) => sellValue * rate;
 
     switch (active) {
-      case SwapType.SELL:
+      case SwapType.SELL: {
         // Update buyValue based on sellValue
         const newBuyValue = calculateNewBuyValue(sellValue);
         setBuyValue(newBuyValue);
         break;
-      case SwapType.BUY:
+      }
+      case SwapType.BUY: {
         // Update sellValue based on buyValue
         const newSellValue = calculateNewSellValue(buyValue);
-        setSellValue(newSellValue)
+        setSellValue(newSellValue);
         break;
+      }
       default:
         break;
     }
@@ -109,7 +115,7 @@ export const Swap = ({ navigation }: SwapProps) => {
     if (rate) {
       setRate(1 / rate);
     }
-  }
+  };
 
   const handlePress = () => {
     const transaction: SwapTransaction = {
@@ -122,14 +128,14 @@ export const Swap = ({ navigation }: SwapProps) => {
     };
     bloc.setTransaction(transaction);
     navigation.navigate('DetailsSwap');
-  }
+  };
 
-  const isButtonEnabled = () => sellValue > 0 && sellValue <= BalanceStore.get(sellAsset) && buyValue > 0
+  const isButtonEnabled = () => sellValue > 0 && sellValue <= BalanceStore.get(sellAsset) && buyValue > 0;
 
   return (
-    <StyledView className='bg-white h-full p-4'>
-      <StyledText className='text-2xl font-bold mb-4'>Sell {sellAsset}</StyledText>
-      <StyledText className='text-gray text-xs mb-1'>You sell</StyledText>
+    <StyledView className="bg-white h-full p-4">
+      <StyledText className="text-2xl font-bold mb-4">Sell {sellAsset}</StyledText>
+      <StyledText className="text-gray text-xs mb-1">You sell</StyledText>
       <AssetSwap
         asset={sellAsset}
         balance={BalanceStore.get(sellAsset)}
@@ -141,11 +147,11 @@ export const Swap = ({ navigation }: SwapProps) => {
         onPress={() => setActive(SwapType.SELL)}
       />
       <TouchableOpacity onPress={handleSwap}>
-        <StyledView className='items-center mb-1' testID='arrowIcon'>
-          <ArrowPathIcon size={24} color='red' />
+        <StyledView className="items-center mb-1" testID="arrowIcon">
+          <ArrowPathIcon size={24} color="red" />
         </StyledView>
       </TouchableOpacity>
-      <StyledText className='text-gray text-xs mb-1'>You buy</StyledText>
+      <StyledText className="text-gray text-xs mb-1">You buy</StyledText>
       <AssetSwap
         asset={buyAsset}
         balance={BalanceStore.get(buyAsset)}
@@ -156,8 +162,12 @@ export const Swap = ({ navigation }: SwapProps) => {
         isActive={active === SwapType.BUY}
         onPress={() => setActive(SwapType.BUY)}
       />
-      <StyledText className='text-gray text-xs mb-4'>1 {sellAsset} ≈ {rate?.toFixed(6)} {buyAsset}</StyledText>
-      <Button backgroundColor='red' textColor='white' onPress={handlePress} disabled={!isButtonEnabled()}>Review order</Button>
+      <StyledText className="text-gray text-xs mb-4">
+        1 {sellAsset} ≈ {rate?.toFixed(6)} {buyAsset}
+      </StyledText>
+      <Button backgroundColor="red" textColor="white" onPress={handlePress} disabled={!isButtonEnabled()}>
+        Review order
+      </Button>
     </StyledView>
   );
 };

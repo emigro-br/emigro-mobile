@@ -1,7 +1,8 @@
-import { useNavigation } from '@react-navigation/native';
-import { styled } from 'nativewind';
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
+
+import { useNavigation } from '@react-navigation/native';
+import { styled } from 'nativewind';
 
 import emigroLogo from '@assets/images/emigro-logo.png';
 
@@ -20,7 +21,6 @@ export const Welcome: React.FunctionComponent = () => {
         <StyledText className="text-2xl text-center text-white font-bold mb-2">The Travelers Digital Wallet</StyledText>
         <StyledText className="text-lg text-white text-center">Instant cross-border retail payments</StyledText>
       </StyledView>
-
 
       <StyledView className="bg-transparent border border-red rounded-md mx-4 mt-10 mb-4">
         <TouchableOpacity onPress={() => navigation.navigate('Login' as never)}>

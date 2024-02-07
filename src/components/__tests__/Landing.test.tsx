@@ -1,13 +1,14 @@
+import React from 'react';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { render } from '@testing-library/react-native';
-import React from 'react';
+
+import RootNavigator from '@navigation/index';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 jest.mock('expo-camera/next');
 jest.mock('expo-clipboard');
-
-import RootNavigator from '@navigation/index';
-
+jest.mock('mobx-react-lite');
 
 describe('Landing component', () => {
   test('Should render Landing component correctly', () => {

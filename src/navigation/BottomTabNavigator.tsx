@@ -1,8 +1,9 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { styled } from 'nativewind';
 import { View } from 'react-native';
 import * as IconsOutline from 'react-native-heroicons/outline';
 import * as IconsSolid from 'react-native-heroicons/solid';
+
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { styled } from 'nativewind';
 
 import Header from '@components/Header';
 
@@ -17,7 +18,6 @@ export type TabNavParamList = {
   Location: undefined;
   Profile: undefined;
 };
-
 
 const BottomTab = createBottomTabNavigator<TabNavParamList>();
 const enableLocation = false;
@@ -76,25 +76,25 @@ const BottomTabNavigator = () => {
       />
       {enableLocation && (
         <BottomTab.Screen
-        name="Location"
-        component={Location}
-        options={() => ({
-          title: 'Location',
-          tabBarIcon: ({ focused }) =>
-          focused ? (
-            <StyledView className="h-full border-t-2 border-red w-full justify-center items-center">
-                <StyledView className="mt-1">
-                  <IconsSolid.MapIcon size={24} color="red" />
+          name="Location"
+          component={Location}
+          options={() => ({
+            title: 'Location',
+            tabBarIcon: ({ focused }) =>
+              focused ? (
+                <StyledView className="h-full border-t-2 border-red w-full justify-center items-center">
+                  <StyledView className="mt-1">
+                    <IconsSolid.MapIcon size={24} color="red" />
+                  </StyledView>
                 </StyledView>
-              </StyledView>
-            ) : (
-              <StyledView className="mt-1">
-                <IconsOutline.MapIcon size={24} color="grey" />
-              </StyledView>
-            ),
+              ) : (
+                <StyledView className="mt-1">
+                  <IconsOutline.MapIcon size={24} color="grey" />
+                </StyledView>
+              ),
             header: () => <Header />,
           })}
-          />
+        />
       )}
       <BottomTab.Screen
         name="Profile"

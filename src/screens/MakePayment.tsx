@@ -1,20 +1,21 @@
-import { styled } from 'nativewind';
 import React, { useState } from 'react';
 import { Image, View } from 'react-native';
 
-import qrImage from '../assets/images/qr-code.png';
+import { styled } from 'nativewind';
 
 import Button from '@components/Button';
 import QRCodeScanner from '@components/QRCodeScanner';
+
 import { RootStackParamList } from '@navigation/index';
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+
+import qrImage from '../assets/images/qr-code.png';
 
 const StyledView = styled(View);
 const StyledImage = styled(Image);
 
 type MakePaymentProps = BottomTabScreenProps<RootStackParamList, 'MakePayment'>;
 
-const MakePayment: React.FunctionComponent<MakePaymentProps> = ({navigation}) => {
+const MakePayment: React.FunctionComponent<MakePaymentProps> = ({ navigation }) => {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   const handleScanPress = () => {
@@ -27,10 +28,7 @@ const MakePayment: React.FunctionComponent<MakePaymentProps> = ({navigation}) =>
 
   if (isScannerOpen) {
     return (
-        <QRCodeScanner 
-          onCancel={handleCancelPress} 
-          onProceedToPayment={() => navigation.navigate('ConfirmPayment')}
-        />
+      <QRCodeScanner onCancel={handleCancelPress} onProceedToPayment={() => navigation.navigate('ConfirmPayment')} />
     );
   }
 

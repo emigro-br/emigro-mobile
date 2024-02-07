@@ -1,11 +1,12 @@
-import { styled } from 'nativewind';
-import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, ScrollView, Text, View } from 'react-native';
+
+import { useNavigation } from '@react-navigation/native';
 import * as Application from 'expo-application';
-import { clearSession } from '@/storage/helpers';
+import { styled } from 'nativewind';
 
 import { NotAuhtorized, getUserProfile } from '@/services/emigro';
+import { clearSession } from '@/storage/helpers';
 
 import profileLogo from '@assets/images/profile-icon.png';
 
@@ -22,7 +23,6 @@ const Profile = () => {
     await clearSession();
     navigation.navigate('Welcome' as never);
   };
-
 
   useEffect(() => {
     const fetchUserInformation = async () => {
@@ -50,7 +50,7 @@ const Profile = () => {
   }
 
   return (
-    <StyledScrollView className='bg-white h-full'>
+    <StyledScrollView className="bg-white h-full">
       <StyledView className="flex items-center pt-8 px-4">
         <StyledView className="mb-8">
           <StyledImage source={profileLogo} className="h-32 w-32" />
@@ -77,17 +77,16 @@ const Profile = () => {
           <StyledView className="flex flex-row items-center">
             <StyledText className="text-lg">{userInformation.address}</StyledText>
           </StyledView>
-
         </StyledView>
 
-        
         <StyledView className="flex items-center pt-8 mb-2">
           <StyledText className="text-red text-lg py-2" onPress={handleLogout}>
             Log out
           </StyledText>
-          <StyledText className="text-lightGray">ver. {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})</StyledText>
+          <StyledText className="text-lightGray">
+            ver. {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})
+          </StyledText>
         </StyledView>
-
       </StyledView>
     </StyledScrollView>
   );

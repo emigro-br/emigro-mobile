@@ -1,8 +1,8 @@
+import React from 'react';
+import { Image, TouchableOpacity, View } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
-import React from 'react';
-import { Image, TouchableOpacity, View } from 'react-native';
 
 import emigroLogo from '@assets/images/emigro-logo.png';
 

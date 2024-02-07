@@ -1,4 +1,5 @@
-import { render, fireEvent } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
+
 import Button from '../Button';
 
 describe('Button', () => {
@@ -21,7 +22,7 @@ describe('Button', () => {
 
   it('shows a loading indicator and hide text when loading', () => {
     const { getByTestId, queryByText } = render(<Button title="Test Button" loading />);
-    expect(getByTestId('loading-indicator')).toBeTruthy()
+    expect(getByTestId('loading-indicator')).toBeTruthy();
     expect(queryByText('Test Button')).toBeNull();
   });
 });

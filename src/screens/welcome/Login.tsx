@@ -1,13 +1,14 @@
-import { useNavigation } from '@react-navigation/native';
-import { styled } from 'nativewind';
 import React, { useState } from 'react';
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { useNavigation } from '@react-navigation/native';
+import { styled } from 'nativewind';
+
 import { SIGNIN_ERROR_MESSAGE, SIGN_IN_FIELDS_ERROR } from '@/constants/errorMessages';
 import { signIn } from '@/services/auth';
+import { getUserPublicKey } from '@/services/emigro';
 import { getAccessToken, getSession, saveSession } from '@/storage/helpers';
 import { FormField } from '@/types/FormField';
-import { getUserPublicKey } from '@/services/emigro';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -51,7 +52,7 @@ const Login: React.FunctionComponent = () => {
     } catch (error) {
       console.warn('Failed to get user public key:', error);
     }
-  }
+  };
 
   const handleSignIn = async () => {
     setIsLoggingIn(true);
@@ -62,7 +63,7 @@ const Login: React.FunctionComponent = () => {
         return;
       }
       const authSession = await signIn(formData.email, formData.password);
-      saveSession(authSession)
+      saveSession(authSession);
       setError('');
       triggerUpdateUserPublicKey();
       const accessToken = await getAccessToken();

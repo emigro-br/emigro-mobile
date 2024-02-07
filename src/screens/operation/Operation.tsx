@@ -1,22 +1,31 @@
-import { styled } from 'nativewind';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, Linking, Text, TouchableOpacity, View } from 'react-native';
-import * as Clipboard from 'expo-clipboard';
-import Ionicons from '@expo/vector-icons/Ionicons';
 
-import { getInteractiveUrl, confirmWithdraw, ConfirmWithdrawDto, CallbackType, getTransaction } from '@/services/anchor';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import * as Clipboard from 'expo-clipboard';
+import { styled } from 'nativewind';
+
+import {
+  CallbackType,
+  ConfirmWithdrawDto,
+  confirmWithdraw,
+  getInteractiveUrl,
+  getTransaction,
+} from '@/services/anchor';
 import { getUserPublicKey } from '@/services/emigro';
 import { getAssetCode } from '@/stellar/utils';
 import { getAccessToken } from '@/storage/helpers';
 import { useOperationStore } from '@/stores/operationStore';
+import { Sep24Transaction } from '@/types/Sep24Transaction';
+import { TransactionStatus } from '@/types/TransactionStatus';
 import { getAssetIcon } from '@/utils/getAssetIcon';
+
 import { AssetCode } from '@constants/assetCode';
-import { ErrorModal } from './modals/ErrorModal';
-import { SuccessModal } from './modals/SuccessModal';
+
 import { ConfirmationModal } from './modals/ConfirmationModal';
-import { Sep24Transaction } from '../../types/Sep24Transaction';
-import { TransactionStatus } from '../../types/TransactionStatus';
+import { ErrorModal } from './modals/ErrorModal';
 import { LoadingModal } from './modals/LoadingModal';
+import { SuccessModal } from './modals/SuccessModal';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -34,7 +43,7 @@ const maskWallet = (address: string): string => {
   const firstFive = address.slice(0, 5);
   const lastFive = address.slice(-5);
   return `${firstFive}...${lastFive}`;
-}
+};
 
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
@@ -66,7 +75,6 @@ const Operation: React.FunctionComponent = () => {
   });
 
   const handleOnPress = async (asset: AssetCode) => {
-
     setOperationLoading(true);
     setSelectedAsset(asset);
     setTransactionId(null);
@@ -104,7 +112,7 @@ const Operation: React.FunctionComponent = () => {
 
         // without Modal
         Linking.openURL(url);
-      } else if (!url && !id){
+      } else if (!url && !id) {
         setErrorMessage(defaultErrorMessage);
       }
     } catch (error) {
@@ -136,16 +144,16 @@ const Operation: React.FunctionComponent = () => {
       from: publicKey!,
     };
     try {
-      const response = await confirmWithdraw(data);
+      await confirmWithdraw(data);
       setStep(TransactionStep.SUCCESS);
     } catch (error) {
       console.error(error);
       if (error instanceof Error) {
-        setErrorMessage(error.message)
+        setErrorMessage(error.message);
       }
       setStep(TransactionStep.ERROR);
     }
-  }
+  };
 
   // Stopping the interval
   const stopFetchingTransaction = (status: TransactionStatus) => {
@@ -154,10 +162,7 @@ const Operation: React.FunctionComponent = () => {
   };
 
   const waitWithdrawOnAnchorComplete = async (transactionId: string, assetCode: AssetCode) => {
-    const endStatuses = [
-      TransactionStatus.COMPLETED,
-      TransactionStatus.ERROR,
-    ];
+    const endStatuses = [TransactionStatus.COMPLETED, TransactionStatus.ERROR];
 
     try {
       const transaction = await getTransaction(transactionId, assetCode);
@@ -169,7 +174,7 @@ const Operation: React.FunctionComponent = () => {
         return;
       }
 
-      if (currentStatus == TransactionStatus.PENDING_USER_TRANSFER_START) {
+      if (currentStatus === TransactionStatus.PENDING_USER_TRANSFER_START) {
         stopFetchingTransaction(currentStatus); // stop immediatelly to avoid multiple calls
         setTransaction(transaction);
         setStep(TransactionStep.CONFIRM_TRANSFER);
@@ -187,17 +192,16 @@ const Operation: React.FunctionComponent = () => {
         setErrorMessage(error.message);
       }
     }
-  }
-
+  };
 
   return (
     <StyledView className="flex items-center bg-white h-full">
       {/* {step == TransactionStep.STARTED &&
         <WebModal url={url!} visible={true} onClose={handleWebClose} />} */}
 
-      <LoadingModal isVisible={step == TransactionStep.WAITING} label='Waiting...' />
+      <LoadingModal isVisible={step === TransactionStep.WAITING} label="Waiting..." />
 
-      {transaction &&
+      {transaction && (
         <ConfirmationModal
           isVisible={step === TransactionStep.CONFIRM_TRANSFER}
           transaction={transaction!}
@@ -205,7 +209,7 @@ const Operation: React.FunctionComponent = () => {
           onPress={() => handleConfirmTransaction(transactionId!, getAssetCode(selectedAsset!))}
           onClose={() => setStep(TransactionStep.NONE)}
         />
-      }
+      )}
 
       <SuccessModal
         isVisible={step === TransactionStep.SUCCESS}
@@ -220,16 +224,16 @@ const Operation: React.FunctionComponent = () => {
       />
 
       <StyledText className="text-center font-black text-2xl my-4">{type}</StyledText>
-      {publicKey &&
+      {publicKey && (
         <TouchableOpacity onPress={copyToClipboard}>
           <StyledView className="flex flex-row mb-2">
             <StyledText className="text-center text-sm mr-2">{maskWallet(publicKey)}</StyledText>
             <Ionicons name="clipboard-outline" size={16} />
           </StyledView>
         </TouchableOpacity>
-      }
+      )}
       <StyledText className="text-lg text-center mb-4">Select the currency you want to {type}</StyledText>
-      <StyledView className='flex flex-row flex-wrap px-4 gap-4'>
+      <StyledView className="flex flex-row flex-wrap px-4 gap-4">
         {filteredAssets.map((asset) => (
           <TouchableOpacity key={`asset_${asset}`} onPress={() => handleOnPress(asset)} disabled={operationLoading}>
             <StyledView className="flex-row w-32 h-20 items-center justify-center bg-white rounded-lg shadow">
@@ -238,9 +242,7 @@ const Operation: React.FunctionComponent = () => {
               ) : (
                 <>
                   <Image source={getAssetIcon(asset)} style={{ width: 30, height: 30 }} />
-                  <StyledText className="ml-1 flex-row font-bold text-xl">
-                    {asset}
-                  </StyledText>
+                  <StyledText className="ml-1 flex-row font-bold text-xl">{asset}</StyledText>
                 </>
               )}
             </StyledView>
@@ -251,6 +253,5 @@ const Operation: React.FunctionComponent = () => {
     </StyledView>
   );
 };
-
 
 export default Operation;

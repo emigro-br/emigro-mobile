@@ -1,7 +1,10 @@
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import React from 'react';
-import { AssetSwap } from '../AssetSwap';
+
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+
 import { AssetCode } from '@constants/assetCode';
+
+import { AssetSwap } from '../AssetSwap';
 import { SwapType } from '../types';
 
 describe('AssetSwap component', () => {
@@ -16,7 +19,7 @@ describe('AssetSwap component', () => {
         onChangeAsset={mockSetAsset}
         sellOrBuy={SwapType.SELL}
         onChangeValue={mockOnChangeValue}
-      />
+      />,
     );
 
     const assetSwapText = getByText('BRL');
@@ -24,7 +27,6 @@ describe('AssetSwap component', () => {
 
     const balanceText = getByText('Balance: R$ 1.00');
     expect(balanceText).toBeDefined();
-
   });
 
   test('Should call onChangeValue when input value is changed', () => {
@@ -38,7 +40,7 @@ describe('AssetSwap component', () => {
         onChangeAsset={mockSetAsset}
         sellOrBuy={SwapType.SELL}
         onChangeValue={mockOnChangeValue}
-      />
+      />,
     );
 
     const input = getByPlaceholderText('0');
@@ -60,7 +62,7 @@ describe('AssetSwap component', () => {
         sellOrBuy={SwapType.SELL}
         onChangeValue={mockOnChangeValue}
         onPress={onPressMock}
-       />
+      />,
     );
 
     const touchable = getByTestId('touchable');
@@ -81,7 +83,7 @@ describe('AssetSwap component', () => {
         onChangeAsset={mockSetAsset}
         sellOrBuy={SwapType.SELL}
         onChangeValue={mockOnChangeValue}
-      />
+      />,
     );
 
     const input = getByPlaceholderText('0');
@@ -92,5 +94,4 @@ describe('AssetSwap component', () => {
       expect(exceedsBalanceText).toBeDefined();
     });
   });
-
 });

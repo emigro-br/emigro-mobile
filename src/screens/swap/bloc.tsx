@@ -1,8 +1,10 @@
-import { sendTransaction } from "@/services/emigro";
-import { getSession } from "@/storage/helpers";
-import { ITransactionRequest } from "@/types/ITransactionRequest";
-import { AssetCode } from "@constants/assetCode";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable } from 'mobx';
+
+import { sendTransaction } from '@/services/emigro';
+import { getSession } from '@/storage/helpers';
+import { ITransactionRequest } from '@/types/ITransactionRequest';
+
+import { AssetCode } from '@constants/assetCode';
 
 export type SwapTransaction = {
   from: AssetCode;
@@ -11,7 +13,7 @@ export type SwapTransaction = {
   toValue: number;
   rate: number;
   fees: number;
-}
+};
 
 export class SwapBloc {
   _publicKey?: string;

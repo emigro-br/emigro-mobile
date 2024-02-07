@@ -19,9 +19,8 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
 }));
 
 describe('CreateAccount component', () => {
-
   beforeEach(() => {
-    jest.useFakeTimers(); 
+    jest.useFakeTimers();
     jest.clearAllMocks();
   });
 
@@ -75,7 +74,7 @@ describe('CreateAccount component', () => {
   });
 
   test('Should display an error message if signUp fails', async () => {
-    const consoleMock = jest.spyOn(global.console, "error").mockImplementation(() => {});
+    const consoleMock = jest.spyOn(global.console, 'error').mockImplementation(() => {});
     const error = new Error();
     jest.spyOn(auth, 'signUp').mockRejectedValue(error);
     const { getByPlaceholderText, getByText, findByText } = render(<CreateAccount navigation={{}} />);

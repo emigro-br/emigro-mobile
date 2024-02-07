@@ -1,9 +1,9 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import * as auth from '@/services/auth';
+import { IAuthSession } from '@/types/IAuthSession';
 
 import Login from '@screens/welcome/Login';
-import { IAuthSession } from '@/types/IAuthSession';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
@@ -22,7 +22,7 @@ describe('Login screen', () => {
       idToken: 'idToken',
       tokenExpirationDate: new Date(),
       email: '',
-    }
+    };
 
     signInMock.mockResolvedValue(Promise.resolve(authSession));
 

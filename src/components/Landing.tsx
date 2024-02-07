@@ -2,7 +2,6 @@ import { NavigationContainer } from '@react-navigation/native';
 
 import RootNavigator from '@navigation/index';
 
-
 type LandingProps = {
   isSignedIn: boolean;
 };

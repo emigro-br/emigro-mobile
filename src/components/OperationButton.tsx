@@ -1,11 +1,12 @@
-import { styled } from 'nativewind';
 import { FunctionComponent } from 'react';
 import { View } from 'react-native';
+
+import { useNavigation } from '@react-navigation/native';
+import { styled } from 'nativewind';
 
 import Button from '@components/Button';
 
 import { OperationType } from '@constants/constants';
-import { useNavigation } from '@react-navigation/native';
 
 const StyledView = styled(View);
 

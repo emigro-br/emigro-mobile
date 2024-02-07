@@ -1,7 +1,9 @@
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import React from 'react';
-import Operation from '../operation/Operation';
 import { Linking } from 'react-native';
+
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+
+import Operation from '../operation/Operation';
 
 jest.mock('expo-clipboard');
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
@@ -37,9 +39,7 @@ jest.mock('@/stores/operationStore', () => ({
   }),
 }));
 
-
 describe('Operation', () => {
-
   beforeEach(() => {
     jest.useFakeTimers(); // Please, keep this to avoid act() warning
     jest.clearAllMocks();
@@ -83,7 +83,6 @@ describe('Operation', () => {
   });
 
   it('Should handle the operation correctly', async () => {
-
     const { getByText } = render(<Operation />);
     const button = getByText('USD');
 

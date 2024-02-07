@@ -1,8 +1,10 @@
-import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import ConfirmAccount from '../welcome/ConfirmAccount';
+
 import * as auth from '@/services/auth';
+
 import { CONFIRM_ACCOUNT_ERROR } from '@constants/errorMessages';
+
+import ConfirmAccount from '../welcome/ConfirmAccount';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
@@ -25,7 +27,6 @@ const mockResponse = {
 };
 
 describe('ConfirmAccount component', () => {
-
   it('Should handle confirmation with success', async () => {
     const confirmAccount = jest.spyOn(auth, 'confirmAccount');
     confirmAccount.mockResolvedValue(mockResponse);
@@ -46,7 +47,7 @@ describe('ConfirmAccount component', () => {
   });
 
   it('Should handle error from confirmAccount', async () => {
-    const consoleMock = jest.spyOn(global.console, "error").mockImplementation(() => {});
+    const consoleMock = jest.spyOn(global.console, 'error').mockImplementation(() => {});
     jest.spyOn(auth, 'confirmAccount').mockRejectedValue(CONFIRM_ACCOUNT_ERROR);
 
     const { getByPlaceholderText, getByText, getByTestId } = render(<ConfirmAccount navigation={{}} />);

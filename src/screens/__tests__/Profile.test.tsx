@@ -1,9 +1,11 @@
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 
-import Profile from '@screens/Profile';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+
 import { clearSession } from '@/storage/helpers';
 import { IUserProfile } from '@/types/IUserProfile';
+
+import Profile from '@screens/Profile';
 
 jest.mock('@/storage/helpers', () => ({
   getSession: jest.fn(),
@@ -28,10 +30,7 @@ jest.mock('@/services/emigro', () => ({
 
 jest.mock('react', () => ({
   ...jest.requireActual('react'),
-  useState: () => ([
-    jest.fn(),
-    jest.fn(),
-  ]),
+  useState: () => [jest.fn(), jest.fn()],
 }));
 
 describe('Profile screen', () => {

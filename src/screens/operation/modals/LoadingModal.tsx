@@ -1,6 +1,8 @@
 import React from 'react';
+import { ActivityIndicator, Text, View } from 'react-native';
+
 import { styled } from 'nativewind';
-import { View, Text, ActivityIndicator } from 'react-native';
+
 import CustomModal from '@components/CustomModal';
 
 const StyledView = styled(View);

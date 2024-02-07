@@ -1,11 +1,16 @@
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import React from 'react';
-import { Swap } from '../Swap';
-import { AssetCode } from '@constants/assetCode';
-import * as emigroService from '@/services/emigro';
+
 import { NavigationProp } from '@react-navigation/native';
-import { RootStackParamList } from '@navigation/index';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+
+import * as emigroService from '@/services/emigro';
 import BalanceStore from '@/stores/BalanceStore';
+
+import { AssetCode } from '@constants/assetCode';
+
+import { RootStackParamList } from '@navigation/index';
+
+import { Swap } from '../Swap';
 import bloc from '../bloc';
 
 jest.mock('@/services/emigro', () => ({
@@ -17,9 +22,7 @@ const navigation = {
 } as unknown as NavigationProp<RootStackParamList, 'Swap'>;
 
 describe('Swap component', () => {
-
   test('Should render Swap component correctly', async () => {
-
     const { getByText, getByTestId } = render(<Swap navigation={navigation} />);
 
     // check title

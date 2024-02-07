@@ -1,9 +1,9 @@
-import { styled } from 'nativewind';
 import React from 'react';
 import { View } from 'react-native';
 
-const StyledView = styled(View);
+import { styled } from 'nativewind';
 
+const StyledView = styled(View);
 
 type CardProps = {
   children: React.ReactNode;
@@ -15,8 +15,6 @@ export const Card = (props: CardProps) => {
   const { color = 'white', borderColor } = props;
   const border = borderColor ? `border border-${borderColor}` : '';
   return (
-    <StyledView className={`bg-${color} ${border} p-4 mb-4 rounded-xl shadow shadow-sm`}>
-      {props.children}
-    </StyledView>
+    <StyledView className={`bg-${color} ${border} p-4 mb-4 rounded-xl shadow shadow-sm`}>{props.children}</StyledView>
   );
 };

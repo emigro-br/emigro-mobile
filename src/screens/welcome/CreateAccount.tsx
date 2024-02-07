@@ -1,7 +1,8 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { styled } from 'nativewind';
 import React, { useState } from 'react';
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { styled } from 'nativewind';
 
 import { signUp } from '@/services/auth';
 import { FormField } from '@/types/FormField';

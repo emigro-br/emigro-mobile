@@ -1,6 +1,7 @@
-import { styled } from 'nativewind';
 import React from 'react';
 import { View } from 'react-native';
+
+import { styled } from 'nativewind';
 
 import MapScreen from '../components/MapScreen';
 

@@ -1,9 +1,13 @@
-import { styled } from "nativewind";
-import React, { useEffect, useRef } from "react";
-import { TextInput, TouchableHighlight, View, Text } from "react-native";
+import React, { useEffect, useRef } from 'react';
+import { Text, TextInput, TouchableHighlight, View } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-import { AssetCode, AssetCodeToSymbol } from "@constants/assetCode";
-import { Card } from "../../components/Card";
+
+import { styled } from 'nativewind';
+
+import { Card } from '@/components/Card';
+
+import { AssetCode, AssetCodeToSymbol } from '@constants/assetCode';
+
 import { SwapType } from './types';
 
 const StyledView = styled(View);
@@ -21,7 +25,6 @@ type AssetSwapProps = {
   onChangeValue: (value: number, type: SwapType) => void;
 };
 
-
 export const AssetSwap = (props: AssetSwapProps) => {
   const inputRef = useRef<TextInput>(null);
   const [value, setValue] = React.useState('');
@@ -30,7 +33,8 @@ export const AssetSwap = (props: AssetSwapProps) => {
   const sign = props.sellOrBuy === SwapType.SELL ? '-' : '+';
 
   useEffect(() => {
-    if (props.value !== undefined) { // accept 0
+    if (props.value !== undefined) {
+      // accept 0
       if (parseFloat(value) !== props.value) {
         if (props.value === 0) {
           setValue('');
@@ -43,10 +47,10 @@ export const AssetSwap = (props: AssetSwapProps) => {
 
   const handleInputChange = (text: string) => {
     // workaround for replaceAll is undefined
-    text = text.split(",").join(".");
+    text = text.split(',').join('.');
 
     // check if text has more than 1 dot
-    if (text.split(".").length > 2) {
+    if (text.split('.').length > 2) {
       return;
     }
 
@@ -57,8 +61,8 @@ export const AssetSwap = (props: AssetSwapProps) => {
     text = text.replace(/[^0-9.]/g, '');
 
     // check if decimal has more than 2 characters
-    if (text.split(".").length > 1) {
-      let [integer, decimal] = text.split(".");
+    if (text.split('.').length > 1) {
+      const [, decimal] = text.split('.');
       if (decimal.length > 2) {
         console.log('decimal has more than 2 characters');
         return;
@@ -68,13 +72,14 @@ export const AssetSwap = (props: AssetSwapProps) => {
     // now we can set the value
     setValue(text);
 
-    let newValue = Number(text);
+    const newValue = Number(text);
     if (isNaN(newValue)) {
       return;
     }
 
     const prevValue = Number(value);
-    if (newValue === prevValue) { // accept 2.
+    if (newValue === prevValue) {
+      // accept 2.
       return;
     }
 
@@ -84,12 +89,11 @@ export const AssetSwap = (props: AssetSwapProps) => {
   };
 
   const handlePress = () => {
-    inputRef.current?.focus()
+    inputRef.current?.focus();
     if (props.onPress) {
       props.onPress();
     }
-  }
-
+  };
 
   const filteredAssets = Object.values(AssetCode).filter((asset) => !['XLM', 'USD', 'EUR'].includes(asset)); //FIXME: break up assets from curencies
 
@@ -99,39 +103,44 @@ export const AssetSwap = (props: AssetSwapProps) => {
   }));
 
   const fontColor = Number(value) > 0 ? 'text-black' : 'text-slate-500';
-  const hasBalance = props.sellOrBuy == SwapType.SELL && Number(value) > balance;
+  const hasBalance = props.sellOrBuy === SwapType.SELL && Number(value) > balance;
 
   return (
     <TouchableHighlight onPress={handlePress} underlayColor="transparent" testID="touchable">
       <Card borderColor={isActive ? 'red' : ''}>
-        <StyledView className='flex-row justify-between'>
-          <StyledView className='flex-col w-1/4'>
+        <StyledView className="flex-row justify-between">
+          <StyledView className="flex-col w-1/4">
             <Dropdown
-              selectedTextStyle={{ fontWeight: '500'}}
+              selectedTextStyle={{ fontWeight: '500' }}
               data={data}
               value={asset}
-              labelField={'label'}
-              valueField={'value'}
+              labelField="label"
+              valueField="value"
               onChange={(selectedItem) => props.onChangeAsset(selectedItem.value, props.sellOrBuy)}
             />
           </StyledView>
-          <StyledView className='flex-row items-center justify-end w-3/4'>
-            <StyledText className={`font-bold ${fontColor}`}>{sign}{AssetCodeToSymbol[asset]}</StyledText>
+          <StyledView className="flex-row items-center justify-end w-3/4">
+            <StyledText className={`font-bold ${fontColor}`}>
+              {sign}
+              {AssetCodeToSymbol[asset]}
+            </StyledText>
             <StyledTextInput
               ref={inputRef}
               className={`font-bold ${fontColor} text-right px-1 py-2`}
-              autoFocus={props.sellOrBuy == SwapType.SELL}
-              placeholder='0'
+              autoFocus={props.sellOrBuy === SwapType.SELL}
+              placeholder="0"
               value={value}
               onChangeText={(text) => handleInputChange(text)}
-              keyboardType='numeric'
+              keyboardType="numeric"
               onFocus={handlePress}
             />
           </StyledView>
         </StyledView>
-        <StyledView className='flex-row justify-between'>
-          <StyledText className={`${hasBalance ? 'text-red' : 'text-gray'} text-xs`}>Balance: {AssetCodeToSymbol[asset]} {Number(balance).toFixed(2)}</StyledText>
-          {hasBalance && <StyledText className='text-red text-xs'>exceeds balance</StyledText>}
+        <StyledView className="flex-row justify-between">
+          <StyledText className={`${hasBalance ? 'text-red' : 'text-gray'} text-xs`}>
+            Balance: {AssetCodeToSymbol[asset]} {Number(balance).toFixed(2)}
+          </StyledText>
+          {hasBalance && <StyledText className="text-red text-xs">exceeds balance</StyledText>}
         </StyledView>
       </Card>
     </TouchableHighlight>

@@ -1,18 +1,17 @@
-import { Ionicons } from '@expo/vector-icons';
-import { styled } from 'nativewind';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { CameraView, useCameraPermissions } from 'expo-camera/next';
+
+import { Ionicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import { BarCodeScanner } from 'expo-barcode-scanner';
 import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
+import { CameraView, useCameraPermissions } from 'expo-camera/next';
+import { styled } from 'nativewind';
 
-import Button from './Button';
-
+import Button from '@/components/Button';
 import { INVALID_QR_CODE } from '@/constants/errorMessages';
 import { useVendor } from '@/contexts/VendorContext';
 import { formatAssetCode } from '@/utils/formatAssetCode';
-import { useFocusEffect } from '@react-navigation/native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
-
 
 type QRCodeScannerProps = {
   onCancel: () => void;
@@ -32,7 +31,7 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
   const [error, setError] = useState('');
 
   useEffect(() => {
-    requestPermission()
+    requestPermission();
   }, []);
 
   useFocusEffect(
@@ -43,8 +42,8 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
       return () => {
         // dismiss the scanner when the user leaves the screen
         onCancel();
-      }
-    }, [])
+      };
+    }, []),
   );
 
   const handleBarCodeScanned = (result: BarCodeScanningResult) => {
@@ -60,7 +59,7 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
   };
 
   const handleProceedToPayment = () => {
-    onProceedToPayment()
+    onProceedToPayment();
     onCancel();
   };
 
@@ -79,7 +78,7 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
           onBarcodeScanned={handleBarCodeScanned}
           style={[StyleSheet.absoluteFillObject]}
           barcodeScannerSettings={{
-            barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],  // FIXME: "qr" string is not working
+            barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr], // FIXME: "qr" string is not working
           }}
         >
           <StyledView style={styles.rectangleContainer}>
@@ -94,7 +93,8 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
         <StyledView className="flex flex-col items-center justify-center w-full mt-4">
           <StyledText className="text-lg font-bold">Scan the QR code</StyledText>
           <StyledText className="text-lg font-bold">to pay the vendor</StyledText>
-        </StyledView>)}
+        </StyledView>
+      )}
       {isScanned && scannedVendor.name ? (
         <StyledView className="flex flex-col p-4 mt-4 w-full gap-2">
           <StyledText className="text-xl font-bold">Confirm the information below:</StyledText>

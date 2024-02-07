@@ -1,4 +1,5 @@
 import { AssetCode } from '@constants/assetCode';
+
 import { SwapBloc, SwapTransaction } from '../bloc';
 
 jest.mock('@/storage/helpers', () => ({
@@ -17,7 +18,6 @@ describe('SwapBloc', () => {
   });
 
   it('should call swap with correct parameters', async () => {
-
     const emigro = jest.requireMock('@/services/emigro');
 
     const transaction: SwapTransaction = {

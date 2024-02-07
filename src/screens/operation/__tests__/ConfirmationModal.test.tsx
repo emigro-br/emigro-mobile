@@ -1,8 +1,11 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import { ConfirmationModal } from '../modals/ConfirmationModal';
+
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+
 import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { TransactionStatus } from '@/types/TransactionStatus';
+
+import { ConfirmationModal } from '../modals/ConfirmationModal';
 
 const mockTransaction: Sep24Transaction = {
   amount_in: '100',
@@ -23,19 +26,19 @@ const mockTransaction: Sep24Transaction = {
   stellar_transaction_id: null,
   withdraw_anchor_account: '',
   withdraw_memo: '',
-  withdraw_memo_type: ''
+  withdraw_memo_type: '',
 };
 
 describe('ConfirmationModal', () => {
   it('renders correctly', () => {
     const { getByText } = render(
       <ConfirmationModal
-        isVisible={true}
+        isVisible
         assetCode="USD"
         transaction={mockTransaction}
         onPress={jest.fn()}
         onClose={jest.fn()}
-      />
+      />,
     );
     expect(getByText('Confirm the transaction')).toBeTruthy();
     expect(getByText('Are you sure you want to withdraw?')).toBeTruthy();
@@ -50,12 +53,12 @@ describe('ConfirmationModal', () => {
     const onPress = jest.fn();
     const { getByText } = render(
       <ConfirmationModal
-        isVisible={true}
+        isVisible
         assetCode="USD"
         transaction={mockTransaction}
         onPress={onPress}
         onClose={jest.fn()}
-      />
+      />,
     );
     fireEvent.press(getByText('Confirm'));
 
@@ -68,12 +71,12 @@ describe('ConfirmationModal', () => {
     const onClose = jest.fn();
     const { getByText } = render(
       <ConfirmationModal
-        isVisible={true}
+        isVisible
         assetCode="USD"
         transaction={mockTransaction}
         onPress={jest.fn()}
         onClose={onClose}
-      />
+      />,
     );
     fireEvent.press(getByText('Cancel'));
     expect(onClose).toHaveBeenCalled();
@@ -82,12 +85,12 @@ describe('ConfirmationModal', () => {
   it('shows a loading modal when processing', () => {
     const { getByText } = render(
       <ConfirmationModal
-        isVisible={true}
+        isVisible
         assetCode="USD"
         transaction={mockTransaction}
         onPress={jest.fn()}
         onClose={jest.fn()}
-      />
+      />,
     );
     fireEvent.press(getByText('Confirm'));
 

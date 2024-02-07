@@ -1,5 +1,4 @@
-
 export enum SwapType {
-   SELL,
-   BUY
+  SELL,
+  BUY,
 }
