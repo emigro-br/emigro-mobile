@@ -39,7 +39,6 @@
       }
     },
     "preview": {
-      "extends": "production",
       "android": {
         "track": "internal",
         "releaseStatus": "draft"
