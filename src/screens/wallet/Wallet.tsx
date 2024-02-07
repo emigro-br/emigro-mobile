@@ -46,7 +46,7 @@ const Wallet: React.FunctionComponent = observer(() => {
       className="flex-1 bg-white"
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} title="Refreshing..." />}
     >
-      <StyledView className="flex items-center">
+      <StyledView className="flex">
         <StyledView className="px-4 py-8">
           <OperationButton onPress={handleOnPress} />
         </StyledView>
