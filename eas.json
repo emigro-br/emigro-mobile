@@ -13,11 +13,6 @@
       },
       "channel": "development"
     },
-    "preview": {
-      "extends": "production",
-      "distribution": "internal",
-      "channel": "preview"
-    },
     "production": {
       "autoIncrement": true,
       "env": {
@@ -25,16 +20,29 @@
         "EXPO_PUBLIC_GEOCODE_BASE_URL": "https://nominatim.openstreetmap.org/search"
       },
       "channel": "production"
+    },
+    "preview": {
+      "extends": "production",
+      "distribution": "internal",
+      "channel": "preview"
     }
   },
   "submit": {
     "production": {
       "android": {
+        "track": "production",
         "releaseStatus": "draft"
       },
       "ios": {
         "companyName": "Emigro Inc.",
         "ascAppId": "6475793514"
+      }
+    },
+    "preview": {
+      "extends": "production",
+      "android": {
+        "track": "internal",
+        "releaseStatus": "draft"
       }
     }
   }
