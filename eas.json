@@ -35,7 +35,8 @@
       },
       "ios": {
         "companyName": "Emigro Inc.",
-        "ascAppId": "6475793514"
+        "ascAppId": "6475793514",
+        "metadataPath": "./store.config.json"
       }
     },
     "preview": {

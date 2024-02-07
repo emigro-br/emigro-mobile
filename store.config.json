@@ -1,0 +1,64 @@
+{
+  "configVersion": 0,
+  "apple": {
+    "version": "1.1",
+    "categories": [
+      "TRAVEL",
+      "FINANCE"
+    ],
+    "info": {
+      "en-US": {
+        "title": "Emigro",
+        "subtitle": "The Travelers Digital Wallet",
+        "description": "Instant mobile payments for international tourism. Pay like a local would to any person or business.",
+        "keywords": [
+          "travel",
+          "tourism",
+          "payments",
+          "wallet",
+          "digital",
+          "international",
+          "local",
+          "currency",
+          "exchange",
+          "money",
+          "transfer",
+          "emigro"
+        ],
+        "marketingUrl": "https://emigro.co/",
+        "privacyPolicyUrl": "https://www.freeprivacypolicy.com/live/50920300-2615-4cc0-80e3-a4e10dfbdd4a"
+      }
+    },
+    "advisory": {
+      "alcoholTobaccoOrDrugUseOrReferences": "NONE",
+      "contests": "NONE",
+      "gamblingSimulated": "NONE",
+      "horrorOrFearThemes": "NONE",
+      "matureOrSuggestiveThemes": "NONE",
+      "medicalOrTreatmentInformation": "NONE",
+      "profanityOrCrudeHumor": "NONE",
+      "sexualContentGraphicAndNudity": "NONE",
+      "sexualContentOrNudity": "NONE",
+      "violenceCartoonOrFantasy": "NONE",
+      "violenceRealistic": "NONE",
+      "violenceRealisticProlongedGraphicOrSadistic": "NONE",
+      "gambling": false,
+      "unrestrictedWebAccess": false,
+      "kidsAgeBand": null,
+      "seventeenPlus": false
+    },
+    "release": {
+      "automaticRelease": true
+    },
+    "review": {
+      "firstName": "Blake",
+      "lastName": "Sieders",
+      "email": "blake@emigro.io",
+      "phone": "+55 21 97060-2695",
+      "demoRequired": true,
+      "demoUsername": "venen46249@beeplush.com",
+      "demoPassword": "Password123.",
+      "notes": "This app is a digital wallet for international travelers. It allows users to pay like a local would to any person or business"
+    }
+  }
+}
