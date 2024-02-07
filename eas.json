@@ -23,7 +23,6 @@
     },
     "preview": {
       "extends": "production",
-      "distribution": "internal",
       "channel": "preview"
     }
   },
@@ -40,6 +39,7 @@
       }
     },
     "preview": {
+      "extends": "production",
       "android": {
         "track": "internal",
         "releaseStatus": "draft"
