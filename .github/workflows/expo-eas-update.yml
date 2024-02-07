@@ -1,7 +1,11 @@
 name: Expo EAS Update
 on:
   workflow_dispatch:
-  # push:
+  push:
+    branches:
+      - main
+      - preview
+      - production
 
 jobs:
   update:
