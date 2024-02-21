@@ -20,18 +20,33 @@ const DeleteAccount = () => {
   };
 
   return (
-    <StyledView>
-      <StyledText className="">Delete Account</StyledText>
-      <StyledText>
-        Please be aware that this action is final and cannot be reversed. By proceeding with the deletion of your XXX
-        account, you will permanently remove all your data from XXX systems. This includes your personal profile, app
-        settings, user history, and any associated data. Once your account is deleted, you will not be able to access
-        any XXX services, retrieve your data, or restore your account. If you have any subscriptions or ongoing
-        services, they will be immediately canceled. If you have any remaining balance or credits within XXX, please
-        ensure to redeem or transfer them before account deletion as they will not be recoverable afterward. We strongly
-        advise you to backup any important data or transfer any assets before you finalize the deletion of your account.
-      </StyledText>
-      <Button onPress={handleDeleteAccount}>Confirm</Button>
+    <StyledView className="bg-white h-full p-4">
+      <StyledText className="text-xl font-bold mb-4">Delete Account</StyledText>
+      <StyledView className="gap-4 mb-8">
+        <StyledText>Please be aware that this action is final and cannot be reversed.</StyledText>
+        <StyledText>
+          By proceeding with the deletion of your Emigro account, you will permanently remove all your data from Emigro
+          systems. This includes your personal profile, app settings, user history, and any associated data.
+        </StyledText>
+        <StyledText>
+          Once your account is deleted, you will not be able to access any Emigro services, retrieve your data, or
+          restore your account. If you have any subscriptions or ongoing services, they will be immediately canceled.
+        </StyledText>
+        <StyledText>
+          If you have any remaining balance or credits within Emigro, please ensure to redeem or transfer them before
+          account deletion as they will not be recoverable afterward.
+        </StyledText>
+        <StyledText>
+          We strongly advise you to backup any important data or transfer any assets before you finalize the deletion of
+          your account.
+        </StyledText>
+      </StyledView>
+      <Button backgroundColor="red" textColor="white" onPress={handleDeleteAccount}>
+        Yes, delete my account permanently
+      </Button>
+      <Button backgroundColor="white" textColor="red" onPress={() => navigation.goBack()}>
+        No, keep my account
+      </Button>
     </StyledView>
   );
 };

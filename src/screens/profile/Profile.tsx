@@ -78,6 +78,12 @@ const Profile = () => {
         <StyledView className="flex flex-row items-center">
           <StyledText className="text-lg">{userInformation.address}</StyledText>
         </StyledView>
+
+        <Divider />
+
+        <StyledText className="text-red text-sm py-2" onPress={() => navigation.navigate('DeleteAccount' as never)}>
+          Delete account
+        </StyledText>
       </StyledView>
 
       <StyledView className="flex items-center pt-4 mb-2">
