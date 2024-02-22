@@ -1,3 +1,5 @@
+import { refresh as refreshSession } from '@/services/auth';
+import { getSession, saveSession } from '@/storage/helpers';
 import { IBalance } from '@/types/IBalance';
 import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { IQuote } from '@/types/IQuote';
@@ -5,13 +7,10 @@ import { IQuoteRequest } from '@/types/IQuoteRequest';
 import { ITransaction } from '@/types/ITransaction';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IUserProfile } from '@/types/IUserProfile';
-import { refresh as refreshSession } from '@/services/auth';
-import { getSession, saveSession } from '@/storage/helpers';
 
 import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
-
 
 export class NotAuhtorized extends Error {
   constructor() {
@@ -21,7 +20,6 @@ export class NotAuhtorized extends Error {
 }
 
 export const fetchWithTokenCheck = async (url: string, options: RequestInit): Promise<Response> => {
-
   let session = await getSession();
   if (!session) {
     throw new NotAuhtorized();
@@ -48,7 +46,7 @@ export const fetchWithTokenCheck = async (url: string, options: RequestInit): Pr
   };
 
   return fetch(url, options);
-}
+};
 
 export const getTransactions = async (): Promise<ITransaction[]> => {
   const transactionsUrl = `${backendUrl}/transaction/all`;
@@ -71,17 +69,16 @@ export const getTransactions = async (): Promise<ITransaction[]> => {
 export const getUserBalance = async (): Promise<IBalance[]> => {
   const url = `${backendUrl}/user`;
   try {
-    const response = await fetchWithTokenCheck(url, {
+    const res = await fetchWithTokenCheck(url, {
       method: 'GET',
     });
-    const json = await response.json();
+    const json = await res.json();
 
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-
-    if (json.statusCode === 401) {
-      throw new NotAuhtorized();
+    if (!res.ok) {
+      if (json.error) {
+        throw new Error(json.error.message);
+      }
+      throw new Error(res.statusText);
     }
 
     const { balances } = json;
@@ -90,7 +87,7 @@ export const getUserBalance = async (): Promise<IBalance[]> => {
     }
     return balances;
   } catch (error) {
-    console.error(error, GET_USER_BALANCE_ERROR);
+    console.error(error);
     throw new Error(GET_USER_BALANCE_ERROR);
   }
 };
@@ -115,7 +112,7 @@ export const handleQuote = async (body: IQuoteRequest): Promise<IQuote> => {
     const { quote } = json;
     return quote;
   } catch (error) {
-    console.error(error, QUOTE_NOT_AVAILABLE_ERROR);
+    console.error(error);
     throw new Error(QUOTE_NOT_AVAILABLE_ERROR);
   }
 };
@@ -142,7 +139,7 @@ export const sendTransaction = async (transactionRequest: ITransactionRequest): 
 
     return json;
   } catch (error) {
-    console.error(error, TRANSACTION_ERROR_MESSAGE);
+    console.error(error);
     throw new Error(TRANSACTION_ERROR_MESSAGE);
   }
 };
@@ -178,7 +175,7 @@ export const getUserProfile = async (): Promise<IUserProfile> => {
       throw new Error(res.statusText);
     }
 
-    return json
+    return json;
   } catch (error) {
     console.error(error);
     throw error;

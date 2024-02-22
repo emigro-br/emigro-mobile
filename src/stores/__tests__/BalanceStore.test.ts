@@ -1,6 +1,9 @@
-import { IBalance } from '@/types/IBalance';
-import { BalanceStore } from '../BalanceStore';
+import mockConsole from 'jest-mock-console';
+
 import * as BalanceModule from '@/services/emigro';
+import { IBalance } from '@/types/IBalance';
+
+import { BalanceStore } from '../BalanceStore';
 
 jest.mock('@/services/emigro', () => ({
   getUserBalance: jest.fn(),
@@ -8,13 +11,15 @@ jest.mock('@/services/emigro', () => ({
 
 describe('BalanceStore', () => {
   let balanceStore: BalanceStore;
-  const mockBalances: IBalance[] = [{
-    assetType: 'someAssetType',
-    assetCode: 'someAssetCode',
-    label: 'someLabel',
-    value: 'someValue',
-    balance: '100',
-  }];
+  const mockBalances: IBalance[] = [
+    {
+      assetType: 'someAssetType',
+      assetCode: 'someAssetCode',
+      label: 'someLabel',
+      value: 'someValue',
+      balance: '100',
+    },
+  ];
 
   beforeEach(() => {
     balanceStore = new BalanceStore();
@@ -40,8 +45,9 @@ describe('BalanceStore', () => {
   });
 
   it('should throw an error when fetching user balance fails', async () => {
-    const consoleMock = jest.spyOn(console, 'error').mockImplementation();
-    const error = new Error('Failed to fetch user balance');
+    const restoreConsole = mockConsole();
+    const message = 'Failed to fetch user balance';
+    const error = new Error(message);
     (BalanceModule.getUserBalance as jest.Mock).mockRejectedValue(error);
     jest.spyOn(balanceStore, 'setUserBalance');
 
@@ -49,7 +55,8 @@ describe('BalanceStore', () => {
 
     expect(BalanceModule.getUserBalance).toHaveBeenCalled();
     expect(balanceStore.setUserBalance).not.toHaveBeenCalled();
-    expect(consoleMock).toHaveBeenCalledWith(error);
+    expect(console.warn).toHaveBeenCalledWith(message, error);
+    restoreConsole();
   });
 
   it('should return user balance', () => {
