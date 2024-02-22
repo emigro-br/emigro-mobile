@@ -1,4 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import mockConsole from 'jest-mock-console';
 
 import * as auth from '@/services/auth';
 
@@ -74,7 +75,7 @@ describe('CreateAccount component', () => {
   });
 
   test('Should display an error message if signUp fails', async () => {
-    const consoleMock = jest.spyOn(global.console, 'error').mockImplementation(() => {});
+    const restoreConsole = mockConsole();
     const error = new Error();
     jest.spyOn(auth, 'signUp').mockRejectedValue(error);
     const { getByPlaceholderText, getByText, findByText } = render(<CreateAccount navigation={{}} />);
@@ -96,7 +97,8 @@ describe('CreateAccount component', () => {
     await waitFor(() => {
       const errorElement = findByText(SIGNUP_ERROR_MESSAGE);
       expect(errorElement).toBeTruthy();
-      expect(consoleMock).toHaveBeenCalledWith(error, SIGNUP_ERROR_MESSAGE);
+      expect(console.error).toHaveBeenCalledWith(error, SIGNUP_ERROR_MESSAGE);
     });
+    restoreConsole();
   });
 });
