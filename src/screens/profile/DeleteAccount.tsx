@@ -4,19 +4,30 @@ import { Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { styled } from 'nativewind';
 
+import { deleteAccount } from '@/services/auth';
+import { clearSession, getSession } from '@/storage/helpers';
+
 import Button from '@components/Button';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
 
 const DeleteAccount = () => {
-  // const { user } = useAuth();
-  // const { deleteAccount } = useAuthActions();
   const navigation = useNavigation();
 
   const handleDeleteAccount = async () => {
-    // await deleteAccount(user!.uid);
-    navigation.navigate('Welcome' as never);
+    const session = await getSession();
+    if (!session) {
+      navigation.navigate('Welcome' as never);
+      return;
+    }
+    try {
+      await deleteAccount(session);
+      clearSession();
+      navigation.navigate('Welcome' as never);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
