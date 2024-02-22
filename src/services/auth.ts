@@ -1,6 +1,6 @@
+import { IAuthSession } from '@/types/IAuthSession';
 import { IConfirmUser } from '@/types/IConfirmUser';
 import { IRegisterResponse } from '@/types/IRegisterResponse';
-import { IAuthSession } from '@/types/IAuthSession';
 
 import { Role } from '@constants/constants';
 import {
@@ -36,12 +36,7 @@ export const signIn = async (email: string, password: string): Promise<IAuthSess
       throw new Error(json.message);
     }
 
-    const {
-      accessToken,
-      refreshToken,
-      idToken,
-      tokenExpirationDate,
-    } = json;
+    const { accessToken, refreshToken, idToken, tokenExpirationDate } = json;
 
     const session: IAuthSession = {
       accessToken,
@@ -110,12 +105,7 @@ export const refresh = async (authSession: IAuthSession): Promise<IAuthSession> 
       throw new Error(json.message);
     }
 
-    const {
-      accessToken,
-      refreshToken,
-      idToken,
-      tokenExpirationDate,
-    } = json;
+    const { accessToken, refreshToken, idToken, tokenExpirationDate } = json;
 
     const session: IAuthSession = {
       accessToken,
@@ -129,5 +119,24 @@ export const refresh = async (authSession: IAuthSession): Promise<IAuthSession> 
   } catch (error) {
     console.error(REFRESH_SESSION_ERROR, error);
     throw new Error();
+  }
+};
+
+export const deleteAccount = async (authSession: IAuthSession): Promise<void> => {
+  const url = `${backendUrl}/auth/delete`;
+  try {
+    const res = await fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(authSession),
+    });
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
 };
