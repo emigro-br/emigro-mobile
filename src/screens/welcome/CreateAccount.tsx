@@ -47,26 +47,33 @@ const CreateAccount: React.FunctionComponent<SignUpProps> = ({ navigation }) => 
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  const clearForm = () => {
+    setFormData({
+      email: '',
+      password: '',
+      firstName: '',
+      lastName: '',
+      address: '',
+      role: Role.CUSTOMER,
+    });
+  };
+
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
       setError('');
       const { username } = await signUp(formData);
+      if (!username) {
+        throw new Error(SIGNUP_ERROR_MESSAGE);
+      }
       await AsyncStorage.multiSet([
         ['email', formData.email],
         ['username', username],
       ]);
       setShowConfirmationModal(true);
-      setFormData({
-        email: '',
-        password: '',
-        firstName: '',
-        lastName: '',
-        address: '',
-        role: Role.CUSTOMER,
-      });
+      clearForm();
     } catch (error) {
-      console.error(error, SIGNUP_ERROR_MESSAGE);
+      console.error(error);
       setError(SIGNUP_ERROR_MESSAGE);
     } finally {
       setIsLoading(false);

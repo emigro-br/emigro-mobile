@@ -97,7 +97,7 @@ describe('CreateAccount component', () => {
     await waitFor(() => {
       const errorElement = findByText(SIGNUP_ERROR_MESSAGE);
       expect(errorElement).toBeTruthy();
-      expect(console.error).toHaveBeenCalledWith(error, SIGNUP_ERROR_MESSAGE);
+      expect(console.error).toHaveBeenCalledWith(error);
     });
     restoreConsole();
   });
