@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Image, View } from 'react-native';
 
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { styled } from 'nativewind';
 
 import Button from '@components/Button';
@@ -15,7 +16,7 @@ const StyledImage = styled(Image);
 
 type MakePaymentProps = BottomTabScreenProps<RootStackParamList, 'MakePayment'>;
 
-const MakePayment: React.FunctionComponent<MakePaymentProps> = ({ navigation }) => {
+const MakePayment: React.FC<MakePaymentProps> = ({ navigation }) => {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   const handleScanPress = () => {
