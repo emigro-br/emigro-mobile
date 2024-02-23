@@ -87,7 +87,7 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
           onBarcodeScanned={handleBarCodeScanned}
           style={[StyleSheet.absoluteFillObject]}
           barcodeScannerSettings={{
-            barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr], // FIXME: "qr" string is not working
+            barcodeTypes: [BarCodeScanner.Constants.BarCodeType.qr], // FIXME: "qr" string is not working
           }}
         >
           <StyledView style={styles.rectangleContainer}>
