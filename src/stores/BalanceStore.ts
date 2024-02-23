@@ -1,6 +1,7 @@
-import { getUserBalance } from "@/services/emigro";
-import { IBalance } from "@/types/IBalance";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable } from 'mobx';
+
+import { getUserBalance } from '@/services/emigro';
+import { IBalance } from '@/types/IBalance';
 
 export class BalanceStore {
   userBalance: IBalance[] = [];
@@ -9,17 +10,17 @@ export class BalanceStore {
     makeAutoObservable(this);
   }
 
-  setUserBalance(balance: IBalance[]) : void {
+  setUserBalance(balance: IBalance[]): void {
     this.userBalance = balance;
   }
 
-  get(assetCode: string) : number {
+  get(assetCode: string): number {
     const found = this.userBalance.find((balance) => balance.assetCode === assetCode);
     if (found) return Number(found.balance); //TODO: change the balance to number
     return 0;
   }
 
-  async fetchUserBalance() : Promise<IBalance[]> {
+  async fetchUserBalance(): Promise<IBalance[]> {
     try {
       console.debug('Fetching user balance...');
       const balances = await getUserBalance();
@@ -28,7 +29,7 @@ export class BalanceStore {
       }
       return balances;
     } catch (error) {
-      console.error(error);
+      console.warn('Failed to fetch user balance', error);
       throw new Error('Failed to fetch user balance');
     }
   }

@@ -9,7 +9,7 @@ import Header from '@components/Header';
 
 import Location from '@screens/Location';
 import MakePayment from '@screens/MakePayment';
-import Profile from '@screens/Profile';
+import Profile from '@screens/profile/Profile';
 import Wallet from '@screens/wallet/Wallet';
 
 export type TabNavParamList = {

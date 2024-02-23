@@ -49,44 +49,50 @@ const Profile = () => {
     );
   }
 
+  const Divider = () => <StyledView className="border-b-[1px] border-slate-200 w-full pt-2 mb-2" />;
+
   return (
     <StyledScrollView className="bg-white h-full">
-      <StyledView className="flex items-center pt-8 px-4">
-        <StyledView className="mb-8">
-          <StyledImage source={profileLogo} className="h-32 w-32" />
-        </StyledView>
+      <StyledView className="items-center m-6">
+        <StyledImage source={profileLogo} className="h-32 w-32" />
+      </StyledView>
 
-        <StyledView className="flex gap-2 w-full">
-          <StyledText className="text-lightGray">Full name</StyledText>
-          <StyledView className="flex flex-row items-center">
-            <StyledText className="text-lg">
-              {userInformation.given_name} {userInformation.family_name}
-            </StyledText>
-          </StyledView>
-
-          <StyledView className="border-b-[1px] border-slate-200 w-full pt-4 mb-4" />
-
-          <StyledText className="text-lightGray">Email address</StyledText>
-          <StyledView className="flex flex-row items-center">
-            <StyledText className="text-lg">{userInformation.email}</StyledText>
-          </StyledView>
-
-          <StyledView className="border-b-[1px] border-slate-200 w-full pt-4 mb-4" />
-
-          <StyledText className="text-lightGray">Address</StyledText>
-          <StyledView className="flex flex-row items-center">
-            <StyledText className="text-lg">{userInformation.address}</StyledText>
-          </StyledView>
-        </StyledView>
-
-        <StyledView className="flex items-center pt-8 mb-2">
-          <StyledText className="text-red text-lg py-2" onPress={handleLogout}>
-            Log out
-          </StyledText>
-          <StyledText className="text-lightGray">
-            ver. {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})
+      <StyledView className="flex gap-1 w-full px-4">
+        <StyledText className="text-lightGray">Full name</StyledText>
+        <StyledView className="flex flex-row items-center">
+          <StyledText className="text-lg">
+            {userInformation.given_name} {userInformation.family_name}
           </StyledText>
         </StyledView>
+
+        <Divider />
+
+        <StyledText className="text-lightGray">Email address</StyledText>
+        <StyledView className="flex flex-row items-center">
+          <StyledText className="text-lg">{userInformation.email}</StyledText>
+        </StyledView>
+
+        <Divider />
+
+        <StyledText className="text-lightGray">Address</StyledText>
+        <StyledView className="flex flex-row items-center">
+          <StyledText className="text-lg">{userInformation.address}</StyledText>
+        </StyledView>
+
+        <Divider />
+
+        <StyledText className="text-red text-sm py-2" onPress={() => navigation.navigate('DeleteAccount' as never)}>
+          Delete account
+        </StyledText>
+      </StyledView>
+
+      <StyledView className="flex items-center pt-4 mb-2">
+        <StyledText className="text-red text-lg py-2" onPress={handleLogout}>
+          Log out
+        </StyledText>
+        <StyledText className="text-lightGray text-sml">
+          ver. {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})
+        </StyledText>
       </StyledView>
     </StyledScrollView>
   );

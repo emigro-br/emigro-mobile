@@ -8,8 +8,29 @@ on:
 
 jobs:
 
-  scan:
+  build:
+    runs-on: ubuntu-latest
 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test
+
+  scan:
     runs-on: ubuntu-latest
 
     env:
@@ -24,4 +45,3 @@ jobs:
 
       - name: Scan with Sonarqube
         uses: sonarsource/sonarqube-scan-action@master
-

@@ -48,7 +48,7 @@
       "seventeenPlus": false
     },
     "release": {
-      "automaticRelease": true
+      "automaticRelease": false
     },
     "review": {
       "firstName": "Blake",

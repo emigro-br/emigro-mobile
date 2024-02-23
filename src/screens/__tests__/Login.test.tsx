@@ -13,6 +13,16 @@ jest.mock('@react-navigation/native', () => ({
   }),
 }));
 
+jest.mock('@/storage/helpers', () => ({
+  getAccessToken: jest.fn(),
+  getSession: jest.fn(),
+  saveSession: jest.fn(),
+}));
+
+jest.mock('@/services/emigro', () => ({
+  getUserPublicKey: jest.fn(),
+}));
+
 describe('Login screen', () => {
   test('Should call signIn with correct credentials', async () => {
     const signInMock = jest.spyOn(auth, 'signIn');

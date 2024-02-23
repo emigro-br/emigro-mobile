@@ -1,4 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import mockConsole from 'jest-mock-console';
 
 import * as auth from '@/services/auth';
 
@@ -47,7 +48,7 @@ describe('ConfirmAccount component', () => {
   });
 
   it('Should handle error from confirmAccount', async () => {
-    const consoleMock = jest.spyOn(global.console, 'error').mockImplementation(() => {});
+    const restoreConsole = mockConsole();
     jest.spyOn(auth, 'confirmAccount').mockRejectedValue(CONFIRM_ACCOUNT_ERROR);
 
     const { getByPlaceholderText, getByText, getByTestId } = render(<ConfirmAccount navigation={{}} />);
@@ -61,7 +62,8 @@ describe('ConfirmAccount component', () => {
     await waitFor(() => {
       const { children } = getByTestId('confirm-account-error');
       expect(children[0]).toEqual(CONFIRM_ACCOUNT_ERROR);
-      expect(consoleMock).toHaveBeenCalledWith(CONFIRM_ACCOUNT_ERROR);
+      expect(console.error).toHaveBeenCalledWith(CONFIRM_ACCOUNT_ERROR);
     });
+    restoreConsole();
   });
 });
