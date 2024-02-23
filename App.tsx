@@ -17,17 +17,14 @@ export default function App() {
     try {
       let authSession = await getSession();
       if (authSession) {
-        const isTokenExpired = authSession.tokenExpirationDate < new Date();
-        if (isTokenExpired){
-          console.debug('Refreshing session...');
-          const newSession = await refreshSession(authSession);
-          if (newSession) {
-            saveSession(newSession);
-            authSession = newSession;
-          } else {
-            throw new Error('Can not refresh session');
-          }
-        } 
+        // always refresh the session on app start
+        console.debug('Refreshing session...');
+        const newSession = await refreshSession(authSession);
+        if (!newSession) {
+          throw new Error('Can not refresh session');
+        }
+        saveSession(newSession);
+        authSession = newSession;
         setUserToken(authSession.accessToken);
       }
     } catch (error) {
