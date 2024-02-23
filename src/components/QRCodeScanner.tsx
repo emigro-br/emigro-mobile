@@ -3,9 +3,9 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { BarCodeScanner, PermissionResponse } from 'expo-barcode-scanner';
 import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
-import { CameraView, useCameraPermissions } from 'expo-camera/next';
+import { CameraView, PermissionStatus, useCameraPermissions } from 'expo-camera/next';
 import { styled } from 'nativewind';
 
 import Button from '@/components/Button';
@@ -13,26 +13,28 @@ import { INVALID_QR_CODE } from '@/constants/errorMessages';
 import { useVendor } from '@/contexts/VendorContext';
 import { formatAssetCode } from '@/utils/formatAssetCode';
 
+import AskCamera from '@screens/AskCamera';
+
 type QRCodeScannerProps = {
   onCancel: () => void;
   onProceedToPayment: () => void;
 };
 
 const StyledView = styled(View);
-
 const StyledText = styled(Text);
-
 const StyledTouchableOpacity = styled(TouchableOpacity);
 
 const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, onProceedToPayment }) => {
   const { scannedVendor, setScannedVendor } = useVendor();
-  const [permission, requestPermission] = useCameraPermissions();
+  const [cameraPermission, setCameraPermission] = useState<PermissionResponse | null>(null);
   const [isScanned, setIsScanned] = useState(false);
   const [error, setError] = useState('');
 
+  // only used when screen starts
+  const [permission] = useCameraPermissions();
   useEffect(() => {
-    requestPermission();
-  }, []);
+    setCameraPermission(permission);
+  }, [permission]);
 
   useFocusEffect(
     useCallback(() => {
@@ -63,10 +65,17 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
     onCancel();
   };
 
-  if (!permission?.granted) {
+  if (cameraPermission?.status === PermissionStatus.UNDETERMINED) {
+    return <AskCamera onAnswer={(newPermission) => setCameraPermission(newPermission)} />;
+  }
+
+  if (!cameraPermission?.granted) {
     return (
-      <StyledView className="flex items-center justify-center h-full">
-        <StyledText className="text-lg m-4">No access to camera</StyledText>
+      <StyledView className="bg-white flex items-center justify-center h-full">
+        <StyledText className="text-lg m-4">
+          Camera access has been denied. Please enable camera access in your device settings to proceed with QR code
+          payments.
+        </StyledText>
       </StyledView>
     );
   }
@@ -78,7 +87,7 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
           onBarcodeScanned={handleBarCodeScanned}
           style={[StyleSheet.absoluteFillObject]}
           barcodeScannerSettings={{
-            barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr], // FIXME: "qr" string is not working
+            barcodeTypes: [BarCodeScanner.Constants.BarCodeType.qr], // FIXME: "qr" string is not working
           }}
         >
           <StyledView style={styles.rectangleContainer}>
