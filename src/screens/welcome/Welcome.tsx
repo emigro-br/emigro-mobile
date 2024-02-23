@@ -18,7 +18,9 @@ export const Welcome: React.FunctionComponent = () => {
         <StyledView className="h-20 w-80 mb-10">
           <StyledImage className="h-full w-full object-contain" source={emigroLogo} />
         </StyledView>
-        <StyledText className="text-2xl text-center text-white font-bold mb-2">The Travelers Digital Wallet</StyledText>
+        <StyledText className="text-2xl text-center text-white font-bold mb-2">
+          The Traveler's Digital Wallet
+        </StyledText>
         <StyledText className="text-lg text-white text-center">Instant cross-border retail payments</StyledText>
       </StyledView>
 

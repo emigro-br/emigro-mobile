@@ -1,3 +1,4 @@
+/*eslint quotes: ["error", "single", { "avoidEscape": true }]*/
 import React from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -17,7 +18,7 @@ describe('Landing component', () => {
         <RootNavigator isSignedIn={false} />
       </NavigationContainer>,
     );
-    const welcomeScreen = getByText('The Travelers Digital Wallet');
+    const welcomeScreen = getByText("The Traveler's Digital Wallet");
 
     expect(welcomeScreen).toBeDefined();
   });
