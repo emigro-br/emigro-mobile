@@ -23,18 +23,22 @@ const AskCamera = ({ onAnswer }: AskCameraProps) => {
 
   return (
     <StyledView className="flex items-center bg-white h-full">
-      <StyledView className="pt-12 pb-8" testID="camera-icon">
-        <CameraIcon size={96} color="red" />
+      <StyledView className="pt-12 pb-6" testID="camera-icon">
+        <CameraIcon size={128} color="red" />
       </StyledView>
+
       <StyledText className="text-xl font-bold mb-4">Enable Camera</StyledText>
-      <StyledText className="text-lg text-gray px-8 mb-6">
-        Please grant us access to your camera, which is required to:
-      </StyledText>
-      <StyledView className="flex-row justify-start items-center w-full px-8">
-        <QrCodeIcon size={24} color="red" />
-        <StyledText className="text-gray text-lg"> scan QR codes for payments</StyledText>
+
+      <StyledView className="px-8 mb-8">
+        <StyledText className="text-lg text-gray mb-6">
+          Please grant us access to your camera, which is required to:
+        </StyledText>
+        <StyledView className="flex-row justify-start items-center w-full">
+          <QrCodeIcon size={24} color="red" />
+          <StyledText className="text-gray text-lg"> scan QR codes for payments</StyledText>
+        </StyledView>
       </StyledView>
-      <StyledView className="w-full p-8">
+      <StyledView className="w-full px-8">
         <Button backgroundColor="red" textColor="white" onPress={handleRequestPermission}>
           Continue
         </Button>
