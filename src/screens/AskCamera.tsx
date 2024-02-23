@@ -23,7 +23,7 @@ const AskCamera = ({ onAnswer }: AskCameraProps) => {
 
   return (
     <StyledView className="flex items-center bg-white h-full">
-      <StyledView className="pt-12 pb-8">
+      <StyledView className="pt-12 pb-8" testID="camera-icon">
         <CameraIcon size={96} color="red" />
       </StyledView>
       <StyledText className="text-xl font-bold mb-4">Enable Camera</StyledText>
