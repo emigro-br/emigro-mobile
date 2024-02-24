@@ -9,7 +9,7 @@ import Button from '@components/Button';
 
 import { deleteAccount } from '@services/auth';
 
-import { clearSession, getSession } from '@storage/helpers';
+import { sessionStore } from '@stores/SessionStore';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -18,14 +18,14 @@ const DeleteAccount = () => {
   const navigation = useNavigation();
 
   const handleDeleteAccount = async () => {
-    const session = await getSession();
+    const session = sessionStore.session;
     if (!session) {
       navigation.navigate('Welcome' as never);
       return;
     }
     try {
       await deleteAccount(session);
-      clearSession();
+      sessionStore.clear();
       navigation.navigate('Welcome' as never);
     } catch (error) {
       console.error(error);

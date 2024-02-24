@@ -2,11 +2,13 @@ import { AssetCode } from '@constants/assetCode';
 
 import { SwapBloc, SwapTransaction } from '../bloc';
 
-jest.mock('@/storage/helpers', () => ({
-  getSession: jest.fn().mockResolvedValue({ publicKey: 'mockedPublicKey' }),
+jest.mock('@stores/SessionStore', () => ({
+  sessionStore: {
+    session: { publicKey: 'mockedPublicKey' },
+  },
 }));
 
-jest.mock('@/services/emigro', () => ({
+jest.mock('@services/emigro', () => ({
   sendTransaction: jest.fn().mockResolvedValue({ transactionHash: 'hash' }),
 }));
 

@@ -10,7 +10,7 @@ import profileLogo from '@assets/images/profile-icon.png';
 
 import { NotAuhtorized, getUserProfile } from '@services/emigro';
 
-import { clearSession } from '@storage/helpers';
+import { sessionStore } from '@stores/SessionStore';
 
 const StyledScrollView = styled(ScrollView);
 const StyledView = styled(View);
@@ -22,7 +22,7 @@ const Profile = () => {
   const [userInformation, setUserInformation] = useState<any>(null);
 
   const handleLogout = async () => {
-    await clearSession();
+    await sessionStore.clear();
     navigation.navigate('Welcome' as never);
   };
 

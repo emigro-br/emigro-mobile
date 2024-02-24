@@ -10,7 +10,7 @@ import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_ME
 
 import { refresh as refreshSession } from '@services/auth';
 
-import { getSession, saveSession } from '@storage/helpers';
+import { sessionStore } from '@stores/SessionStore';
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -22,7 +22,7 @@ export class NotAuhtorized extends Error {
 }
 
 export const fetchWithTokenCheck = async (url: string, options: RequestInit): Promise<Response> => {
-  let session = await getSession();
+  let session = sessionStore.session;
   if (!session) {
     throw new NotAuhtorized();
   }
@@ -34,7 +34,7 @@ export const fetchWithTokenCheck = async (url: string, options: RequestInit): Pr
     console.debug('Token expired, refreshing...');
     const newSession = await refreshSession(session);
     if (newSession) {
-      saveSession(newSession);
+      sessionStore.save(newSession);
       session = newSession;
     } else {
       throw new Error('Could not refresh session');
@@ -164,7 +164,7 @@ export const getUserPublicKey = async (): Promise<string> => {
 export const getUserProfile = async (): Promise<IUserProfile> => {
   const url = `${backendUrl}/user/profile`;
   try {
-    const session = await getSession();
+    const session = sessionStore.session;
     const res = await fetchWithTokenCheck(url, {
       method: 'POST',
       headers: {

@@ -28,6 +28,11 @@ const mockResponse = {
 };
 
 describe('ConfirmAccount component', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.useFakeTimers();
+  });
+
   it('Should handle confirmation with success', async () => {
     const confirmAccount = jest.spyOn(auth, 'confirmAccount');
     confirmAccount.mockResolvedValue(mockResponse);
@@ -41,9 +46,9 @@ describe('ConfirmAccount component', () => {
     fireEvent.press(confirmButton);
 
     await waitFor(() => {
-      expect(confirmAccount).toHaveBeenCalled();
       const { children } = getByTestId('confirm-account-error');
       expect(children[0]).toBeUndefined();
+      expect(confirmAccount).toHaveBeenCalled();
     });
   });
 

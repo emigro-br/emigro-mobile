@@ -6,7 +6,7 @@ import { VendorContextProvider } from '@/contexts/VendorContext';
 import { SplashScreen } from '@screens/Splash';
 import { Landing } from '@components/Landing';
 import { useEffect, useState } from 'react';
-import { clearSession, getSession, saveSession } from '@/storage/helpers';
+import { sessionStore } from '@stores/SessionStore';
 import { refresh as refreshSession } from '@/services/auth';
 
 export default function App() {
@@ -15,7 +15,7 @@ export default function App() {
 
   const bootstrapAsync = async () => {
     try {
-      let authSession = await getSession();
+      let authSession = await sessionStore.load();
       if (authSession) {
         // always refresh the session on app start
         console.debug('Refreshing session...');
@@ -23,13 +23,13 @@ export default function App() {
         if (!newSession) {
           throw new Error('Can not refresh session');
         }
-        saveSession(newSession);
+        sessionStore.save(newSession);
         authSession = newSession;
         setUserToken(authSession.accessToken);
       }
     } catch (error) {
       console.warn('Can not load the token, cleaning session', error);
-      await clearSession();
+      await sessionStore.clear();
     } finally {
       setIsLoading(false);
     }

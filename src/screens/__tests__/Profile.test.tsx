@@ -6,12 +6,12 @@ import { IUserProfile } from '@/types/IUserProfile';
 
 import Profile from '@screens/profile/Profile';
 
-import { clearSession } from '@storage/helpers';
+import { sessionStore } from '@stores/SessionStore';
 
-jest.mock('@/storage/helpers', () => ({
-  getSession: jest.fn(),
-  clearSession: jest.fn(),
-  getAccessToken: jest.fn(),
+jest.mock('@stores/SessionStore', () => ({
+  sessionStore: {
+    clear: jest.fn(),
+  },
 }));
 
 jest.mock('@react-navigation/native', () => ({
@@ -42,7 +42,7 @@ describe('Profile screen', () => {
     fireEvent.press(logoutButton);
 
     await waitFor(() => {
-      expect(clearSession).toHaveBeenCalled();
+      expect(sessionStore.clear).toHaveBeenCalled();
     });
   });
 });

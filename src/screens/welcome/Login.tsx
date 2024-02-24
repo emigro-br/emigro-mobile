@@ -5,13 +5,14 @@ import { useNavigation } from '@react-navigation/native';
 
 import { styled } from 'nativewind';
 
-import { SIGNIN_ERROR_MESSAGE, SIGN_IN_FIELDS_ERROR } from '@/constants/errorMessages';
 import { FormField } from '@/types/FormField';
+
+import { SIGNIN_ERROR_MESSAGE, SIGN_IN_FIELDS_ERROR } from '@constants/errorMessages';
 
 import { signIn } from '@services/auth';
 import { getUserPublicKey } from '@services/emigro';
 
-import { getAccessToken, getSession, saveSession } from '@storage/helpers';
+import { sessionStore } from '@stores/SessionStore';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -45,10 +46,10 @@ const Login: React.FunctionComponent = () => {
     try {
       // TODO: improve this workaround to update the session with the user public key
       const publicKey = await getUserPublicKey();
-      const authSession = await getSession();
+      const authSession = sessionStore.session;
       if (authSession) {
         authSession.publicKey = publicKey;
-        saveSession(authSession);
+        sessionStore.save(authSession);
       } else {
         console.warn('Failed to update user public key');
       }
@@ -66,10 +67,10 @@ const Login: React.FunctionComponent = () => {
         return;
       }
       const authSession = await signIn(formData.email, formData.password);
-      saveSession(authSession);
+      sessionStore.save(authSession);
       setError('');
       triggerUpdateUserPublicKey();
-      const accessToken = await getAccessToken();
+      const accessToken = sessionStore.getAccessToken();
       accessToken && navigation?.navigate('Root' as never);
     } catch (error) {
       console.error(error, SIGNIN_ERROR_MESSAGE);
