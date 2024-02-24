@@ -1,5 +1,6 @@
 import { NavigationContainer, NavigationProp } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { IPaymentResponse } from '@/types/IPaymentResponse';

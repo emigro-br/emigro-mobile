@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { styled } from 'nativewind';
 
-import { confirmAccount } from '@/services/auth';
+import { styled } from 'nativewind';
 
 import Button from '@components/Button';
 import CustomModal from '@components/CustomModal';
 
 import { CONFIRM_ACCOUNT_ERROR, WRONG_CODE_ERROR } from '@constants/errorMessages';
+
+import { confirmAccount } from '@services/auth';
 
 type ConfirmAccountProps = {
   navigation: any;

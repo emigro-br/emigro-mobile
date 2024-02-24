@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 
+import { NavigationProp } from '@react-navigation/native';
+
 import { styled } from 'nativewind';
 
 import Button from '@components/Button';

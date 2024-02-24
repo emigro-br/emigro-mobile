@@ -2,27 +2,27 @@ import React, { useState } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
 
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+
 import { observer } from 'mobx-react-lite';
 import { styled } from 'nativewind';
-
-import BalanceStore from '@/stores/BalanceStore';
-import { useOperationStore } from '@/stores/operationStore';
 
 import Balance from '@components/Balance';
 import OperationButton from '@components/OperationButton';
 
 import { OperationType } from '@constants/constants';
 
+import BalanceStore from '@stores/BalanceStore';
+import { operationStore } from '@stores/OperationStore';
+
 const StyledScrollView = styled(ScrollView);
 const StyledView = styled(View);
 
 const Wallet: React.FunctionComponent = observer(() => {
   const [refreshing, setRefreshing] = useState(false);
-  const { setOperationType } = useOperationStore();
   const navigation = useNavigation();
 
   const handleOnPress = (operationType: OperationType) => {
-    setOperationType(operationType);
+    operationStore.setOperationType(operationType);
     navigation.navigate('Operation' as never);
   };
 

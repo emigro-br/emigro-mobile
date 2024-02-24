@@ -1,5 +1,5 @@
 export interface IAnchorResponse {
-    url: string;
-    type: string;
-    id: string;
+  url: string;
+  type: string;
+  id: string;
 }

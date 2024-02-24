@@ -1,6 +1,9 @@
 import { Platform } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import * as SecureStore from 'expo-secure-store';
+
 import { IAuthSession } from '../types/IAuthSession';
 
 export const getAccessToken = async (): Promise<string | null> => {
@@ -21,7 +24,7 @@ export const saveSession = (session: IAuthSession) => {
   if (session.publicKey) {
     SecureStore.setItem('publicKey', session.publicKey);
   }
-}
+};
 
 export const getSession = async (): Promise<IAuthSession | null> => {
   const accessToken = await SecureStore.getItemAsync('accessToken');
@@ -46,9 +49,9 @@ export const getSession = async (): Promise<IAuthSession | null> => {
     tokenExpirationDate: new Date(tokenExpirationDate),
     email,
     publicKey,
-  }
+  };
   return authSession;
-}
+};
 
 export const clearSession = async (): Promise<void> => {
   await SecureStore.deleteItemAsync('accessToken');
@@ -68,4 +71,4 @@ export const clearSession = async (): Promise<void> => {
       await AsyncStorage.multiRemove(asyncStorageKeys);
     }
   }
-}
+};

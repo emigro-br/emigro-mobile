@@ -1,8 +1,7 @@
 export interface ITransactionRequest {
-    maxAmountToSend: string | undefined;
-    destinationAmount: string;
-    destination: string;
-    sourceAssetCode: string;
-    destinationAssetCode: string;
-  }
-  
+  maxAmountToSend: string | undefined;
+  destinationAmount: string;
+  destination: string;
+  sourceAssetCode: string;
+  destinationAssetCode: string;
+}

@@ -1,9 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
+
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import mockConsole from 'jest-mock-console';
 
-import { deleteAccount } from '@/services/auth';
-import { clearSession, getSession } from '@/storage/helpers';
+import { deleteAccount } from '@services/auth';
+
+import { clearSession, getSession } from '@storage/helpers';
 
 import DeleteAccount from '../DeleteAccount';
 
@@ -11,12 +13,12 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: jest.fn(),
 }));
 
-jest.mock('@/storage/helpers', () => ({
+jest.mock('@storage/helpers', () => ({
   getSession: jest.fn(),
   clearSession: jest.fn(),
 }));
 
-jest.mock('@/services/auth', () => ({
+jest.mock('@services/auth', () => ({
   getSession: jest.fn(),
   deleteAccount: jest.fn(),
   clearSession: jest.fn(),

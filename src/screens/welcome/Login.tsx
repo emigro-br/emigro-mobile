@@ -2,13 +2,16 @@ import React, { useState } from 'react';
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
+
 import { styled } from 'nativewind';
 
 import { SIGNIN_ERROR_MESSAGE, SIGN_IN_FIELDS_ERROR } from '@/constants/errorMessages';
-import { signIn } from '@/services/auth';
-import { getUserPublicKey } from '@/services/emigro';
-import { getAccessToken, getSession, saveSession } from '@/storage/helpers';
 import { FormField } from '@/types/FormField';
+
+import { signIn } from '@services/auth';
+import { getUserPublicKey } from '@services/emigro';
+
+import { getAccessToken, getSession, saveSession } from '@storage/helpers';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);

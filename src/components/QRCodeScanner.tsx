@@ -1,19 +1,22 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
+
+import { Ionicons } from '@expo/vector-icons';
 import { BarCodeScanner, PermissionResponse } from 'expo-barcode-scanner';
 import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
 import { CameraView, PermissionStatus, useCameraPermissions } from 'expo-camera/next';
 import { styled } from 'nativewind';
 
 import Button from '@/components/Button';
-import { INVALID_QR_CODE } from '@/constants/errorMessages';
 import { useVendor } from '@/contexts/VendorContext';
-import { formatAssetCode } from '@/utils/formatAssetCode';
+
+import { INVALID_QR_CODE } from '@constants/errorMessages';
 
 import AskCamera from '@screens/AskCamera';
+
+import { formatAssetCode } from '@utils/formatAssetCode';
 
 type QRCodeScannerProps = {
   onCancel: () => void;

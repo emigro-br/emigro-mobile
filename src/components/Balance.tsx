@@ -3,9 +3,10 @@ import { Image, Text, View } from 'react-native';
 import { styled } from 'nativewind';
 
 import { IBalance } from '@/types/IBalance';
-import { getAssetIcon } from '@/utils/getAssetIcon';
 
 import { AssetCode, AssetCodeToName, AssetCodeToSymbol } from '@constants/assetCode';
+
+import { getAssetIcon } from '@utils/getAssetIcon';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);

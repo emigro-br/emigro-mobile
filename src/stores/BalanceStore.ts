@@ -1,7 +1,8 @@
 import { makeAutoObservable } from 'mobx';
 
-import { getUserBalance } from '@/services/emigro';
 import { IBalance } from '@/types/IBalance';
+
+import { getUserBalance } from '@services/emigro';
 
 export class BalanceStore {
   userBalance: IBalance[] = [];

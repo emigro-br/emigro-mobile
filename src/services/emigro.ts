@@ -1,5 +1,3 @@
-import { refresh as refreshSession } from '@/services/auth';
-import { getSession, saveSession } from '@/storage/helpers';
 import { IBalance } from '@/types/IBalance';
 import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { IQuote } from '@/types/IQuote';
@@ -9,6 +7,10 @@ import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IUserProfile } from '@/types/IUserProfile';
 
 import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
+
+import { refresh as refreshSession } from '@services/auth';
+
+import { getSession, saveSession } from '@storage/helpers';
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 

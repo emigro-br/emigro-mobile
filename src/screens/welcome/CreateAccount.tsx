@@ -2,16 +2,19 @@ import React, { useState } from 'react';
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { styled } from 'nativewind';
 
-import { signUp } from '@/services/auth';
 import { FormField } from '@/types/FormField';
+import { IRegisterUser } from '@/types/IRegisterUser';
 
 import Button from '@components/Button';
 import CustomModal from '@components/CustomModal';
 
 import { Role } from '@constants/constants';
 import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
+
+import { signUp } from '@services/auth';
 
 type SignUpProps = {
   navigation: any;

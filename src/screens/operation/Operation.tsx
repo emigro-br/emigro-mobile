@@ -5,22 +5,20 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import * as Clipboard from 'expo-clipboard';
 import { styled } from 'nativewind';
 
-import {
-  CallbackType,
-  ConfirmWithdrawDto,
-  confirmWithdraw,
-  getInteractiveUrl,
-  getTransaction,
-} from '@/services/anchor';
-import { getUserPublicKey } from '@/services/emigro';
 import { getAssetCode } from '@/stellar/utils';
-import { getAccessToken } from '@/storage/helpers';
-import { useOperationStore } from '@/stores/operationStore';
 import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { TransactionStatus } from '@/types/TransactionStatus';
-import { getAssetIcon } from '@/utils/getAssetIcon';
 
 import { AssetCode } from '@constants/assetCode';
+
+import { CallbackType, ConfirmWithdrawDto, confirmWithdraw, getInteractiveUrl, getTransaction } from '@services/anchor';
+import { getUserPublicKey } from '@services/emigro';
+
+import { getAccessToken } from '@storage/helpers';
+
+import { operationStore } from '@stores/OperationStore';
+
+import { getAssetIcon } from '@utils/getAssetIcon';
 
 import { ConfirmationModal } from './modals/ConfirmationModal';
 import { ErrorModal } from './modals/ErrorModal';
@@ -48,7 +46,7 @@ const maskWallet = (address: string): string => {
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
 const Operation: React.FunctionComponent = () => {
-  const { type } = useOperationStore().operation;
+  const { type } = operationStore.operation;
   const [publicKey, setPublicKey] = useState<string | null>(null);
   // const [url, setUrl] = useState<string | null>(null);
   const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);

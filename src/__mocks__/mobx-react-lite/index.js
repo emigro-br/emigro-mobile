@@ -1,2 +1,2 @@
 // mocking mobx-react-lite
-export const observer = (component) => component
+export const observer = (component) => component;

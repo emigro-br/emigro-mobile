@@ -1,9 +1,9 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import mockConsole from 'jest-mock-console';
 
-import * as auth from '@/services/auth';
-
 import { CONFIRM_ACCOUNT_ERROR } from '@constants/errorMessages';
+
+import * as auth from '@services/auth';
 
 import ConfirmAccount from '../welcome/ConfirmAccount';
 

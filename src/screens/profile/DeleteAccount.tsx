@@ -2,12 +2,14 @@ import React from 'react';
 import { Text, View } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
+
 import { styled } from 'nativewind';
 
-import { deleteAccount } from '@/services/auth';
-import { clearSession, getSession } from '@/storage/helpers';
-
 import Button from '@components/Button';
+
+import { deleteAccount } from '@services/auth';
+
+import { clearSession, getSession } from '@storage/helpers';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);

@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Image, ScrollView, Text, View } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
+
 import * as Application from 'expo-application';
 import { styled } from 'nativewind';
 
-import { NotAuhtorized, getUserProfile } from '@/services/emigro';
-import { clearSession } from '@/storage/helpers';
-
 import profileLogo from '@assets/images/profile-icon.png';
+
+import { NotAuhtorized, getUserProfile } from '@services/emigro';
+
+import { clearSession } from '@storage/helpers';
 
 const StyledScrollView = styled(ScrollView);
 const StyledView = styled(View);

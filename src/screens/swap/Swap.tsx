@@ -3,16 +3,19 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { ArrowPathIcon } from 'react-native-heroicons/solid';
 
 import { NavigationProp } from '@react-navigation/native';
+
 import { styled } from 'nativewind';
 
 import Button from '@/components/Button';
-import { handleQuote } from '@/services/emigro';
-import BalanceStore from '@/stores/BalanceStore';
 import { IQuoteRequest } from '@/types/IQuoteRequest';
 
 import { AssetCode } from '@constants/assetCode';
 
 import { RootStackParamList } from '@navigation/index';
+
+import { handleQuote } from '@services/emigro';
+
+import BalanceStore from '@stores/BalanceStore';
 
 import { AssetSwap } from './AssetSwap';
 import bloc, { SwapTransaction } from './bloc';

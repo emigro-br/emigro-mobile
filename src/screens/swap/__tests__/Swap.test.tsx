@@ -1,14 +1,16 @@
 import React from 'react';
 
 import { NavigationProp } from '@react-navigation/native';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import * as emigroService from '@/services/emigro';
-import BalanceStore from '@/stores/BalanceStore';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { AssetCode } from '@constants/assetCode';
 
 import { RootStackParamList } from '@navigation/index';
+
+import * as emigroService from '@services/emigro';
+
+import BalanceStore from '@stores/BalanceStore';
 
 import { Swap } from '../Swap';
 import bloc from '../bloc';
