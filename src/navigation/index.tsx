@@ -5,6 +5,8 @@ import Operation from '@screens/operation/Operation';
 import DeleteAccount from '@screens/profile/DeleteAccount';
 import { DetailsSwap } from '@screens/swap/DetailsSwap';
 import { Swap } from '@screens/swap/Swap';
+import TransferAsset from '@screens/transfers/TransferAsset';
+import Transfers from '@screens/transfers/Transfers';
 import ConfirmAccount from '@screens/welcome/ConfirmAccount';
 import CreateAccount from '@screens/welcome/CreateAccount';
 import Login from '@screens/welcome/Login';
@@ -25,6 +27,10 @@ export type RootStackParamList = {
   Swap: undefined;
   DetailsSwap: undefined;
   DeleteAccount: undefined;
+  Transfers: undefined;
+  TransferAsset: {
+    asset: string;
+  };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -44,6 +50,13 @@ function RootNavigator(props: RootNavigatorProps) {
     >
       <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+      <Stack.Screen name="Transfers" component={Transfers} options={{ title: 'Transfers' }} />
+      <Stack.Screen
+        name="TransferAsset"
+        component={TransferAsset}
+        options={{ title: 'Transfers', headerTitle: '' }}
+        initialParams={{ asset: '' }}
+      />
 
       {/* Auth screens */}
       <Stack.Group>
