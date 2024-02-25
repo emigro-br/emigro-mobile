@@ -35,7 +35,6 @@ describe('Login screen', () => {
       refreshToken: 'refreshToken',
       idToken: 'idToken',
       tokenExpirationDate: new Date(),
-      email: '',
     };
 
     signInMock.mockResolvedValue(Promise.resolve(authSession));
