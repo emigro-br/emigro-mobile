@@ -1,7 +1,3 @@
-import { Platform } from 'react-native';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import * as SecureStore from 'expo-secure-store';
 import { makeAutoObservable } from 'mobx';
 
@@ -61,17 +57,6 @@ export class SessionStore {
     const keys = ['accessToken', 'refreshToken', 'idToken', 'tokenExpirationDate', 'email', 'publicKey'];
     await Promise.all(keys.map((key) => SecureStore.deleteItemAsync(key)));
     this.session = null;
-
-    // https://stackoverflow.com/questions/46736268/react-native-asyncstorage-clear-is-failing-on-ios
-    const asyncStorageKeys = await AsyncStorage.getAllKeys();
-    if (asyncStorageKeys.length > 0) {
-      if (Platform.OS === 'android') {
-        await AsyncStorage.clear();
-      }
-      if (Platform.OS === 'ios') {
-        await AsyncStorage.multiRemove(asyncStorageKeys);
-      }
-    }
   }
 
   async refresh() {

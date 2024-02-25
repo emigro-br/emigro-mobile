@@ -15,10 +15,6 @@ jest.mock('@react-navigation/native', () => ({
   }),
 }));
 
-jest.mock('@react-native-async-storage/async-storage', () => ({
-  multiSet: jest.fn(),
-}));
-
 describe('CreateAccount component', () => {
   beforeEach(() => {
     jest.useFakeTimers();

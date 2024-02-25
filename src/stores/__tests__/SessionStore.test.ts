@@ -1,5 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import * as SecureStore from 'expo-secure-store';
 
 import { IAuthSession } from '@/types/IAuthSession';
@@ -9,13 +7,6 @@ import { refresh as refreshSession } from '@services/auth';
 import { SessionStore } from '../SessionStore';
 
 jest.mock('expo-secure-store');
-
-jest.mock('@react-native-async-storage/async-storage', () => ({
-  multiSet: jest.fn(),
-  getAllKeys: jest.fn(),
-  multiRemove: jest.fn(),
-  clear: jest.fn(),
-}));
 
 jest.mock('@services/auth', () => ({
   refresh: jest.fn(),
@@ -58,8 +49,6 @@ describe('SessionStore', () => {
   });
 
   it('should clear session', async () => {
-    (AsyncStorage.getAllKeys as jest.Mock).mockResolvedValue([]);
-
     const session = {
       accessToken: 'access_token',
       refreshToken: 'refresh_token',
