@@ -2,6 +2,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import * as SecureStore from 'expo-secure-store';
 
+import { IAuthSession } from '@/types/IAuthSession';
+
+import { refresh as refreshSession } from '@services/auth';
+
 import { SessionStore } from '../SessionStore';
 
 jest.mock('expo-secure-store');
@@ -11,6 +15,10 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   getAllKeys: jest.fn(),
   multiRemove: jest.fn(),
   clear: jest.fn(),
+}));
+
+jest.mock('@services/auth', () => ({
+  refresh: jest.fn(),
 }));
 
 describe('SessionStore', () => {
@@ -98,5 +106,37 @@ describe('SessionStore', () => {
     const publicKey = sessionStore.getPublicKey();
 
     expect(publicKey).toBe(session.publicKey);
+  });
+
+  it('should refresh session', async () => {
+    const inMemoryStorage: Record<string, string> = {};
+    (SecureStore.setItemAsync as jest.Mock).mockImplementation(async (key, value) => {
+      inMemoryStorage[key] = value;
+    });
+    (SecureStore.getItemAsync as jest.Mock).mockImplementation(async (key) => inMemoryStorage[key]);
+
+    // set a previous session
+    const mockSession: IAuthSession = {
+      accessToken: 'access_token',
+      refreshToken: 'refresh_token',
+      idToken: 'id_token',
+      tokenExpirationDate: new Date(),
+    };
+    sessionStore.save(mockSession);
+
+    // mock refresh session
+    const mockNewSession: IAuthSession = {
+      accessToken: 'new_access_token',
+      refreshToken: 'new_refresh_token',
+      idToken: 'new_id_token',
+      tokenExpirationDate: new Date(),
+    };
+    (refreshSession as jest.Mock).mockResolvedValue(mockNewSession);
+
+    // refresh session
+    await sessionStore.refresh();
+    const loadedSession = await sessionStore.load();
+
+    expect(loadedSession).toEqual(mockNewSession);
   });
 });

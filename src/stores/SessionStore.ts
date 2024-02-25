@@ -5,6 +5,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import { makeAutoObservable } from 'mobx';
 
+import { refresh as refreshSession } from '@services/auth';
+
 import { IAuthSession } from '../types/IAuthSession';
 
 export class SessionStore {
@@ -69,6 +71,18 @@ export class SessionStore {
       if (Platform.OS === 'ios') {
         await AsyncStorage.multiRemove(asyncStorageKeys);
       }
+    }
+  }
+
+  async refresh() {
+    if (!this.session) {
+      return null;
+    }
+
+    const newSession = await refreshSession(this.session);
+    if (newSession) {
+      await this.save(newSession);
+      return this.session;
     }
   }
 }
