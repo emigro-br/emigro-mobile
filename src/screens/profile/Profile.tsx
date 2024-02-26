@@ -36,7 +36,7 @@ const Profile = () => {
     } catch (error) {
       console.warn('Can not load the profile', error);
       if (error instanceof CustomError) {
-        if (['NotAuhtorized', 'BadRequestException'].includes(error.name)) {
+        if (['UnauthorizedException', 'BadRequestException'].includes(error.name)) {
           handleLogout();
         }
       }
