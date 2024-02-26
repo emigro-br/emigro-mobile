@@ -10,7 +10,7 @@ import { RootStackParamList } from '@navigation/index';
 
 import * as emigroService from '@services/emigro';
 
-import BalanceStore from '@stores/BalanceStore';
+import { balanceStore } from '@stores/BalanceStore';
 
 import { Swap } from '../Swap';
 import bloc from '../bloc';
@@ -66,7 +66,7 @@ describe('Swap component', () => {
 
   test('Should update bloc and navigate to DetailsSwap when button is pressed', async () => {
     const spy = jest.spyOn(bloc, 'setTransaction');
-    jest.spyOn(BalanceStore, 'get').mockReturnValue(100); // enough balance
+    jest.spyOn(balanceStore, 'get').mockReturnValue(100); // enough balance
 
     const { getByText, findAllByPlaceholderText } = render(<Swap navigation={navigation} />);
 

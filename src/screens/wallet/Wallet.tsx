@@ -11,7 +11,7 @@ import OperationButton from '@components/OperationButton';
 
 import { OperationType } from '@constants/constants';
 
-import BalanceStore from '@stores/BalanceStore';
+import { balanceStore } from '@stores/BalanceStore';
 import { operationStore } from '@stores/OperationStore';
 
 const StyledScrollView = styled(ScrollView);
@@ -28,14 +28,14 @@ const Wallet: React.FunctionComponent = observer(() => {
 
   useFocusEffect(
     React.useCallback(() => {
-      BalanceStore.fetchUserBalance();
+      balanceStore.fetchUserBalance();
     }, []),
   );
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     try {
-      await BalanceStore.fetchUserBalance();
+      await balanceStore.fetchUserBalance();
     } finally {
       setRefreshing(false);
     }
@@ -51,7 +51,7 @@ const Wallet: React.FunctionComponent = observer(() => {
           <OperationButton onPress={handleOnPress} />
         </StyledView>
         <StyledView className="px-4 w-full">
-          <Balance userBalance={BalanceStore.userBalance} />
+          <Balance userBalance={balanceStore.userBalance} />
         </StyledView>
       </StyledView>
     </StyledScrollView>

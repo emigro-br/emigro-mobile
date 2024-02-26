@@ -36,4 +36,4 @@ export class BalanceStore {
   }
 }
 
-export default new BalanceStore();
+export const balanceStore = new BalanceStore();
