@@ -24,6 +24,11 @@ const navigation = {
 } as unknown as NavigationProp<RootStackParamList, 'Swap'>;
 
 describe('Swap component', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.useFakeTimers();
+  });
+
   test('Should render Swap component correctly', async () => {
     const { getByText, getByTestId } = render(<Swap navigation={navigation} />);
 
@@ -36,10 +41,10 @@ describe('Swap component', () => {
     expect(arrowIcon).toBeDefined();
 
     await waitFor(() => {
-      expect(emigroService.handleQuote).toBeCalledTimes(1);
       // check rate
       const buyText = getByText(`1 ${AssetCode.EURC} ≈ 1.082900 ${AssetCode.BRL}`);
       expect(buyText).toBeDefined();
+      expect(emigroService.handleQuote).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -85,8 +90,8 @@ describe('Swap component', () => {
     };
 
     await waitFor(() => {
-      expect(spy).toBeCalledWith(transaction);
-      expect(navigation.navigate).toBeCalledWith('DetailsSwap');
+      expect(spy).toHaveBeenCalledWith(transaction);
+      expect(navigation.navigate).toHaveBeenCalledWith('DetailsSwap');
     });
   });
 });

@@ -14,13 +14,16 @@ jest.mock('@react-navigation/native', () => ({
   }),
 }));
 
-jest.mock('@/storage/helpers', () => ({
-  getAccessToken: jest.fn(),
-  getSession: jest.fn(),
-  saveSession: jest.fn(),
+jest.mock('@stores/SessionStore', () => ({
+  sessionStore: {
+    session: {},
+    clear: jest.fn(),
+    save: jest.fn(),
+    getAccessToken: jest.fn(),
+  },
 }));
 
-jest.mock('@/services/emigro', () => ({
+jest.mock('@services/emigro', () => ({
   getUserPublicKey: jest.fn(),
 }));
 

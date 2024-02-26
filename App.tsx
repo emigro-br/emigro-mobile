@@ -1,35 +1,35 @@
-import { StatusBar } from 'expo-status-bar';
+import { useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import { StatusBar } from 'expo-status-bar';
 
 import { VendorContextProvider } from '@/contexts/VendorContext';
 
-import { SplashScreen } from '@screens/Splash';
 import { Landing } from '@components/Landing';
-import { useEffect, useState } from 'react';
-import { clearSession, getSession, saveSession } from '@/storage/helpers';
-import { refresh as refreshSession } from '@/services/auth';
+
+import { SplashScreen } from '@screens/Splash';
+
+import { sessionStore } from '@stores/SessionStore';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [userToken, setUserToken] = useState<string | null>(null); // Update the type of userToken
+  const [isSignedIn, setIsSignedIn] = useState(false);
 
   const bootstrapAsync = async () => {
     try {
-      let authSession = await getSession();
+      const authSession = await sessionStore.load();
       if (authSession) {
         // always refresh the session on app start
         console.debug('Refreshing session...');
-        const newSession = await refreshSession(authSession);
+        const newSession = await sessionStore.refresh();
         if (!newSession) {
-          throw new Error('Can not refresh session');
+          throw new Error('Can not refresh the session');
         }
-        saveSession(newSession);
-        authSession = newSession;
-        setUserToken(authSession.accessToken);
+        setIsSignedIn(true);
       }
     } catch (error) {
       console.warn('Can not load the token, cleaning session', error);
-      await clearSession();
+      await sessionStore.clear();
     } finally {
       setIsLoading(false);
     }
@@ -48,7 +48,7 @@ export default function App() {
     <SafeAreaProvider>
       <VendorContextProvider>
         <StatusBar style="dark" />
-        <Landing isSignedIn={!!userToken} />
+        <Landing isSignedIn={isSignedIn} />
       </VendorContextProvider>
     </SafeAreaProvider>
   );

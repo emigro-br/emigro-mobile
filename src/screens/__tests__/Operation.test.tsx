@@ -26,9 +26,11 @@ jest.mock('@services/emigro', () => ({
   getUserPublicKey: jest.fn().mockResolvedValue('somePublicKey'),
 }));
 
-jest.mock('@storage/helpers', () => ({
-  getAccessToken: jest.fn().mockResolvedValue('someToken'),
-  getAssetCode: jest.fn(),
+jest.mock('@stores/SessionStore', () => ({
+  sessionStore: {
+    session: null,
+    getAccessToken: jest.fn().mockReturnValue('someToken'),
+  },
 }));
 
 jest.mock('@stores/OperationStore', () => ({

@@ -14,9 +14,8 @@ import { AssetCode } from '@constants/assetCode';
 import { CallbackType, ConfirmWithdrawDto, confirmWithdraw, getInteractiveUrl, getTransaction } from '@services/anchor';
 import { getUserPublicKey } from '@services/emigro';
 
-import { getAccessToken } from '@storage/helpers';
-
 import { operationStore } from '@stores/OperationStore';
+import { sessionStore } from '@stores/SessionStore';
 
 import { getAssetIcon } from '@utils/getAssetIcon';
 
@@ -79,18 +78,18 @@ const Operation: React.FunctionComponent = () => {
 
     const assetCodeSelected = getAssetCode(asset);
 
-    const cognitoToken = await getAccessToken();
+    const cognitoToken = sessionStore.accessToken;
 
     let acccountId = publicKey;
     if (!publicKey) {
-      acccountId = await getUserPublicKey();
+      acccountId = await getUserPublicKey(); // TODO: use sessionStore.publicKey;
     }
 
     const anchorParams = {
       account: acccountId!,
       operation: type as string,
       asset_code: assetCodeSelected,
-      cognito_token: cognitoToken,
+      cognito_token: cognitoToken!,
     };
 
     try {
