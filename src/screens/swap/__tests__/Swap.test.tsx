@@ -1,14 +1,16 @@
 import React from 'react';
 
 import { NavigationProp } from '@react-navigation/native';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import * as emigroService from '@/services/emigro';
-import BalanceStore from '@/stores/BalanceStore';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { AssetCode } from '@constants/assetCode';
 
 import { RootStackParamList } from '@navigation/index';
+
+import * as emigroService from '@services/emigro';
+
+import { balanceStore } from '@stores/BalanceStore';
 
 import { Swap } from '../Swap';
 import bloc from '../bloc';
@@ -22,6 +24,11 @@ const navigation = {
 } as unknown as NavigationProp<RootStackParamList, 'Swap'>;
 
 describe('Swap component', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.useFakeTimers();
+  });
+
   test('Should render Swap component correctly', async () => {
     const { getByText, getByTestId } = render(<Swap navigation={navigation} />);
 
@@ -34,10 +41,10 @@ describe('Swap component', () => {
     expect(arrowIcon).toBeDefined();
 
     await waitFor(() => {
-      expect(emigroService.handleQuote).toBeCalledTimes(1);
       // check rate
       const buyText = getByText(`1 ${AssetCode.EURC} ≈ 1.082900 ${AssetCode.BRL}`);
       expect(buyText).toBeDefined();
+      expect(emigroService.handleQuote).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -59,7 +66,7 @@ describe('Swap component', () => {
 
   test('Should update bloc and navigate to DetailsSwap when button is pressed', async () => {
     const spy = jest.spyOn(bloc, 'setTransaction');
-    jest.spyOn(BalanceStore, 'get').mockReturnValue(100); // enough balance
+    jest.spyOn(balanceStore, 'get').mockReturnValue(100); // enough balance
 
     const { getByText, findAllByPlaceholderText } = render(<Swap navigation={navigation} />);
 
@@ -83,8 +90,8 @@ describe('Swap component', () => {
     };
 
     await waitFor(() => {
-      expect(spy).toBeCalledWith(transaction);
-      expect(navigation.navigate).toBeCalledWith('DetailsSwap');
+      expect(spy).toHaveBeenCalledWith(transaction);
+      expect(navigation.navigate).toHaveBeenCalledWith('DetailsSwap');
     });
   });
 });

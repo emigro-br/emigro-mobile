@@ -1,11 +1,11 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import mockConsole from 'jest-mock-console';
 
-import * as auth from '@/services/auth';
-
 import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 
 import CreateAccount from '@screens/welcome/CreateAccount';
+
+import * as auth from '@services/auth';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
@@ -13,10 +13,6 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: () => ({
     navigate: jest.fn(),
   }),
-}));
-
-jest.mock('@react-native-async-storage/async-storage', () => ({
-  multiSet: jest.fn(),
 }));
 
 describe('CreateAccount component', () => {

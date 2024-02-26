@@ -8,7 +8,7 @@ import Operation from '../operation/Operation';
 jest.mock('expo-clipboard');
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
-jest.mock('@/services/anchor', () => ({
+jest.mock('@services/anchor', () => ({
   getInteractiveUrl: jest.fn().mockResolvedValue({
     url: 'http://mock.url', // do not use variables here
     type: 'withdraw',
@@ -22,21 +22,24 @@ jest.mock('@/services/anchor', () => ({
   },
 }));
 
-jest.mock('@/services/emigro', () => ({
+jest.mock('@services/emigro', () => ({
   getUserPublicKey: jest.fn().mockResolvedValue('somePublicKey'),
 }));
 
-jest.mock('@/storage/helpers', () => ({
-  getAccessToken: jest.fn().mockResolvedValue('someToken'),
-  getAssetCode: jest.fn(),
+jest.mock('@stores/SessionStore', () => ({
+  sessionStore: {
+    session: null,
+    getAccessToken: jest.fn().mockReturnValue('someToken'),
+  },
 }));
 
-jest.mock('@/stores/operationStore', () => ({
-  useOperationStore: jest.fn().mockReturnValue({
+jest.mock('@stores/OperationStore', () => ({
+  operationStore: {
     operation: {
       type: 'withdraw',
     },
-  }),
+    setOperationType: jest.fn(),
+  },
 }));
 
 describe('Operation', () => {

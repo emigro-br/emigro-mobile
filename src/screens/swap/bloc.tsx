@@ -1,10 +1,12 @@
 import { makeAutoObservable } from 'mobx';
 
-import { sendTransaction } from '@/services/emigro';
-import { getSession } from '@/storage/helpers';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 
 import { AssetCode } from '@constants/assetCode';
+
+import { sendTransaction } from '@services/emigro';
+
+import { sessionStore } from '@stores/SessionStore';
 
 export type SwapTransaction = {
   from: AssetCode;
@@ -36,7 +38,7 @@ export class SwapBloc {
       return this._publicKey;
     }
 
-    const session = await getSession();
+    const session = sessionStore.session;
     if (session && session.publicKey) {
       this._publicKey = session.publicKey;
       return this._publicKey;

@@ -1,4 +1,4 @@
-import { KeyboardType } from "react-native";
+import { KeyboardType } from 'react-native';
 
 export type FormField = {
   name: string;
@@ -6,5 +6,5 @@ export type FormField = {
   secureTextEntry?: boolean;
   label?: string;
   keyboardType: KeyboardType;
-  autoCapitalize?: "none" | "sentences" | "words" | "characters";
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
 };

@@ -3,16 +3,19 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { ArrowPathIcon } from 'react-native-heroicons/solid';
 
 import { NavigationProp } from '@react-navigation/native';
+
 import { styled } from 'nativewind';
 
 import Button from '@/components/Button';
-import { handleQuote } from '@/services/emigro';
-import BalanceStore from '@/stores/BalanceStore';
 import { IQuoteRequest } from '@/types/IQuoteRequest';
 
 import { AssetCode } from '@constants/assetCode';
 
 import { RootStackParamList } from '@navigation/index';
+
+import { handleQuote } from '@services/emigro';
+
+import { balanceStore } from '@stores/BalanceStore';
 
 import { AssetSwap } from './AssetSwap';
 import bloc, { SwapTransaction } from './bloc';
@@ -130,7 +133,7 @@ export const Swap = ({ navigation }: SwapProps) => {
     navigation.navigate('DetailsSwap');
   };
 
-  const isButtonEnabled = () => sellValue > 0 && sellValue <= BalanceStore.get(sellAsset) && buyValue > 0;
+  const isButtonEnabled = () => sellValue > 0 && sellValue <= balanceStore.get(sellAsset) && buyValue > 0;
 
   return (
     <StyledView className="bg-white h-full p-4">
@@ -138,7 +141,7 @@ export const Swap = ({ navigation }: SwapProps) => {
       <StyledText className="text-gray text-xs mb-1">You sell</StyledText>
       <AssetSwap
         asset={sellAsset}
-        balance={BalanceStore.get(sellAsset)}
+        balance={balanceStore.get(sellAsset)}
         sellOrBuy={SwapType.SELL}
         value={sellValue}
         onChangeAsset={onChangeAsset}
@@ -154,7 +157,7 @@ export const Swap = ({ navigation }: SwapProps) => {
       <StyledText className="text-gray text-xs mb-1">You buy</StyledText>
       <AssetSwap
         asset={buyAsset}
-        balance={BalanceStore.get(buyAsset)}
+        balance={balanceStore.get(buyAsset)}
         sellOrBuy={SwapType.BUY}
         value={buyValue}
         onChangeAsset={onChangeAsset}

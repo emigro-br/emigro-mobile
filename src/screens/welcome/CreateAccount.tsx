@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styled } from 'nativewind';
 
-import { signUp } from '@/services/auth';
 import { FormField } from '@/types/FormField';
+import { IRegisterUser } from '@/types/IRegisterUser';
 
 import Button from '@components/Button';
 import CustomModal from '@components/CustomModal';
@@ -13,8 +12,15 @@ import CustomModal from '@components/CustomModal';
 import { Role } from '@constants/constants';
 import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 
+import { signUp } from '@services/auth';
+
 type SignUpProps = {
   navigation: any;
+};
+
+type ConfirmationParams = {
+  email: string;
+  username: string;
 };
 
 const StyledView = styled(View);
@@ -29,7 +35,7 @@ const formFields: FormField[] = [
   { name: 'address', placeholder: 'Address', keyboardType: 'default' },
 ];
 
-const CreateAccount: React.FunctionComponent<SignUpProps> = ({ navigation }) => {
+const CreateAccount = ({ navigation }: SignUpProps) => {
   const [formData, setFormData] = useState<IRegisterUser>({
     email: '',
     password: '',
@@ -38,8 +44,8 @@ const CreateAccount: React.FunctionComponent<SignUpProps> = ({ navigation }) => 
     address: '',
     role: Role.CUSTOMER,
   });
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmaationParams, setConfirmationParams] = useState<ConfirmationParams | null>(null);
 
   const [error, setError] = useState('');
 
@@ -66,11 +72,7 @@ const CreateAccount: React.FunctionComponent<SignUpProps> = ({ navigation }) => 
       if (!username) {
         throw new Error(SIGNUP_ERROR_MESSAGE);
       }
-      await AsyncStorage.multiSet([
-        ['email', formData.email],
-        ['username', username],
-      ]);
-      setShowConfirmationModal(true);
+      setConfirmationParams({ email: formData.email, username });
       clearForm();
     } catch (error) {
       console.error(error);
@@ -81,8 +83,8 @@ const CreateAccount: React.FunctionComponent<SignUpProps> = ({ navigation }) => 
   };
 
   const handleCloseConfirmationModal = () => {
-    setShowConfirmationModal(false);
-    navigation.navigate('ConfirmAccount');
+    setConfirmationParams(null);
+    navigation.navigate('ConfirmAccount', confirmaationParams);
   };
 
   return (
@@ -95,6 +97,7 @@ const CreateAccount: React.FunctionComponent<SignUpProps> = ({ navigation }) => 
           value={formData[field.name]}
           onChangeText={(text) => handleChange(field.name, text)}
           secureTextEntry={field.secureTextEntry}
+          keyboardType={field.keyboardType}
         />
       ))}
 
@@ -110,10 +113,10 @@ const CreateAccount: React.FunctionComponent<SignUpProps> = ({ navigation }) => 
         </TouchableOpacity>
       </StyledView>
       <StyledText className="text-red text-center text-lg">{error}</StyledText>
-      <CustomModal isVisible={showConfirmationModal} title="Complete registration">
+      <CustomModal isVisible={!!confirmaationParams} title="Complete registration">
         <StyledText className="text-lg p-4">We have sent you a confirmation code to your email address.</StyledText>
         <Button backgroundColor="red" textColor="white" onPress={handleCloseConfirmationModal}>
-          Accept
+          Continue
         </Button>
       </CustomModal>
     </StyledView>

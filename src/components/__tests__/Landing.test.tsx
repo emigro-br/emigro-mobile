@@ -2,6 +2,7 @@
 import React from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
+
 import { render } from '@testing-library/react-native';
 
 import RootNavigator from '@navigation/index';

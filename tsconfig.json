@@ -38,6 +38,9 @@
       "@constants/*": [
         "./src/constants/*"
       ],
+      "@contexts/*": [
+        "./src/contexts/*"
+      ],
       "@hooks/*": [
         "./src/hooks/*"
       ],
@@ -46,6 +49,18 @@
       ],
       "@screens/*": [
         "./src/screens/*"
+      ],
+      "@services/*": [
+        "./src/services/*"
+      ],
+      "@storage/*": [
+        "./src/storage/*"
+      ],
+      "@stores/*": [
+        "./src/stores/*"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
       ],
       "@config/*": [
         "./config/*"

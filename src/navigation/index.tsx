@@ -22,7 +22,10 @@ export type RootStackParamList = {
   MakePayment: undefined;
   ConfirmPayment: undefined;
   Wallet: undefined;
-  ConfirmAccount: undefined;
+  ConfirmAccount: {
+    email: string;
+    username: string;
+  };
   Operation: undefined;
   Swap: undefined;
   DetailsSwap: undefined;

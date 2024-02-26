@@ -2,40 +2,40 @@ import React, { useState } from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
 
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+
 import { observer } from 'mobx-react-lite';
 import { styled } from 'nativewind';
-
-import BalanceStore from '@/stores/BalanceStore';
-import { useOperationStore } from '@/stores/operationStore';
 
 import Balance from '@components/Balance';
 import OperationButton from '@components/OperationButton';
 
 import { OperationType } from '@constants/constants';
 
+import { balanceStore } from '@stores/BalanceStore';
+import { operationStore } from '@stores/OperationStore';
+
 const StyledScrollView = styled(ScrollView);
 const StyledView = styled(View);
 
 const Wallet: React.FunctionComponent = observer(() => {
   const [refreshing, setRefreshing] = useState(false);
-  const { setOperationType } = useOperationStore();
   const navigation = useNavigation();
 
   const handleOnPress = (operationType: OperationType) => {
-    setOperationType(operationType);
+    operationStore.setOperationType(operationType);
     navigation.navigate('Operation' as never);
   };
 
   useFocusEffect(
     React.useCallback(() => {
-      BalanceStore.fetchUserBalance();
+      balanceStore.fetchUserBalance();
     }, []),
   );
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     try {
-      await BalanceStore.fetchUserBalance();
+      await balanceStore.fetchUserBalance();
     } finally {
       setRefreshing(false);
     }
@@ -51,7 +51,7 @@ const Wallet: React.FunctionComponent = observer(() => {
           <OperationButton onPress={handleOnPress} />
         </StyledView>
         <StyledView className="px-4 w-full">
-          <Balance userBalance={BalanceStore.userBalance} />
+          <Balance userBalance={balanceStore.userBalance} />
         </StyledView>
       </StyledView>
     </StyledScrollView>

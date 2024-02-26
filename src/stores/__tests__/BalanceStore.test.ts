@@ -1,7 +1,8 @@
 import mockConsole from 'jest-mock-console';
 
-import * as BalanceModule from '@/services/emigro';
 import { IBalance } from '@/types/IBalance';
+
+import * as BalanceModule from '@services/emigro';
 
 import { BalanceStore } from '../BalanceStore';
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Image, View } from 'react-native';
 
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+
 import { styled } from 'nativewind';
 
 import Button from '@components/Button';

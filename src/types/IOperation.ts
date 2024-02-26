@@ -1,5 +1,5 @@
-import { OperationType } from "@constants/constants";
+import { OperationType } from '@constants/constants';
 
 export interface IOperation {
-    type?: OperationType;
+  type?: OperationType;
 }

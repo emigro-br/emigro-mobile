@@ -2,21 +2,23 @@ import React from 'react';
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { clearSession } from '@/storage/helpers';
 import { IUserProfile } from '@/types/IUserProfile';
 
 import Profile from '@screens/profile/Profile';
 
-jest.mock('@/storage/helpers', () => ({
-  getSession: jest.fn(),
-  clearSession: jest.fn(),
-  getAccessToken: jest.fn(),
+import { sessionStore } from '@stores/SessionStore';
+
+jest.mock('@stores/SessionStore', () => ({
+  sessionStore: {
+    clear: jest.fn(),
+  },
 }));
 
 jest.mock('@react-navigation/native', () => ({
   useNavigation: () => ({
     navigate: jest.fn(),
   }),
+  useFocusEffect: jest.fn(),
 }));
 
 jest.mock('@/services/emigro', () => ({
@@ -41,7 +43,7 @@ describe('Profile screen', () => {
     fireEvent.press(logoutButton);
 
     await waitFor(() => {
-      expect(clearSession).toHaveBeenCalled();
+      expect(sessionStore.clear).toHaveBeenCalled();
     });
   });
 });
