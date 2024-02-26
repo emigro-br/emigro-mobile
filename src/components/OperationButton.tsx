@@ -24,7 +24,7 @@ const OperationButton: FunctionComponent<OperationButtonProps> = ({ onPress }) =
   return (
     <StyledView className="flex-row w-screen justify-around">
       <Button textColor="white" backgroundColor="red" onPress={() => handleOnPress(OperationType.DEPOSIT)}>
-        Add money
+        Deposit
       </Button>
       <Button textColor="white" backgroundColor="red" onPress={() => handleOnPress(OperationType.WITHDRAW)}>
         Withdraw
