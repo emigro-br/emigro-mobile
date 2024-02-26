@@ -3,5 +3,6 @@ export type IAuthSession = {
   refreshToken: string;
   idToken: string;
   tokenExpirationDate: Date;
+  email?: string | null;
   publicKey?: string | null;
 };

@@ -39,6 +39,7 @@ export const signIn = async (email: string, password: string): Promise<IAuthSess
       refreshToken,
       idToken,
       tokenExpirationDate,
+      email,
     };
     return session;
   } catch (error) {
@@ -109,6 +110,7 @@ export const refresh = async (authSession: IAuthSession): Promise<IAuthSession> 
       refreshToken,
       idToken,
       tokenExpirationDate,
+      email: authSession.email, // TODO: check if this is needed
     };
 
     return session;
