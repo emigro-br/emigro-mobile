@@ -76,9 +76,7 @@ describe('SessionStore', () => {
     };
 
     sessionStore.save(session);
-    const accessToken = sessionStore.getAccessToken();
-
-    expect(accessToken).toBe(session.accessToken);
+    expect(sessionStore.accessToken).toBe(session.accessToken);
   });
 
   it('should get public key', () => {
@@ -92,9 +90,7 @@ describe('SessionStore', () => {
     };
 
     sessionStore.save(session);
-    const publicKey = sessionStore.getPublicKey();
-
-    expect(publicKey).toBe(session.publicKey);
+    expect(sessionStore.publicKey).toBe(session.publicKey);
   });
 
   it('should refresh session', async () => {

@@ -49,7 +49,7 @@ export const fetchWithTokenCheck = async (url: string, options: RequestInit): Pr
 
   options.headers = {
     ...options.headers,
-    Authorization: `Bearer ${sessionStore.getAccessToken()}`,
+    Authorization: `Bearer ${sessionStore.accessToken}`,
   };
 
   return fetch(url, options);

@@ -78,11 +78,11 @@ const Operation: React.FunctionComponent = () => {
 
     const assetCodeSelected = getAssetCode(asset);
 
-    const cognitoToken = sessionStore.getAccessToken();
+    const cognitoToken = sessionStore.accessToken;
 
     let acccountId = publicKey;
     if (!publicKey) {
-      acccountId = await getUserPublicKey(); // TODO: use sessionStore.getPublicKey();
+      acccountId = await getUserPublicKey(); // TODO: use sessionStore.publicKey;
     }
 
     const anchorParams = {

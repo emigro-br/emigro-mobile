@@ -13,11 +13,11 @@ export class SessionStore {
     makeAutoObservable(this);
   }
 
-  getAccessToken() {
+  get accessToken() {
     return this.session?.accessToken;
   }
 
-  getPublicKey() {
+  get publicKey() {
     return this.session?.publicKey;
   }
 

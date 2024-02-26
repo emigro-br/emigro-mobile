@@ -67,11 +67,10 @@ const Login: React.FunctionComponent = () => {
         return;
       }
       const authSession = await signIn(formData.email, formData.password);
-      sessionStore.save(authSession);
+      await sessionStore.save(authSession);
       setError('');
       triggerUpdateUserPublicKey();
-      const accessToken = sessionStore.getAccessToken();
-      accessToken && navigation?.navigate('Root' as never);
+      sessionStore.accessToken && navigation?.navigate('Root' as never);
     } catch (error) {
       console.error(error, SIGNIN_ERROR_MESSAGE);
       setError(SIGNIN_ERROR_MESSAGE);
