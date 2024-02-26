@@ -1,5 +1,3 @@
-import { refresh as refreshSession } from '@/services/auth';
-import { getSession, saveSession } from '@/storage/helpers';
 import { IBalance } from '@/types/IBalance';
 import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { IQuote } from '@/types/IQuote';
@@ -10,9 +8,26 @@ import { IUserProfile } from '@/types/IUserProfile';
 
 import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
 
+import { sessionStore } from '@stores/SessionStore';
+
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 
-export class NotAuhtorized extends Error {
+export class CustomError extends Error {
+  constructor(message: string, cause?: Error) {
+    super(message);
+    this.name = this.constructor.name;
+    this.stack = cause?.stack;
+  }
+
+  static fromJSON(json: any) {
+    const error = new CustomError(json.message);
+    error.name = json.name;
+    error.stack = json.stack;
+    return error;
+  }
+}
+
+export class NotAuhtorized extends CustomError {
   constructor() {
     super('Not authorized');
     this.name = 'NotAuhtorized';
@@ -20,29 +35,21 @@ export class NotAuhtorized extends Error {
 }
 
 export const fetchWithTokenCheck = async (url: string, options: RequestInit): Promise<Response> => {
-  let session = await getSession();
-  if (!session) {
+  if (!sessionStore.session) {
     throw new NotAuhtorized();
   }
 
-  const { tokenExpirationDate } = session;
-  const isTokenExpired = tokenExpirationDate < new Date();
-
-  if (isTokenExpired) {
+  if (sessionStore.isTokenExpired) {
     console.debug('Token expired, refreshing...');
-    const newSession = await refreshSession(session);
-    if (newSession) {
-      saveSession(newSession);
-      session = newSession;
-    } else {
+    const newSession = await sessionStore.refresh();
+    if (!newSession) {
       throw new Error('Could not refresh session');
     }
   }
 
-  const { accessToken } = session;
   options.headers = {
     ...options.headers,
-    Authorization: `Bearer ${accessToken}`,
+    Authorization: `Bearer ${sessionStore.accessToken}`,
   };
 
   return fetch(url, options);
@@ -162,7 +169,7 @@ export const getUserPublicKey = async (): Promise<string> => {
 export const getUserProfile = async (): Promise<IUserProfile> => {
   const url = `${backendUrl}/user/profile`;
   try {
-    const session = await getSession();
+    const session = sessionStore.session;
     const res = await fetchWithTokenCheck(url, {
       method: 'POST',
       headers: {
@@ -172,6 +179,9 @@ export const getUserProfile = async (): Promise<IUserProfile> => {
     });
     const json = await res.json();
     if (!res.ok) {
+      if (json.error) {
+        throw CustomError.fromJSON(json.error);
+      }
       throw new Error(res.statusText);
     }
 

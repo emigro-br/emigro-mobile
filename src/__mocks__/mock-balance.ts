@@ -1,4 +1,4 @@
-import { IBalance } from "@/types/IBalance";
+import { IBalance } from '@/types/IBalance';
 
 export const userBalance: IBalance[] = [
   { label: 'BRL', value: 'BRL', balance: '10', assetType: 'Asset Type 1', assetCode: 'BRL' },

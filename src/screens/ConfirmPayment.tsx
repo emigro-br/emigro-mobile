@@ -3,11 +3,11 @@ import { ActivityIndicator, KeyboardAvoidingView, Text, TextInput, TouchableOpac
 import DropDownPicker from 'react-native-dropdown-picker';
 
 import { useNavigation } from '@react-navigation/native';
+
 import { styled } from 'nativewind';
 
 import { useVendor } from '@/contexts/VendorContext';
 import { IVendor } from '@/types/IVendor';
-import { formatAssetCode } from '@/utils/formatAssetCode';
 
 import Button from '@components/Button';
 import CustomModal from '@components/CustomModal';
@@ -15,6 +15,8 @@ import CustomModal from '@components/CustomModal';
 import useCurrencyChange from '@hooks/useCurrencyChange';
 import useGetUserBalance from '@hooks/useGetUserBalance';
 import usePayment from '@hooks/usePayment';
+
+import { formatAssetCode } from '@utils/formatAssetCode';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);

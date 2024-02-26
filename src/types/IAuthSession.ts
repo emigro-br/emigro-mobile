@@ -3,6 +3,6 @@ export type IAuthSession = {
   refreshToken: string;
   idToken: string;
   tokenExpirationDate: Date;
-  email?: string | null;
+  email: string; // required by Cognito signin/refresh
   publicKey?: string | null;
 };

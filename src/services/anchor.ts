@@ -1,8 +1,10 @@
 import { IAnchorParams } from '@/types/IAnchorParams';
 import { IAnchorResponse } from '@/types/IAnchorResponse';
-import { AssetCode } from '@constants/assetCode';
-import { fetchWithTokenCheck } from './emigro';
 import { Sep24Transaction } from '@/types/Sep24Transaction';
+
+import { AssetCode } from '@constants/assetCode';
+
+import { fetchWithTokenCheck } from './emigro';
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -10,14 +12,17 @@ export type ConfirmWithdrawDto = {
   transactionId: string;
   assetCode: string;
   from: string;
-}
+};
 
 export enum CallbackType {
   CALLBACK_URL,
   EVENT_POST_MESSAGE,
 }
 
-export const getInteractiveUrl = async (anchorParams: IAnchorParams, callback: CallbackType): Promise<IAnchorResponse> => {
+export const getInteractiveUrl = async (
+  anchorParams: IAnchorParams,
+  callback: CallbackType,
+): Promise<IAnchorResponse> => {
   const anchorUrl = `${backendUrl}/anchor/${anchorParams.operation}`;
   try {
     const res = await fetch(anchorUrl, {
@@ -33,10 +38,10 @@ export const getInteractiveUrl = async (anchorParams: IAnchorParams, callback: C
       throw new Error('Could not get interactive url');
     }
 
-    if (callback == CallbackType.CALLBACK_URL) {
+    if (callback === CallbackType.CALLBACK_URL) {
       const assetCode = anchorParams.asset_code; // FIXME: I think this is not necessary
       json.url = `${json.url}&callback=${encodeURIComponent(`${backendUrl}/anchor/withdraw-callback?assetCode=${assetCode}`)}`;
-    } else if (callback == CallbackType.EVENT_POST_MESSAGE) {
+    } else if (callback === CallbackType.EVENT_POST_MESSAGE) {
       json.url = `${json.url}&callback=postMessage`;
     }
 
@@ -47,8 +52,7 @@ export const getInteractiveUrl = async (anchorParams: IAnchorParams, callback: C
   }
 };
 
-
-export const getTransaction = async ( id: string, assetCode: AssetCode ): Promise<Sep24Transaction> => {
+export const getTransaction = async (id: string, assetCode: AssetCode): Promise<Sep24Transaction> => {
   const anchorUrl = `${backendUrl}/anchor/transaction?id=${id}&assetCode=${assetCode}`;
   try {
     const res = await fetchWithTokenCheck(anchorUrl, {
@@ -70,8 +74,7 @@ export const getTransaction = async ( id: string, assetCode: AssetCode ): Promis
   }
 };
 
-
-export const confirmWithdraw = async ( data: ConfirmWithdrawDto) => {
+export const confirmWithdraw = async (data: ConfirmWithdrawDto) => {
   const anchorUrl = `${backendUrl}/anchor/withdraw-confirm`;
   try {
     const response = await fetch(anchorUrl, {

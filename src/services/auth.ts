@@ -1,6 +1,7 @@
 import { IAuthSession } from '@/types/IAuthSession';
 import { IConfirmUser } from '@/types/IConfirmUser';
 import { IRegisterResponse } from '@/types/IRegisterResponse';
+import { IRegisterUser } from '@/types/IRegisterUser';
 
 import { Role } from '@constants/constants';
 import {
@@ -29,15 +30,10 @@ export const signIn = async (email: string, password: string): Promise<IAuthSess
 
     const json = await res.json();
     if (!res.ok) {
-      throw new Error(res.statusText);
-    }
-
-    if (json.message) {
-      throw new Error(json.message);
+      throw new Error(json?.error?.message ?? res.statusText);
     }
 
     const { accessToken, refreshToken, idToken, tokenExpirationDate } = json;
-
     const session: IAuthSession = {
       accessToken,
       refreshToken,
@@ -114,7 +110,7 @@ export const refresh = async (authSession: IAuthSession): Promise<IAuthSession> 
       refreshToken,
       idToken,
       tokenExpirationDate,
-      email: authSession.email, // TODO: check if this is needed
+      email: authSession.email,
     };
 
     return session;

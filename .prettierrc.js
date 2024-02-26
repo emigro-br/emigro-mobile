@@ -5,6 +5,7 @@ module.exports = {
   "plugins": [require.resolve("@trivago/prettier-plugin-sort-imports")],
   "importOrder": [
     "^react(.*)$",
+    "^@react(.*)$",
     "<THIRD_PARTY_MODULES>",
     "^@/(.*)$",
     "^@api/(.*)$",
@@ -17,9 +18,13 @@ module.exports = {
     "^@navigation/(.*)$",
     "^@screens/(.*)$",
     "^@services/(.*)$",
+    "^@storage/(.*)$",
+    "^@stores/(.*)$",
+    // "^@types/(.*)$",
     "^@utils/(.*)$",
     "^[./]"
   ],
   "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true
+  "importOrderSortSpecifiers": true,
+  "importOrderParserPlugins": ["typescript", "jsx"],
 }

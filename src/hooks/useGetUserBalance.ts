@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 
-import { getUserBalance } from '@/services/emigro';
 import { IFilteredBalance } from '@/types/IFilteredBalance';
-import { formatAssetCode } from '@/utils/formatAssetCode';
+
+import { getUserBalance } from '@services/emigro';
+
+import { formatAssetCode } from '@utils/formatAssetCode';
 
 const useGetUserBalance = () => {
   const [userBalance, setUserBalance] = useState<IFilteredBalance[]>([]);

@@ -1,6 +1,5 @@
 import { TransactionStatus } from '@/types/TransactionStatus';
 
-
 export type Sep24Transaction = {
   amount_fee: string;
   amount_in: string;

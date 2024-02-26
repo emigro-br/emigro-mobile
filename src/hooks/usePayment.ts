@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import { getUserBalance, handleQuote, sendTransaction } from '@/services/emigro';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IVendor } from '@/types/IVendor';
+
+import { getUserBalance, handleQuote, sendTransaction } from '@services/emigro';
 
 interface TransactionValue {
   message: string;

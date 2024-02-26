@@ -3,6 +3,7 @@ import * as IconsOutline from 'react-native-heroicons/outline';
 import * as IconsSolid from 'react-native-heroicons/solid';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 import { styled } from 'nativewind';
 
 import Header from '@components/Header';

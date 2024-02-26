@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { useNavigation } from '@react-navigation/native';
+
 import {
   AddIcon,
   ArrowDownIcon,
@@ -10,7 +12,6 @@ import {
   Text,
   VStack,
 } from '@gluestack-ui/themed';
-import { useNavigation } from '@react-navigation/native';
 
 import { OperationType } from '@constants/constants';
 
@@ -26,7 +27,7 @@ const OperationButton: React.FC<OperationButtonProps> = ({ onPress }) => {
 
   return (
     <ButtonGroup>
-      <ButtonItem title="Add money" icon={AddIcon} onPress={() => handleOnPress(OperationType.DEPOSIT)} />
+      <ButtonItem title="Deposit" icon={AddIcon} onPress={() => handleOnPress(OperationType.DEPOSIT)} />
       <ButtonItem title="Withdraw" icon={ArrowDownIcon} onPress={() => handleOnPress(OperationType.WITHDRAW)} />
       <ButtonItem title="Swap" icon={RepeatIcon} onPress={() => navigation.navigate('Swap' as never)} />
     </ButtonGroup>
