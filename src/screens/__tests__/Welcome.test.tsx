@@ -26,7 +26,7 @@ describe('Welcome screen', () => {
   test('Should navigates to Login when "Log In" is pressed', () => {
     const { getByText } = render(<TestNavigator />);
 
-    const logInButton = getByText('Access your account');
+    const logInButton = getByText('Login');
     fireEvent.press(logInButton);
 
     const loginText = getByText('Sign in');
