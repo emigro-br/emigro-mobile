@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { ActivityIndicator, Image, ScrollView, Text, View } from 'react-native';
 
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 import * as Application from 'expo-application';
 import { styled } from 'nativewind';
 
 import profileLogo from '@assets/images/profile-icon.png';
 
-import { NotAuhtorized, getUserProfile } from '@services/emigro';
+import { CustomError, getUserProfile } from '@services/emigro';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -26,22 +26,28 @@ const Profile = () => {
     navigation.navigate('Welcome' as never);
   };
 
-  useEffect(() => {
-    const fetchUserInformation = async () => {
-      try {
-        const userProfile = await getUserProfile();
-        if (userProfile) {
-          setUserInformation(userProfile);
-        }
-      } catch (error) {
-        console.warn('Can not load the profile', error);
-        if (error instanceof NotAuhtorized) {
+  const fetchUserInformation = async () => {
+    try {
+      console.debug('fetching user information');
+      const userProfile = await getUserProfile();
+      if (userProfile) {
+        setUserInformation(userProfile);
+      }
+    } catch (error) {
+      console.warn('Can not load the profile', error);
+      if (error instanceof CustomError) {
+        if (['NotAuhtorized', 'BadRequestException'].includes(error.name)) {
           handleLogout();
         }
       }
-    };
-    fetchUserInformation();
-  }, []);
+    }
+  };
+
+  useFocusEffect(() => {
+    if (!userInformation) {
+      fetchUserInformation();
+    }
+  });
 
   if (!userInformation) {
     return (

@@ -22,9 +22,11 @@ export class SessionStore {
   }
 
   async save(session: IAuthSession) {
-    this.session = session;
+    this.session = session; // FIXME: we can not replace when is only a partial update
     await Promise.all(
-      Object.entries(session).map(([key, value]) => SecureStore.setItemAsync(key, JSON.stringify(value))),
+      Object.entries(session)
+        .filter(([, value]) => value !== undefined)
+        .map(([key, value]) => SecureStore.setItemAsync(key, JSON.stringify(value))),
     );
   }
 

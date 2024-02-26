@@ -110,7 +110,7 @@ export const refresh = async (authSession: IAuthSession): Promise<IAuthSession> 
       refreshToken,
       idToken,
       tokenExpirationDate,
-      email: authSession.email, // TODO: check if this is needed
+      email: authSession.email,
     };
 
     return session;

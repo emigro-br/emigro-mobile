@@ -33,7 +33,7 @@ describe('SessionStore', () => {
       return inMemoryStorage[key];
     });
 
-    const session = {
+    const session: IAuthSession = {
       accessToken: 'access_token',
       refreshToken: 'refresh_token',
       idToken: 'id_token',
@@ -109,6 +109,7 @@ describe('SessionStore', () => {
       accessToken: 'access_token',
       refreshToken: 'refresh_token',
       idToken: 'id_token',
+      email: 'email',
       tokenExpirationDate: new Date(),
     };
     sessionStore.save(mockSession);
@@ -118,6 +119,7 @@ describe('SessionStore', () => {
       accessToken: 'new_access_token',
       refreshToken: 'new_refresh_token',
       idToken: 'new_id_token',
+      email: 'new_email',
       tokenExpirationDate: new Date(),
     };
     (refreshSession as jest.Mock).mockResolvedValue(mockNewSession);

@@ -18,6 +18,7 @@ jest.mock('@react-navigation/native', () => ({
   useNavigation: () => ({
     navigate: jest.fn(),
   }),
+  useFocusEffect: jest.fn(),
 }));
 
 jest.mock('@/services/emigro', () => ({

@@ -14,7 +14,22 @@ import { sessionStore } from '@stores/SessionStore';
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 
-export class NotAuhtorized extends Error {
+export class CustomError extends Error {
+  constructor(message: string, cause?: Error) {
+    super(message);
+    this.name = this.constructor.name;
+    this.stack = cause?.stack;
+  }
+
+  static fromJSON(json: any) {
+    const error = new CustomError(json.message);
+    error.name = json.name;
+    error.stack = json.stack;
+    return error;
+  }
+}
+
+export class NotAuhtorized extends CustomError {
   constructor() {
     super('Not authorized');
     this.name = 'NotAuhtorized';
@@ -174,6 +189,9 @@ export const getUserProfile = async (): Promise<IUserProfile> => {
     });
     const json = await res.json();
     if (!res.ok) {
+      if (json.error) {
+        throw CustomError.fromJSON(json.error);
+      }
       throw new Error(res.statusText);
     }
 
