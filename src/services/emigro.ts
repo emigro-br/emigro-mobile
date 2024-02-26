@@ -8,8 +8,6 @@ import { IUserProfile } from '@/types/IUserProfile';
 
 import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
 
-import { refresh as refreshSession } from '@services/auth';
-
 import { sessionStore } from '@stores/SessionStore';
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -37,29 +35,21 @@ export class NotAuhtorized extends CustomError {
 }
 
 export const fetchWithTokenCheck = async (url: string, options: RequestInit): Promise<Response> => {
-  let session = sessionStore.session;
-  if (!session) {
+  if (!sessionStore.session) {
     throw new NotAuhtorized();
   }
 
-  const { tokenExpirationDate } = session;
-  const isTokenExpired = tokenExpirationDate < new Date();
-
-  if (isTokenExpired) {
+  if (sessionStore.isTokenExpired) {
     console.debug('Token expired, refreshing...');
-    const newSession = await refreshSession(session);
-    if (newSession) {
-      sessionStore.save(newSession);
-      session = newSession;
-    } else {
+    const newSession = await sessionStore.refresh();
+    if (!newSession) {
       throw new Error('Could not refresh session');
     }
   }
 
-  const { accessToken } = session;
   options.headers = {
     ...options.headers,
-    Authorization: `Bearer ${accessToken}`,
+    Authorization: `Bearer ${sessionStore.getAccessToken()}`,
   };
 
   return fetch(url, options);

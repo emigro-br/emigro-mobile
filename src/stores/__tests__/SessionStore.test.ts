@@ -131,3 +131,36 @@ describe('SessionStore', () => {
     expect(loadedSession).toEqual(mockNewSession);
   });
 });
+
+it('should return true if token is expired', () => {
+  const sessionStore = new SessionStore();
+
+  const expiredSession: IAuthSession = {
+    accessToken: 'access_token',
+    refreshToken: 'refresh_token',
+    idToken: 'id_token',
+    tokenExpirationDate: new Date('2021-01-01'), // Expired date in the past
+    email: 'test@example.com',
+    publicKey: 'public_key',
+  };
+
+  sessionStore.save(expiredSession);
+
+  expect(sessionStore.isTokenExpired).toBe(true);
+});
+
+it('should return false if token is not expired', () => {
+  const sessionStore = new SessionStore();
+
+  const validSession: IAuthSession = {
+    accessToken: 'access_token',
+    refreshToken: 'refresh_token',
+    idToken: 'id_token',
+    tokenExpirationDate: new Date('2050-01-01'), // Valid date in the future
+    email: 'test@example.com',
+    publicKey: 'public_key',
+  };
+
+  sessionStore.save(validSession);
+  expect(sessionStore.isTokenExpired).toBe(false);
+});

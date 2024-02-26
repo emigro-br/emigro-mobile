@@ -21,6 +21,10 @@ export class SessionStore {
     return this.session?.publicKey;
   }
 
+  get isTokenExpired(): boolean {
+    return !this.session ? true : this.session?.tokenExpirationDate < new Date();
+  }
+
   async save(session: IAuthSession) {
     this.session = session; // FIXME: we can not replace when is only a partial update
     await Promise.all(
