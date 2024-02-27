@@ -4,6 +4,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
 import { VendorContextProvider } from '@/contexts/VendorContext';
+import { GluestackUIProvider, Text, Box } from "@gluestack-ui/themed"
+import { config } from '@config/gluestack-ui.config';
 
 import { Landing } from '@components/Landing';
 
@@ -45,11 +47,13 @@ export default function App() {
   }
 
   return (
-    <SafeAreaProvider>
-      <VendorContextProvider>
-        <StatusBar style="dark" />
-        <Landing isSignedIn={isSignedIn} />
-      </VendorContextProvider>
-    </SafeAreaProvider>
+    <GluestackUIProvider config={config}>
+      <SafeAreaProvider>
+        <VendorContextProvider>
+          <StatusBar style="dark" />
+          <Landing isSignedIn={isSignedIn} />
+        </VendorContextProvider>
+      </SafeAreaProvider>
+    </GluestackUIProvider>
   );
 }
