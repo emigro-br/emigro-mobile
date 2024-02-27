@@ -3,8 +3,8 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 
 import {
-  AddIcon,
   ArrowDownIcon,
+  ArrowUpIcon,
   Button,
   ButtonGroup,
   ButtonIcon,
@@ -15,34 +15,34 @@ import {
 
 import { OperationType } from '@constants/constants';
 
-export interface OperationButtonProps {
+type Props = {
   onPress: (operation: OperationType) => void;
-}
+};
 
-const OperationButton: React.FC<OperationButtonProps> = ({ onPress }) => {
+const OperationButton = ({ onPress }: Props) => {
   const navigation = useNavigation();
   const handleOnPress = (operationType: OperationType) => {
     onPress(operationType);
   };
 
   return (
-    <ButtonGroup>
-      <ButtonItem title="Deposit" icon={AddIcon} onPress={() => handleOnPress(OperationType.DEPOSIT)} />
-      <ButtonItem title="Withdraw" icon={ArrowDownIcon} onPress={() => handleOnPress(OperationType.WITHDRAW)} />
+    <ButtonGroup justifyContent="space-around">
+      <ButtonItem title="Deposit" icon={ArrowDownIcon} onPress={() => handleOnPress(OperationType.DEPOSIT)} />
+      <ButtonItem title="Withdraw" icon={ArrowUpIcon} onPress={() => handleOnPress(OperationType.WITHDRAW)} />
       <ButtonItem title="Swap" icon={RepeatIcon} onPress={() => navigation.navigate('Swap' as never)} />
     </ButtonGroup>
   );
 };
 
-interface ButtonItemProps {
+type ButtonItemProps = {
   title: string;
   icon: any;
   onPress: () => void;
-}
+};
 
-const ButtonItem: React.FC<ButtonItemProps> = ({ title, icon, onPress }) => {
+const ButtonItem = ({ title, icon, onPress }: ButtonItemProps) => {
   return (
-    <VStack alignItems="center" width="$24">
+    <VStack alignItems="center">
       <Button borderRadius="$full" size="lg" marginBottom="$1" height="$12" width="$12" onPress={onPress}>
         <ButtonIcon as={icon} size="xl" />
       </Button>
