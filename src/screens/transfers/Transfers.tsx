@@ -1,3 +1,5 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+
 import {
   Avatar,
   AvatarImage,
@@ -10,7 +12,6 @@ import {
   Text,
   VStack,
 } from '@gluestack-ui/themed';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { getAssetIcon } from '@/utils/getAssetIcon';
 

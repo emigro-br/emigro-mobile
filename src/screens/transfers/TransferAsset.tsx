@@ -2,6 +2,8 @@ import { useState } from 'react';
 import CurrencyInput from 'react-native-currency-input';
 import { QrCodeIcon } from 'react-native-heroicons/solid';
 
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+
 import {
   Box,
   Button,
@@ -15,7 +17,6 @@ import {
   Text,
   VStack,
 } from '@gluestack-ui/themed';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { RootStackParamList } from '@navigation/index';
 
