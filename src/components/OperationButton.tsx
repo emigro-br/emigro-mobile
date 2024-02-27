@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import {
   ArrowDownIcon,
+  ArrowRightIcon,
   ArrowUpIcon,
   Button,
   ButtonGroup,
@@ -29,6 +30,7 @@ const OperationButton = ({ onPress }: Props) => {
     <ButtonGroup justifyContent="space-around">
       <ButtonItem title="Deposit" icon={ArrowDownIcon} onPress={() => handleOnPress(OperationType.DEPOSIT)} />
       <ButtonItem title="Withdraw" icon={ArrowUpIcon} onPress={() => handleOnPress(OperationType.WITHDRAW)} />
+      <ButtonItem title="Send" icon={ArrowRightIcon} onPress={() => navigation.navigate('Transfers' as never)} />
       <ButtonItem title="Swap" icon={RepeatIcon} onPress={() => navigation.navigate('Swap' as never)} />
     </ButtonGroup>
   );
