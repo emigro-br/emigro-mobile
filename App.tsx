@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import { VendorContextProvider } from '@/contexts/VendorContext';
 import { GluestackUIProvider, Text, Box } from "@gluestack-ui/themed"
-import { config } from './config/gluestack-ui.config';
+import { config } from '@config/gluestack-ui.config';
 
 import { Landing } from '@components/Landing';
 
