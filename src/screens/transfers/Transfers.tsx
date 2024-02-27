@@ -52,7 +52,7 @@ const Transfers = ({ navigation }: Props) => {
           renderItem={({ item }: { item: Item }) => (
             <Pressable
               onPress={() =>
-                navigation.push('TransferAsset', {
+                navigation.push('SendAsset', {
                   asset: item.code,
                 })
               }

@@ -5,7 +5,7 @@ import Operation from '@screens/operation/Operation';
 import DeleteAccount from '@screens/profile/DeleteAccount';
 import { DetailsSwap } from '@screens/swap/DetailsSwap';
 import { Swap } from '@screens/swap/Swap';
-import TransferAsset from '@screens/transfers/TransferAsset';
+import SendAsset from '@screens/transfers/SendAsset';
 import Transfers from '@screens/transfers/Transfers';
 import ConfirmAccount from '@screens/welcome/ConfirmAccount';
 import CreateAccount from '@screens/welcome/CreateAccount';
@@ -31,7 +31,7 @@ export type RootStackParamList = {
   DetailsSwap: undefined;
   DeleteAccount: undefined;
   Transfers: undefined;
-  TransferAsset: {
+  SendAsset: {
     asset: string;
   };
 };
@@ -55,9 +55,9 @@ function RootNavigator(props: RootNavigatorProps) {
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="Transfers" component={Transfers} options={{ title: 'Transfers' }} />
       <Stack.Screen
-        name="TransferAsset"
-        component={TransferAsset}
-        options={{ title: 'Transfers', headerTitle: '' }}
+        name="SendAsset"
+        component={SendAsset}
+        options={{ title: 'Transfers', headerTitle: '', headerBackTitleVisible: false }}
         initialParams={{ asset: '' }}
       />
 
