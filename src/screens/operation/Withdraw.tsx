@@ -9,6 +9,8 @@ import { getAssetCode } from '@/stellar/utils';
 import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { TransactionStatus } from '@/types/TransactionStatus';
 
+import Button from '@components/Button';
+
 import { AssetCode } from '@constants/assetCode';
 import { OperationType } from '@constants/constants';
 
@@ -31,6 +33,7 @@ enum TransactionStep {
   NONE = 'none',
   STARTED = 'started',
   WAITING = 'waiting',
+  PENDING_USER = 'pending_user',
   CONFIRM_TRANSFER = 'confirm_transfer',
   SUCCESS = 'success',
   ERROR = 'error',
@@ -96,7 +99,6 @@ const Withdraw: React.FC = () => {
 
       if (id) {
         setTransactionId(id);
-        setStep(TransactionStep.WAITING);
         waitWithdrawOnAnchorComplete(id, assetCodeSelected);
       }
 
@@ -151,12 +153,20 @@ const Withdraw: React.FC = () => {
   };
 
   // Stopping the interval
-  const stopFetchingTransaction = (status: TransactionStatus) => {
+  const stopFetchingTransaction = (status?: TransactionStatus) => {
     console.debug('Stopping the fetch transaction. Status: ', status);
     clearTimeout(timeoutId);
   };
 
+  // used to keep the current step in the setTimeout callback
+  const stepRef = React.useRef(step);
+  stepRef.current = step;
+
   const waitWithdrawOnAnchorComplete = async (transactionId: string, assetCode: AssetCode) => {
+    if (stepRef.current !== TransactionStep.WAITING) {
+      setStep(TransactionStep.WAITING);
+    }
+
     const endStatuses = [TransactionStatus.COMPLETED, TransactionStatus.ERROR];
 
     try {
@@ -176,10 +186,12 @@ const Withdraw: React.FC = () => {
         return;
       }
 
-      // check again in few seconds
-      console.log('Sleeping...');
-      const timeoutId = setTimeout(() => waitWithdrawOnAnchorComplete(transactionId, assetCode), 5000);
-      setTimeoutId(timeoutId);
+      // check again in few seconds only if the user still waiting
+      if (stepRef.current === TransactionStep.WAITING) {
+        console.log('Sleeping...');
+        const timeoutId = setTimeout(() => waitWithdrawOnAnchorComplete(transactionId, assetCode), 5000);
+        setTimeoutId(timeoutId);
+      }
     } catch (error) {
       stopFetchingTransaction(TransactionStatus.ERROR); // clean up
       console.error('Error getting transaction', error);
@@ -189,9 +201,14 @@ const Withdraw: React.FC = () => {
     }
   };
 
+  const handleCloseWait = () => {
+    stopFetchingTransaction();
+    setStep(TransactionStep.PENDING_USER);
+  };
+
   return (
     <StyledView className="flex bg-white h-full">
-      <LoadingModal isVisible={step === TransactionStep.WAITING} label="Waiting..." />
+      <LoadingModal isVisible={step === TransactionStep.WAITING} label="Waiting..." onClose={handleCloseWait} />
 
       {transaction && (
         <ConfirmationModal
@@ -243,6 +260,16 @@ const Withdraw: React.FC = () => {
           </TouchableOpacity>
         ))}
       </StyledView>
+      {transactionId && step === TransactionStep.PENDING_USER && (
+        <StyledView className="items-start mt-6">
+          <Button
+            textColor="red"
+            onPress={() => waitWithdrawOnAnchorComplete(transactionId, getAssetCode(selectedAsset!))}
+          >
+            Check pending transaction: {transactionId}
+          </Button>
+        </StyledView>
+      )}
       {errorMessage && <StyledText className="text-red pt-6">{errorMessage}</StyledText>}
     </StyledView>
   );
