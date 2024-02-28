@@ -24,7 +24,7 @@ const StyledText = styled(Text);
 
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
-const Deposit = () => {
+const Deposit: React.FC = () => {
   const navigation = useNavigation();
   const operationType = OperationType.DEPOSIT; // FIXME: we don't need this
   // const [transactionId, setTransactionId] = useState<string | null>(null);

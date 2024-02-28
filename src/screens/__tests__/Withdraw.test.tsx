@@ -5,7 +5,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import * as anchor from '@services/anchor';
 
-import Operation from '../operation/Operation';
+import Withdraw from '../operation/Withdraw';
 
 jest.mock('expo-clipboard');
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
@@ -31,7 +31,7 @@ jest.mock('@stores/SessionStore', () => ({
   },
 }));
 
-describe('Operation', () => {
+describe('Withdraw', () => {
   beforeEach(() => {
     jest.useFakeTimers(); // Please, keep this to avoid act() warning
     jest.clearAllMocks();
@@ -42,7 +42,7 @@ describe('Operation', () => {
   });
 
   it('Should render correctly', async () => {
-    const { queryByText } = render(<Operation />);
+    const { queryByText } = render(<Withdraw />);
 
     expect(queryByText('ARS')).toBeDefined();
     expect(queryByText('BRL')).toBeDefined();
@@ -57,7 +57,7 @@ describe('Operation', () => {
       type: 'withdraw',
       id: 'someId',
     });
-    const { getByText } = render(<Operation />);
+    const { getByText } = render(<Withdraw />);
     const button = getByText('ARS');
 
     fireEvent.press(button);
@@ -73,7 +73,7 @@ describe('Operation', () => {
       type: 'withdraw',
       id: 'someId',
     });
-    const { getByText } = render(<Operation />);
+    const { getByText } = render(<Withdraw />);
     const button = getByText('BRL');
 
     fireEvent.press(button);
@@ -89,7 +89,7 @@ describe('Operation', () => {
       type: 'withdraw',
       id: 'someId',
     });
-    const { getByText } = render(<Operation />);
+    const { getByText } = render(<Withdraw />);
     const button = getByText('EURC');
 
     fireEvent.press(button);

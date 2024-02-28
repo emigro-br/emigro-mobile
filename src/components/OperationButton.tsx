@@ -19,7 +19,7 @@ const OperationButton = () => {
   return (
     <ButtonGroup justifyContent="space-around">
       <ButtonItem title="Deposit" icon={ArrowDownIcon} onPress={() => navigation.navigate('Deposit' as never)} />
-      <ButtonItem title="Withdraw" icon={ArrowUpIcon} onPress={() => navigation.navigate('Operation' as never)} />
+      <ButtonItem title="Withdraw" icon={ArrowUpIcon} onPress={() => navigation.navigate('Withdraw' as never)} />
       <ButtonItem title="Swap" icon={RepeatIcon} onPress={() => navigation.navigate('Swap' as never)} />
     </ButtonGroup>
   );

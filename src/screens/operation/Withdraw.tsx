@@ -44,7 +44,7 @@ const maskWallet = (address: string): string => {
 
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
-const Operation: React.FunctionComponent = () => {
+const Withdraw: React.FC = () => {
   const type = OperationType.WITHDRAW; // FIXME: we don't need this
   const [publicKey, setPublicKey] = useState<string | null>(null);
   // const [url, setUrl] = useState<string | null>(null);
@@ -250,4 +250,4 @@ const Operation: React.FunctionComponent = () => {
   );
 };
 
-export default Operation;
+export default Withdraw;
