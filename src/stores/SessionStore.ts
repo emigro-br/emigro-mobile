@@ -1,5 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-import { makeAutoObservable } from 'mobx';
+import { action, makeAutoObservable, observable } from 'mobx';
 
 import { refresh as refreshSession } from '@services/auth';
 import { getUserPublicKey } from '@services/emigro';
@@ -11,7 +11,10 @@ export class SessionStore {
   session: IAuthSession | null = null;
 
   constructor() {
-    makeAutoObservable(this);
+    makeAutoObservable(this, {
+      session: observable,
+      setSession: action,
+    });
   }
 
   get accessToken() {
@@ -23,6 +26,10 @@ export class SessionStore {
       this.fetchPublicKey();
     }
     return this.session?.publicKey;
+  }
+
+  setSession(session: IAuthSession | null) {
+    this.session = session;
   }
 
   async fetchPublicKey() {
@@ -40,7 +47,7 @@ export class SessionStore {
   }
 
   async save(session: IAuthSession) {
-    this.session = session; // FIXME: we can not replace when is only a partial update
+    this.setSession(session); // FIXME: we can not replace when is only a partial update
     await Promise.all(
       Object.entries(session)
         .filter(([, value]) => value !== undefined)
@@ -69,14 +76,14 @@ export class SessionStore {
     if (!session.refreshToken || !session.idToken || !session.tokenExpirationDate) {
       throw new Error('Invalid session');
     }
-    this.session = session as IAuthSession;
+    this.setSession(session as IAuthSession);
     return this.session;
   }
 
   async clear() {
     const keys = ['accessToken', 'refreshToken', 'idToken', 'tokenExpirationDate', 'email', 'publicKey'];
     await Promise.all(keys.map((key) => SecureStore.deleteItemAsync(key)));
-    this.session = null;
+    this.setSession(null);
   }
 
   async refresh() {

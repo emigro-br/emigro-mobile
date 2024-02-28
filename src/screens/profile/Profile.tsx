@@ -24,7 +24,6 @@ const Profile = () => {
 
   const handleLogout = async () => {
     await sessionStore.clear();
-    navigation.navigate('Welcome' as never);
   };
 
   const fetchUserInformation = async () => {
