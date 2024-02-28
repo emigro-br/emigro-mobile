@@ -10,11 +10,11 @@ import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { TransactionStatus } from '@/types/TransactionStatus';
 
 import { AssetCode } from '@constants/assetCode';
+import { OperationType } from '@constants/constants';
 
 import { CallbackType, ConfirmWithdrawDto, confirmWithdraw, getInteractiveUrl, getTransaction } from '@services/anchor';
 import { getUserPublicKey } from '@services/emigro';
 
-import { operationStore } from '@stores/OperationStore';
 import { sessionStore } from '@stores/SessionStore';
 
 import { getAssetIcon } from '@utils/getAssetIcon';
@@ -45,7 +45,7 @@ const maskWallet = (address: string): string => {
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
 const Operation: React.FunctionComponent = () => {
-  const { type } = operationStore.operation;
+  const type = OperationType.WITHDRAW; // FIXME: we don't need this
   const [publicKey, setPublicKey] = useState<string | null>(null);
   // const [url, setUrl] = useState<string | null>(null);
   const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);

@@ -13,22 +13,13 @@ import {
   VStack,
 } from '@gluestack-ui/themed';
 
-import { OperationType } from '@constants/constants';
-
-type Props = {
-  onPress: (operation: OperationType) => void;
-};
-
-const OperationButton = ({ onPress }: Props) => {
+const OperationButton = () => {
   const navigation = useNavigation();
-  const handleOnPress = (operationType: OperationType) => {
-    onPress(operationType);
-  };
 
   return (
     <ButtonGroup justifyContent="space-around">
-      <ButtonItem title="Deposit" icon={ArrowDownIcon} onPress={() => handleOnPress(OperationType.DEPOSIT)} />
-      <ButtonItem title="Withdraw" icon={ArrowUpIcon} onPress={() => handleOnPress(OperationType.WITHDRAW)} />
+      <ButtonItem title="Deposit" icon={ArrowDownIcon} onPress={() => navigation.navigate('Deposit' as never)} />
+      <ButtonItem title="Withdraw" icon={ArrowUpIcon} onPress={() => navigation.navigate('Operation' as never)} />
       <ButtonItem title="Swap" icon={RepeatIcon} onPress={() => navigation.navigate('Swap' as never)} />
     </ButtonGroup>
   );

@@ -34,8 +34,8 @@ export const getInteractiveUrl = async (
     });
 
     const json = await res.json();
-    if (!res.ok || !json.url) {
-      throw new Error('Could not get interactive url');
+    if (!res.ok || json.error) {
+      throw new Error(json?.error?.message || res.statusText);
     }
 
     if (callback === CallbackType.CALLBACK_URL) {
@@ -48,7 +48,7 @@ export const getInteractiveUrl = async (
     return json;
   } catch (error) {
     console.error(error);
-    throw new Error();
+    throw new Error('Could not get interactive url');
   }
 };
 
