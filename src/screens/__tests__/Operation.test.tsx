@@ -31,15 +31,6 @@ jest.mock('@stores/SessionStore', () => ({
   },
 }));
 
-jest.mock('@stores/OperationStore', () => ({
-  operationStore: {
-    operation: {
-      type: 'withdraw',
-    },
-    setOperationType: jest.fn(),
-  },
-}));
-
 describe('Operation', () => {
   beforeEach(() => {
     jest.useFakeTimers(); // Please, keep this to avoid act() warning
