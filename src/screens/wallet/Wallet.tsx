@@ -7,7 +7,7 @@ import { observer } from 'mobx-react-lite';
 import { styled } from 'nativewind';
 
 import Balance from '@components/Balance';
-import OperationButton from '@components/OperationButton';
+import OperationButtons from '@components/OperationButtons';
 
 import { balanceStore } from '@stores/BalanceStore';
 
@@ -39,7 +39,7 @@ const Wallet: React.FC = observer(() => {
     >
       <StyledView className="flex">
         <StyledView className="px-4 py-8">
-          <OperationButton />
+          <OperationButtons />
         </StyledView>
         <StyledView className="px-4 w-full">
           <Balance userBalance={balanceStore.userBalance} />

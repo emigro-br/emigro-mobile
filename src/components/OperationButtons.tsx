@@ -13,7 +13,7 @@ import {
   VStack,
 } from '@gluestack-ui/themed';
 
-const OperationButton = () => {
+const OperationButtons = () => {
   const navigation = useNavigation();
 
   return (
@@ -42,4 +42,4 @@ const ButtonItem = ({ title, icon, onPress }: ButtonItemProps) => {
   );
 };
 
-export default OperationButton;
+export default OperationButtons;
