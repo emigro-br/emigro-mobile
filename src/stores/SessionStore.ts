@@ -2,6 +2,7 @@ import * as SecureStore from 'expo-secure-store';
 import { makeAutoObservable } from 'mobx';
 
 import { refresh as refreshSession } from '@services/auth';
+import { getUserPublicKey } from '@services/emigro';
 
 import { IAuthSession } from '../types/IAuthSession';
 
@@ -18,7 +19,16 @@ export class SessionStore {
   }
 
   get publicKey() {
+    if (this.session && !this.session.publicKey) {
+      this.fetchPublicKey();
+    }
     return this.session?.publicKey;
+  }
+
+  async fetchPublicKey() {
+    console.debug('Fetching user public key');
+    const publicKey = await getUserPublicKey();
+    this.session!.publicKey = publicKey;
   }
 
   get isTokenExpired(): boolean {
