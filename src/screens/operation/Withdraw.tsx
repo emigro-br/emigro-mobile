@@ -190,7 +190,7 @@ const Withdraw: React.FC = () => {
   };
 
   return (
-    <StyledView className="flex bg-white h-full py-4">
+    <StyledView className="flex bg-white h-full">
       <LoadingModal isVisible={step === TransactionStep.WAITING} label="Waiting..." />
 
       {transaction && (
@@ -216,7 +216,7 @@ const Withdraw: React.FC = () => {
       />
 
       {publicKey && (
-        <StyledView className="items-center">
+        <StyledView className="items-center mt-4">
           <TouchableOpacity onPress={copyToClipboard}>
             <StyledView className="flex flex-row items-center">
               <StyledText className="text-center text-sm mr-2">{maskWallet(publicKey)}</StyledText>
