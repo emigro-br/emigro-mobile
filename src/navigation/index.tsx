@@ -59,7 +59,7 @@ function RootNavigator(props: RootNavigatorProps) {
       <Stack.Group>
         <Stack.Screen name="MakePayment" component={BottomTabNavigator} options={{ headerShown: false }} />
         <Stack.Screen name="ConfirmPayment" component={ConfirmPayment} options={{ headerTitle: 'Confirm Payment' }} />
-        <Stack.Screen name="Operation" component={Operation} />
+        <Stack.Screen name="Operation" component={Operation} options={{ headerBackTitle: 'Back', headerTitle: '' }} />
         <Stack.Screen name="Swap" component={Swap} options={{ headerShown: true }} />
         <Stack.Screen name="DetailsSwap" component={DetailsSwap} options={{ headerTitle: 'Confirm Swap' }} />
       </Stack.Group>
