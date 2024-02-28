@@ -51,8 +51,9 @@ const Login: React.FunctionComponent = () => {
       }
       const authSession = await signIn(formData.email, formData.password);
       await sessionStore.save(authSession);
+      sessionStore.fetchPublicKey();
+      navigation.navigate('Root' as never);
       setError('');
-      sessionStore.accessToken && navigation?.navigate('Root' as never);
     } catch (error) {
       console.error(error, SIGNIN_ERROR_MESSAGE);
       setError(SIGNIN_ERROR_MESSAGE);

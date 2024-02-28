@@ -28,7 +28,11 @@ export class SessionStore {
   async fetchPublicKey() {
     console.debug('Fetching user public key');
     const publicKey = await getUserPublicKey();
-    this.session!.publicKey = publicKey;
+    if (this.session && publicKey) {
+      this.session.publicKey = publicKey;
+      await this.save(this.session);
+    }
+    return publicKey;
   }
 
   get isTokenExpired(): boolean {
@@ -82,6 +86,7 @@ export class SessionStore {
 
     const newSession = await refreshSession(this.session);
     if (newSession) {
+      newSession.publicKey = this.session.publicKey; // FIXME: workaround to avoid losing the public key on save
       await this.save(newSession);
       return this.session;
     }

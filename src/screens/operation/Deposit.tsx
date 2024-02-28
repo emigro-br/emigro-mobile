@@ -33,11 +33,8 @@ const Deposit: React.FC = () => {
   const availableAssets = [AssetCode.ARS, AssetCode.BRL, AssetCode.EURC];
 
   useEffect(() => {
-    if (!sessionStore.publicKey) {
-      sessionStore.fetchPublicKey();
-    }
     return cleanUp;
-  }, [sessionStore.publicKey]);
+  }, []);
 
   const cleanUp = () => {
     // setTransactionId(null);
