@@ -24,7 +24,7 @@ const StyledText = styled(Text);
 
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
-const Operation: React.FunctionComponent = () => {
+const Deposit = () => {
   const navigation = useNavigation();
   const operationType = OperationType.DEPOSIT; // FIXME: we don't need this
   // const [transactionId, setTransactionId] = useState<string | null>(null);
@@ -111,4 +111,4 @@ const Operation: React.FunctionComponent = () => {
   );
 };
 
-export default Operation;
+export default Deposit;

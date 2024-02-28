@@ -16,7 +16,7 @@ type Props = {
 
 export const OpenURLModal: React.FunctionComponent<Props> = ({ isVisible, onConfirm }) => (
   <CustomModal isVisible={isVisible}>
-    <StyledView className="container h-max flex justify-between">
+    <StyledView className="container h-max flex justify-between" testID="open-url-modal">
       <StyledText className="text-lg mb-4">
         You will be redirected to the Anchor website to complete this transaction.
       </StyledText>

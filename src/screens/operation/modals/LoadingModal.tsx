@@ -15,7 +15,7 @@ type LoadingModalProps = {
 
 export const LoadingModal: React.FunctionComponent<LoadingModalProps> = ({ isVisible, label }) => (
   <CustomModal isVisible={isVisible}>
-    <StyledView className="container h-max flex justify-between">
+    <StyledView className="container h-max flex justify-between" testID="loading-modal">
       <StyledView className="flex flex-col justify-center items-center">
         <StyledText className="text-2xl font-bold text-center mb-4">{label || 'Loading...'}</StyledText>
         <ActivityIndicator size="large" />
