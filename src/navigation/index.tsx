@@ -1,7 +1,8 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import ConfirmPayment from '@screens/ConfirmPayment';
-import Operation from '@screens/operation/Operation';
+import Deposit from '@screens/operation/Deposit';
+import Withdraw from '@screens/operation/Withdraw';
 import DeleteAccount from '@screens/profile/DeleteAccount';
 import { DetailsSwap } from '@screens/swap/DetailsSwap';
 import { Swap } from '@screens/swap/Swap';
@@ -24,7 +25,8 @@ export type RootStackParamList = {
     email: string;
     username: string;
   };
-  Operation: undefined;
+  Deposit: undefined;
+  Withdraw: undefined;
   Swap: undefined;
   DetailsSwap: undefined;
   DeleteAccount: undefined;
@@ -59,7 +61,16 @@ function RootNavigator(props: RootNavigatorProps) {
       <Stack.Group>
         <Stack.Screen name="MakePayment" component={BottomTabNavigator} options={{ headerShown: false }} />
         <Stack.Screen name="ConfirmPayment" component={ConfirmPayment} options={{ headerTitle: 'Confirm Payment' }} />
-        <Stack.Screen name="Operation" component={Operation} options={{ headerBackTitle: 'Back', headerTitle: '' }} />
+        <Stack.Screen
+          name="Deposit"
+          component={Deposit}
+          options={{ headerBackTitle: 'Back', headerTitle: 'Deposit' }}
+        />
+        <Stack.Screen
+          name="Withdraw"
+          component={Withdraw}
+          options={{ headerBackTitle: 'Back', headerTitle: 'Withdraw' }}
+        />
         <Stack.Screen name="Swap" component={Swap} options={{ headerShown: true }} />
         <Stack.Screen name="DetailsSwap" component={DetailsSwap} options={{ headerTitle: 'Confirm Swap' }} />
       </Stack.Group>

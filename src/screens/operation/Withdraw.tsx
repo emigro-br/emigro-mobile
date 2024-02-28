@@ -10,11 +10,11 @@ import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { TransactionStatus } from '@/types/TransactionStatus';
 
 import { AssetCode } from '@constants/assetCode';
+import { OperationType } from '@constants/constants';
 
 import { CallbackType, ConfirmWithdrawDto, confirmWithdraw, getInteractiveUrl, getTransaction } from '@services/anchor';
 import { getUserPublicKey } from '@services/emigro';
 
-import { operationStore } from '@stores/OperationStore';
 import { sessionStore } from '@stores/SessionStore';
 
 import { getAssetIcon } from '@utils/getAssetIcon';
@@ -44,8 +44,7 @@ const maskWallet = (address: string): string => {
 
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
-const Operation: React.FunctionComponent = () => {
-  const { type } = operationStore.operation;
+const Withdraw: React.FC = () => {
   const [publicKey, setPublicKey] = useState<string | null>(null);
   // const [url, setUrl] = useState<string | null>(null);
   const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
@@ -86,7 +85,7 @@ const Operation: React.FunctionComponent = () => {
 
     const anchorParams = {
       account: acccountId!,
-      operation: type as string,
+      operation: OperationType.WITHDRAW,
       asset_code: assetCodeSelected,
       cognito_token: cognitoToken!,
     };
@@ -191,10 +190,7 @@ const Operation: React.FunctionComponent = () => {
   };
 
   return (
-    <StyledView className="flex items-center bg-white h-full">
-      {/* {step == TransactionStep.STARTED &&
-        <WebModal url={url!} visible={true} onClose={handleWebClose} />} */}
-
+    <StyledView className="flex bg-white h-full">
       <LoadingModal isVisible={step === TransactionStep.WAITING} label="Waiting..." />
 
       {transaction && (
@@ -219,16 +215,18 @@ const Operation: React.FunctionComponent = () => {
         onClose={() => setStep(TransactionStep.NONE)}
       />
 
-      <StyledText className="text-center font-black text-2xl my-4">{type}</StyledText>
       {publicKey && (
-        <TouchableOpacity onPress={copyToClipboard}>
-          <StyledView className="flex flex-row mb-2">
-            <StyledText className="text-center text-sm mr-2">{maskWallet(publicKey)}</StyledText>
-            <Ionicons name="clipboard-outline" size={16} />
-          </StyledView>
-        </TouchableOpacity>
+        <StyledView className="items-center mt-4">
+          <TouchableOpacity onPress={copyToClipboard}>
+            <StyledView className="flex flex-row items-center">
+              <StyledText className="text-center text-sm mr-2">{maskWallet(publicKey)}</StyledText>
+              <Ionicons name="clipboard-outline" size={16} />
+            </StyledView>
+          </TouchableOpacity>
+        </StyledView>
       )}
-      <StyledText className="text-lg text-center mb-4">Select the currency you want to {type}</StyledText>
+
+      <StyledText className="text-lg p-4">Select the currency you want to withdraw:</StyledText>
       <StyledView className="flex flex-row flex-wrap px-4 gap-4">
         {availableAssets.map((asset) => (
           <TouchableOpacity key={`asset_${asset}`} onPress={() => handleOnPress(asset)} disabled={operationLoading}>
@@ -250,4 +248,4 @@ const Operation: React.FunctionComponent = () => {
   );
 };
 
-export default Operation;
+export default Withdraw;

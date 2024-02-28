@@ -5,7 +5,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import * as anchor from '@services/anchor';
 
-import Operation from '../operation/Operation';
+import Withdraw from '../operation/Withdraw';
 
 jest.mock('expo-clipboard');
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
@@ -31,16 +31,7 @@ jest.mock('@stores/SessionStore', () => ({
   },
 }));
 
-jest.mock('@stores/OperationStore', () => ({
-  operationStore: {
-    operation: {
-      type: 'withdraw',
-    },
-    setOperationType: jest.fn(),
-  },
-}));
-
-describe('Operation', () => {
+describe('Withdraw', () => {
   beforeEach(() => {
     jest.useFakeTimers(); // Please, keep this to avoid act() warning
     jest.clearAllMocks();
@@ -51,13 +42,16 @@ describe('Operation', () => {
   });
 
   it('Should render correctly', async () => {
-    const { queryByText } = render(<Operation />);
+    const { queryByText } = render(<Withdraw />);
 
-    expect(queryByText('ARS')).toBeDefined();
-    expect(queryByText('BRL')).toBeDefined();
-    expect(queryByText('EURC')).toBeDefined();
-    expect(queryByText('USDC')).toBeNull();
-    expect(queryByText('XML')).toBeNull();
+    await waitFor(() => {
+      // only because of the useEffect
+      expect(queryByText('ARS')).toBeOnTheScreen();
+      expect(queryByText('BRL')).toBeOnTheScreen();
+      expect(queryByText('EURC')).toBeOnTheScreen();
+      expect(queryByText('USDC')).not.toBeOnTheScreen();
+      expect(queryByText('XML')).not.toBeOnTheScreen();
+    });
   });
 
   it('Should call handleOnPress when ARS button is pressed', async () => {
@@ -66,12 +60,14 @@ describe('Operation', () => {
       type: 'withdraw',
       id: 'someId',
     });
-    const { getByText } = render(<Operation />);
+    const { getByText, getByTestId } = render(<Withdraw />);
     const button = getByText('ARS');
 
     fireEvent.press(button);
 
     await waitFor(() => {
+      const loadingModal = getByTestId('loading-modal');
+      expect(loadingModal).toBeOnTheScreen();
       expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.ars');
     });
   });
@@ -82,12 +78,14 @@ describe('Operation', () => {
       type: 'withdraw',
       id: 'someId',
     });
-    const { getByText } = render(<Operation />);
+    const { getByText, getByTestId } = render(<Withdraw />);
     const button = getByText('BRL');
 
     fireEvent.press(button);
 
     await waitFor(() => {
+      const loadingModal = getByTestId('loading-modal');
+      expect(loadingModal).toBeOnTheScreen();
       expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.brl');
     });
   });
@@ -98,12 +96,14 @@ describe('Operation', () => {
       type: 'withdraw',
       id: 'someId',
     });
-    const { getByText } = render(<Operation />);
+    const { getByText, getByTestId } = render(<Withdraw />);
     const button = getByText('EURC');
 
     fireEvent.press(button);
 
     await waitFor(() => {
+      const loadingModal = getByTestId('loading-modal');
+      expect(loadingModal).toBeOnTheScreen();
       expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.eurc');
     });
   });

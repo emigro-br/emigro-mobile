@@ -8,7 +8,8 @@ import { styled } from 'nativewind';
 
 import profileLogo from '@assets/images/profile-icon.png';
 
-import { CustomError, getUserProfile } from '@services/emigro';
+import { getUserProfile } from '@services/emigro';
+import { CustomError } from '@services/errors';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -29,7 +30,7 @@ const Profile = () => {
   const fetchUserInformation = async () => {
     try {
       console.debug('fetching user information');
-      const userProfile = await getUserProfile();
+      const userProfile = await getUserProfile(sessionStore.session!);
       if (userProfile) {
         setUserInformation(userProfile);
       }

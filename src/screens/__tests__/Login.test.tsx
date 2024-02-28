@@ -6,6 +6,8 @@ import Login from '@screens/welcome/Login';
 
 import * as auth from '@services/auth';
 
+import { sessionStore } from '@stores/SessionStore';
+
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
 jest.mock('@react-navigation/native', () => ({
@@ -19,7 +21,7 @@ jest.mock('@stores/SessionStore', () => ({
     session: {},
     clear: jest.fn(),
     save: jest.fn(),
-    getAccessToken: jest.fn(),
+    fetchPublicKey: jest.fn(),
   },
 }));
 
@@ -52,6 +54,8 @@ describe('Login screen', () => {
 
     await waitFor(() => {
       expect(signInMock).toHaveBeenCalledWith('test@example.com', 'password123');
+      expect(sessionStore.save).toHaveBeenCalledWith(authSession);
+      expect(sessionStore.fetchPublicKey).toHaveBeenCalled();
     });
   });
 });
