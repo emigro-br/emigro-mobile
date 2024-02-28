@@ -44,11 +44,11 @@ describe('Withdraw', () => {
   it('Should render correctly', async () => {
     const { queryByText } = render(<Withdraw />);
 
-    expect(queryByText('ARS')).toBeDefined();
-    expect(queryByText('BRL')).toBeDefined();
-    expect(queryByText('EURC')).toBeDefined();
-    expect(queryByText('USDC')).toBeNull();
-    expect(queryByText('XML')).toBeNull();
+    expect(queryByText('ARS')).toBeOnTheScreen();
+    expect(queryByText('BRL')).toBeOnTheScreen();
+    expect(queryByText('EURC')).toBeOnTheScreen();
+    expect(queryByText('USDC')).not.toBeOnTheScreen();
+    expect(queryByText('XML')).not.toBeOnTheScreen();
   });
 
   it('Should call handleOnPress when ARS button is pressed', async () => {
@@ -57,12 +57,14 @@ describe('Withdraw', () => {
       type: 'withdraw',
       id: 'someId',
     });
-    const { getByText } = render(<Withdraw />);
+    const { getByText, getByTestId } = render(<Withdraw />);
     const button = getByText('ARS');
 
     fireEvent.press(button);
 
     await waitFor(() => {
+      const loadingModal = getByTestId('loading-modal');
+      expect(loadingModal).toBeOnTheScreen();
       expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.ars');
     });
   });
@@ -73,12 +75,14 @@ describe('Withdraw', () => {
       type: 'withdraw',
       id: 'someId',
     });
-    const { getByText } = render(<Withdraw />);
+    const { getByText, getByTestId } = render(<Withdraw />);
     const button = getByText('BRL');
 
     fireEvent.press(button);
 
     await waitFor(() => {
+      const loadingModal = getByTestId('loading-modal');
+      expect(loadingModal).toBeOnTheScreen();
       expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.brl');
     });
   });
@@ -89,12 +93,14 @@ describe('Withdraw', () => {
       type: 'withdraw',
       id: 'someId',
     });
-    const { getByText } = render(<Withdraw />);
+    const { getByText, getByTestId } = render(<Withdraw />);
     const button = getByText('EURC');
 
     fireEvent.press(button);
 
     await waitFor(() => {
+      const loadingModal = getByTestId('loading-modal');
+      expect(loadingModal).toBeOnTheScreen();
       expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.eurc');
     });
   });
