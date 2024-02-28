@@ -54,8 +54,7 @@ const Operation: React.FunctionComponent = () => {
   const [operationLoading, setOperationLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<AssetCode | null>(null);
-  const assets = Object.values(AssetCode);
-  const filteredAssets = assets.filter((asset) => !['USDC', 'EURC'].includes(asset));
+  const availableAssets = [AssetCode.ARS, AssetCode.BRL, AssetCode.EURC];
   // TODO: replace by useRef: https://react.dev/reference/react/useRef
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>(); // see: https://code.pieces.app/blog/resolving-react-setinterval-conflicts
 
@@ -231,7 +230,7 @@ const Operation: React.FunctionComponent = () => {
       )}
       <StyledText className="text-lg text-center mb-4">Select the currency you want to {type}</StyledText>
       <StyledView className="flex flex-row flex-wrap px-4 gap-4">
-        {filteredAssets.map((asset) => (
+        {availableAssets.map((asset) => (
           <TouchableOpacity key={`asset_${asset}`} onPress={() => handleOnPress(asset)} disabled={operationLoading}>
             <StyledView className="flex-row w-32 h-20 items-center justify-center bg-white rounded-lg shadow">
               {operationLoading && asset === selectedAsset ? (
