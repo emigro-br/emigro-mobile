@@ -1,3 +1,4 @@
+import { IAuthSession } from '@/types/IAuthSession';
 import { IBalance } from '@/types/IBalance';
 import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { IQuote } from '@/types/IQuote';
@@ -8,52 +9,10 @@ import { IUserProfile } from '@/types/IUserProfile';
 
 import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
 
-import { sessionStore } from '@stores/SessionStore';
+import { CustomError } from './errors';
+import { fetchWithTokenCheck } from './utils';
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
-
-export class CustomError extends Error {
-  constructor(message: string, cause?: Error) {
-    super(message);
-    this.name = this.constructor.name;
-    this.stack = cause?.stack;
-  }
-
-  static fromJSON(json: any) {
-    const error = new CustomError(json.message);
-    error.name = json.name;
-    error.stack = json.stack;
-    return error;
-  }
-}
-
-export class NotAuhtorized extends CustomError {
-  constructor() {
-    super('Not authorized');
-    this.name = 'NotAuhtorized';
-  }
-}
-
-export const fetchWithTokenCheck = async (url: string, options: RequestInit): Promise<Response> => {
-  if (!sessionStore.session) {
-    throw new NotAuhtorized();
-  }
-
-  if (sessionStore.isTokenExpired) {
-    console.debug('Token expired, refreshing...');
-    const newSession = await sessionStore.refresh();
-    if (!newSession) {
-      throw new Error('Could not refresh session');
-    }
-  }
-
-  options.headers = {
-    ...options.headers,
-    Authorization: `Bearer ${sessionStore.accessToken}`,
-  };
-
-  return fetch(url, options);
-};
 
 export const getTransactions = async (): Promise<ITransaction[]> => {
   const transactionsUrl = `${backendUrl}/transaction/all`;
@@ -166,10 +125,9 @@ export const getUserPublicKey = async (): Promise<string> => {
   }
 };
 
-export const getUserProfile = async (): Promise<IUserProfile> => {
+export const getUserProfile = async (session: IAuthSession): Promise<IUserProfile> => {
   const url = `${backendUrl}/user/profile`;
   try {
-    const session = sessionStore.session;
     const res = await fetchWithTokenCheck(url, {
       method: 'POST',
       headers: {

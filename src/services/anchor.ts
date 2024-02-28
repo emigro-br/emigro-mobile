@@ -4,7 +4,7 @@ import { Sep24Transaction } from '@/types/Sep24Transaction';
 
 import { AssetCode } from '@constants/assetCode';
 
-import { fetchWithTokenCheck } from './emigro';
+import { fetchWithTokenCheck } from './utils';
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 
