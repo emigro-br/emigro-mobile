@@ -44,11 +44,14 @@ describe('Withdraw', () => {
   it('Should render correctly', async () => {
     const { queryByText } = render(<Withdraw />);
 
-    expect(queryByText('ARS')).toBeOnTheScreen();
-    expect(queryByText('BRL')).toBeOnTheScreen();
-    expect(queryByText('EURC')).toBeOnTheScreen();
-    expect(queryByText('USDC')).not.toBeOnTheScreen();
-    expect(queryByText('XML')).not.toBeOnTheScreen();
+    await waitFor(() => {
+      // only because of the useEffect
+      expect(queryByText('ARS')).toBeOnTheScreen();
+      expect(queryByText('BRL')).toBeOnTheScreen();
+      expect(queryByText('EURC')).toBeOnTheScreen();
+      expect(queryByText('USDC')).not.toBeOnTheScreen();
+      expect(queryByText('XML')).not.toBeOnTheScreen();
+    });
   });
 
   it('Should call handleOnPress when ARS button is pressed', async () => {

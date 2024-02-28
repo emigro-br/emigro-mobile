@@ -175,7 +175,6 @@ describe('SessionStore', () => {
     await sessionStore.fetchPublicKey();
 
     const updatedSession = await sessionStore.load();
-    console.debug('U', updatedSession);
 
     expect(updatedSession?.publicKey).toBe(mockPublicKey);
   });

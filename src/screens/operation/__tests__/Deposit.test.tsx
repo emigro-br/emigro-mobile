@@ -4,6 +4,7 @@ import { Linking } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import mockConsole from 'jest-mock-console';
 
 import { getInteractiveUrl } from '@services/anchor';
 
@@ -82,9 +83,11 @@ describe('Deposit screen', () => {
   });
 
   test('Should display default error message when an error occurs', async () => {
+    const restoreConsole = mockConsole();
     // mock getInteractiveUrl to throw an error
+    const error = new Error('An error occurred');
     (getInteractiveUrl as jest.Mock).mockImplementation(() => {
-      throw new Error('An error occurred');
+      throw error;
     });
 
     const { getByText } = render(<Deposit />);
@@ -94,6 +97,8 @@ describe('Deposit screen', () => {
     await waitFor(() => {
       const errorMessage = getByText('Something went wrong. Please try again');
       expect(errorMessage).toBeOnTheScreen();
+      expect(console.warn).toHaveBeenCalledWith(error);
     });
+    restoreConsole();
   });
 });
