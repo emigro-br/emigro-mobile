@@ -8,6 +8,7 @@ import { styled } from 'nativewind';
 
 import { useVendor } from '@/contexts/VendorContext';
 import { IVendor } from '@/types/IVendor';
+import { CryptoAsset } from '@/types/assets';
 
 import Button from '@components/Button';
 import CustomModal from '@components/CustomModal';
@@ -16,7 +17,7 @@ import useCurrencyChange from '@hooks/useCurrencyChange';
 import useGetUserBalance from '@hooks/useGetUserBalance';
 import usePayment from '@hooks/usePayment';
 
-import { formatAssetCode } from '@utils/formatAssetCode';
+import { AssetToCurrency } from '@utils/assets';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -125,7 +126,8 @@ const ConfirmPayment: React.FunctionComponent = () => {
               </StyledText>
             ) : (
               <StyledText className="text-lg font-bold">
-                {scannedVendor.name} will receive: {paymentAmount} {formatAssetCode(destinationAssetCode)}
+                {scannedVendor.name} will receive: {paymentAmount}{' '}
+                {AssetToCurrency[destinationAssetCode as CryptoAsset]}
               </StyledText>
             )}
           </StyledView>
@@ -147,12 +149,12 @@ const ConfirmPayment: React.FunctionComponent = () => {
             <StyledView className="mb-2">
               <StyledText>{scannedVendor?.name} will receive:</StyledText>
               <StyledText className="font-bold text-lg text-green">
-                {paymentAmount} {formatAssetCode(destinationAssetCode)}
+                {paymentAmount} {AssetToCurrency[destinationAssetCode as CryptoAsset]}
               </StyledText>
             </StyledView>
             <StyledText>Transaction amount:</StyledText>
             <StyledText className="font-bold text-lg text-red">
-              {String(transactionValue)} {formatAssetCode(currency)}
+              {String(transactionValue)} {AssetToCurrency[currency as CryptoAsset]}
             </StyledText>
           </StyledView>
 

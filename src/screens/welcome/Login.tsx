@@ -10,7 +10,6 @@ import { FormField } from '@/types/FormField';
 import { SIGNIN_ERROR_MESSAGE, SIGN_IN_FIELDS_ERROR } from '@constants/errorMessages';
 
 import { signIn } from '@services/auth';
-import { getUserPublicKey } from '@services/emigro';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -42,22 +41,6 @@ const Login: React.FunctionComponent = () => {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const triggerUpdateUserPublicKey = async () => {
-    try {
-      // TODO: improve this workaround to update the session with the user public key
-      const publicKey = await getUserPublicKey();
-      const authSession = sessionStore.session;
-      if (authSession) {
-        authSession.publicKey = publicKey;
-        sessionStore.save(authSession);
-      } else {
-        console.warn('Failed to update user public key');
-      }
-    } catch (error) {
-      console.warn('Failed to get user public key:', error);
-    }
-  };
-
   const handleSignIn = async () => {
     setIsLoggingIn(true);
     try {
@@ -68,9 +51,8 @@ const Login: React.FunctionComponent = () => {
       }
       const authSession = await signIn(formData.email, formData.password);
       await sessionStore.save(authSession);
+      sessionStore.fetchPublicKey();
       setError('');
-      triggerUpdateUserPublicKey();
-      sessionStore.accessToken && navigation?.navigate('Root' as never);
     } catch (error) {
       console.error(error, SIGNIN_ERROR_MESSAGE);
       setError(SIGNIN_ERROR_MESSAGE);

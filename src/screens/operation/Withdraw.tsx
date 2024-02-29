@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Linking, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Linking, Text, TouchableOpacity, View } from 'react-native';
 
-import Ionicons from '@expo/vector-icons/Ionicons';
-import * as Clipboard from 'expo-clipboard';
+import { observer } from 'mobx-react-lite';
 import { styled } from 'nativewind';
 
-import { getAssetCode } from '@/stellar/utils';
 import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { TransactionStatus } from '@/types/TransactionStatus';
+import { CryptoAsset } from '@/types/assets';
 
-import { AssetCode } from '@constants/assetCode';
+import Button from '@components/Button';
+
+import { OperationType } from '@constants/constants';
 
 import { CallbackType, ConfirmWithdrawDto, confirmWithdraw, getInteractiveUrl, getTransaction } from '@services/anchor';
-import { getUserPublicKey } from '@services/emigro';
 
-import { operationStore } from '@stores/OperationStore';
 import { sessionStore } from '@stores/SessionStore';
 
-import { getAssetIcon } from '@utils/getAssetIcon';
+import { iconFor } from '@utils/assets';
 
 import { ConfirmationModal } from './modals/ConfirmationModal';
 import { ErrorModal } from './modals/ErrorModal';
@@ -31,65 +30,53 @@ enum TransactionStep {
   NONE = 'none',
   STARTED = 'started',
   WAITING = 'waiting',
+  PENDING_USER = 'pending_user',
   CONFIRM_TRANSFER = 'confirm_transfer',
   SUCCESS = 'success',
   ERROR = 'error',
 }
 
-const maskWallet = (address: string): string => {
-  const firstFive = address.slice(0, 5);
-  const lastFive = address.slice(-5);
-  return `${firstFive}...${lastFive}`;
-};
-
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
-const Operation: React.FunctionComponent = () => {
-  const { type } = operationStore.operation;
-  const [publicKey, setPublicKey] = useState<string | null>(null);
+const Withdraw: React.FC = observer(() => {
   // const [url, setUrl] = useState<string | null>(null);
   const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
   const [transactionId, setTransactionId] = useState<string | null>(null);
   const [transaction, setTransaction] = useState<Sep24Transaction | null>(null);
-  const [operationLoading, setOperationLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [selectedAsset, setSelectedAsset] = useState<AssetCode | null>(null);
-  const assets = Object.values(AssetCode);
-  const filteredAssets = assets.filter((asset) => !['USDC', 'EURC'].includes(asset));
+  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset | null>(null);
+  const availableAssets = [CryptoAsset.ARS, CryptoAsset.BRL, CryptoAsset.EURC];
   // TODO: replace by useRef: https://react.dev/reference/react/useRef
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>(); // see: https://code.pieces.app/blog/resolving-react-setinterval-conflicts
 
   useEffect(() => {
-    const getUserPublicKeyAsync = async () => {
-      try {
-        const publicKey = await getUserPublicKey();
-        setPublicKey(publicKey);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getUserPublicKeyAsync();
-  });
+    return cleanUp;
+  }, []);
 
-  const handleOnPress = async (asset: AssetCode) => {
-    setOperationLoading(true);
+  const cleanUp = () => {
+    // setTransactionId(null);
+    // setUrl(null);
+    setIsLoading(false);
+    setErrorMessage(null);
+  };
+
+  const handleOnPress = async (asset: CryptoAsset) => {
+    setIsLoading(true);
     setSelectedAsset(asset);
     setTransactionId(null);
 
-    const assetCodeSelected = getAssetCode(asset);
-
-    const cognitoToken = sessionStore.accessToken;
-
-    let acccountId = publicKey;
-    if (!publicKey) {
-      acccountId = await getUserPublicKey(); // TODO: use sessionStore.publicKey;
+    if (!sessionStore.accessToken || !sessionStore.publicKey) {
+      setErrorMessage('Invalid session');
+      setIsLoading(false);
+      return;
     }
 
     const anchorParams = {
-      account: acccountId!,
-      operation: type as string,
-      asset_code: assetCodeSelected,
-      cognito_token: cognitoToken!,
+      account: sessionStore.publicKey,
+      operation: OperationType.WITHDRAW,
+      asset_code: asset,
+      cognito_token: sessionStore.accessToken,
     };
 
     try {
@@ -98,8 +85,7 @@ const Operation: React.FunctionComponent = () => {
 
       if (id) {
         setTransactionId(id);
-        setStep(TransactionStep.WAITING);
-        waitWithdrawOnAnchorComplete(id, assetCodeSelected);
+        waitWithdrawOnAnchorComplete(id, asset);
       }
 
       if (url) {
@@ -113,32 +99,18 @@ const Operation: React.FunctionComponent = () => {
         setErrorMessage(defaultErrorMessage);
       }
     } catch (error) {
-      console.error(error);
+      console.warn(error);
       setErrorMessage(defaultErrorMessage);
     } finally {
-      setOperationLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const copyToClipboard = async () => {
-    await Clipboard.setStringAsync(publicKey!);
-  };
-
-  // const handleWebClose = async () => {
-  //   if (type == OperationType.WITHDRAW) {
-  //     setStep(TransactionStep.WAITING);
-  //     // pollWithdrawUntilComplete(transactionId!, getAssetCode(selectedAsset!));
-  //     waitWithdrawOnAnchorComplete(transactionId!, getAssetCode(selectedAsset!));
-  //   } else {
-  //     setStep(TransactionStep.NONE);
-  //   }
-  // }
-
-  const handleConfirmTransaction = async (transactionId: string, assetCode: AssetCode) => {
+  const handleConfirmTransaction = async (transactionId: string, assetCode: CryptoAsset) => {
     const data: ConfirmWithdrawDto = {
       transactionId,
       assetCode,
-      from: publicKey!,
+      from: sessionStore.publicKey!,
     };
     try {
       await confirmWithdraw(data);
@@ -153,12 +125,20 @@ const Operation: React.FunctionComponent = () => {
   };
 
   // Stopping the interval
-  const stopFetchingTransaction = (status: TransactionStatus) => {
+  const stopFetchingTransaction = (status?: TransactionStatus) => {
     console.debug('Stopping the fetch transaction. Status: ', status);
     clearTimeout(timeoutId);
   };
 
-  const waitWithdrawOnAnchorComplete = async (transactionId: string, assetCode: AssetCode) => {
+  // used to keep the current step in the setTimeout callback
+  const stepRef = React.useRef(step);
+  stepRef.current = step;
+
+  const waitWithdrawOnAnchorComplete = async (transactionId: string, assetCode: CryptoAsset) => {
+    if (stepRef.current !== TransactionStep.WAITING) {
+      setStep(TransactionStep.WAITING);
+    }
+
     const endStatuses = [TransactionStatus.COMPLETED, TransactionStatus.ERROR];
 
     try {
@@ -178,10 +158,12 @@ const Operation: React.FunctionComponent = () => {
         return;
       }
 
-      // check again in few seconds
-      console.log('Sleeping...');
-      const timeoutId = setTimeout(() => waitWithdrawOnAnchorComplete(transactionId, assetCode), 5000);
-      setTimeoutId(timeoutId);
+      // check again in few seconds only if the user still waiting
+      if (stepRef.current === TransactionStep.WAITING) {
+        console.log('Sleeping...');
+        const timeoutId = setTimeout(() => waitWithdrawOnAnchorComplete(transactionId, assetCode), 5000);
+        setTimeoutId(timeoutId);
+      }
     } catch (error) {
       stopFetchingTransaction(TransactionStatus.ERROR); // clean up
       console.error('Error getting transaction', error);
@@ -191,19 +173,23 @@ const Operation: React.FunctionComponent = () => {
     }
   };
 
-  return (
-    <StyledView className="flex items-center bg-white h-full">
-      {/* {step == TransactionStep.STARTED &&
-        <WebModal url={url!} visible={true} onClose={handleWebClose} />} */}
+  const handleCloseWait = () => {
+    stopFetchingTransaction();
+    setStep(TransactionStep.PENDING_USER);
+  };
 
-      <LoadingModal isVisible={step === TransactionStep.WAITING} label="Waiting..." />
+  return (
+    <StyledView className="flex bg-white h-full">
+      <LoadingModal isVisible={!sessionStore.publicKey || isLoading} />
+      <LoadingModal isVisible={step === TransactionStep.STARTED} label="Loading..." />
+      <LoadingModal isVisible={step === TransactionStep.WAITING} label="Waiting..." onClose={handleCloseWait} />
 
       {transaction && (
         <ConfirmationModal
           isVisible={step === TransactionStep.CONFIRM_TRANSFER}
           transaction={transaction!}
-          assetCode={getAssetCode(selectedAsset!)}
-          onPress={() => handleConfirmTransaction(transactionId!, getAssetCode(selectedAsset!))}
+          assetCode={selectedAsset!}
+          onPress={() => handleConfirmTransaction(transactionId!, selectedAsset!)}
           onClose={() => setStep(TransactionStep.NONE)}
         />
       )}
@@ -211,7 +197,7 @@ const Operation: React.FunctionComponent = () => {
       <SuccessModal
         isVisible={step === TransactionStep.SUCCESS}
         onClose={() => setStep(TransactionStep.NONE)}
-        publicKey={publicKey!}
+        publicKey={sessionStore.publicKey!}
       />
 
       <ErrorModal
@@ -220,35 +206,27 @@ const Operation: React.FunctionComponent = () => {
         onClose={() => setStep(TransactionStep.NONE)}
       />
 
-      <StyledText className="text-center font-black text-2xl my-4">{type}</StyledText>
-      {publicKey && (
-        <TouchableOpacity onPress={copyToClipboard}>
-          <StyledView className="flex flex-row mb-2">
-            <StyledText className="text-center text-sm mr-2">{maskWallet(publicKey)}</StyledText>
-            <Ionicons name="clipboard-outline" size={16} />
-          </StyledView>
-        </TouchableOpacity>
-      )}
-      <StyledText className="text-lg text-center mb-4">Select the currency you want to {type}</StyledText>
+      <StyledText className="text-lg p-4">Select the currency you want to withdraw:</StyledText>
       <StyledView className="flex flex-row flex-wrap px-4 gap-4">
-        {filteredAssets.map((asset) => (
-          <TouchableOpacity key={`asset_${asset}`} onPress={() => handleOnPress(asset)} disabled={operationLoading}>
+        {availableAssets.map((asset) => (
+          <TouchableOpacity key={`asset_${asset}`} onPress={() => handleOnPress(asset)}>
             <StyledView className="flex-row w-32 h-20 items-center justify-center bg-white rounded-lg shadow">
-              {operationLoading && asset === selectedAsset ? (
-                <ActivityIndicator size="large" />
-              ) : (
-                <>
-                  <Image source={getAssetIcon(asset)} style={{ width: 30, height: 30 }} />
-                  <StyledText className="ml-1 flex-row font-bold text-xl">{asset}</StyledText>
-                </>
-              )}
+              <Image source={iconFor(asset)} style={{ width: 30, height: 30 }} />
+              <StyledText className="ml-1 flex-row font-bold text-xl">{asset}</StyledText>
             </StyledView>
           </TouchableOpacity>
         ))}
       </StyledView>
+      {transactionId && step === TransactionStep.PENDING_USER && (
+        <StyledView className="items-start mt-6">
+          <Button textColor="red" onPress={() => waitWithdrawOnAnchorComplete(transactionId, selectedAsset!)}>
+            Check pending transaction: {transactionId}
+          </Button>
+        </StyledView>
+      )}
       {errorMessage && <StyledText className="text-red pt-6">{errorMessage}</StyledText>}
     </StyledView>
   );
-};
+});
 
-export default Operation;
+export default Withdraw;

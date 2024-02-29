@@ -1,7 +1,8 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import ConfirmPayment from '@screens/ConfirmPayment';
-import Operation from '@screens/operation/Operation';
+import Deposit from '@screens/operation/Deposit';
+import Withdraw from '@screens/operation/Withdraw';
 import DeleteAccount from '@screens/profile/DeleteAccount';
 import { DetailsSwap } from '@screens/swap/DetailsSwap';
 import { Swap } from '@screens/swap/Swap';
@@ -26,7 +27,8 @@ export type RootStackParamList = {
     email: string;
     username: string;
   };
-  Operation: undefined;
+  Deposit: undefined;
+  Withdraw: undefined;
   Swap: undefined;
   DetailsSwap: undefined;
   DeleteAccount: undefined;
@@ -38,46 +40,69 @@ export type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-type RootNavigatorProps = {
+type Props = {
   isSignedIn: boolean;
 };
 
-function RootNavigator(props: RootNavigatorProps) {
+function RootNavigator({ isSignedIn }: Props) {
   // TODO: improve the navigation with https://reactnavigation.org/docs/auth-flow/
   return (
     <Stack.Navigator
-      initialRouteName={props.isSignedIn ? 'Root' : 'Welcome'}
+      initialRouteName={isSignedIn ? 'Root' : 'Welcome'}
       screenOptions={{
         headerTintColor: 'red',
       }}
     >
-      <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
-      <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
-      <Stack.Screen name="Transfers" component={Transfers} options={{ title: 'Transfers' }} />
-      <Stack.Screen
-        name="SendAsset"
-        component={SendAsset}
-        options={{ title: 'Transfers', headerTitle: '', headerBackTitleVisible: false }}
-        initialParams={{ asset: '' }}
-      />
+      {isSignedIn ? (
+        <>
+          <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
 
-      {/* Auth screens */}
-      <Stack.Group>
-        <Stack.Screen name="SignUp" component={CreateAccount} options={{ headerTitle: 'Create Account' }} />
-        <Stack.Screen name="Login" component={Login} options={{ headerTitle: 'Login' }} />
-        <Stack.Screen name="ConfirmAccount" component={ConfirmAccount} options={{ headerTitle: 'Confirm Account' }} />
-      </Stack.Group>
+          {/* Transaction screens */}
+          <Stack.Group>
+            <Stack.Screen name="MakePayment" component={BottomTabNavigator} options={{ headerShown: false }} />
+            <Stack.Screen
+              name="ConfirmPayment"
+              component={ConfirmPayment}
+              options={{ headerTitle: 'Confirm Payment' }}
+            />
+            <Stack.Screen
+              name="Deposit"
+              component={Deposit}
+              options={{ headerBackTitle: 'Back', headerTitle: 'Deposit' }}
+            />
+            <Stack.Screen
+              name="Withdraw"
+              component={Withdraw}
+              options={{ headerBackTitle: 'Back', headerTitle: 'Withdraw' }}
+            />
+            <Stack.Screen name="Transfers" component={Transfers} options={{ title: 'Transfers' }} />
+            <Stack.Screen
+              name="SendAsset"
+              component={SendAsset}
+              options={{ title: 'Transfers', headerTitle: '', headerBackTitleVisible: false }}
+              initialParams={{ asset: '' }}
+            />
+            <Stack.Screen name="Swap" component={Swap} options={{ headerShown: true }} />
+            <Stack.Screen name="DetailsSwap" component={DetailsSwap} options={{ headerTitle: 'Confirm Swap' }} />
+          </Stack.Group>
 
-      {/* Transaction screens */}
-      <Stack.Group>
-        <Stack.Screen name="MakePayment" component={BottomTabNavigator} options={{ headerShown: false }} />
-        <Stack.Screen name="ConfirmPayment" component={ConfirmPayment} options={{ headerTitle: 'Confirm Payment' }} />
-        <Stack.Screen name="Operation" component={Operation} />
-        <Stack.Screen name="Swap" component={Swap} options={{ headerShown: true }} />
-        <Stack.Screen name="DetailsSwap" component={DetailsSwap} options={{ headerTitle: 'Confirm Swap' }} />
-      </Stack.Group>
-
-      <Stack.Screen name="DeleteAccount" component={DeleteAccount} options={{ headerTitle: 'Delete Account' }} />
+          <Stack.Screen name="DeleteAccount" component={DeleteAccount} options={{ headerTitle: 'Delete Account' }} />
+        </>
+      ) : (
+        <>
+          <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
+          {/* Auth screens */}
+          <Stack.Group>
+            <Stack.Screen name="SignUp" component={CreateAccount} options={{ headerTitle: 'Create Account' }} />
+            <Stack.Screen name="Login" component={Login} options={{ headerTitle: 'Login' }} />
+            <Stack.Screen
+              name="ConfirmAccount"
+              component={ConfirmAccount}
+              options={{ headerTitle: 'Confirm Account' }}
+            />
+          </Stack.Group>
+        </>
+      )}
     </Stack.Navigator>
   );
 }

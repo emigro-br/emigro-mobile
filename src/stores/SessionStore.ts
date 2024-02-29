@@ -1,7 +1,8 @@
 import * as SecureStore from 'expo-secure-store';
-import { makeAutoObservable } from 'mobx';
+import { action, makeAutoObservable, observable } from 'mobx';
 
 import { refresh as refreshSession } from '@services/auth';
+import { getUserPublicKey } from '@services/emigro';
 
 import { IAuthSession } from '../types/IAuthSession';
 
@@ -10,7 +11,11 @@ export class SessionStore {
   session: IAuthSession | null = null;
 
   constructor() {
-    makeAutoObservable(this);
+    makeAutoObservable(this, {
+      session: observable,
+      setSession: action,
+      setPublicKey: action,
+    });
   }
 
   get accessToken() {
@@ -18,7 +23,30 @@ export class SessionStore {
   }
 
   get publicKey() {
+    if (this.session && !this.session.publicKey) {
+      this.fetchPublicKey();
+    }
     return this.session?.publicKey;
+  }
+
+  setSession(session: IAuthSession | null) {
+    this.session = session;
+  }
+
+  setPublicKey(publicKey: string) {
+    if (this.session) {
+      this.session.publicKey = publicKey;
+    }
+  }
+
+  async fetchPublicKey() {
+    console.debug('Fetching user public key');
+    const publicKey = await getUserPublicKey();
+    if (this.session && publicKey) {
+      this.setPublicKey(publicKey); // action will be called
+      await this.save(this.session);
+    }
+    return publicKey;
   }
 
   get isTokenExpired(): boolean {
@@ -26,7 +54,7 @@ export class SessionStore {
   }
 
   async save(session: IAuthSession) {
-    this.session = session; // FIXME: we can not replace when is only a partial update
+    this.setSession(session); // FIXME: we can not replace when is only a partial update
     await Promise.all(
       Object.entries(session)
         .filter(([, value]) => value !== undefined)
@@ -55,14 +83,14 @@ export class SessionStore {
     if (!session.refreshToken || !session.idToken || !session.tokenExpirationDate) {
       throw new Error('Invalid session');
     }
-    this.session = session as IAuthSession;
+    this.setSession(session as IAuthSession);
     return this.session;
   }
 
   async clear() {
     const keys = ['accessToken', 'refreshToken', 'idToken', 'tokenExpirationDate', 'email', 'publicKey'];
     await Promise.all(keys.map((key) => SecureStore.deleteItemAsync(key)));
-    this.session = null;
+    this.setSession(null);
   }
 
   async refresh() {
@@ -72,6 +100,7 @@ export class SessionStore {
 
     const newSession = await refreshSession(this.session);
     if (newSession) {
+      newSession.publicKey = this.session.publicKey; // FIXME: workaround to avoid losing the public key on save
       await this.save(newSession);
       return this.session;
     }

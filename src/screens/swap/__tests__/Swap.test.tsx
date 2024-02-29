@@ -4,7 +4,7 @@ import { NavigationProp } from '@react-navigation/native';
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { AssetCode } from '@constants/assetCode';
+import { CryptoAsset } from '@/types/assets';
 
 import { RootStackParamList } from '@navigation/index';
 
@@ -33,7 +33,7 @@ describe('Swap component', () => {
     const { getByText, getByTestId } = render(<Swap navigation={navigation} />);
 
     // check title
-    const sellText = getByText(`Sell ${AssetCode.EURC}`);
+    const sellText = getByText(`Sell ${CryptoAsset.EURC}`);
     expect(sellText).toBeDefined();
 
     // check arrow icon
@@ -42,7 +42,7 @@ describe('Swap component', () => {
 
     await waitFor(() => {
       // check rate
-      const buyText = getByText(`1 ${AssetCode.EURC} ≈ 1.082900 ${AssetCode.BRL}`);
+      const buyText = getByText(`1 ${CryptoAsset.EURC} ≈ 1.082900 ${CryptoAsset.BRL}`);
       expect(buyText).toBeDefined();
       expect(emigroService.handleQuote).toHaveBeenCalledTimes(1);
     });
@@ -81,9 +81,9 @@ describe('Swap component', () => {
     fireEvent.press(button);
 
     const transaction = {
-      from: AssetCode.EURC,
+      from: CryptoAsset.EURC,
       fromValue: 10,
-      to: AssetCode.BRL,
+      to: CryptoAsset.BRL,
       toValue: 10.829,
       rate: 1.0829,
       fees: 0,

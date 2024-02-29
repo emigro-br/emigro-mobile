@@ -11,12 +11,13 @@ import { styled } from 'nativewind';
 
 import Button from '@/components/Button';
 import { useVendor } from '@/contexts/VendorContext';
+import { CryptoAsset } from '@/types/assets';
 
 import { INVALID_QR_CODE } from '@constants/errorMessages';
 
 import AskCamera from '@screens/AskCamera';
 
-import { formatAssetCode } from '@utils/formatAssetCode';
+import { AssetToCurrency } from '@utils/assets';
 
 type QRCodeScannerProps = {
   onCancel: () => void;
@@ -55,11 +56,14 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
     setIsScanned(true);
     try {
       const qrObject = JSON.parse(result.data);
+      if (!qrObject.name || !qrObject.amount || !qrObject.assetCode || !qrObject.publicKey) {
+        throw new Error(INVALID_QR_CODE);
+      }
       setScannedVendor(qrObject);
     } catch (error) {
+      console.warn('[handleBarCodeScanned]', error);
       setError(INVALID_QR_CODE);
       setIsScanned(false);
-      console.error(error, INVALID_QR_CODE);
     }
   };
 
@@ -121,7 +125,7 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
           <StyledView className="flex-row">
             <StyledText className="text-lg font-bold">Amount: </StyledText>
             <StyledText className="text-lg">
-              {scannedVendor.amount} {formatAssetCode(scannedVendor.assetCode)}
+              {scannedVendor.amount} {AssetToCurrency[scannedVendor.assetCode as CryptoAsset]}
             </StyledText>
           </StyledView>
           <StyledView className="flex justify-center">

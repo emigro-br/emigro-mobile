@@ -13,16 +13,16 @@ import {
   VStack,
 } from '@gluestack-ui/themed';
 
-import { getAssetIcon } from '@/utils/getAssetIcon';
-
-import { AssetCode, AssetCodeToName } from '@constants/assetCode';
+import { CryptoAsset } from '@/types/assets';
 
 import { RootStackParamList } from '@navigation/index';
+
+import { AssetToName, iconFor } from '@utils/assets';
 
 interface Item {
   id: string;
   avatarUrl: string;
-  code: AssetCode;
+  code: CryptoAsset;
   fullName: string;
 }
 
@@ -30,14 +30,14 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Transfers'>;
 
 const Transfers = ({ navigation }: Props) => {
   const data: Item[] = [];
-  const assets = Object.values(AssetCode);
+  const assets = Object.values(CryptoAsset);
 
   for (const asset of assets) {
     data.push({
       id: asset,
-      avatarUrl: getAssetIcon(asset),
+      avatarUrl: iconFor(asset),
       code: asset,
-      fullName: AssetCodeToName[asset],
+      fullName: AssetToName[asset],
     } as Item);
   }
 

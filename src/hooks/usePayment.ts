@@ -69,7 +69,7 @@ const usePayment = (
       return paymentResponse;
     } catch (error) {
       setTransactionError(error);
-      console.error(error);
+      console.error('[handleConfirmPayment]', error);
     } finally {
       setIsTransactionLoading(false);
       setIsTransactionCompletedModalVisible(true);

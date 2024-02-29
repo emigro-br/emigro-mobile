@@ -5,12 +5,12 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
 import { styled } from 'nativewind';
 
+import qrImage from '@assets/images/qr-code.png';
+
 import Button from '@components/Button';
 import QRCodeScanner from '@components/QRCodeScanner';
 
 import { RootStackParamList } from '@navigation/index';
-
-import qrImage from '../assets/images/qr-code.png';
 
 const StyledView = styled(View);
 const StyledImage = styled(Image);

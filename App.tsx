@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { StatusBar } from 'expo-status-bar';
+import { observer } from 'mobx-react-lite';
 
 import { VendorContextProvider } from '@/contexts/VendorContext';
 import { GluestackUIProvider, Text, Box } from "@gluestack-ui/themed"
@@ -13,9 +14,9 @@ import { SplashScreen } from '@screens/Splash';
 
 import { sessionStore } from '@stores/SessionStore';
 
-export default function App() {
+
+export default observer(function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [isSignedIn, setIsSignedIn] = useState(false);
 
   const bootstrapAsync = async () => {
     try {
@@ -27,7 +28,6 @@ export default function App() {
         if (!newSession) {
           throw new Error('Can not refresh the session');
         }
-        setIsSignedIn(true);
       }
     } catch (error) {
       console.warn('Can not load the token, cleaning session', error);
@@ -46,6 +46,8 @@ export default function App() {
     return <SplashScreen />;
   }
 
+  const isSignedIn = !!sessionStore.session;
+
   return (
     <GluestackUIProvider config={config}>
       <SafeAreaProvider>
@@ -56,4 +58,4 @@ export default function App() {
       </SafeAreaProvider>
     </GluestackUIProvider>
   );
-}
+});
