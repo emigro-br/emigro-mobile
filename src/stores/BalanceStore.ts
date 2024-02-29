@@ -1,4 +1,4 @@
-import { makeAutoObservable } from 'mobx';
+import { action, makeAutoObservable, observable } from 'mobx';
 
 import { IBalance } from '@/types/IBalance';
 
@@ -8,7 +8,10 @@ export class BalanceStore {
   userBalance: IBalance[] = [];
 
   constructor() {
-    makeAutoObservable(this);
+    makeAutoObservable(this, {
+      userBalance: observable,
+      setUserBalance: action,
+    });
   }
 
   setUserBalance(balance: IBalance[]): void {

@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, Image, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Toast, ToastDescription, useToast } from '@gluestack-ui/themed';
 import * as Application from 'expo-application';
+import * as Clipboard from 'expo-clipboard';
 import { styled } from 'nativewind';
 
 import profileLogo from '@assets/images/profile-icon.png';
@@ -18,8 +21,15 @@ const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledImage = styled(Image);
 
+const maskWallet = (address: string): string => {
+  const firstFive = address.slice(0, 5);
+  const lastFive = address.slice(-5);
+  return `${firstFive}...${lastFive}`;
+};
+
 const Profile = () => {
   const navigation = useNavigation();
+  const toast = useToast();
   const [userInformation, setUserInformation] = useState<any>(null);
 
   const handleLogout = async () => {
@@ -49,6 +59,21 @@ const Profile = () => {
     }
   });
 
+  const publicKey = sessionStore.publicKey;
+
+  const copyToClipboard = async () => {
+    if (publicKey) {
+      await Clipboard.setStringAsync(publicKey);
+      toast.show({
+        render: ({ id }) => (
+          <Toast nativeID={`toast${id}`} action="info" variant="solid">
+            <ToastDescription>Copied to clipboard</ToastDescription>
+          </Toast>
+        ),
+      });
+    }
+  };
+
   if (!userInformation) {
     return (
       <StyledView className="flex items-center justify-center h-full">
@@ -64,6 +89,17 @@ const Profile = () => {
       <StyledView className="items-center m-6">
         <StyledImage source={profileLogo} className="h-32 w-32" />
       </StyledView>
+
+      {publicKey && (
+        <StyledView className="items-center">
+          <TouchableOpacity onPress={copyToClipboard}>
+            <StyledView className="flex flex-row items-center">
+              <StyledText className="text-center text-sm mr-2">{maskWallet(publicKey)}</StyledText>
+              <Ionicons name="clipboard-outline" size={16} />
+            </StyledView>
+          </TouchableOpacity>
+        </StyledView>
+      )}
 
       <StyledView className="flex gap-1 w-full px-4">
         <StyledText className="text-lightGray">Full name</StyledText>

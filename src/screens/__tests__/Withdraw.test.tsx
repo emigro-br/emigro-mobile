@@ -7,7 +7,6 @@ import * as anchor from '@services/anchor';
 
 import Withdraw from '../operation/Withdraw';
 
-jest.mock('expo-clipboard');
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
 jest.mock('@services/anchor', () => ({
@@ -26,8 +25,9 @@ jest.mock('@services/emigro', () => ({
 
 jest.mock('@stores/SessionStore', () => ({
   sessionStore: {
-    session: null,
-    getAccessToken: jest.fn().mockReturnValue('someToken'),
+    session: {},
+    accessToken: 'someAccessToken',
+    publicKey: 'somePublicKey',
   },
 }));
 

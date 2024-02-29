@@ -3,6 +3,7 @@ import { Image, Linking, Text, TouchableOpacity, View } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 
+import { observer } from 'mobx-react-lite';
 import { styled } from 'nativewind';
 
 import { getAssetCode } from '@/stellar/utils';
@@ -24,11 +25,11 @@ const StyledText = styled(Text);
 
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
-const Deposit: React.FC = () => {
+const Deposit: React.FC = observer(() => {
   const navigation = useNavigation();
   // const [transactionId, setTransactionId] = useState<string | null>(null);
   const [url, setUrl] = useState<string | null>(null);
-  const [operationLoading, setOperationLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const availableAssets = [AssetCode.ARS, AssetCode.BRL, AssetCode.EURC];
 
@@ -39,16 +40,16 @@ const Deposit: React.FC = () => {
   const cleanUp = () => {
     // setTransactionId(null);
     setUrl(null);
-    setOperationLoading(false);
+    setIsLoading(false);
     setErrorMessage(null);
   };
 
   const handleAssetChoosen = async (asset: AssetCode) => {
-    setOperationLoading(true);
+    setIsLoading(true);
 
     if (!sessionStore.accessToken || !sessionStore.publicKey) {
       setErrorMessage('Invalid session');
-      setOperationLoading(false);
+      setIsLoading(false);
       return;
     }
 
@@ -77,7 +78,7 @@ const Deposit: React.FC = () => {
       console.warn(error);
       setErrorMessage(defaultErrorMessage);
     } finally {
-      setOperationLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -88,7 +89,7 @@ const Deposit: React.FC = () => {
 
   return (
     <StyledView className="flex bg-white h-full">
-      <LoadingModal isVisible={operationLoading} />
+      <LoadingModal isVisible={!sessionStore.publicKey || isLoading} />
       <OpenURLModal isVisible={!!url} onConfirm={handleModalPressed} />
 
       <StyledText className="text-lg p-4">Choose which one you would like to deposit:</StyledText>
@@ -105,6 +106,6 @@ const Deposit: React.FC = () => {
       {errorMessage && <StyledText className="text-red px-4 pt-6">{errorMessage}</StyledText>}
     </StyledView>
   );
-};
+});
 
 export default Deposit;

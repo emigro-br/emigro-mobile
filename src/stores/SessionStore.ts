@@ -14,6 +14,7 @@ export class SessionStore {
     makeAutoObservable(this, {
       session: observable,
       setSession: action,
+      setPublicKey: action,
     });
   }
 
@@ -32,11 +33,17 @@ export class SessionStore {
     this.session = session;
   }
 
+  setPublicKey(publicKey: string) {
+    if (this.session) {
+      this.session.publicKey = publicKey;
+    }
+  }
+
   async fetchPublicKey() {
     console.debug('Fetching user public key');
     const publicKey = await getUserPublicKey();
     if (this.session && publicKey) {
-      this.session.publicKey = publicKey;
+      this.setPublicKey(publicKey); // action will be called
       await this.save(this.session);
     }
     return publicKey;

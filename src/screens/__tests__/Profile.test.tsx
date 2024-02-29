@@ -8,9 +8,16 @@ import Profile from '@screens/profile/Profile';
 
 import { sessionStore } from '@stores/SessionStore';
 
+jest.mock('expo-clipboard');
+
+jest.mock('@gluestack-ui/themed', () => ({
+  useToast: jest.fn(),
+}));
+
 jest.mock('@stores/SessionStore', () => ({
   sessionStore: {
     clear: jest.fn(),
+    publicKey: 'test-public',
   },
 }));
 

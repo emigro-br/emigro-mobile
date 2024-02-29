@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, Linking, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Linking, Text, TouchableOpacity, View } from 'react-native';
 
-import Ionicons from '@expo/vector-icons/Ionicons';
-import * as Clipboard from 'expo-clipboard';
+import { observer } from 'mobx-react-lite';
 import { styled } from 'nativewind';
 
 import { getAssetCode } from '@/stellar/utils';
@@ -15,7 +14,6 @@ import { AssetCode } from '@constants/assetCode';
 import { OperationType } from '@constants/constants';
 
 import { CallbackType, ConfirmWithdrawDto, confirmWithdraw, getInteractiveUrl, getTransaction } from '@services/anchor';
-import { getUserPublicKey } from '@services/emigro';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -39,21 +37,14 @@ enum TransactionStep {
   ERROR = 'error',
 }
 
-const maskWallet = (address: string): string => {
-  const firstFive = address.slice(0, 5);
-  const lastFive = address.slice(-5);
-  return `${firstFive}...${lastFive}`;
-};
-
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
-const Withdraw: React.FC = () => {
-  const [publicKey, setPublicKey] = useState<string | null>(null);
+const Withdraw: React.FC = observer(() => {
   // const [url, setUrl] = useState<string | null>(null);
   const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
   const [transactionId, setTransactionId] = useState<string | null>(null);
   const [transaction, setTransaction] = useState<Sep24Transaction | null>(null);
-  const [operationLoading, setOperationLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<AssetCode | null>(null);
   const availableAssets = [AssetCode.ARS, AssetCode.BRL, AssetCode.EURC];
@@ -61,36 +52,34 @@ const Withdraw: React.FC = () => {
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>(); // see: https://code.pieces.app/blog/resolving-react-setinterval-conflicts
 
   useEffect(() => {
-    const getUserPublicKeyAsync = async () => {
-      try {
-        const publicKey = await getUserPublicKey();
-        setPublicKey(publicKey);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    getUserPublicKeyAsync();
-  });
+    return cleanUp;
+  }, []);
+
+  const cleanUp = () => {
+    // setTransactionId(null);
+    // setUrl(null);
+    setIsLoading(false);
+    setErrorMessage(null);
+  };
 
   const handleOnPress = async (asset: AssetCode) => {
-    setOperationLoading(true);
+    setIsLoading(true);
     setSelectedAsset(asset);
     setTransactionId(null);
 
     const assetCodeSelected = getAssetCode(asset);
 
-    const cognitoToken = sessionStore.accessToken;
-
-    let acccountId = publicKey;
-    if (!publicKey) {
-      acccountId = await getUserPublicKey(); // TODO: use sessionStore.publicKey;
+    if (!sessionStore.accessToken || !sessionStore.publicKey) {
+      setErrorMessage('Invalid session');
+      setIsLoading(false);
+      return;
     }
 
     const anchorParams = {
-      account: acccountId!,
+      account: sessionStore.publicKey,
       operation: OperationType.WITHDRAW,
       asset_code: assetCodeSelected,
-      cognito_token: cognitoToken!,
+      cognito_token: sessionStore.accessToken,
     };
 
     try {
@@ -113,32 +102,18 @@ const Withdraw: React.FC = () => {
         setErrorMessage(defaultErrorMessage);
       }
     } catch (error) {
-      console.error(error);
+      console.warn(error);
       setErrorMessage(defaultErrorMessage);
     } finally {
-      setOperationLoading(false);
+      setIsLoading(false);
     }
   };
-
-  const copyToClipboard = async () => {
-    await Clipboard.setStringAsync(publicKey!);
-  };
-
-  // const handleWebClose = async () => {
-  //   if (type == OperationType.WITHDRAW) {
-  //     setStep(TransactionStep.WAITING);
-  //     // pollWithdrawUntilComplete(transactionId!, getAssetCode(selectedAsset!));
-  //     waitWithdrawOnAnchorComplete(transactionId!, getAssetCode(selectedAsset!));
-  //   } else {
-  //     setStep(TransactionStep.NONE);
-  //   }
-  // }
 
   const handleConfirmTransaction = async (transactionId: string, assetCode: AssetCode) => {
     const data: ConfirmWithdrawDto = {
       transactionId,
       assetCode,
-      from: publicKey!,
+      from: sessionStore.publicKey!,
     };
     try {
       await confirmWithdraw(data);
@@ -208,6 +183,8 @@ const Withdraw: React.FC = () => {
 
   return (
     <StyledView className="flex bg-white h-full">
+      <LoadingModal isVisible={!sessionStore.publicKey || isLoading} />
+      <LoadingModal isVisible={step === TransactionStep.STARTED} label="Loading..." />
       <LoadingModal isVisible={step === TransactionStep.WAITING} label="Waiting..." onClose={handleCloseWait} />
 
       {transaction && (
@@ -223,7 +200,7 @@ const Withdraw: React.FC = () => {
       <SuccessModal
         isVisible={step === TransactionStep.SUCCESS}
         onClose={() => setStep(TransactionStep.NONE)}
-        publicKey={publicKey!}
+        publicKey={sessionStore.publicKey!}
       />
 
       <ErrorModal
@@ -232,30 +209,13 @@ const Withdraw: React.FC = () => {
         onClose={() => setStep(TransactionStep.NONE)}
       />
 
-      {publicKey && (
-        <StyledView className="items-center mt-4">
-          <TouchableOpacity onPress={copyToClipboard}>
-            <StyledView className="flex flex-row items-center">
-              <StyledText className="text-center text-sm mr-2">{maskWallet(publicKey)}</StyledText>
-              <Ionicons name="clipboard-outline" size={16} />
-            </StyledView>
-          </TouchableOpacity>
-        </StyledView>
-      )}
-
       <StyledText className="text-lg p-4">Select the currency you want to withdraw:</StyledText>
       <StyledView className="flex flex-row flex-wrap px-4 gap-4">
         {availableAssets.map((asset) => (
-          <TouchableOpacity key={`asset_${asset}`} onPress={() => handleOnPress(asset)} disabled={operationLoading}>
+          <TouchableOpacity key={`asset_${asset}`} onPress={() => handleOnPress(asset)}>
             <StyledView className="flex-row w-32 h-20 items-center justify-center bg-white rounded-lg shadow">
-              {operationLoading && asset === selectedAsset ? (
-                <ActivityIndicator size="large" />
-              ) : (
-                <>
-                  <Image source={getAssetIcon(asset)} style={{ width: 30, height: 30 }} />
-                  <StyledText className="ml-1 flex-row font-bold text-xl">{asset}</StyledText>
-                </>
-              )}
+              <Image source={getAssetIcon(asset)} style={{ width: 30, height: 30 }} />
+              <StyledText className="ml-1 flex-row font-bold text-xl">{asset}</StyledText>
             </StyledView>
           </TouchableOpacity>
         ))}
@@ -273,6 +233,6 @@ const Withdraw: React.FC = () => {
       {errorMessage && <StyledText className="text-red pt-6">{errorMessage}</StyledText>}
     </StyledView>
   );
-};
+});
 
 export default Withdraw;
