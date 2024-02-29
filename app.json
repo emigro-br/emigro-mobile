@@ -6,7 +6,7 @@
     "version": "1.2.0",
     "description": "The traveler's digital wallet",
     "orientation": "portrait",
-    "icon": "./src/assets/images/icon.png",
+    "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "light",
     "platforms": [
       "ios",
@@ -34,7 +34,7 @@
       ]
     ],
     "splash": {
-      "image": "./src/assets/images/splash.png",
+      "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

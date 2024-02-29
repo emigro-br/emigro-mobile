@@ -30,7 +30,10 @@
         "./src/api/*"
       ],
       "@assets/*": [
-        "./src/assets/*"
+        "./assets/*"
+      ],
+      "@config/*": [
+        "./config/*"
       ],
       "@components/*": [
         "./src/components/*"
@@ -61,9 +64,6 @@
       ],
       "@utils/*": [
         "./src/utils/*"
-      ],
-      "@config/*": [
-        "./config/*"
       ],
       "@/*": [
         "./src/*"
