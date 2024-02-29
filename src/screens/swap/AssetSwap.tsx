@@ -5,8 +5,9 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { styled } from 'nativewind';
 
 import { Card } from '@/components/Card';
+import { CryptoAsset } from '@/types/assets';
 
-import { AssetCode, AssetCodeToSymbol } from '@constants/assetCode';
+import { AssetToSymbol } from '@utils/assets';
 
 import { SwapType } from './types';
 
@@ -15,13 +16,13 @@ const StyledText = styled(Text);
 const StyledTextInput = styled(TextInput);
 
 type AssetSwapProps = {
-  asset: AssetCode;
+  asset: CryptoAsset;
   balance: number;
   sellOrBuy: SwapType;
   value?: number;
   isActive?: boolean;
   onPress?: () => void;
-  onChangeAsset: (asset: AssetCode, type: SwapType) => void;
+  onChangeAsset: (asset: CryptoAsset, type: SwapType) => void;
   onChangeValue: (value: number, type: SwapType) => void;
 };
 
@@ -95,7 +96,7 @@ export const AssetSwap = (props: AssetSwapProps) => {
     }
   };
 
-  const filteredAssets = Object.values(AssetCode).filter((asset) => !['XLM', 'USD', 'EUR'].includes(asset)); //FIXME: break up assets from curencies
+  const filteredAssets = Object.values(CryptoAsset).filter((asset) => !['XLM', 'USD', 'EUR'].includes(asset)); //FIXME: break up assets from curencies
 
   const data = filteredAssets.map((asset) => ({
     label: asset,
@@ -122,7 +123,7 @@ export const AssetSwap = (props: AssetSwapProps) => {
           <StyledView className="flex-row items-center justify-end w-3/4">
             <StyledText className={`font-bold ${fontColor}`}>
               {sign}
-              {AssetCodeToSymbol[asset]}
+              {AssetToSymbol[asset]}
             </StyledText>
             <StyledTextInput
               ref={inputRef}
@@ -138,7 +139,7 @@ export const AssetSwap = (props: AssetSwapProps) => {
         </StyledView>
         <StyledView className="flex-row justify-between">
           <StyledText className={`${hasBalance ? 'text-red' : 'text-gray'} text-xs`}>
-            Balance: {AssetCodeToSymbol[asset]} {Number(balance).toFixed(2)}
+            Balance: {AssetToSymbol[asset]} {Number(balance).toFixed(2)}
           </StyledText>
           {hasBalance && <StyledText className="text-red text-xs">exceeds balance</StyledText>}
         </StyledView>

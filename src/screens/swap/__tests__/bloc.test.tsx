@@ -1,4 +1,4 @@
-import { AssetCode } from '@constants/assetCode';
+import { CryptoAsset } from '@/types/assets';
 
 import { SwapBloc, SwapTransaction } from '../bloc';
 
@@ -23,9 +23,9 @@ describe('SwapBloc', () => {
     const emigro = jest.requireMock('@/services/emigro');
 
     const transaction: SwapTransaction = {
-      from: AssetCode.EURC,
+      from: CryptoAsset.EURC,
       fromValue: 100,
-      to: AssetCode.BRL,
+      to: CryptoAsset.BRL,
       toValue: 120,
       rate: 1.2,
       fees: 0,
@@ -40,8 +40,8 @@ describe('SwapBloc', () => {
       maxAmountToSend: '100', // cry
       destinationAmount: '120',
       destination: 'mockedPublicKey',
-      sourceAssetCode: AssetCode.EURC,
-      destinationAssetCode: AssetCode.BRL,
+      sourceAssetCode: CryptoAsset.EURC,
+      destinationAssetCode: CryptoAsset.BRL,
     });
   });
 });

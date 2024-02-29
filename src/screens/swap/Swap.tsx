@@ -8,8 +8,7 @@ import { styled } from 'nativewind';
 
 import Button from '@/components/Button';
 import { IQuoteRequest } from '@/types/IQuoteRequest';
-
-import { AssetCode } from '@constants/assetCode';
+import { CryptoAsset } from '@/types/assets';
 
 import { RootStackParamList } from '@navigation/index';
 
@@ -30,8 +29,8 @@ type SwapProps = {
 
 export const Swap = ({ navigation }: SwapProps) => {
   const [active, setActive] = useState<SwapType>(SwapType.SELL);
-  const [sellAsset, setSellAsset] = useState<AssetCode>(AssetCode.EURC);
-  const [buyAsset, setBuyAsset] = useState<AssetCode>(AssetCode.BRL);
+  const [sellAsset, setSellAsset] = useState<CryptoAsset>(CryptoAsset.EURC);
+  const [buyAsset, setBuyAsset] = useState<CryptoAsset>(CryptoAsset.BRL);
   const [sellValue, setSellValue] = useState(0);
   const [buyValue, setBuyValue] = useState(0);
   const [rate, setRate] = useState<number | null>(null);
@@ -63,7 +62,7 @@ export const Swap = ({ navigation }: SwapProps) => {
     }
   };
 
-  const onChangeAsset = (asset: AssetCode, type: SwapType) => {
+  const onChangeAsset = (asset: CryptoAsset, type: SwapType) => {
     if (type === SwapType.SELL) {
       if (asset === buyAsset) {
         setBuyAsset(sellAsset);

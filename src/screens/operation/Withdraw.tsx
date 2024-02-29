@@ -4,20 +4,19 @@ import { Image, Linking, Text, TouchableOpacity, View } from 'react-native';
 import { observer } from 'mobx-react-lite';
 import { styled } from 'nativewind';
 
-import { getAssetCode } from '@/stellar/utils';
 import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { TransactionStatus } from '@/types/TransactionStatus';
+import { CryptoAsset } from '@/types/assets';
 
 import Button from '@components/Button';
 
-import { AssetCode } from '@constants/assetCode';
 import { OperationType } from '@constants/constants';
 
 import { CallbackType, ConfirmWithdrawDto, confirmWithdraw, getInteractiveUrl, getTransaction } from '@services/anchor';
 
 import { sessionStore } from '@stores/SessionStore';
 
-import { getAssetIcon } from '@utils/getAssetIcon';
+import { iconFor } from '@utils/assets';
 
 import { ConfirmationModal } from './modals/ConfirmationModal';
 import { ErrorModal } from './modals/ErrorModal';
@@ -46,8 +45,8 @@ const Withdraw: React.FC = observer(() => {
   const [transaction, setTransaction] = useState<Sep24Transaction | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [selectedAsset, setSelectedAsset] = useState<AssetCode | null>(null);
-  const availableAssets = [AssetCode.ARS, AssetCode.BRL, AssetCode.EURC];
+  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset | null>(null);
+  const availableAssets = [CryptoAsset.ARS, CryptoAsset.BRL, CryptoAsset.EURC];
   // TODO: replace by useRef: https://react.dev/reference/react/useRef
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>(); // see: https://code.pieces.app/blog/resolving-react-setinterval-conflicts
 
@@ -62,12 +61,10 @@ const Withdraw: React.FC = observer(() => {
     setErrorMessage(null);
   };
 
-  const handleOnPress = async (asset: AssetCode) => {
+  const handleOnPress = async (asset: CryptoAsset) => {
     setIsLoading(true);
     setSelectedAsset(asset);
     setTransactionId(null);
-
-    const assetCodeSelected = getAssetCode(asset);
 
     if (!sessionStore.accessToken || !sessionStore.publicKey) {
       setErrorMessage('Invalid session');
@@ -78,7 +75,7 @@ const Withdraw: React.FC = observer(() => {
     const anchorParams = {
       account: sessionStore.publicKey,
       operation: OperationType.WITHDRAW,
-      asset_code: assetCodeSelected,
+      asset_code: asset,
       cognito_token: sessionStore.accessToken,
     };
 
@@ -88,7 +85,7 @@ const Withdraw: React.FC = observer(() => {
 
       if (id) {
         setTransactionId(id);
-        waitWithdrawOnAnchorComplete(id, assetCodeSelected);
+        waitWithdrawOnAnchorComplete(id, asset);
       }
 
       if (url) {
@@ -109,7 +106,7 @@ const Withdraw: React.FC = observer(() => {
     }
   };
 
-  const handleConfirmTransaction = async (transactionId: string, assetCode: AssetCode) => {
+  const handleConfirmTransaction = async (transactionId: string, assetCode: CryptoAsset) => {
     const data: ConfirmWithdrawDto = {
       transactionId,
       assetCode,
@@ -137,7 +134,7 @@ const Withdraw: React.FC = observer(() => {
   const stepRef = React.useRef(step);
   stepRef.current = step;
 
-  const waitWithdrawOnAnchorComplete = async (transactionId: string, assetCode: AssetCode) => {
+  const waitWithdrawOnAnchorComplete = async (transactionId: string, assetCode: CryptoAsset) => {
     if (stepRef.current !== TransactionStep.WAITING) {
       setStep(TransactionStep.WAITING);
     }
@@ -191,8 +188,8 @@ const Withdraw: React.FC = observer(() => {
         <ConfirmationModal
           isVisible={step === TransactionStep.CONFIRM_TRANSFER}
           transaction={transaction!}
-          assetCode={getAssetCode(selectedAsset!)}
-          onPress={() => handleConfirmTransaction(transactionId!, getAssetCode(selectedAsset!))}
+          assetCode={selectedAsset!}
+          onPress={() => handleConfirmTransaction(transactionId!, selectedAsset!)}
           onClose={() => setStep(TransactionStep.NONE)}
         />
       )}
@@ -214,7 +211,7 @@ const Withdraw: React.FC = observer(() => {
         {availableAssets.map((asset) => (
           <TouchableOpacity key={`asset_${asset}`} onPress={() => handleOnPress(asset)}>
             <StyledView className="flex-row w-32 h-20 items-center justify-center bg-white rounded-lg shadow">
-              <Image source={getAssetIcon(asset)} style={{ width: 30, height: 30 }} />
+              <Image source={iconFor(asset)} style={{ width: 30, height: 30 }} />
               <StyledText className="ml-1 flex-row font-bold text-xl">{asset}</StyledText>
             </StyledView>
           </TouchableOpacity>
@@ -222,10 +219,7 @@ const Withdraw: React.FC = observer(() => {
       </StyledView>
       {transactionId && step === TransactionStep.PENDING_USER && (
         <StyledView className="items-start mt-6">
-          <Button
-            textColor="red"
-            onPress={() => waitWithdrawOnAnchorComplete(transactionId, getAssetCode(selectedAsset!))}
-          >
+          <Button textColor="red" onPress={() => waitWithdrawOnAnchorComplete(transactionId, selectedAsset!)}>
             Check pending transaction: {transactionId}
           </Button>
         </StyledView>

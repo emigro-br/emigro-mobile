@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 
 import { IFilteredBalance } from '@/types/IFilteredBalance';
+import { CryptoAsset } from '@/types/assets';
 
 import { getUserBalance } from '@services/emigro';
 
-import { formatAssetCode } from '@utils/formatAssetCode';
+import { AssetToCurrency } from '@utils/assets';
 
 const useGetUserBalance = () => {
   const [userBalance, setUserBalance] = useState<IFilteredBalance[]>([]);
@@ -13,7 +14,7 @@ const useGetUserBalance = () => {
     try {
       const userBalance = await getUserBalance();
       const balances = userBalance.map((bal) => {
-        const label = formatAssetCode(bal.assetCode);
+        const label = AssetToCurrency[bal.assetCode as CryptoAsset];
 
         return {
           label,

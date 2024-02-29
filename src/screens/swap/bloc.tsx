@@ -1,17 +1,16 @@
 import { makeAutoObservable } from 'mobx';
 
 import { ITransactionRequest } from '@/types/ITransactionRequest';
-
-import { AssetCode } from '@constants/assetCode';
+import { CryptoAsset } from '@/types/assets';
 
 import { sendTransaction } from '@services/emigro';
 
 import { sessionStore } from '@stores/SessionStore';
 
 export type SwapTransaction = {
-  from: AssetCode;
+  from: CryptoAsset;
   fromValue: number;
-  to: AssetCode;
+  to: CryptoAsset;
   toValue: number;
   rate: number;
   fees: number;
