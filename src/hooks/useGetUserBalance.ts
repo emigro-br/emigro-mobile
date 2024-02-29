@@ -24,7 +24,7 @@ const useGetUserBalance = () => {
       });
       setUserBalance(balances);
     } catch (error) {
-      console.error(error);
+      console.error('[useGetUserBalance]', error);
     }
   };
 

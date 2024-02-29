@@ -56,11 +56,14 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
     setIsScanned(true);
     try {
       const qrObject = JSON.parse(result.data);
+      if (!qrObject.name || !qrObject.amount || !qrObject.assetCode || !qrObject.publicKey) {
+        throw new Error(INVALID_QR_CODE);
+      }
       setScannedVendor(qrObject);
     } catch (error) {
+      console.warn('[handleBarCodeScanned]', error);
       setError(INVALID_QR_CODE);
       setIsScanned(false);
-      console.error(error, INVALID_QR_CODE);
     }
   };
 
