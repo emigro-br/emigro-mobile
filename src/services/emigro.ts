@@ -51,6 +51,12 @@ export const getUserBalance = async (): Promise<IBalance[]> => {
     if (!balances) {
       throw new Error('No balances found');
     }
+    // workaround for the backend not returning the assetCode for native
+    for (const balance of balances) {
+      if (balance.assetType === 'native') {
+        balance.assetCode = 'XLM';
+      }
+    }
     return balances;
   } catch (error) {
     console.error(error);
@@ -72,7 +78,7 @@ export const handleQuote = async (body: IQuoteRequest): Promise<IQuote> => {
 
     const json = await res.json();
     if (!res.ok) {
-      throw new Error(res.statusText);
+      throw new Error(json.error?.message || res.statusText);
     }
 
     const { quote } = json;
@@ -86,7 +92,7 @@ export const handleQuote = async (body: IQuoteRequest): Promise<IQuote> => {
 export const sendTransaction = async (transactionRequest: ITransactionRequest): Promise<IPaymentResponse> => {
   const url = `${backendUrl}/transaction`;
   try {
-    const response = await fetchWithTokenCheck(url, {
+    const res = await fetchWithTokenCheck(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -94,13 +100,9 @@ export const sendTransaction = async (transactionRequest: ITransactionRequest): 
       body: JSON.stringify(transactionRequest),
     });
 
-    const json = await response.json();
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-
-    if (json.message) {
-      throw new Error(json.message);
+    const json = await res.json();
+    if (!res.ok) {
+      throw new Error(json.error?.message || res.statusText);
     }
 
     return json;
