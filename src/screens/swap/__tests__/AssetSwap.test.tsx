@@ -2,7 +2,7 @@ import React from 'react';
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { AssetCode } from '@constants/assetCode';
+import { CryptoAsset } from '@/types/assets';
 
 import { AssetSwap } from '../AssetSwap';
 import { SwapType } from '../types';
@@ -14,7 +14,7 @@ describe('AssetSwap component', () => {
 
     const { getByText } = render(
       <AssetSwap
-        asset={AssetCode.BRL}
+        asset={CryptoAsset.BRL}
         balance={1.0}
         onChangeAsset={mockSetAsset}
         sellOrBuy={SwapType.SELL}
@@ -35,7 +35,7 @@ describe('AssetSwap component', () => {
 
     const { getByPlaceholderText } = render(
       <AssetSwap
-        asset={AssetCode.EURC}
+        asset={CryptoAsset.EURC}
         balance={1.0}
         onChangeAsset={mockSetAsset}
         sellOrBuy={SwapType.SELL}
@@ -56,7 +56,7 @@ describe('AssetSwap component', () => {
 
     const { getByTestId } = render(
       <AssetSwap
-        asset={AssetCode.EURC}
+        asset={CryptoAsset.EURC}
         balance={1.0}
         onChangeAsset={mockSetAsset}
         sellOrBuy={SwapType.SELL}
@@ -78,7 +78,7 @@ describe('AssetSwap component', () => {
 
     const { getByPlaceholderText, getByText } = render(
       <AssetSwap
-        asset={AssetCode.EURC}
+        asset={CryptoAsset.EURC}
         balance={1.0}
         onChangeAsset={mockSetAsset}
         sellOrBuy={SwapType.SELL}

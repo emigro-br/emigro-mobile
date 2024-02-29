@@ -6,16 +6,16 @@ import { useNavigation } from '@react-navigation/native';
 import { observer } from 'mobx-react-lite';
 import { styled } from 'nativewind';
 
-import { getAssetCode } from '@/stellar/utils';
+import { IAnchorParams } from '@/types/IAnchorParams';
+import { CryptoAsset } from '@/types/assets';
 
-import { AssetCode } from '@constants/assetCode';
 import { OperationType } from '@constants/constants';
 
 import { CallbackType, getInteractiveUrl } from '@services/anchor';
 
 import { sessionStore } from '@stores/SessionStore';
 
-import { getAssetIcon } from '@utils/getAssetIcon';
+import { iconFor } from '@utils/assets';
 
 import { LoadingModal } from './modals/LoadingModal';
 import { OpenURLModal } from './modals/OpenURLModal';
@@ -31,7 +31,7 @@ const Deposit: React.FC = observer(() => {
   const [url, setUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const availableAssets = [AssetCode.ARS, AssetCode.BRL, AssetCode.EURC];
+  const availableAssets = [CryptoAsset.ARS, CryptoAsset.BRL, CryptoAsset.EURC];
 
   useEffect(() => {
     return cleanUp;
@@ -44,7 +44,7 @@ const Deposit: React.FC = observer(() => {
     setErrorMessage(null);
   };
 
-  const handleAssetChoosen = async (asset: AssetCode) => {
+  const handleAssetChoosen = async (asset: CryptoAsset) => {
     setIsLoading(true);
 
     if (!sessionStore.accessToken || !sessionStore.publicKey) {
@@ -53,10 +53,10 @@ const Deposit: React.FC = observer(() => {
       return;
     }
 
-    const anchorParams = {
+    const anchorParams: IAnchorParams = {
       account: sessionStore.publicKey,
       operation: OperationType.DEPOSIT,
-      asset_code: getAssetCode(asset),
+      asset_code: asset,
       cognito_token: sessionStore.accessToken,
     };
 
@@ -97,7 +97,7 @@ const Deposit: React.FC = observer(() => {
         {availableAssets.map((asset) => (
           <TouchableOpacity key={`asset_${asset}`} onPress={() => handleAssetChoosen(asset)}>
             <StyledView className="flex-row w-32 h-20 items-center justify-center bg-white rounded-lg shadow">
-              <Image source={getAssetIcon(asset)} style={{ width: 30, height: 30 }} />
+              <Image source={iconFor(asset)} style={{ width: 30, height: 30 }} />
               <StyledText className="ml-1 flex-row font-bold text-xl">{asset}</StyledText>
             </StyledView>
           </TouchableOpacity>

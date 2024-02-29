@@ -13,14 +13,18 @@ describe('Balance component', () => {
 
   it('Should display the correct asset codes and balances', () => {
     render(<Balance userBalance={userBalance} />);
-    const brlAssetCodeElement = screen.getByText('Brazilian Real');
-    const usdcAssetCodeElement = screen.getByText('US Dollar');
-    const balanceElement = screen.getByText('R$ 10.00');
-    const noFundsElement = screen.getByText('€ 0.00');
+    const brlAsset = screen.getByText('Brazilian Real');
+    const usdcAsset = screen.getByText('USD Coin');
+    const eurocAsset = screen.getByText('Euro Coin');
+    const brlBalance = screen.getByText('R$ 10.00');
+    const usdcBalance = screen.getByText('$ 30.00');
+    const euroBalance = screen.getByText('€ 0.00');
 
-    expect(brlAssetCodeElement).toBeTruthy();
-    expect(usdcAssetCodeElement).toBeTruthy();
-    expect(balanceElement).toBeTruthy();
-    expect(noFundsElement).toBeTruthy();
+    expect(brlAsset).toBeOnTheScreen();
+    expect(usdcAsset).toBeOnTheScreen();
+    expect(eurocAsset).toBeOnTheScreen();
+    expect(brlBalance).toBeOnTheScreen();
+    expect(usdcBalance).toBeOnTheScreen();
+    expect(euroBalance).toBeOnTheScreen();
   });
 });

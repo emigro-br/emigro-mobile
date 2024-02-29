@@ -1,8 +1,7 @@
 import { IAnchorParams } from '@/types/IAnchorParams';
 import { IAnchorResponse } from '@/types/IAnchorResponse';
 import { Sep24Transaction } from '@/types/Sep24Transaction';
-
-import { AssetCode } from '@constants/assetCode';
+import { CryptoAsset } from '@/types/assets';
 
 import { fetchWithTokenCheck } from './utils';
 
@@ -52,7 +51,7 @@ export const getInteractiveUrl = async (
   }
 };
 
-export const getTransaction = async (id: string, assetCode: AssetCode): Promise<Sep24Transaction> => {
+export const getTransaction = async (id: string, assetCode: CryptoAsset): Promise<Sep24Transaction> => {
   const anchorUrl = `${backendUrl}/anchor/transaction?id=${id}&assetCode=${assetCode}`;
   try {
     const res = await fetchWithTokenCheck(anchorUrl, {

@@ -11,12 +11,13 @@ import { styled } from 'nativewind';
 
 import Button from '@/components/Button';
 import { useVendor } from '@/contexts/VendorContext';
+import { CryptoAsset } from '@/types/assets';
 
 import { INVALID_QR_CODE } from '@constants/errorMessages';
 
 import AskCamera from '@screens/AskCamera';
 
-import { formatAssetCode } from '@utils/formatAssetCode';
+import { AssetToCurrency } from '@utils/assets';
 
 type QRCodeScannerProps = {
   onCancel: () => void;
@@ -121,7 +122,7 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
           <StyledView className="flex-row">
             <StyledText className="text-lg font-bold">Amount: </StyledText>
             <StyledText className="text-lg">
-              {scannedVendor.amount} {formatAssetCode(scannedVendor.assetCode)}
+              {scannedVendor.amount} {AssetToCurrency[scannedVendor.assetCode as CryptoAsset]}
             </StyledText>
           </StyledView>
           <StyledView className="flex justify-center">

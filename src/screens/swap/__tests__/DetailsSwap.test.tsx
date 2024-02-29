@@ -4,8 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { IPaymentResponse } from '@/types/IPaymentResponse';
-
-import { AssetCode } from '@constants/assetCode';
+import { CryptoAsset } from '@/types/assets';
 
 import { RootStackParamList } from '@navigation/index';
 
@@ -24,9 +23,9 @@ describe('DetailsSwap', () => {
   } as unknown as NavigationProp<RootStackParamList, 'DetailsSwap'>;
 
   const transaction = {
-    from: AssetCode.EURC,
+    from: CryptoAsset.EURC,
     fromValue: 100,
-    to: AssetCode.BRL,
+    to: CryptoAsset.BRL,
     toValue: 120,
     rate: 1.2,
     fees: 0.01,
