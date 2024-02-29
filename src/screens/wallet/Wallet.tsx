@@ -20,7 +20,7 @@ const Wallet: React.FC = observer(() => {
   useFocusEffect(
     React.useCallback(() => {
       balanceStore.fetchUserBalance();
-    }, []),
+    }, [balanceStore.fetchUserBalance]),
   );
 
   const onRefresh = React.useCallback(async () => {
@@ -30,7 +30,7 @@ const Wallet: React.FC = observer(() => {
     } finally {
       setRefreshing(false);
     }
-  }, []);
+  }, [balanceStore.fetchUserBalance]);
 
   return (
     <StyledScrollView
