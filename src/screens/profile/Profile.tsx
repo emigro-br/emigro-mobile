@@ -1,15 +1,28 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { View } from 'react-native';
 
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { Toast, ToastDescription, useToast } from '@gluestack-ui/themed';
+import {
+  Avatar,
+  AvatarFallbackText,
+  Box,
+  Button,
+  ButtonIcon,
+  ButtonText,
+  Center,
+  CopyIcon,
+  Divider,
+  Heading,
+  Spinner,
+  Text,
+  Toast,
+  ToastDescription,
+  VStack,
+  useToast,
+} from '@gluestack-ui/themed';
 import * as Application from 'expo-application';
 import * as Clipboard from 'expo-clipboard';
-import { styled } from 'nativewind';
-
-import profileLogo from '@assets/images/profile-icon.png';
 
 import { getUserProfile } from '@services/emigro';
 import { CustomError } from '@services/errors';
@@ -17,11 +30,6 @@ import { CustomError } from '@services/errors';
 import { sessionStore } from '@stores/SessionStore';
 
 import { maskWallet } from '@utils/masks';
-
-const StyledScrollView = styled(ScrollView);
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledImage = styled(Image);
 
 const Profile = () => {
   const navigation = useNavigation();
@@ -72,69 +80,77 @@ const Profile = () => {
 
   if (!userInformation) {
     return (
-      <StyledView className="flex items-center justify-center h-full">
-        <ActivityIndicator size="large" />
-      </StyledView>
+      <Center flex={1} bg="$backgroundLight0">
+        <Spinner size="large" testID="loading" />
+      </Center>
     );
   }
 
-  const Divider = () => <StyledView className="border-b-[1px] border-slate-200 w-full pt-2 mb-2" />;
+  const fullName = `${userInformation.given_name} ${userInformation.family_name}`;
 
   return (
-    <StyledScrollView className="bg-white h-full">
-      <StyledView className="items-center m-6">
-        <StyledImage source={profileLogo} className="h-32 w-32" />
-      </StyledView>
+    <Box flex={1} bg="$white" justifyContent="space-between">
+      <VStack p="$4" space="lg">
+        <Center>
+          <Avatar bgColor="$amber600" size="xl" borderRadius="$full">
+            <AvatarFallbackText>{fullName}</AvatarFallbackText>
+          </Avatar>
+          <Heading py="$2">{fullName}</Heading>
+          {publicKey && (
+            <Button size="md" variant="link" action="primary" onPress={copyToClipboard}>
+              <ButtonText>{maskWallet(publicKey)}</ButtonText>
+              <ButtonIcon as={CopyIcon} />
+            </Button>
+          )}
+        </Center>
 
-      {publicKey && (
-        <StyledView className="items-center">
-          <TouchableOpacity onPress={copyToClipboard}>
-            <StyledView className="flex flex-row items-center">
-              <StyledText className="text-center text-sm mr-2">{maskWallet(publicKey)}</StyledText>
-              <Ionicons name="clipboard-outline" size={16} />
-            </StyledView>
-          </TouchableOpacity>
-        </StyledView>
-      )}
+        <VStack space="xl">
+          <View>
+            <Text size="sm" color="$textLight500">
+              Full Name
+            </Text>
+            <Text>{fullName}</Text>
+          </View>
 
-      <StyledView className="flex gap-1 w-full px-4">
-        <StyledText className="text-lightGray">Full name</StyledText>
-        <StyledView className="flex flex-row items-center">
-          <StyledText className="text-lg">
-            {userInformation.given_name} {userInformation.family_name}
-          </StyledText>
-        </StyledView>
+          <Divider />
 
-        <Divider />
+          <View>
+            <Text size="sm" color="$textLight500">
+              Email address
+            </Text>
+            <Text>{userInformation.email}</Text>
+          </View>
 
-        <StyledText className="text-lightGray">Email address</StyledText>
-        <StyledView className="flex flex-row items-center">
-          <StyledText className="text-lg">{userInformation.email}</StyledText>
-        </StyledView>
+          <Divider />
 
-        <Divider />
+          <View>
+            <Text size="sm" color="$textLight500">
+              Address
+            </Text>
+            <Text>{userInformation.address}</Text>
+          </View>
 
-        <StyledText className="text-lightGray">Address</StyledText>
-        <StyledView className="flex flex-row items-center">
-          <StyledText className="text-lg">{userInformation.address}</StyledText>
-        </StyledView>
+          <Divider />
 
-        <Divider />
-
-        <StyledText className="text-red text-sm py-2" onPress={() => navigation.navigate('DeleteAccount' as never)}>
-          Delete account
-        </StyledText>
-      </StyledView>
-
-      <StyledView className="flex items-center pt-4 mb-2">
-        <StyledText className="text-red text-lg py-2" onPress={handleLogout}>
-          Log out
-        </StyledText>
-        <StyledText className="text-lightGray text-sml">
-          ver. {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})
-        </StyledText>
-      </StyledView>
-    </StyledScrollView>
+          <Button
+            onPress={() => navigation.navigate('DeleteAccount' as never)}
+            variant="link"
+            size="sm"
+            alignSelf="flex-start"
+          >
+            <ButtonText>Delete account</ButtonText>
+          </Button>
+        </VStack>
+      </VStack>
+      <Box alignItems="center" py="$4">
+        <Button onPress={handleLogout} variant="link" size="lg">
+          <ButtonText>Logout</ButtonText>
+        </Button>
+        <Text size="sm">
+          version {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})
+        </Text>
+      </Box>
+    </Box>
   );
 };
 
