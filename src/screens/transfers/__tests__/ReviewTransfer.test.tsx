@@ -12,12 +12,12 @@ jest.mock('@stores/PaymentStore', () => ({
   paymentStore: {
     transaction: {
       from: {
-        wallet: 'fromWallet',
+        wallet: 'F'.repeat(56),
       },
       to: {
-        wallet: 'toWallet',
+        wallet: 'D'.repeat(56),
         value: 100,
-        asset: 'asset',
+        asset: 'XLM',
       },
     },
     pay: jest.fn(),
@@ -38,10 +38,12 @@ describe('ReviewTransfer component', () => {
       </Provider>,
     );
 
-    expect(getByText('Review Transfer')).toBeDefined();
-    expect(getByText('You Pay')).toBeDefined();
-    expect(getByText('Recipient')).toBeDefined();
-    expect(getByText('Send')).toBeDefined();
+    expect(getByText('Review Transfer')).toBeOnTheScreen();
+    expect(getByText('You Pay')).toBeOnTheScreen();
+    expect(getByText('100 XLM')).toBeOnTheScreen();
+    expect(getByText('Recipient')).toBeOnTheScreen();
+    expect(getByText('DDDDD...DDDDD')).toBeOnTheScreen();
+    expect(getByText('Send')).toBeOnTheScreen();
   });
 
   test('Should call handlePress when Send button is pressed', async () => {

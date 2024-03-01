@@ -11,6 +11,8 @@ import { RootStackParamList } from '@navigation/index';
 
 import { paymentStore as bloc } from '@stores/PaymentStore';
 
+import { maskWallet } from '@utils/masks';
+
 type Props = NativeStackScreenProps<RootStackParamList, 'ReviewTransfer'>;
 
 export const ReviewTransfer = ({ navigation }: Props) => {
@@ -19,7 +21,7 @@ export const ReviewTransfer = ({ navigation }: Props) => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const { from, to } = bloc.transaction!;
-  const destination = to.wallet;
+  const destinationWallet = to.wallet;
   const amount = to.value;
   const asset = to.asset;
 
@@ -56,18 +58,20 @@ export const ReviewTransfer = ({ navigation }: Props) => {
       <SuccessDialog isOpen={isSuccessDialogOpen} publicKey={from.wallet} onClose={handleCloseModal} />
       <ErrorDialog isOpen={!!errorMessage} onClose={() => setErrorMessage('')} errorMessage={errorMessage} />
       <Box flex={1}>
-        <Heading m="$3">Review Transfer</Heading>
-        <Card size="md" variant="filled" m="$3" bg="$white">
-          <VStack space="md" p="$2">
-            <Text>Review transfer details before sending</Text>
-            <Row label="You Pay" value={`${amount} ${asset}`} />
-            <Row label="Recipient" value={destination} />
-            <Button onPress={() => handlePress()} isDisabled={isLoading}>
-              {isLoading && <ButtonSpinner mr="$1" />}
-              <ButtonText>{isLoading ? 'Sending...' : 'Send'}</ButtonText>
-            </Button>
-          </VStack>
-        </Card>
+        <VStack p="$4" space="lg">
+          <Heading size="xl">Review Transfer</Heading>
+          <Card size="md" variant="filled" bg="$white">
+            <VStack space="md" p="$2">
+              <Text>Review transfer details before sending</Text>
+              <Row label="You Pay" value={`${amount} ${asset}`} />
+              <Row label="Recipient" value={maskWallet(destinationWallet)} />
+            </VStack>
+          </Card>
+          <Button onPress={() => handlePress()} isDisabled={isLoading}>
+            {isLoading && <ButtonSpinner mr="$1" />}
+            <ButtonText>{isLoading ? 'Sending...' : 'Send'}</ButtonText>
+          </Button>
+        </VStack>
       </Box>
     </>
   );
