@@ -1,10 +1,7 @@
-import { View } from 'react-native';
 import * as IconsOutline from 'react-native-heroicons/outline';
 import * as IconsSolid from 'react-native-heroicons/solid';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
-import { styled } from 'nativewind';
 
 import Header from '@components/Header';
 
@@ -20,104 +17,60 @@ export type TabNavParamList = {
   Profile: undefined;
 };
 
-const BottomTab = createBottomTabNavigator<TabNavParamList>();
+const Tab = createBottomTabNavigator<TabNavParamList>();
 const enableLocation = false;
-
-const StyledView = styled(View);
 
 const BottomTabNavigator = () => {
   return (
-    <BottomTab.Navigator
+    <Tab.Navigator
       initialRouteName="Wallet"
       screenOptions={{
         tabBarActiveTintColor: 'red',
         tabBarInactiveTintColor: 'grey',
       }}
     >
-      <BottomTab.Screen
+      <Tab.Screen
         name="Wallet"
         component={Wallet}
         options={() => ({
           title: 'Wallet',
-          tabBarIcon: ({ focused }) =>
-            focused ? (
-              <StyledView className="h-full border-t-2 border-red w-full justify-center items-center">
-                <StyledView className="mt-1">
-                  <IconsSolid.WalletIcon size={24} color="red" />
-                </StyledView>
-              </StyledView>
-            ) : (
-              <StyledView className="mt-1">
-                <IconsOutline.WalletIcon size={24} color="grey" />
-              </StyledView>
-            ),
+          tabBarIcon: ({ color, size, focused }) => <IconsSolid.WalletIcon size={size} color={color} />,
           header: () => <Header />,
         })}
       />
 
-      <BottomTab.Screen
+      <Tab.Screen
         name="MakePayment"
         component={MakePayment}
         options={() => ({
           title: 'Payment',
-          tabBarIcon: ({ focused }) =>
-            focused ? (
-              <StyledView className="h-full border-t-2 border-red w-full justify-center items-center">
-                <StyledView className="mt-1">
-                  <IconsSolid.QrCodeIcon size={24} color="red" />
-                </StyledView>
-              </StyledView>
-            ) : (
-              <StyledView className="mt-1">
-                <IconsOutline.QrCodeIcon size={24} color="grey" />
-              </StyledView>
-            ),
+          tabBarIcon: ({ color, size }) => <IconsOutline.QrCodeIcon size={size} color={color} />,
           header: () => <Header />,
         })}
       />
+
       {enableLocation && (
-        <BottomTab.Screen
+        <Tab.Screen
           name="Location"
           component={Location}
           options={() => ({
             title: 'Location',
-            tabBarIcon: ({ focused }) =>
-              focused ? (
-                <StyledView className="h-full border-t-2 border-red w-full justify-center items-center">
-                  <StyledView className="mt-1">
-                    <IconsSolid.MapIcon size={24} color="red" />
-                  </StyledView>
-                </StyledView>
-              ) : (
-                <StyledView className="mt-1">
-                  <IconsOutline.MapIcon size={24} color="grey" />
-                </StyledView>
-              ),
+            tabBarIcon: ({ size, color, focused }) => <IconsSolid.MapIcon size={size} color={color} />,
             header: () => <Header />,
           })}
         />
       )}
-      <BottomTab.Screen
+
+      <Tab.Screen
         name="Profile"
         component={Profile}
         options={() => ({
           title: 'Profile',
-          tabBarIcon: ({ focused }) =>
-            focused ? (
-              <StyledView className="h-full border-t-2 border-red w-full justify-center items-center">
-                <StyledView className="mt-1">
-                  <IconsSolid.UserCircleIcon size={24} color="red" />
-                </StyledView>
-              </StyledView>
-            ) : (
-              <StyledView className="mt-1">
-                <IconsOutline.UserCircleIcon size={24} color="grey" />
-              </StyledView>
-            ),
+          tabBarIcon: ({ color, size, focused }) => <IconsOutline.UserCircleIcon size={size} color={color} />,
           header: () => <Header />,
         })}
       />
-    </BottomTab.Navigator>
+    </Tab.Navigator>
   );
 };
 

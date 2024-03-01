@@ -1,26 +1,24 @@
 import React from 'react';
-import { Image, TouchableOpacity, View } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 
-import { styled } from 'nativewind';
+import { Box, Center, Image, Pressable } from '@gluestack-ui/themed';
 
 import emigroLogo from '@assets/images/emigro-logo.png';
 
-const StyledView = styled(View);
-const StyledImage = styled(Image);
-
-const Header: React.FunctionComponent = () => {
+const Header: React.FC = () => {
   const navigation = useNavigation();
 
   return (
-    <StyledView className="flex-row items-center justify-center bg-red pt-8">
-      <TouchableOpacity onPress={() => navigation.navigate('Wallet' as never)}>
-        <StyledView className="h-14 w-40">
-          <StyledImage className="h-full w-full object-contain" source={emigroLogo} />
-        </StyledView>
-      </TouchableOpacity>
-    </StyledView>
+    <Box bg="$primary500" pt="$8" pb="$2">
+      <Center>
+        <Pressable onPress={() => navigation.navigate('Wallet' as never)}>
+          <Box w="$40" h="$12">
+            <Image source={emigroLogo} w="$full" h="$full" alt="Emigro" />
+          </Box>
+        </Pressable>
+      </Center>
+    </Box>
   );
 };
 
