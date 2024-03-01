@@ -1,10 +1,10 @@
 import { CryptoAsset } from '@/types/assets';
 
-import { SwapBloc, SwapTransaction } from '../bloc';
+import { PaymentStore, SwapTransaction } from '../PaymentStore';
 
 jest.mock('@stores/SessionStore', () => ({
   sessionStore: {
-    session: { publicKey: 'mockedPublicKey' },
+    publicKey: 'mockedPublicKey',
   },
 }));
 
@@ -13,10 +13,10 @@ jest.mock('@services/emigro', () => ({
 }));
 
 describe('SwapBloc', () => {
-  let swapBloc: SwapBloc;
+  let swapBloc: PaymentStore;
 
   beforeEach(() => {
-    swapBloc = new SwapBloc();
+    swapBloc = new PaymentStore();
   });
 
   it('should call swap with correct parameters', async () => {
@@ -31,9 +31,9 @@ describe('SwapBloc', () => {
       fees: 0,
     };
 
-    swapBloc.setTransaction(transaction);
+    swapBloc.setSwap(transaction);
 
-    await swapBloc.swap();
+    await swapBloc.pay();
 
     // check sendTransaction is called with correct parameters
     expect(emigro.sendTransaction).toHaveBeenCalledWith({

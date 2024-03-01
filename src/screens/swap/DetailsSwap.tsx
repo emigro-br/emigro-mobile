@@ -12,7 +12,7 @@ import { RootStackParamList } from '@navigation/index';
 
 import { ErrorModal } from '@screens/operation/modals/ErrorModal';
 
-import bloc from './bloc';
+import { paymentStore as bloc } from '@stores/PaymentStore';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
@@ -25,15 +25,15 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const { from, fromValue, to, rate, fees } = bloc.transaction!;
-  const toValue = fromValue * rate;
+  const { from, to, rate, fees } = bloc.transaction!;
+  const toValue = from.value * rate;
   const estimated = toValue - fees;
 
   const handlePress = async () => {
     setIsLoading(true);
 
     try {
-      const result = await bloc.swap();
+      const result = await bloc.pay();
       if (result.transactionHash) {
         navigation.navigate('Wallet');
       }
@@ -54,14 +54,14 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
       <StyledView className="h-full p-4">
         <Card>
           <StyledText className="text-lg font-bold mb-6">Confirm Swap</StyledText>
-          <Row label="Amount" value={`${fromValue.toFixed(2)} ${from}`} />
-          <Row label="Rate" value={`1 ${from} ≈ ${rate.toFixed(6)} ${to}`} />
-          <Row label="Exchanged" value={`${toValue.toFixed(2)} ${to}`} />
+          <Row label="Amount" value={`${from.value.toFixed(2)} ${from.asset}`} />
+          <Row label="Rate" value={`1 ${from.asset} ≈ ${rate.toFixed(6)} ${to.asset}`} />
+          <Row label="Exchanged" value={`${toValue.toFixed(2)} ${to.asset}`} />
           <Row label="Fees" value={fees} />
-          <Row label="Final receive" value={`${estimated.toFixed(2)} ${to}`} />
+          <Row label="Final receive" value={`${estimated.toFixed(2)} ${to.asset}`} />
           <StyledText className="text-gray text-xs my-4">The final amount is estimated and may change.</StyledText>
           <Button backgroundColor="red" textColor="white" onPress={handlePress} loading={isLoading}>
-            Swap {from} for {to}
+            Swap {from.asset} for {to.asset}
           </Button>
         </Card>
       </StyledView>

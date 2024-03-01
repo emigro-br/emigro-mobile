@@ -23,16 +23,19 @@ import {
   VStack,
 } from '@gluestack-ui/themed';
 
+import { CryptoAsset } from '@/types/assets';
+
 import { RootStackParamList } from '@navigation/index';
 
 import { balanceStore } from '@stores/BalanceStore';
+import { paymentStore as bloc } from '@stores/PaymentStore';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SendAsset'>;
 
 const SendAsset = ({ route, navigation }: Props) => {
   const [amount, setAmount] = useState<number | null>(null);
   const [address, setAddress] = useState<string>('');
-  const { asset } = route.params;
+  const asset = CryptoAsset[route.params.asset as keyof typeof CryptoAsset];
   const balance = balanceStore.get(asset);
 
   if (!asset) {
@@ -43,6 +46,11 @@ const SendAsset = ({ route, navigation }: Props) => {
   const isValidAddress = address.length && address.length === stellarKeySize;
   const isBalanceExceeded = !!amount && amount > balance;
   const isButtonDisabled = !isValidAddress || isBalanceExceeded || !amount || amount <= 0;
+
+  const handlePressContinue = () => {
+    bloc.setTransfer(amount!, asset, address);
+    navigation.navigate('ReviewTransfer');
+  };
 
   return (
     <Box
@@ -104,7 +112,7 @@ const SendAsset = ({ route, navigation }: Props) => {
               <FormControlErrorText>A valid wallet is required</FormControlErrorText>
             </FormControlError>
           </FormControl>
-          <Button isDisabled={isButtonDisabled} onPress={() => navigation.navigate('Transfers')}>
+          <Button isDisabled={isButtonDisabled} onPress={handlePressContinue}>
             <ButtonText>Continue</ButtonText>
           </Button>
         </VStack>

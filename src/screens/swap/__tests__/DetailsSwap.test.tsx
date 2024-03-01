@@ -8,8 +8,9 @@ import { CryptoAsset } from '@/types/assets';
 
 import { RootStackParamList } from '@navigation/index';
 
+import { paymentStore } from '@stores/PaymentStore';
+
 import { DetailsSwap } from '../DetailsSwap';
-import bloc from '../bloc';
 
 jest.mock('@/services/emigro', () => ({
   getUserPublicKey: jest.fn().mockReturnValue('mockedPublicKey'),
@@ -36,13 +37,13 @@ describe('DetailsSwap', () => {
 
   beforeAll(() => {
     jest.useFakeTimers();
-    bloc.setTransaction(transaction);
-    jest.spyOn(bloc, 'swap').mockResolvedValue({ transactionHash: 'hash' } as IPaymentResponse);
+    paymentStore.setSwap(transaction);
+    jest.spyOn(paymentStore, 'pay').mockResolvedValue({ transactionHash: 'hash' } as IPaymentResponse);
   });
 
   afterAll(() => {
     jest.restoreAllMocks();
-    bloc.reset();
+    paymentStore.reset();
   });
 
   it('renders correctly', () => {
@@ -54,30 +55,30 @@ describe('DetailsSwap', () => {
       </NavigationContainer>,
     );
 
-    expect(getByText('Confirm Swap')).toBeTruthy();
+    expect(getByText('Confirm Swap')).toBeOnTheScreen();
 
     // from
-    expect(getByText('Amount')).toBeTruthy();
-    expect(getByText('100.00 EURC')).toBeTruthy();
+    expect(getByText('Amount')).toBeOnTheScreen();
+    expect(getByText('100.00 EURC')).toBeOnTheScreen();
 
     // rate
-    expect(getByText('Rate')).toBeTruthy();
-    expect(getByText('1 EURC ≈ 1.200000 BRL')).toBeTruthy();
+    expect(getByText('Rate')).toBeOnTheScreen();
+    expect(getByText('1 EURC ≈ 1.200000 BRL')).toBeOnTheScreen();
 
     // to: rate is 1.2, so 100 EURC = 120 BRL
-    expect(getByText('Exchanged')).toBeTruthy();
-    expect(getByText('120.00 BRL')).toBeTruthy();
+    expect(getByText('Exchanged')).toBeOnTheScreen();
+    expect(getByText('120.00 BRL')).toBeOnTheScreen();
 
     // fees
-    expect(getByText('Fees')).toBeTruthy();
-    expect(getByText('0.01')).toBeTruthy();
+    expect(getByText('Fees')).toBeOnTheScreen();
+    expect(getByText('0.01')).toBeOnTheScreen();
 
     // fees is 0.01, so 100 EURC = 120 BRL - 0.01 = 119.99 BRL
-    expect(getByText('Final receive')).toBeTruthy();
-    expect(getByText('119.99 BRL')).toBeTruthy();
+    expect(getByText('Final receive')).toBeOnTheScreen();
+    expect(getByText('119.99 BRL')).toBeOnTheScreen();
 
-    expect(getByText('The final amount is estimated and may change.')).toBeTruthy();
-    expect(getByText('Swap EURC for BRL')).toBeTruthy();
+    expect(getByText('The final amount is estimated and may change.')).toBeOnTheScreen();
+    expect(getByText('Swap EURC for BRL')).toBeOnTheScreen();
   });
 
   it('navigates on button press', async () => {
@@ -92,12 +93,12 @@ describe('DetailsSwap', () => {
     fireEvent.press(getByText('Swap EURC for BRL'));
 
     await waitFor(() => {
-      expect(bloc.swap).toBeCalled();
+      expect(paymentStore.pay).toHaveBeenCalled();
     });
   });
 
   it('shows error message', async () => {
-    jest.spyOn(bloc, 'swap').mockRejectedValue(new Error('error message'));
+    jest.spyOn(paymentStore, 'pay').mockRejectedValue(new Error('error message'));
 
     const { getByText } = render(
       <NavigationContainer>
@@ -110,7 +111,7 @@ describe('DetailsSwap', () => {
     fireEvent.press(getByText('Swap EURC for BRL'));
 
     await waitFor(() => {
-      expect(getByText('error message')).toBeTruthy();
+      expect(getByText('error message')).toBeOnTheScreen();
     });
   });
 });

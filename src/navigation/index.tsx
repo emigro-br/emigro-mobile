@@ -6,6 +6,7 @@ import Withdraw from '@screens/operation/Withdraw';
 import DeleteAccount from '@screens/profile/DeleteAccount';
 import { DetailsSwap } from '@screens/swap/DetailsSwap';
 import { Swap } from '@screens/swap/Swap';
+import ReviewTransfer from '@screens/transfers/ReviewTransfer';
 import SendAsset from '@screens/transfers/SendAsset';
 import Transfers from '@screens/transfers/Transfers';
 import ConfirmAccount from '@screens/welcome/ConfirmAccount';
@@ -33,6 +34,7 @@ export type RootStackParamList = {
   DetailsSwap: undefined;
   DeleteAccount: undefined;
   Transfers: undefined;
+  ReviewTransfer: undefined;
   SendAsset: {
     asset: string;
   };
@@ -76,6 +78,7 @@ function RootNavigator({ isSignedIn }: Props) {
               options={{ headerBackTitle: 'Back', headerTitle: 'Withdraw' }}
             />
             <Stack.Screen name="Transfers" component={Transfers} options={{ title: 'Transfers' }} />
+            <Stack.Screen name="ReviewTransfer" component={ReviewTransfer} options={{ title: 'Review Transfer' }} />
             <Stack.Screen
               name="SendAsset"
               component={SendAsset}
