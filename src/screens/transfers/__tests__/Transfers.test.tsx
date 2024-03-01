@@ -21,9 +21,9 @@ describe('Transfers component', () => {
       </Provider>,
     );
 
+    expect(getByText('Send money')).toBeOnTheScreen();
     expect(getByText('XLM')).toBeOnTheScreen();
     expect(getByText('Stellar Lumens')).toBeOnTheScreen();
-    expect(getByText('Send')).toBeOnTheScreen();
   });
 
   test('Should navigate to SendAsset screen when an asset is pressed', () => {

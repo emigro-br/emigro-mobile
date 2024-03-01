@@ -43,40 +43,40 @@ export const Transfers = ({ navigation }: Props) => {
 
   return (
     <Box flex={1}>
-      <Heading m="$3" size="xl">
-        Send
-      </Heading>
-      <Card size="md" variant="filled" m="$3" bg="$white">
-        <FlatList
-          data={data}
-          renderItem={({ item }: { item: Item }) => (
-            <Pressable
-              onPress={() =>
-                navigation.push('SendAsset', {
-                  asset: item.code,
-                })
-              }
-            >
-              <Box py="$4">
-                <HStack space="md">
-                  <Avatar size="md" bg="$transparent">
-                    <AvatarImage source={item.avatarUrl} alt={item.fullName} />
-                  </Avatar>
-                  <VStack>
-                    <Text color="$coolGray800" fontWeight="500" $dark-color="$warmGray100">
-                      {item.code}
-                    </Text>
-                    <Text size="sm" color="$coolGray500" $dark-color="$warmGray200">
-                      {item.fullName}
-                    </Text>
-                  </VStack>
-                </HStack>
-              </Box>
-            </Pressable>
-          )}
-          keyExtractor={(item: Item) => item.id}
-        />
-      </Card>
+      <VStack p="$4" space="lg">
+        <Heading size="xl">Send money</Heading>
+        <Card size="md" py="$1" variant="filled" bg="$white">
+          <FlatList
+            data={data}
+            renderItem={({ item }: { item: Item }) => (
+              <Pressable
+                onPress={() =>
+                  navigation.push('SendAsset', {
+                    asset: item.code,
+                  })
+                }
+              >
+                <Box py="$4">
+                  <HStack space="md">
+                    <Avatar size="md" bg="$transparent">
+                      <AvatarImage source={item.avatarUrl} alt={item.fullName} />
+                    </Avatar>
+                    <VStack>
+                      <Text color="$coolGray800" fontWeight="500" $dark-color="$warmGray100">
+                        {item.code}
+                      </Text>
+                      <Text size="sm" color="$coolGray500" $dark-color="$warmGray200">
+                        {item.fullName}
+                      </Text>
+                    </VStack>
+                  </HStack>
+                </Box>
+              </Pressable>
+            )}
+            keyExtractor={(item: Item) => item.id}
+          />
+        </Card>
+      </VStack>
     </Box>
   );
 };
