@@ -5,6 +5,8 @@ import { NavigationContainer } from '@react-navigation/native';
 
 import { render } from '@testing-library/react-native';
 
+import { Provider } from '@components/Provider';
+
 import RootNavigator from '@navigation/index';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
@@ -15,9 +17,12 @@ jest.mock('mobx-react-lite');
 describe('Landing component', () => {
   test('Should render Landing component correctly', () => {
     const { getByText } = render(
-      <NavigationContainer>
-        <RootNavigator isSignedIn={false} />
-      </NavigationContainer>,
+      <Provider>
+        <NavigationContainer>
+          <RootNavigator isSignedIn={false} />
+        </NavigationContainer>
+        ,
+      </Provider>,
     );
     const welcomeScreen = getByText("The Traveler's Digital Wallet");
 

@@ -5,6 +5,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { fireEvent, render } from '@testing-library/react-native';
 
+import { Provider } from '@components/Provider';
+
 import CreateAccount from '@screens/welcome/CreateAccount';
 import Login from '@screens/welcome/Login';
 import { Welcome } from '@screens/welcome/Welcome';
@@ -13,16 +15,31 @@ jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
 const Stack = createNativeStackNavigator();
 const TestNavigator = () => (
-  <NavigationContainer>
-    <Stack.Navigator initialRouteName="Welcome">
-      <Stack.Screen name="Welcome" component={Welcome} />
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="SignUp" component={CreateAccount} />
-    </Stack.Navigator>
-  </NavigationContainer>
+  <Provider>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Welcome">
+        <Stack.Screen name="Welcome" component={Welcome} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="SignUp" component={CreateAccount} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  </Provider>
 );
 
 describe('Welcome screen', () => {
+  test('Should render the Welcome screen correctly', () => {
+    const { getByText } = render(<TestNavigator />);
+
+    const welcomeText = getByText('Instant cross-border payments');
+    expect(welcomeText).toBeOnTheScreen();
+
+    const loginButton = getByText('Login');
+    expect(loginButton).toBeOnTheScreen();
+
+    const signUpButton = getByText('Create an Account');
+    expect(signUpButton).toBeOnTheScreen();
+  });
+
   test('Should navigates to Login when "Log In" is pressed', () => {
     const { getByText } = render(<TestNavigator />);
 
