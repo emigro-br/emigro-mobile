@@ -6,6 +6,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { CryptoAsset } from '@/types/assets';
 
+import { Provider } from '@components/Provider';
+
 import { RootStackParamList } from '@navigation/index';
 
 import { paymentStore } from '@stores/PaymentStore';
@@ -33,7 +35,11 @@ describe('DetailsSwap', () => {
   };
 
   // Create a separate component
-  const DetailsSwapScreen = () => <DetailsSwap navigation={navigation} />;
+  const DetailsSwapScreen = () => (
+    <Provider>
+      <DetailsSwap navigation={navigation} />
+    </Provider>
+  );
 
   beforeAll(() => {
     jest.useFakeTimers();

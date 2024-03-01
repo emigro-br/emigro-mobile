@@ -1,19 +1,13 @@
-import React, { useEffect, useRef } from 'react';
-import { Text, TextInput, TouchableHighlight, View } from 'react-native';
+import React, { useEffect } from 'react';
 import { Dropdown } from 'react-native-element-dropdown';
 
-import { styled } from 'nativewind';
+import { Box, Card, HStack, Input, InputField, Pressable, Text } from '@gluestack-ui/themed';
 
-import { Card } from '@/components/Card';
 import { CryptoAsset } from '@/types/assets';
 
 import { AssetToSymbol } from '@utils/assets';
 
 import { SwapType } from './types';
-
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledTextInput = styled(TextInput);
 
 type AssetSwapProps = {
   asset: CryptoAsset;
@@ -27,7 +21,6 @@ type AssetSwapProps = {
 };
 
 export const AssetSwap = (props: AssetSwapProps) => {
-  const inputRef = useRef<TextInput>(null);
   const [value, setValue] = React.useState('');
 
   const { asset, balance, isActive } = props;
@@ -90,27 +83,26 @@ export const AssetSwap = (props: AssetSwapProps) => {
   };
 
   const handlePress = () => {
-    inputRef.current?.focus();
     if (props.onPress) {
       props.onPress();
     }
   };
 
-  const filteredAssets = Object.values(CryptoAsset).filter((asset) => !['XLM', 'USD', 'EUR'].includes(asset)); //FIXME: break up assets from curencies
+  const filteredAssets = Object.values(CryptoAsset);
 
   const data = filteredAssets.map((asset) => ({
     label: asset,
     value: asset,
   }));
 
-  const fontColor = Number(value) > 0 ? 'text-black' : 'text-slate-500';
+  const fontColor = Number(value) > 0 ? '$black' : '$textLight500';
   const hasBalance = props.sellOrBuy === SwapType.SELL && Number(value) > balance;
 
   return (
-    <TouchableHighlight onPress={handlePress} underlayColor="transparent" testID="touchable">
-      <Card borderColor={isActive ? 'red' : ''}>
-        <StyledView className="flex-row justify-between">
-          <StyledView className="flex-col w-1/4">
+    <Pressable onPress={handlePress} testID="touchable">
+      <Card variant={isActive ? 'outline' : 'elevated'} borderColor="$red">
+        <HStack>
+          <Box w="$1/4">
             <Dropdown
               selectedTextStyle={{ fontWeight: '500' }}
               data={data}
@@ -119,31 +111,43 @@ export const AssetSwap = (props: AssetSwapProps) => {
               valueField="value"
               onChange={(selectedItem) => props.onChangeAsset(selectedItem.value, props.sellOrBuy)}
             />
-          </StyledView>
-          <StyledView className="flex-row items-center justify-end w-3/4">
-            <StyledText className={`font-bold ${fontColor}`}>
+          </Box>
+          <HStack alignItems="center" justifyContent="flex-end" w="$3/4">
+            <Text bold color={fontColor}>
               {sign}
               {AssetToSymbol[asset]}
-            </StyledText>
-            <StyledTextInput
-              ref={inputRef}
-              className={`font-bold ${fontColor} text-right px-1 py-2`}
-              autoFocus={props.sellOrBuy === SwapType.SELL}
-              placeholder="0"
-              value={value}
-              onChangeText={(text) => handleInputChange(text)}
-              keyboardType="numeric"
-              onFocus={handlePress}
-            />
-          </StyledView>
-        </StyledView>
-        <StyledView className="flex-row justify-between">
-          <StyledText className={`${hasBalance ? 'text-red' : 'text-gray'} text-xs`}>
+            </Text>
+            <Input
+              variant="underlined"
+              // size='md'
+              minWidth="$12" // FIXME: dynamic width is not working
+              borderBottomWidth={0}
+              isFocused={isActive}
+            >
+              <InputField
+                fontWeight="bold"
+                textAlign="right"
+                autoFocus={props.sellOrBuy === SwapType.SELL}
+                placeholder="0"
+                value={value}
+                onChangeText={(text) => handleInputChange(text)}
+                keyboardType="numeric"
+                onFocus={handlePress}
+              />
+            </Input>
+          </HStack>
+        </HStack>
+        <HStack justifyContent="space-between">
+          <Text size="xs" color={`${hasBalance ? '$red' : '$gray'}`}>
             Balance: {AssetToSymbol[asset]} {Number(balance).toFixed(2)}
-          </StyledText>
-          {hasBalance && <StyledText className="text-red text-xs">exceeds balance</StyledText>}
-        </StyledView>
+          </Text>
+          {hasBalance && (
+            <Text color="$red" size="xs">
+              exceeds balance
+            </Text>
+          )}
+        </HStack>
       </Card>
-    </TouchableHighlight>
+    </Pressable>
   );
 };

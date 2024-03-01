@@ -1,21 +1,14 @@
 import React, { useState } from 'react';
-import { Text, View } from 'react-native';
 
 import { NavigationProp } from '@react-navigation/native';
 
-import { styled } from 'nativewind';
-
-import Button from '@components/Button';
-import { Card } from '@components/Card';
+import { Box, Button, ButtonText, Card, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
 
 import { RootStackParamList } from '@navigation/index';
 
 import { ErrorModal } from '@screens/operation/modals/ErrorModal';
 
 import { paymentStore as bloc } from '@stores/PaymentStore';
-
-const StyledView = styled(View);
-const StyledText = styled(Text);
 
 interface DetailsSwapProps {
   navigation: NavigationProp<RootStackParamList>;
@@ -51,20 +44,24 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
   return (
     <>
       <ErrorModal errorMessage={errorMessage} isVisible={!!errorMessage} onClose={() => navigation.goBack()} />
-      <StyledView className="h-full p-4">
-        <Card>
-          <StyledText className="text-lg font-bold mb-6">Confirm Swap</StyledText>
-          <Row label="Amount" value={`${from.value.toFixed(2)} ${from.asset}`} />
-          <Row label="Rate" value={`1 ${from.asset} ≈ ${rate.toFixed(6)} ${to.asset}`} />
-          <Row label="Exchanged" value={`${toValue.toFixed(2)} ${to.asset}`} />
-          <Row label="Fees" value={fees} />
-          <Row label="Final receive" value={`${estimated.toFixed(2)} ${to.asset}`} />
-          <StyledText className="text-gray text-xs my-4">The final amount is estimated and may change.</StyledText>
-          <Button backgroundColor="red" textColor="white" onPress={handlePress} loading={isLoading}>
-            Swap {from.asset} for {to.asset}
+      <Box flex={1}>
+        <VStack p="$4" space="lg">
+          <Heading>Confirm Swap</Heading>
+          <Card size="md" variant="elevated" bg="$white">
+            <VStack space="md">
+              <Row label="Amount" value={`${from.value.toFixed(2)} ${from.asset}`} />
+              <Row label="Rate" value={`1 ${from.asset} ≈ ${rate.toFixed(6)} ${to.asset}`} />
+              <Row label="Exchanged" value={`${toValue.toFixed(2)} ${to.asset}`} />
+              <Row label="Fees" value={fees} />
+              <Row label="Final receive" value={`${estimated.toFixed(2)} ${to.asset}`} />
+            </VStack>
+          </Card>
+          <Text size="xs">The final amount is estimated and may change.</Text>
+          <Button onPress={handlePress} isDisabled={isLoading}>
+            <ButtonText>{isLoading ? 'Processing...' : `Swap ${from.asset} for ${to.asset}`}</ButtonText>
           </Button>
-        </Card>
-      </StyledView>
+        </VStack>
+      </Box>
     </>
   );
 };
@@ -75,8 +72,10 @@ interface RowProps {
 }
 
 const Row: React.FC<RowProps> = ({ label, value }) => (
-  <StyledView className="flex-row justify-between mb-4">
-    <StyledText className="text-gray">{label}</StyledText>
-    <StyledText>{value}</StyledText>
-  </StyledView>
+  <HStack justifyContent="space-between">
+    <Text size="sm" color="gray">
+      {label}
+    </Text>
+    <Text color="$textLight900">{value}</Text>
+  </HStack>
 );

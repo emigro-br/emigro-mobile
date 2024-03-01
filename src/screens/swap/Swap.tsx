@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
 import { ArrowPathIcon } from 'react-native-heroicons/solid';
 
 import { NavigationProp } from '@react-navigation/native';
 
-import { styled } from 'nativewind';
+import { Box, Button, ButtonText, Center, Heading, Pressable, Text, VStack } from '@gluestack-ui/themed';
 
-import Button from '@/components/Button';
 import { IQuoteRequest } from '@/types/IQuoteRequest';
 import { CryptoAsset } from '@/types/assets';
 
@@ -19,9 +17,6 @@ import { SwapTransaction, paymentStore as bloc } from '@stores/PaymentStore';
 
 import { AssetSwap } from './AssetSwap';
 import { SwapType } from './types';
-
-const StyledView = styled(View);
-const StyledText = styled(Text);
 
 type SwapProps = {
   navigation: NavigationProp<RootStackParamList>;
@@ -135,41 +130,47 @@ export const Swap = ({ navigation }: SwapProps) => {
   const isButtonEnabled = () => sellValue > 0 && sellValue <= balanceStore.get(sellAsset) && buyValue > 0;
 
   return (
-    <StyledView className="bg-white h-full p-4">
-      <StyledText className="text-2xl font-bold mb-4">Sell {sellAsset}</StyledText>
-      <StyledText className="text-gray text-xs mb-1">You sell</StyledText>
-      <AssetSwap
-        asset={sellAsset}
-        balance={balanceStore.get(sellAsset)}
-        sellOrBuy={SwapType.SELL}
-        value={sellValue}
-        onChangeAsset={onChangeAsset}
-        onChangeValue={onChangeValue}
-        isActive={active === SwapType.SELL}
-        onPress={() => setActive(SwapType.SELL)}
-      />
-      <TouchableOpacity onPress={handleSwap}>
-        <StyledView className="items-center mb-1" testID="arrowIcon">
-          <ArrowPathIcon size={24} color="red" />
-        </StyledView>
-      </TouchableOpacity>
-      <StyledText className="text-gray text-xs mb-1">You buy</StyledText>
-      <AssetSwap
-        asset={buyAsset}
-        balance={balanceStore.get(buyAsset)}
-        sellOrBuy={SwapType.BUY}
-        value={buyValue}
-        onChangeAsset={onChangeAsset}
-        onChangeValue={onChangeValue}
-        isActive={active === SwapType.BUY}
-        onPress={() => setActive(SwapType.BUY)}
-      />
-      <StyledText className="text-gray text-xs mb-4">
-        1 {sellAsset} ≈ {rate?.toFixed(6)} {buyAsset}
-      </StyledText>
-      <Button backgroundColor="red" textColor="white" onPress={handlePress} disabled={!isButtonEnabled()}>
-        Review order
-      </Button>
-    </StyledView>
+    <Box flex={1} bg="$white">
+      <VStack p="$4" space="lg">
+        <Heading size="xl">Sell {sellAsset}</Heading>
+        <VStack space="sm">
+          <Text size="xs">You sell</Text>
+          <AssetSwap
+            asset={sellAsset}
+            balance={balanceStore.get(sellAsset)}
+            sellOrBuy={SwapType.SELL}
+            value={sellValue}
+            onChangeAsset={onChangeAsset}
+            onChangeValue={onChangeValue}
+            isActive={active === SwapType.SELL}
+            onPress={() => setActive(SwapType.SELL)}
+          />
+        </VStack>
+        <Center mt="$2">
+          <Pressable onPress={handleSwap}>
+            <ArrowPathIcon size={24} color="red" testID="arrowIcon" />
+          </Pressable>
+        </Center>
+        <VStack space="sm">
+          <Text size="xs">You buy</Text>
+          <AssetSwap
+            asset={buyAsset}
+            balance={balanceStore.get(buyAsset)}
+            sellOrBuy={SwapType.BUY}
+            value={buyValue}
+            onChangeAsset={onChangeAsset}
+            onChangeValue={onChangeValue}
+            isActive={active === SwapType.BUY}
+            onPress={() => setActive(SwapType.BUY)}
+          />
+          <Text size="xs" color="$gray">
+            1 {sellAsset} ≈ {rate?.toFixed(6)} {buyAsset}
+          </Text>
+        </VStack>
+        <Button onPress={handlePress} isDisabled={!isButtonEnabled()}>
+          <ButtonText>Review order</ButtonText>
+        </Button>
+      </VStack>
+    </Box>
   );
 };
