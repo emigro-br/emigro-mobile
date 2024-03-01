@@ -6,6 +6,9 @@ import Withdraw from '@screens/operation/Withdraw';
 import DeleteAccount from '@screens/profile/DeleteAccount';
 import { DetailsSwap } from '@screens/swap/DetailsSwap';
 import { Swap } from '@screens/swap/Swap';
+import ReviewTransfer from '@screens/transfers/ReviewTransfer';
+import SendAsset from '@screens/transfers/SendAsset';
+import Transfers from '@screens/transfers/Transfers';
 import ConfirmAccount from '@screens/welcome/ConfirmAccount';
 import CreateAccount from '@screens/welcome/CreateAccount';
 import Login from '@screens/welcome/Login';
@@ -30,6 +33,11 @@ export type RootStackParamList = {
   Swap: undefined;
   DetailsSwap: undefined;
   DeleteAccount: undefined;
+  Transfers: undefined;
+  ReviewTransfer: undefined;
+  SendAsset: {
+    asset: string;
+  };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -68,6 +76,14 @@ function RootNavigator({ isSignedIn }: Props) {
               name="Withdraw"
               component={Withdraw}
               options={{ headerBackTitle: 'Back', headerTitle: 'Withdraw' }}
+            />
+            <Stack.Screen name="Transfers" component={Transfers} options={{ title: 'Transfers' }} />
+            <Stack.Screen name="ReviewTransfer" component={ReviewTransfer} options={{ title: 'Review Transfer' }} />
+            <Stack.Screen
+              name="SendAsset"
+              component={SendAsset}
+              options={{ title: 'Transfers', headerTitle: '', headerBackTitleVisible: false }}
+              initialParams={{ asset: '' }}
             />
             <Stack.Screen name="Swap" component={Swap} options={{ headerShown: true }} />
             <Stack.Screen name="DetailsSwap" component={DetailsSwap} options={{ headerTitle: 'Confirm Swap' }} />

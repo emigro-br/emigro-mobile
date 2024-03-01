@@ -10,14 +10,14 @@
     "format": "prettier --write src/ && eslint --fix src/",
     "test:watch": "jest --watchAll",
     "test:cov": "jest --coverage",
-    "test": "jest --updateSnapshot",
+    "test": "jest",
     "prepare": "husky install",
     "postinstall": "patch-package"
   },
   "jest": {
     "preset": "jest-expo",
     "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|@gluestack-ui)"
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|@gluestack-ui|@legendapp)"
     ],
     "setupFilesAfterEnv": [
       "@testing-library/jest-native/extend-expect"
@@ -51,6 +51,7 @@
     "nativewind": "^2.0.11",
     "react": "18.2.0",
     "react-native": "0.73.4",
+    "react-native-currency-input": "^1.1.1",
     "react-native-dropdown-picker": "^5.4.6",
     "react-native-dropdown-select-list": "^2.0.4",
     "react-native-element-dropdown": "^2.10.1",

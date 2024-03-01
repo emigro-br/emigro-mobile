@@ -16,16 +16,12 @@ import { CustomError } from '@services/errors';
 
 import { sessionStore } from '@stores/SessionStore';
 
+import { maskWallet } from '@utils/masks';
+
 const StyledScrollView = styled(ScrollView);
 const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledImage = styled(Image);
-
-const maskWallet = (address: string): string => {
-  const firstFive = address.slice(0, 5);
-  const lastFive = address.slice(-5);
-  return `${firstFive}...${lastFive}`;
-};
 
 const Profile = () => {
   const navigation = useNavigation();

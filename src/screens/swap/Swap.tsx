@@ -15,9 +15,9 @@ import { RootStackParamList } from '@navigation/index';
 import { handleQuote } from '@services/emigro';
 
 import { balanceStore } from '@stores/BalanceStore';
+import { SwapTransaction, paymentStore as bloc } from '@stores/PaymentStore';
 
 import { AssetSwap } from './AssetSwap';
-import bloc, { SwapTransaction } from './bloc';
 import { SwapType } from './types';
 
 const StyledView = styled(View);
@@ -128,7 +128,7 @@ export const Swap = ({ navigation }: SwapProps) => {
       rate: rate!,
       fees: 0, // TODO: add fees
     };
-    bloc.setTransaction(transaction);
+    bloc.setSwap(transaction);
     navigation.navigate('DetailsSwap');
   };
 
