@@ -28,7 +28,7 @@ interface Item {
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Transfers'>;
 
-const Transfers = ({ navigation }: Props) => {
+export const Transfers = ({ navigation }: Props) => {
   const data: Item[] = [];
   const assets = Object.values(CryptoAsset);
 
@@ -42,7 +42,7 @@ const Transfers = ({ navigation }: Props) => {
   }
 
   return (
-    <Box h="$full">
+    <Box flex={1}>
       <Heading m="$3" size="xl">
         Send
       </Heading>

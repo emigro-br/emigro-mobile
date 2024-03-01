@@ -32,7 +32,7 @@ import { paymentStore as bloc } from '@stores/PaymentStore';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SendAsset'>;
 
-const SendAsset = ({ route, navigation }: Props) => {
+export const SendAsset = ({ route, navigation }: Props) => {
   const [amount, setAmount] = useState<number | null>(null);
   const [address, setAddress] = useState<string>('');
   const asset = CryptoAsset[route.params.asset as keyof typeof CryptoAsset];
