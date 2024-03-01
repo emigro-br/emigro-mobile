@@ -8,6 +8,8 @@ import { paymentStore } from '@stores/PaymentStore';
 
 import { SendAsset } from '../SendAsset';
 
+jest.mock('expo-clipboard');
+
 jest.mock('@stores/BalanceStore', () => ({
   balanceStore: {
     get: jest.fn().mockReturnValue(100),

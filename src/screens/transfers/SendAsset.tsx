@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import CurrencyInput from 'react-native-currency-input';
-import { QrCodeIcon } from 'react-native-heroicons/solid';
+import { ClipboardDocumentIcon } from 'react-native-heroicons/solid';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -22,6 +22,7 @@ import {
   Text,
   VStack,
 } from '@gluestack-ui/themed';
+import * as Clipboard from 'expo-clipboard';
 
 import { CryptoAsset } from '@/types/assets';
 
@@ -50,6 +51,13 @@ export const SendAsset = ({ route, navigation }: Props) => {
   const handlePressContinue = () => {
     bloc.setTransfer(amount!, asset, address);
     navigation.navigate('ReviewTransfer');
+  };
+
+  const handlePaste = async () => {
+    const text = await Clipboard.getStringAsync();
+    if (text.length === stellarKeySize) {
+      setAddress(text);
+    }
   };
 
   return (
@@ -104,8 +112,8 @@ export const SendAsset = ({ route, navigation }: Props) => {
             </FormControlLabel>
             <Input variant="outline" isRequired>
               <InputField placeholder="Enter the wallet address here" value={address} onChangeText={setAddress} />
-              <InputSlot pr="$3" onPress={() => console.log('Paste')}>
-                <InputIcon as={QrCodeIcon} />
+              <InputSlot pr="$3" onPress={handlePaste}>
+                <InputIcon as={ClipboardDocumentIcon} />
               </InputSlot>
             </Input>
             <FormControlError>
