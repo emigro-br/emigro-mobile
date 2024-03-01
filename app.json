@@ -3,7 +3,7 @@
     "name": "Emigro",
     "slug": "emigro-mobile",
     "owner": "emigro",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "description": "The traveler's digital wallet",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
