@@ -10,14 +10,14 @@
     "format": "prettier --write src/ && eslint --fix src/",
     "test:watch": "jest --watchAll",
     "test:cov": "jest --coverage",
-    "test": "jest --updateSnapshot",
+    "test": "jest",
     "prepare": "husky install",
     "postinstall": "patch-package"
   },
   "jest": {
     "preset": "jest-expo",
     "transformIgnorePatterns": [
-      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|@gluestack-ui)"
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|@gluestack-ui|@legendapp)"
     ],
     "setupFilesAfterEnv": [
       "@testing-library/jest-native/extend-expect"
