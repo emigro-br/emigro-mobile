@@ -2,6 +2,8 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { IAuthSession } from '@/types/IAuthSession';
 
+import { Provider } from '@components/Provider';
+
 import Login from '@screens/welcome/Login';
 
 import * as auth from '@services/auth';
@@ -42,7 +44,11 @@ describe('Login screen', () => {
 
     signInMock.mockResolvedValue(Promise.resolve(authSession));
 
-    const { getByPlaceholderText, getByText } = render(<Login />);
+    const { getByPlaceholderText, getByText } = render(
+      <Provider>
+        <Login />
+      </Provider>,
+    );
 
     const emailInput = getByPlaceholderText('Email');
     const passwordInput = getByPlaceholderText('Password');

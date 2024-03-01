@@ -1,9 +1,28 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 
-import { styled } from 'nativewind';
+import {
+  AlertCircleIcon,
+  Box,
+  Button,
+  ButtonText,
+  Card,
+  Center,
+  EyeIcon,
+  EyeOffIcon,
+  FormControl,
+  FormControlError,
+  FormControlErrorIcon,
+  FormControlErrorText,
+  Input,
+  InputField,
+  InputIcon,
+  InputSlot,
+  Link,
+  Text,
+  VStack,
+} from '@gluestack-ui/themed';
 
 import { FormField } from '@/types/FormField';
 
@@ -12,10 +31,6 @@ import { SIGNIN_ERROR_MESSAGE, SIGN_IN_FIELDS_ERROR } from '@constants/errorMess
 import { signIn } from '@services/auth';
 
 import { sessionStore } from '@stores/SessionStore';
-
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledTextInput = styled(TextInput);
 
 const formFields: FormField[] = [
   { name: 'email', placeholder: 'Email', keyboardType: 'email-address', autoCapitalize: 'none' },
@@ -29,6 +44,7 @@ type FormData = {
 const Login: React.FunctionComponent = () => {
   const navigation = useNavigation();
 
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
@@ -61,39 +77,64 @@ const Login: React.FunctionComponent = () => {
     }
   };
 
+  const handleState = () => {
+    setShowPassword((showState) => {
+      return !showState;
+    });
+  };
+
   return (
-    <StyledView className="gap-4 p-6 mt-6">
-      {formFields.map((field) => (
-        <StyledTextInput
-          key={field.name}
-          className="text-lg bg-white py-2 px-3 rounded-md mb-2"
-          placeholder={field.placeholder}
-          value={formData[field.name]}
-          onChangeText={(text) => handleChange(field.name, text)}
-          secureTextEntry={field.secureTextEntry}
-          keyboardType={field.keyboardType}
-          autoCapitalize={field.autoCapitalize}
-        />
-      ))}
+    <Box flex={1}>
+      <VStack p="$4" space="lg">
+        <Card mt="$8">
+          <VStack space="xl">
+            {formFields.map((field) => (
+              <Input size="xl" key={field.name}>
+                <InputField
+                  placeholder={field.placeholder}
+                  value={formData[field.name]}
+                  onChangeText={(text) => handleChange(field.name, text)}
+                  type={field.secureTextEntry && !showPassword ? 'password' : 'text'}
+                  keyboardType={field.keyboardType}
+                  autoCapitalize={field.autoCapitalize}
+                />
+                {field.secureTextEntry ? (
+                  <InputSlot pr="$3" onPress={handleState}>
+                    {/* EyeIcon, EyeOffIcon are both imported from 'lucide-react-native' */}
+                    <InputIcon
+                      as={showPassword ? EyeIcon : EyeOffIcon}
+                      color={showPassword ? '$primary500' : '$textLight500'}
+                    />
+                  </InputSlot>
+                ) : (
+                  ''
+                )}
+              </Input>
+            ))}
 
-      <TouchableOpacity onPress={handleSignIn}>
-        <StyledView className="bg-red rounded-md h-12 justify-center">
-          {isLoggingIn ? (
-            <ActivityIndicator color="white" size="small" />
-          ) : (
-            <StyledText className="text-white font-bold text-center text-lg">Sign in</StyledText>
-          )}
-        </StyledView>
-      </TouchableOpacity>
-      <StyledView className="flex-row justify-center items-center gap-2">
-        <StyledText className="text-lg">Don't have an account?</StyledText>
-        <TouchableOpacity onPress={() => navigation.navigate('SignUp' as never)}>
-          <StyledText className="text-red text-lg font-bold">Sign up</StyledText>
-        </TouchableOpacity>
-      </StyledView>
-
-      {error ? <StyledText className="text-red text-center text-lg">{error}</StyledText> : ''}
-    </StyledView>
+            <FormControl isInvalid={!!error}>
+              <FormControlError>
+                <FormControlErrorIcon as={AlertCircleIcon} />
+                <FormControlErrorText>{error}</FormControlErrorText>
+              </FormControlError>
+            </FormControl>
+            <Button onPress={handleSignIn} isDisabled={isLoggingIn} size="xl">
+              <ButtonText>{isLoggingIn ? 'Signing in...' : 'Sign in'}</ButtonText>
+            </Button>
+          </VStack>
+        </Card>
+        <Center>
+          <Text size="xl">
+            Don't have an account?
+            <Link onPress={() => navigation.navigate('SignUp' as never)}>
+              <Text size="xl" color="$primary500" ml="$2" bold>
+                Sign up
+              </Text>
+            </Link>
+          </Text>
+        </Center>
+      </VStack>
+    </Box>
   );
 };
 
