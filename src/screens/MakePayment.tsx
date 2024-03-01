@@ -1,19 +1,15 @@
 import React, { useState } from 'react';
-import { Image, View } from 'react-native';
+import { QrCodeIcon } from 'react-native-heroicons/solid';
 
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
-import { styled } from 'nativewind';
+import { Box, Button, ButtonIcon, ButtonText, Center, Image, VStack } from '@gluestack-ui/themed';
 
 import qrImage from '@assets/images/qr-code.png';
 
-import Button from '@components/Button';
 import QRCodeScanner from '@components/QRCodeScanner';
 
 import { RootStackParamList } from '@navigation/index';
-
-const StyledView = styled(View);
-const StyledImage = styled(Image);
 
 type MakePaymentProps = BottomTabScreenProps<RootStackParamList, 'MakePayment'>;
 
@@ -35,14 +31,17 @@ const MakePayment: React.FC<MakePaymentProps> = ({ navigation }) => {
   }
 
   return (
-    <StyledView className="flex items-center h-full  bg-white">
-      <StyledImage source={qrImage} className="h-[200px] w-[200px] my-16" />
-      <StyledView className="flex w-full px-4">
-        <Button backgroundColor="red" textColor="white" onPress={handleScanPress}>
-          Scan a Payment
+    <Box flex={1} bg="$white">
+      <VStack p="$4" space="lg">
+        <Center my="$8">
+          <Image source={qrImage} size="2xl" alt="QR Code" />
+        </Center>
+        <Button onPress={handleScanPress}>
+          <ButtonIcon as={QrCodeIcon} mr="$2" />
+          <ButtonText>Scan a Payment</ButtonText>
         </Button>
-      </StyledView>
-    </StyledView>
+      </VStack>
+    </Box>
   );
 };
 
