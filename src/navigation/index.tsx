@@ -96,11 +96,15 @@ function RootNavigator({ isSignedIn }: Props) {
           <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
           {/* Auth screens */}
           <Stack.Group>
-            <Stack.Screen name="SignUp" component={CreateAccount} options={{ headerTitle: 'Create Account' }} />
+            <Stack.Screen
+              name="SignUp"
+              component={CreateAccount}
+              options={{ title: 'Sign up', headerBackTitleVisible: false }}
+            />
             <Stack.Screen
               name="Login"
               component={Login}
-              options={{ headerTitle: 'Login', headerBackTitleVisible: false }}
+              options={{ title: 'Sign in', headerBackTitleVisible: false }}
             />
             <Stack.Screen
               name="ConfirmAccount"

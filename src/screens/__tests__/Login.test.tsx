@@ -44,19 +44,20 @@ describe('Login screen', () => {
 
     signInMock.mockResolvedValue(Promise.resolve(authSession));
 
-    const { getByPlaceholderText, getByText } = render(
+    const { getByTestId } = render(
       <Provider>
         <Login />
       </Provider>,
     );
 
-    const emailInput = getByPlaceholderText('Email');
-    const passwordInput = getByPlaceholderText('Password');
+    const emailInput = getByTestId('email');
+    const passwordInput = getByTestId('password');
 
     fireEvent.changeText(emailInput, 'test@example.com');
     fireEvent.changeText(passwordInput, 'password123');
 
-    fireEvent.press(getByText('Sign in'));
+    const signInButton = getByTestId('signin-button');
+    fireEvent.press(signInButton);
 
     await waitFor(() => {
       expect(signInMock).toHaveBeenCalledWith('test@example.com', 'password123');

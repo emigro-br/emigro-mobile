@@ -11,6 +11,8 @@ import {
   FormControlError,
   FormControlErrorIcon,
   FormControlErrorText,
+  FormControlLabel,
+  FormControlLabelText,
   Heading,
   Input,
   InputField,
@@ -43,11 +45,17 @@ type ConfirmationParams = {
 };
 
 const formFields: FormField[] = [
-  { name: 'email', placeholder: 'Email', keyboardType: 'email-address' },
-  { name: 'password', placeholder: 'Password', secureTextEntry: true, keyboardType: 'default' },
-  { name: 'firstName', placeholder: 'First Name', keyboardType: 'default' },
-  { name: 'lastName', placeholder: 'Last Name', keyboardType: 'default' },
-  { name: 'address', placeholder: 'Address', keyboardType: 'default' },
+  { name: 'firstName', label: 'First Name', placeholder: 'e.g. John', keyboardType: 'default' },
+  { name: 'lastName', label: 'Last Name', placeholder: 'e.g. Doe', keyboardType: 'default' },
+  { name: 'email', label: 'Email', placeholder: 'john.doe@example.com', keyboardType: 'email-address' },
+  {
+    name: 'password',
+    label: 'Password',
+    placeholder: 'At least 6 characters',
+    keyboardType: 'default',
+    secureTextEntry: true,
+  },
+  { name: 'address', label: 'Address', placeholder: 'e.g., 123 Main St, Anytown', keyboardType: 'default' },
 ];
 
 const CreateAccount = ({ navigation }: SignUpProps) => {
@@ -106,18 +114,25 @@ const CreateAccount = ({ navigation }: SignUpProps) => {
     <Box flex={1}>
       <ConfirmationModal isOpen={!!confirmationParams} onConfirm={handleCloseModal} />
       <VStack p="$4" space="lg">
-        <Card mt="$8">
+        <Heading size="xl">Sign up to Emigro</Heading>
+        <Card>
           <VStack space="xl">
             {formFields.map((field) => (
-              <Input size="xl" key={field.name}>
-                <InputField
-                  placeholder={field.placeholder}
-                  value={formData[field.name]}
-                  onChangeText={(text) => handleChange(field.name, text)}
-                  secureTextEntry={field.secureTextEntry}
-                  keyboardType={field.keyboardType}
-                />
-              </Input>
+              <FormControl key={field.name}>
+                <FormControlLabel mb="$1">
+                  <FormControlLabelText>{field.label}</FormControlLabelText>
+                </FormControlLabel>
+                <Input size="xl">
+                  <InputField
+                    placeholder={field.placeholder}
+                    value={formData[field.name]}
+                    onChangeText={(text) => handleChange(field.name, text)}
+                    secureTextEntry={field.secureTextEntry}
+                    keyboardType={field.keyboardType}
+                    testID={field.name}
+                  />
+                </Input>
+              </FormControl>
             ))}
 
             <FormControl isInvalid={!!error}>
@@ -127,8 +142,8 @@ const CreateAccount = ({ navigation }: SignUpProps) => {
               </FormControlError>
             </FormControl>
 
-            <Button onPress={handleSubmit} isDisabled={isLoading} size="xl">
-              <ButtonText>{isLoading ? 'Signing up...' : 'Sign up'}</ButtonText>
+            <Button onPress={handleSubmit} isDisabled={isLoading} size="xl" testID="create-button">
+              <ButtonText>{isLoading ? 'Creating account...' : 'Create Account'}</ButtonText>
             </Button>
           </VStack>
         </Card>

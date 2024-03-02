@@ -42,17 +42,17 @@ describe('CreateAccount component', () => {
 
     signUpMock.mockResolvedValue(mockResponse);
 
-    const { getByPlaceholderText, getByText } = render(
+    const { getByTestId } = render(
       <Provider>
         <CreateAccount navigation={{}} />
       </Provider>,
     );
 
-    const emailInput = getByPlaceholderText('Email');
-    const passwordInput = getByPlaceholderText('Password');
-    const firstNameInput = getByPlaceholderText('First Name');
-    const lastNameInput = getByPlaceholderText('Last Name');
-    const addressInput = getByPlaceholderText('Address');
+    const emailInput = getByTestId('email');
+    const passwordInput = getByTestId('password');
+    const firstNameInput = getByTestId('firstName');
+    const lastNameInput = getByTestId('lastName');
+    const addressInput = getByTestId('address');
 
     fireEvent.changeText(emailInput, 'test@example.com');
     fireEvent.changeText(passwordInput, 'password123');
@@ -60,7 +60,8 @@ describe('CreateAccount component', () => {
     fireEvent.changeText(lastNameInput, 'Doe');
     fireEvent.changeText(addressInput, '123 Main St');
 
-    fireEvent.press(getByText('Sign up'));
+    const createButton = getByTestId('create-button');
+    fireEvent.press(createButton);
 
     const signUpBodyMock = {
       email: 'test@example.com',
@@ -80,13 +81,13 @@ describe('CreateAccount component', () => {
     const restoreConsole = mockConsole();
     const error = new Error();
     jest.spyOn(auth, 'signUp').mockRejectedValue(error);
-    const { getByPlaceholderText, getByText, findByText } = render(<CreateAccount navigation={{}} />);
+    const { getByTestId, findByText } = render(<CreateAccount navigation={{}} />);
 
-    const emailInput = getByPlaceholderText('Email');
-    const passwordInput = getByPlaceholderText('Password');
-    const firstNameInput = getByPlaceholderText('First Name');
-    const lastNameInput = getByPlaceholderText('Last Name');
-    const addressInput = getByPlaceholderText('Address');
+    const emailInput = getByTestId('email');
+    const passwordInput = getByTestId('password');
+    const firstNameInput = getByTestId('firstName');
+    const lastNameInput = getByTestId('lastName');
+    const addressInput = getByTestId('address');
 
     fireEvent.changeText(emailInput, 'test@example.com');
     fireEvent.changeText(passwordInput, 'password123');
@@ -94,7 +95,8 @@ describe('CreateAccount component', () => {
     fireEvent.changeText(lastNameInput, '');
     fireEvent.changeText(addressInput, '');
 
-    fireEvent.press(getByText('Sign up'));
+    const createButton = getByTestId('create-button');
+    fireEvent.press(createButton);
 
     await waitFor(() => {
       const errorElement = findByText(SIGNUP_ERROR_MESSAGE);

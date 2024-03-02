@@ -56,7 +56,7 @@ describe('Welcome screen', () => {
     const signUpButton = getByText('Create an Account');
     fireEvent.press(signUpButton);
 
-    const createAccountText = getByText('Sign up');
+    const createAccountText = getByText('Sign up to Emigro');
     expect(createAccountText).toBeOnTheScreen();
   });
 });

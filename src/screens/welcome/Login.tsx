@@ -15,6 +15,9 @@ import {
   FormControlError,
   FormControlErrorIcon,
   FormControlErrorText,
+  FormControlLabel,
+  FormControlLabelText,
+  Heading,
   Input,
   InputField,
   InputIcon,
@@ -33,8 +36,20 @@ import { signIn } from '@services/auth';
 import { sessionStore } from '@stores/SessionStore';
 
 const formFields: FormField[] = [
-  { name: 'email', placeholder: 'Email', keyboardType: 'email-address', autoCapitalize: 'none' },
-  { name: 'password', placeholder: 'Password', secureTextEntry: true, keyboardType: 'default' },
+  {
+    name: 'email',
+    label: 'Email',
+    placeholder: 'example@email.com',
+    keyboardType: 'email-address',
+    autoCapitalize: 'none',
+  },
+  {
+    name: 'password',
+    label: 'Password',
+    placeholder: 'Enter your password',
+    secureTextEntry: true,
+    keyboardType: 'default',
+  },
 ];
 
 type FormData = {
@@ -86,30 +101,35 @@ const Login: React.FunctionComponent = () => {
   return (
     <Box flex={1}>
       <VStack p="$4" space="lg">
-        <Card mt="$8">
+        <Heading size="xl">Sign in to Emigro</Heading>
+        <Card>
           <VStack space="xl">
             {formFields.map((field) => (
-              <Input size="xl" key={field.name}>
-                <InputField
-                  placeholder={field.placeholder}
-                  value={formData[field.name]}
-                  onChangeText={(text) => handleChange(field.name, text)}
-                  type={field.secureTextEntry && !showPassword ? 'password' : 'text'}
-                  keyboardType={field.keyboardType}
-                  autoCapitalize={field.autoCapitalize}
-                />
-                {field.secureTextEntry ? (
-                  <InputSlot pr="$3" onPress={handleState}>
-                    {/* EyeIcon, EyeOffIcon are both imported from 'lucide-react-native' */}
-                    <InputIcon
-                      as={showPassword ? EyeIcon : EyeOffIcon}
-                      color={showPassword ? '$primary500' : '$textLight500'}
-                    />
-                  </InputSlot>
-                ) : (
-                  ''
-                )}
-              </Input>
+              <FormControl key={field.name}>
+                <FormControlLabel mb="$1">
+                  <FormControlLabelText>{field.label}</FormControlLabelText>
+                </FormControlLabel>
+                <Input size="xl">
+                  <InputField
+                    placeholder={field.placeholder}
+                    value={formData[field.name]}
+                    onChangeText={(text) => handleChange(field.name, text)}
+                    type={field.secureTextEntry && !showPassword ? 'password' : 'text'}
+                    keyboardType={field.keyboardType}
+                    autoCapitalize={field.autoCapitalize}
+                    testID={field.name}
+                  />
+                  {field.secureTextEntry && (
+                    <InputSlot pr="$3" onPress={handleState}>
+                      {/* EyeIcon, EyeOffIcon are both imported from 'lucide-react-native' */}
+                      <InputIcon
+                        as={showPassword ? EyeIcon : EyeOffIcon}
+                        color={showPassword ? '$primary500' : '$textLight500'}
+                      />
+                    </InputSlot>
+                  )}
+                </Input>
+              </FormControl>
             ))}
 
             <FormControl isInvalid={!!error}>
@@ -118,7 +138,7 @@ const Login: React.FunctionComponent = () => {
                 <FormControlErrorText>{error}</FormControlErrorText>
               </FormControlError>
             </FormControl>
-            <Button onPress={handleSignIn} isDisabled={isLoggingIn} size="xl">
+            <Button onPress={handleSignIn} isDisabled={isLoggingIn} size="xl" testID="signin-button">
               <ButtonText>{isLoggingIn ? 'Signing in...' : 'Sign in'}</ButtonText>
             </Button>
           </VStack>
