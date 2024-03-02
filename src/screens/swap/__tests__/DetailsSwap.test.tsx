@@ -106,7 +106,7 @@ describe('DetailsSwap', () => {
   it('shows error message', async () => {
     jest.spyOn(paymentStore, 'pay').mockRejectedValue(new Error('error message'));
 
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen name="DetailsSwap" component={DetailsSwapScreen} />
@@ -117,7 +117,7 @@ describe('DetailsSwap', () => {
     fireEvent.press(getByText('Swap EURC for BRL'));
 
     await waitFor(() => {
-      expect(getByText('error message')).toBeOnTheScreen();
+      expect(getByTestId('error-modal')).toBeOnTheScreen();
     });
   });
 });

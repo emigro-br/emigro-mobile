@@ -1,38 +1,65 @@
 import React from 'react';
-import { Linking, Text, View } from 'react-native';
+import { Linking } from 'react-native';
 
-import { styled } from 'nativewind';
-
-import Button from '@components/Button';
-import CustomModal from '@components/CustomModal';
-
-const StyledView = styled(View);
-const StyledText = styled(Text);
+import {
+  Button,
+  ButtonText,
+  CheckCircleIcon,
+  HStack,
+  Heading,
+  Icon,
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Text,
+  View,
+} from '@gluestack-ui/themed';
 
 type SuccessModalProps = {
-  isVisible: boolean;
+  isOpen: boolean;
+  title: string;
   onClose: () => void;
   publicKey: string;
+  testID?: string;
 };
 
-export const SuccessModal: React.FunctionComponent<SuccessModalProps> = ({ isVisible, onClose, publicKey }) => (
-  <CustomModal isVisible={isVisible}>
-    <StyledView className="container h-max flex justify-between">
-      <StyledView className="flex flex-col justify-center items-center">
-        <StyledText className="text-2xl font-bold text-center mb-4">Transaction successful!</StyledText>
-        <StyledText className="text-center mb-4">
-          You can check the status of your transaction in the{' '}
-          <Text
-            style={{ color: '#1D4ED8' }}
-            onPress={() => Linking.openURL(`https://stellar.expert/explorer/public/account/${publicKey}`)}
-          >
-            Stellar explorer
+export const SuccessModal: React.FC<SuccessModalProps> = ({
+  isOpen,
+  onClose,
+  title,
+  publicKey,
+  testID = 'success-modal',
+}) => (
+  <View testID={testID}>
+    <Modal isOpen={isOpen}>
+      <ModalBackdrop />
+      <ModalContent>
+        <ModalHeader>
+          <HStack space="sm" alignItems="center">
+            <Icon as={CheckCircleIcon} color="$success700" $dark-color="$success300" />
+            <Heading size="lg">{title}</Heading>
+          </HStack>
+        </ModalHeader>
+        <ModalBody>
+          <Text>
+            You can check the status of your transaction in the{' '}
+            <Text
+              style={{ color: '#1D4ED8' }}
+              onPress={() => Linking.openURL(`https://stellar.expert/explorer/public/account/${publicKey}`)}
+            >
+              Stellar explorer
+            </Text>
           </Text>
-        </StyledText>
-        <Button onPress={onClose} backgroundColor="red" textColor="white">
-          <Text>Close</Text>
-        </Button>
-      </StyledView>
-    </StyledView>
-  </CustomModal>
+        </ModalBody>
+        <ModalFooter>
+          <Button action="positive" onPress={onClose}>
+            <ButtonText>Close</ButtonText>
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  </View>
 );

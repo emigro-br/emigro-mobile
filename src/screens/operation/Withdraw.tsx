@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { Image, Linking, Text, TouchableOpacity, View } from 'react-native';
+import { Linking } from 'react-native';
 
+import {
+  Box,
+  Button,
+  ButtonText,
+  Card,
+  FormControlErrorText,
+  HStack,
+  Image,
+  Pressable,
+  Text,
+  VStack,
+} from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
-import { styled } from 'nativewind';
 
 import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { TransactionStatus } from '@/types/TransactionStatus';
 import { CryptoAsset } from '@/types/assets';
-
-import Button from '@components/Button';
 
 import { OperationType } from '@constants/constants';
 
@@ -22,9 +31,6 @@ import { ConfirmationModal } from './modals/ConfirmationModal';
 import { ErrorModal } from './modals/ErrorModal';
 import { LoadingModal } from './modals/LoadingModal';
 import { SuccessModal } from './modals/SuccessModal';
-
-const StyledView = styled(View);
-const StyledText = styled(Text);
 
 enum TransactionStep {
   NONE = 'none',
@@ -179,12 +185,16 @@ const Withdraw: React.FC = observer(() => {
   };
 
   return (
-    <StyledView className="flex bg-white h-full">
+    <Box flex={1}>
       <LoadingModal isOpen={!sessionStore.publicKey || isLoading} />
-      <LoadingModal isOpen={step === TransactionStep.STARTED} text="Loading..." testID="loading-url-modal" />
+      <LoadingModal
+        isOpen={step === TransactionStep.STARTED}
+        text="Connecting to anchor..."
+        testID="loading-url-modal"
+      />
       <LoadingModal
         isOpen={step === TransactionStep.WAITING}
-        text="Waiting..."
+        text="Awaiting transaction completion..."
         onClose={handleCloseWait}
         testID="waiting-transaction-modal"
       />
@@ -200,37 +210,47 @@ const Withdraw: React.FC = observer(() => {
       )}
 
       <SuccessModal
-        isVisible={step === TransactionStep.SUCCESS}
+        isOpen={step === TransactionStep.SUCCESS}
+        title="Transaction successful!"
         onClose={() => setStep(TransactionStep.NONE)}
         publicKey={sessionStore.publicKey!}
       />
 
       <ErrorModal
-        isVisible={step === TransactionStep.ERROR}
-        errorMessage={errorMessage || defaultErrorMessage}
+        isOpen={step === TransactionStep.ERROR}
+        title="Transaction Failed"
+        errorMessage={`Failed message: ${errorMessage || defaultErrorMessage}`}
         onClose={() => setStep(TransactionStep.NONE)}
       />
 
-      <StyledText className="text-lg p-4">Select the currency you want to withdraw:</StyledText>
-      <StyledView className="flex flex-row flex-wrap px-4 gap-4">
-        {availableAssets.map((asset) => (
-          <TouchableOpacity key={`asset_${asset}`} onPress={() => handleOnPress(asset)}>
-            <StyledView className="flex-row w-32 h-20 items-center justify-center bg-white rounded-lg shadow">
-              <Image source={iconFor(asset)} style={{ width: 30, height: 30 }} />
-              <StyledText className="ml-1 flex-row font-bold text-xl">{asset}</StyledText>
-            </StyledView>
-          </TouchableOpacity>
-        ))}
-      </StyledView>
-      {transactionId && step === TransactionStep.PENDING_USER && (
-        <StyledView className="items-start mt-6">
-          <Button textColor="red" onPress={() => waitWithdrawOnAnchorComplete(transactionId, selectedAsset!)}>
-            Check pending transaction: {transactionId}
+      <VStack p="$4" space="lg">
+        <Text size="xl">Select the currency you want to withdraw:</Text>
+        <HStack space="lg">
+          {availableAssets.map((asset) => (
+            <Card key={`asset-${asset}`}>
+              <Pressable onPress={() => handleOnPress(asset)}>
+                <HStack alignItems="center" flexWrap="wrap">
+                  <Image source={iconFor(asset)} size="xs" alt={asset} />
+                  <Text size="xl" bold ml="$2">
+                    {asset}
+                  </Text>
+                </HStack>
+              </Pressable>
+            </Card>
+          ))}
+        </HStack>
+        {transactionId && step === TransactionStep.PENDING_USER && (
+          <Button
+            variant="link"
+            onPress={() => waitWithdrawOnAnchorComplete(transactionId, selectedAsset!)}
+            alignSelf="flex-start"
+          >
+            <ButtonText>Check pending transaction: {transactionId}</ButtonText>
           </Button>
-        </StyledView>
-      )}
-      {errorMessage && <StyledText className="text-red pt-6">{errorMessage}</StyledText>}
-    </StyledView>
+        )}
+        {errorMessage && <FormControlErrorText>{errorMessage}</FormControlErrorText>}
+      </VStack>
+    </Box>
   );
 });
 
