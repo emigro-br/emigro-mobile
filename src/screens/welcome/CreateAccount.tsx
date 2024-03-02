@@ -15,7 +15,6 @@ import {
   Input,
   InputField,
   Link,
-  LinkText,
   Modal,
   ModalBackdrop,
   ModalBody,
@@ -137,9 +136,9 @@ const CreateAccount = ({ navigation }: SignUpProps) => {
           <Text size="xl">
             Already have an account?
             <Link onPress={() => navigation.navigate('Login' as never)}>
-              <LinkText size="xl" color="$primary500" ml="$2">
+              <Text size="xl" color="$primary500" ml="$2" bold>
                 Sign in
-              </LinkText>
+              </Text>
             </Link>
           </Text>
         </Center>
