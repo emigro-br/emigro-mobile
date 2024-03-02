@@ -13,7 +13,7 @@ export const Welcome: React.FunctionComponent = () => {
       <Box bg="$primary500" pt="$40" pb="$20">
         <Center>
           <Box h="$20" w="$80" mb="$10">
-            <Image h="$full" w="$full" source={emigroLogo} alt="Emgro logo" />
+            <Image h="$full" w="$full" source={emigroLogo} alt="Emigro logo" />
           </Box>
           <Text size="2xl" color="$white" bold mb="$2">
             The Traveler's Digital Wallet
