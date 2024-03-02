@@ -1,16 +1,27 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
 
+import { useVendor } from '@contexts/VendorContext';
 import { Ionicons } from '@expo/vector-icons';
+import {
+  Box,
+  Button,
+  ButtonText,
+  Center,
+  FormControlErrorText,
+  HStack,
+  Heading,
+  Pressable,
+  Text,
+  VStack,
+  View,
+} from '@gluestack-ui/themed';
 import { BarCodeScanner, PermissionResponse } from 'expo-barcode-scanner';
 import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
 import { CameraView, PermissionStatus, useCameraPermissions } from 'expo-camera/next';
-import { styled } from 'nativewind';
 
-import Button from '@/components/Button';
-import { useVendor } from '@/contexts/VendorContext';
 import { CryptoAsset } from '@/types/assets';
 
 import { INVALID_QR_CODE } from '@constants/errorMessages';
@@ -23,10 +34,6 @@ type QRCodeScannerProps = {
   onCancel: () => void;
   onProceedToPayment: () => void;
 };
-
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledTouchableOpacity = styled(TouchableOpacity);
 
 const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, onProceedToPayment }) => {
   const { scannedVendor, setScannedVendor } = useVendor();
@@ -78,18 +85,20 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
 
   if (!cameraPermission?.granted) {
     return (
-      <StyledView className="bg-white flex items-center justify-center h-full">
-        <StyledText className="text-lg m-4">
-          Camera access has been denied. Please enable camera access in your device settings to proceed with QR code
-          payments.
-        </StyledText>
-      </StyledView>
+      <Box flex={1} justifyContent="center">
+        <Center>
+          <Text size="lg">
+            Camera access has been denied. Please enable camera access in your device settings to proceed with QR code
+            payments.
+          </Text>
+        </Center>
+      </Box>
     );
   }
 
   return (
-    <StyledView className="flex items-center h-full bg-white">
-      <StyledView className="items-center justify-center h-60 w-full rounded-3xl">
+    <Box flex={1}>
+      <Box h="$72" w="$full">
         <CameraView
           onBarcodeScanned={handleBarCodeScanned}
           style={[StyleSheet.absoluteFillObject]}
@@ -97,47 +106,55 @@ const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, 
             barcodeTypes: [BarCodeScanner.Constants.BarCodeType.qr], // FIXME: "qr" string is not working
           }}
         >
-          <StyledView style={styles.rectangleContainer}>
-            <StyledTouchableOpacity className="absolute right-0 top-8 mr-8" onPress={onCancel}>
+          <View style={styles.rectangleContainer}>
+            <Pressable right={0} top={0} mt="$8" mr="$8" position="absolute" onPress={onCancel}>
               <Ionicons name="close" size={24} color="white" />
-            </StyledTouchableOpacity>
-            <StyledView style={styles.rectangle} />
-          </StyledView>
+            </Pressable>
+            <View style={styles.rectangle} />
+          </View>
         </CameraView>
-      </StyledView>
+      </Box>
       {!isScanned && (
-        <StyledView className="flex flex-col items-center justify-center w-full mt-4">
-          <StyledText className="text-lg font-bold">Scan the QR code</StyledText>
-          <StyledText className="text-lg font-bold">to pay the vendor</StyledText>
-        </StyledView>
+        <Center mt="$8">
+          <Heading>Scan the QR code</Heading>
+          <Heading>to pay the vendor</Heading>
+        </Center>
       )}
       {isScanned && scannedVendor.name ? (
-        <StyledView className="flex flex-col p-4 mt-4 w-full gap-2">
-          <StyledText className="text-xl font-bold">Confirm the information below:</StyledText>
-          <StyledView className="flex-row">
-            <StyledText className="text-lg font-bold">Vendor: </StyledText>
-            <StyledText className="text-lg">{scannedVendor.name}</StyledText>
-          </StyledView>
-          <StyledView className="flex-row">
-            <StyledText className="text-lg font-bold">Address: </StyledText>
-            <StyledText className="text-lg">{scannedVendor.address}</StyledText>
-          </StyledView>
-          <StyledView className="flex-row">
-            <StyledText className="text-lg font-bold">Amount: </StyledText>
-            <StyledText className="text-lg">
-              {scannedVendor.amount} {AssetToCurrency[scannedVendor.assetCode as CryptoAsset]}
-            </StyledText>
-          </StyledView>
-          <StyledView className="flex justify-center">
-            <Button backgroundColor="red" textColor="white" onPress={handleProceedToPayment}>
-              Proceed to payment
-            </Button>
-          </StyledView>
-        </StyledView>
+        <VStack p="$4" space="lg">
+          <Heading>Confirm the information below:</Heading>
+          <VStack space="sm">
+            <HStack>
+              <Text size="lg" bold>
+                Vendor:{' '}
+              </Text>
+              <Text size="lg">{scannedVendor.name}</Text>
+            </HStack>
+            <HStack>
+              <Text size="lg" bold>
+                Address:{' '}
+              </Text>
+              <Text size="lg">{scannedVendor.address}</Text>
+            </HStack>
+            <HStack>
+              <Text size="lg" bold>
+                Amount:{' '}
+              </Text>
+              <Text size="lg">
+                {scannedVendor.amount} {AssetToCurrency[scannedVendor.assetCode as CryptoAsset]}
+              </Text>
+            </HStack>
+          </VStack>
+          <Button onPress={handleProceedToPayment}>
+            <ButtonText>Proceed to payment</ButtonText>
+          </Button>
+        </VStack>
       ) : (
-        <StyledText className="text-red text-lg mt-4 font-bold">{error}</StyledText>
+        <FormControlErrorText bold m="$4">
+          {error}
+        </FormControlErrorText>
       )}
-    </StyledView>
+    </Box>
   );
 };
 
