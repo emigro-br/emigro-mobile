@@ -1,13 +1,33 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import { styled } from 'nativewind';
+import {
+  AlertCircleIcon,
+  Box,
+  Button,
+  ButtonText,
+  Card,
+  Center,
+  FormControl,
+  FormControlError,
+  FormControlErrorIcon,
+  FormControlErrorText,
+  Heading,
+  Input,
+  InputField,
+  Link,
+  LinkText,
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Text,
+  VStack,
+} from '@gluestack-ui/themed';
 
 import { FormField } from '@/types/FormField';
 import { IRegisterUser } from '@/types/IRegisterUser';
-
-import Button from '@components/Button';
-import CustomModal from '@components/CustomModal';
 
 import { Role } from '@constants/constants';
 import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
@@ -15,17 +35,13 @@ import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 import { signUp } from '@services/auth';
 
 type SignUpProps = {
-  navigation: any;
+  navigation: any; // FIXME: set the correct type
 };
 
 type ConfirmationParams = {
   email: string;
   username: string;
 };
-
-const StyledView = styled(View);
-const StyledText = styled(Text);
-const StyledTextInput = styled(TextInput);
 
 const formFields: FormField[] = [
   { name: 'email', placeholder: 'Email', keyboardType: 'email-address' },
@@ -45,7 +61,7 @@ const CreateAccount = ({ navigation }: SignUpProps) => {
     role: Role.CUSTOMER,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [confirmaationParams, setConfirmationParams] = useState<ConfirmationParams | null>(null);
+  const [confirmationParams, setConfirmationParams] = useState<ConfirmationParams | null>(null);
 
   const [error, setError] = useState('');
 
@@ -82,44 +98,79 @@ const CreateAccount = ({ navigation }: SignUpProps) => {
     }
   };
 
-  const handleCloseConfirmationModal = () => {
+  const handleCloseModal = () => {
     setConfirmationParams(null);
-    navigation.navigate('ConfirmAccount', confirmaationParams);
+    navigation.navigate('ConfirmAccount', confirmationParams);
   };
 
   return (
-    <StyledView className="gap-4 p-6 mt-6">
-      {formFields.map((field) => (
-        <StyledTextInput
-          key={field.name}
-          className="text-lg bg-white h-10 p-2 rounded-sm mb-2"
-          placeholder={field.placeholder}
-          value={formData[field.name]}
-          onChangeText={(text) => handleChange(field.name, text)}
-          secureTextEntry={field.secureTextEntry}
-          keyboardType={field.keyboardType}
-        />
-      ))}
+    <Box flex={1}>
+      <ConfirmationModal isOpen={!!confirmationParams} onConfirm={handleCloseModal} />
+      <VStack p="$4" space="lg">
+        <Card mt="$8">
+          <VStack space="xl">
+            {formFields.map((field) => (
+              <Input size="xl" key={field.name}>
+                <InputField
+                  placeholder={field.placeholder}
+                  value={formData[field.name]}
+                  onChangeText={(text) => handleChange(field.name, text)}
+                  secureTextEntry={field.secureTextEntry}
+                  keyboardType={field.keyboardType}
+                />
+              </Input>
+            ))}
 
-      <TouchableOpacity onPress={handleSubmit}>
-        <Button backgroundColor="red" textColor="white" disabled={isLoading} onPress={handleSubmit}>
-          {isLoading ? <ActivityIndicator size="large" color="gray" /> : 'Sign Up'}
-        </Button>
-      </TouchableOpacity>
-      <StyledView className="flex-row justify-center items-center gap-2">
-        <StyledText className="text-lg">Already have an account?</StyledText>
-        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <StyledText className="text-red text-lg font-bold">Log in</StyledText>
-        </TouchableOpacity>
-      </StyledView>
-      <StyledText className="text-red text-center text-lg">{error}</StyledText>
-      <CustomModal isVisible={!!confirmaationParams} title="Complete registration">
-        <StyledText className="text-lg p-4">We have sent you a confirmation code to your email address.</StyledText>
-        <Button backgroundColor="red" textColor="white" onPress={handleCloseConfirmationModal}>
-          Continue
-        </Button>
-      </CustomModal>
-    </StyledView>
+            <FormControl isInvalid={!!error}>
+              <FormControlError>
+                <FormControlErrorIcon as={AlertCircleIcon} />
+                <FormControlErrorText>{error}</FormControlErrorText>
+              </FormControlError>
+            </FormControl>
+
+            <Button onPress={handleSubmit} isDisabled={isLoading} size="xl">
+              <ButtonText>{isLoading ? 'Signing up...' : 'Sign up'}</ButtonText>
+            </Button>
+          </VStack>
+        </Card>
+        <Center>
+          <Text size="xl">
+            Already have an account?
+            <Link onPress={() => navigation.navigate('Login' as never)}>
+              <LinkText size="xl" color="$primary500" ml="$2">
+                Sign in
+              </LinkText>
+            </Link>
+          </Text>
+        </Center>
+      </VStack>
+    </Box>
+  );
+};
+
+type ConfirmationProps = {
+  isOpen: boolean;
+  onConfirm: () => void;
+};
+
+const ConfirmationModal = ({ isOpen, onConfirm }: ConfirmationProps) => {
+  return (
+    <Modal isOpen={isOpen}>
+      <ModalBackdrop />
+      <ModalContent>
+        <ModalHeader>
+          <Heading size="lg">Complete registration</Heading>
+        </ModalHeader>
+        <ModalBody>
+          <Text>We have sent you a confirmation code to your email address.</Text>
+        </ModalBody>
+        <ModalFooter justifyContent="center">
+          <Button onPress={onConfirm} action="primary">
+            <ButtonText>Continue</ButtonText>
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 

@@ -1,6 +1,8 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import mockConsole from 'jest-mock-console';
 
+import { Provider } from '@components/Provider';
+
 import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 
 import CreateAccount from '@screens/welcome/CreateAccount';
@@ -40,7 +42,11 @@ describe('CreateAccount component', () => {
 
     signUpMock.mockResolvedValue(mockResponse);
 
-    const { getByPlaceholderText, getByText } = render(<CreateAccount navigation={{}} />);
+    const { getByPlaceholderText, getByText } = render(
+      <Provider>
+        <CreateAccount navigation={{}} />
+      </Provider>,
+    );
 
     const emailInput = getByPlaceholderText('Email');
     const passwordInput = getByPlaceholderText('Password');
@@ -54,7 +60,7 @@ describe('CreateAccount component', () => {
     fireEvent.changeText(lastNameInput, 'Doe');
     fireEvent.changeText(addressInput, '123 Main St');
 
-    fireEvent.press(getByText('Sign Up'));
+    fireEvent.press(getByText('Sign up'));
 
     const signUpBodyMock = {
       email: 'test@example.com',
@@ -88,7 +94,7 @@ describe('CreateAccount component', () => {
     fireEvent.changeText(lastNameInput, '');
     fireEvent.changeText(addressInput, '');
 
-    fireEvent.press(getByText('Sign Up'));
+    fireEvent.press(getByText('Sign up'));
 
     await waitFor(() => {
       const errorElement = findByText(SIGNUP_ERROR_MESSAGE);

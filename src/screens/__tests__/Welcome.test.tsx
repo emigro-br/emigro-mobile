@@ -56,7 +56,7 @@ describe('Welcome screen', () => {
     const signUpButton = getByText('Create an Account');
     fireEvent.press(signUpButton);
 
-    const createAccountText = getByText('Sign Up');
+    const createAccountText = getByText('Sign up');
     expect(createAccountText).toBeOnTheScreen();
   });
 });
