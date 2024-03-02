@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
-import { styled } from 'nativewind';
+import { Box, Center } from '@gluestack-ui/themed';
 
 import { useVendor } from '@/contexts/VendorContext';
-
-const StyledView = styled(View);
 
 const MapScreen: React.FunctionComponent = () => {
   const { scannedVendor } = useVendor();
@@ -50,8 +47,8 @@ const MapScreen: React.FunctionComponent = () => {
   };
 
   return (
-    <StyledView className="flex-1">
-      <StyledView className="flex-1 align-middle justify-center">
+    <Box flex={1} justifyContent="center">
+      <Center>
         <MapView
           region={{
             latitude: region.latitude,
@@ -63,8 +60,8 @@ const MapScreen: React.FunctionComponent = () => {
         >
           <Marker coordinate={{ latitude: region.latitude, longitude: region.longitude }} />
         </MapView>
-      </StyledView>
-    </StyledView>
+      </Center>
+    </Box>
   );
 };
 
