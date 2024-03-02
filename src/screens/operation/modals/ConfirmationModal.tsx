@@ -37,7 +37,7 @@ export const ConfirmationModal: React.FunctionComponent<ConfirmationModalProps> 
   };
 
   if (isProcessing) {
-    return <LoadingModal isVisible={isProcessing} label="Processing..." />;
+    return <LoadingModal isOpen={isProcessing} text="Processing..." />;
   }
 
   return (

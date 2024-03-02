@@ -66,7 +66,7 @@ describe('Withdraw', () => {
     fireEvent.press(button);
 
     await waitFor(() => {
-      const loadingModal = getByTestId('loading-modal');
+      const loadingModal = getByTestId('loading-url-modal');
       expect(loadingModal).toBeOnTheScreen();
       expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.ars');
     });
@@ -84,7 +84,7 @@ describe('Withdraw', () => {
     fireEvent.press(button);
 
     await waitFor(() => {
-      const loadingModal = getByTestId('loading-modal');
+      const loadingModal = getByTestId('loading-url-modal');
       expect(loadingModal).toBeOnTheScreen();
       expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.brl');
     });
@@ -102,7 +102,7 @@ describe('Withdraw', () => {
     fireEvent.press(button);
 
     await waitFor(() => {
-      const loadingModal = getByTestId('loading-modal');
+      const loadingModal = getByTestId('loading-url-modal');
       expect(loadingModal).toBeOnTheScreen();
       expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.eurc');
     });

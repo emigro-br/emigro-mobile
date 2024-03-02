@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Image, Linking, Text, TouchableOpacity, View } from 'react-native';
+import { Linking } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 
+import { Box, Card, FormControlErrorText, HStack, Image, Pressable, Text, VStack } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
-import { styled } from 'nativewind';
 
 import { IAnchorParams } from '@/types/IAnchorParams';
 import { CryptoAsset } from '@/types/assets';
@@ -19,9 +19,6 @@ import { iconFor } from '@utils/assets';
 
 import { LoadingModal } from './modals/LoadingModal';
 import { OpenURLModal } from './modals/OpenURLModal';
-
-const StyledView = styled(View);
-const StyledText = styled(Text);
 
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
@@ -88,23 +85,28 @@ const Deposit: React.FC = observer(() => {
   };
 
   return (
-    <StyledView className="flex bg-white h-full">
-      <LoadingModal isVisible={!sessionStore.publicKey || isLoading} />
-      <OpenURLModal isVisible={!!url} onConfirm={handleModalPressed} />
-
-      <StyledText className="text-lg p-4">Choose which one you would like to deposit:</StyledText>
-      <StyledView className="flex flex-row flex-wrap px-4 gap-4">
-        {availableAssets.map((asset) => (
-          <TouchableOpacity key={`asset_${asset}`} onPress={() => handleAssetChoosen(asset)}>
-            <StyledView className="flex-row w-32 h-20 items-center justify-center bg-white rounded-lg shadow">
-              <Image source={iconFor(asset)} style={{ width: 30, height: 30 }} />
-              <StyledText className="ml-1 flex-row font-bold text-xl">{asset}</StyledText>
-            </StyledView>
-          </TouchableOpacity>
-        ))}
-      </StyledView>
-      {errorMessage && <StyledText className="text-red px-4 pt-6">{errorMessage}</StyledText>}
-    </StyledView>
+    <Box flex={1}>
+      <LoadingModal isOpen={!sessionStore.publicKey || isLoading} text="Connecting to anchor..." />
+      <OpenURLModal isOpen={!!url} onConfirm={handleModalPressed} />
+      <VStack p="$4" space="lg">
+        <Text size="xl">Choose which one you would like to deposit:</Text>
+        <HStack space="lg">
+          {availableAssets.map((asset) => (
+            <Card key={`asset-${asset}`}>
+              <Pressable onPress={() => handleAssetChoosen(asset)}>
+                <HStack alignItems="center" flexWrap="wrap">
+                  <Image source={iconFor(asset)} size="xs" alt={asset} />
+                  <Text size="xl" bold ml="$2">
+                    {asset}
+                  </Text>
+                </HStack>
+              </Pressable>
+            </Card>
+          ))}
+        </HStack>
+        {errorMessage && <FormControlErrorText>{errorMessage}</FormControlErrorText>}
+      </VStack>
+    </Box>
   );
 });
 

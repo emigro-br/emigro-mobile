@@ -40,9 +40,9 @@ describe('ConfirmationModal', () => {
         onClose={jest.fn()}
       />,
     );
-    expect(getByText('Confirm the transaction')).toBeTruthy();
-    expect(getByText('Are you sure you want to withdraw?')).toBeTruthy();
-    expect(getByText('Requested: 100 USD')).toBeTruthy();
+    expect(getByText('Confirm the transaction')).toBeOnTheScreen();
+    expect(getByText('Are you sure you want to withdraw?')).toBeOnTheScreen();
+    expect(getByText('Requested: 100 USD')).toBeOnTheScreen();
     expect(getByText('Fee: 1 USD')).toBeTruthy();
     expect(getByText('You will receive: 99 USD')).toBeTruthy();
     expect(getByText('Confirm')).toBeTruthy();
@@ -82,8 +82,8 @@ describe('ConfirmationModal', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it('shows a loading modal when processing', () => {
-    const { getByText } = render(
+  it('shows a loading modal when processing', async () => {
+    const { getByText, getByTestId } = render(
       <ConfirmationModal
         isVisible
         assetCode="USD"
@@ -94,8 +94,8 @@ describe('ConfirmationModal', () => {
     );
     fireEvent.press(getByText('Confirm'));
 
-    waitFor(() => {
-      expect(getByText('Processing...')).toBeTruthy();
+    await waitFor(() => {
+      expect(getByTestId('loading-modal')).toBeOnTheScreen();
     });
   });
 });

@@ -180,9 +180,14 @@ const Withdraw: React.FC = observer(() => {
 
   return (
     <StyledView className="flex bg-white h-full">
-      <LoadingModal isVisible={!sessionStore.publicKey || isLoading} />
-      <LoadingModal isVisible={step === TransactionStep.STARTED} label="Loading..." />
-      <LoadingModal isVisible={step === TransactionStep.WAITING} label="Waiting..." onClose={handleCloseWait} />
+      <LoadingModal isOpen={!sessionStore.publicKey || isLoading} />
+      <LoadingModal isOpen={step === TransactionStep.STARTED} text="Loading..." testID="loading-url-modal" />
+      <LoadingModal
+        isOpen={step === TransactionStep.WAITING}
+        text="Waiting..."
+        onClose={handleCloseWait}
+        testID="waiting-transaction-modal"
+      />
 
       {transaction && (
         <ConfirmationModal

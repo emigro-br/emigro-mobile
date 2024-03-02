@@ -1,30 +1,41 @@
 import React from 'react';
-import { Text, View } from 'react-native';
 
-import { styled } from 'nativewind';
-
-import Button from '@components/Button';
-import CustomModal from '@components/CustomModal';
-
-const StyledView = styled(View);
-const StyledText = styled(Text);
+import {
+  Button,
+  ButtonText,
+  Heading,
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Text,
+  View,
+} from '@gluestack-ui/themed';
 
 type Props = {
-  isVisible: boolean;
+  isOpen: boolean;
   onConfirm: () => void;
 };
 
-export const OpenURLModal: React.FunctionComponent<Props> = ({ isVisible, onConfirm }) => (
-  <CustomModal isVisible={isVisible}>
-    <StyledView className="container h-max flex justify-between" testID="open-url-modal">
-      <StyledText className="text-lg mb-4">
-        You will be redirected to the Anchor website to complete this transaction.
-      </StyledText>
-      <StyledView className="items-center">
-        <Button onPress={onConfirm} backgroundColor="red" textColor="white">
-          Continue
-        </Button>
-      </StyledView>
-    </StyledView>
-  </CustomModal>
+export const OpenURLModal: React.FunctionComponent<Props> = ({ isOpen, onConfirm }) => (
+  <View testID="open-url-modal">
+    <Modal isOpen={isOpen}>
+      <ModalBackdrop />
+      <ModalContent>
+        <ModalHeader>
+          <Heading size="lg">Redirect Notice</Heading>
+        </ModalHeader>
+        <ModalBody>
+          <Text>You will be redirected to the Anchor website to complete this transaction.</Text>
+        </ModalBody>
+        <ModalFooter>
+          <Button onPress={onConfirm} action="primary">
+            <ButtonText>Continue to Anchor</ButtonText>
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  </View>
 );
