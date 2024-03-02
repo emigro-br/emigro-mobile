@@ -1,16 +1,19 @@
 import { Image, View } from 'react-native';
 
-import { styled } from 'nativewind';
-
 import splash from '@assets/images/splash.png';
 
-const StyledView = styled(View);
-const StyledImage = styled(Image);
-
+// Keep this component simple and clean, without gluestack theme
 export const SplashScreen = () => {
   return (
-    <StyledView>
-      <StyledImage className="h-full w-full object-contain" source={splash} />
-    </StyledView>
+    <View>
+      <Image
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'contain',
+        }}
+        source={splash}
+      />
+    </View>
   );
 };
