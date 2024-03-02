@@ -201,7 +201,8 @@ const Withdraw: React.FC = observer(() => {
 
       {transaction && (
         <ConfirmationModal
-          isVisible={step === TransactionStep.CONFIRM_TRANSFER}
+          title="Confirm the transaction"
+          isOpen={step === TransactionStep.CONFIRM_TRANSFER}
           transaction={transaction!}
           assetCode={selectedAsset!}
           onPress={() => handleConfirmTransaction(transactionId!, selectedAsset!)}

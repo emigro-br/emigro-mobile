@@ -1,32 +1,44 @@
 import React, { useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
 
-import { styled } from 'nativewind';
+import {
+  Button,
+  ButtonGroup,
+  ButtonText,
+  HStack,
+  Heading,
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Text,
+  VStack,
+  View,
+} from '@gluestack-ui/themed';
 
 import { Sep24Transaction } from '@/types/Sep24Transaction';
 
-import Button from '@components/Button';
-import CustomModal from '@components/CustomModal';
-
 import { LoadingModal } from './LoadingModal';
 
-const StyledView = styled(View);
-const StyledText = styled(Text);
-
-type ConfirmationModalProps = {
-  isVisible: boolean;
+type Props = {
+  title: string;
+  isOpen: boolean;
   assetCode: string;
   transaction: Sep24Transaction;
   onPress: () => void;
   onClose: () => void;
+  testID?: string;
 };
 
-export const ConfirmationModal: React.FunctionComponent<ConfirmationModalProps> = ({
-  isVisible,
+export const ConfirmationModal: React.FC<Props> = ({
+  title,
+  isOpen,
   assetCode,
   transaction,
   onPress,
   onClose,
+  testID = 'confirmation-modal',
 }) => {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
@@ -41,32 +53,43 @@ export const ConfirmationModal: React.FunctionComponent<ConfirmationModalProps> 
   }
 
   return (
-    <CustomModal isVisible={isVisible}>
-      <StyledView className="container h-max flex justify-between">
-        <StyledView className="flex flex-col justify-center">
-          <StyledText className="text-2xl font-bold text-center mb-4">Confirm the transaction</StyledText>
-          <StyledText className="mb-4">Are you sure you want to withdraw?</StyledText>
-          <StyledText className="mb-2">
-            Requested: {transaction.amount_in} {assetCode}
-          </StyledText>
-          <StyledText className="mb-2">
-            Fee: {transaction.amount_fee} {assetCode}
-          </StyledText>
-          <StyledText className="mb-4 font-bold">
-            You will receive: {transaction.amount_out} {assetCode}
-          </StyledText>
-          <StyledView className="w-full">
-            <Button onPress={handleOnPress} backgroundColor="red" textColor="white">
-              <Text>Confirm</Text>
-            </Button>
-          </StyledView>
-          <StyledView className="items-center">
-            <TouchableOpacity onPress={onClose}>
-              <StyledText className="text-center text-red mt-2 py-2 px-3">Cancel</StyledText>
-            </TouchableOpacity>
-          </StyledView>
-        </StyledView>
-      </StyledView>
-    </CustomModal>
+    <View testID={testID}>
+      <Modal isOpen={isOpen}>
+        <ModalBackdrop />
+        <ModalContent>
+          <ModalHeader>
+            <HStack space="sm" alignItems="center">
+              <Heading size="lg">{title}</Heading>
+            </HStack>
+          </ModalHeader>
+          <ModalBody>
+            <Text size="lg" mb="$4">
+              Are you sure you want to withdraw?
+            </Text>
+            <VStack space="xs">
+              <Text>
+                Requested: {transaction.amount_in} {assetCode}
+              </Text>
+              <Text>
+                Fee: {transaction.amount_fee} {assetCode}
+              </Text>
+              <Text bold>
+                You will receive: {transaction.amount_out} {assetCode}
+              </Text>
+            </VStack>
+          </ModalBody>
+          <ModalFooter>
+            <ButtonGroup>
+              <Button variant="outline" action="secondary" onPress={onClose}>
+                <ButtonText>Close</ButtonText>
+              </Button>
+              <Button action="primary" onPress={handleOnPress}>
+                <ButtonText>Confirm</ButtonText>
+              </Button>
+            </ButtonGroup>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </View>
   );
 };
