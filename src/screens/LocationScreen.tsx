@@ -47,7 +47,7 @@ const MapScreen: React.FunctionComponent = () => {
   };
 
   return (
-    <Box flex={1} justifyContent="center">
+    <Box flex={1} justifyContent="center" bg="$white">
       <Center>
         <MapView
           region={{

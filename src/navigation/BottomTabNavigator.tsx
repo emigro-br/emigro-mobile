@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Header from '@components/Header';
 
-import Location from '@screens/Location';
+import Location from '@screens/LocationScreen';
 import MakePayment from '@screens/MakePayment';
 import Profile from '@screens/profile/Profile';
 import Wallet from '@screens/wallet/Wallet';
