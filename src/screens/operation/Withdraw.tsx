@@ -203,11 +203,24 @@ const Withdraw: React.FC = observer(() => {
         <ConfirmationModal
           title="Confirm the transaction"
           isOpen={step === TransactionStep.CONFIRM_TRANSFER}
-          transaction={transaction!}
-          assetCode={selectedAsset!}
           onPress={() => handleConfirmTransaction(transactionId!, selectedAsset!)}
           onClose={() => setStep(TransactionStep.NONE)}
-        />
+        >
+          <Text size="lg" mb="$4">
+            Are you sure you want to withdraw?
+          </Text>
+          <VStack space="xs">
+            <Text>
+              Requested: {transaction.amount_in} {selectedAsset}
+            </Text>
+            <Text>
+              Fee: {transaction.amount_fee} {selectedAsset}
+            </Text>
+            <Text bold>
+              You will receive: {transaction.amount_out} {selectedAsset}
+            </Text>
+          </VStack>
+        </ConfirmationModal>
       )}
 
       <SuccessModal

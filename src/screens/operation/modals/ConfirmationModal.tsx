@@ -12,20 +12,15 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Text,
-  VStack,
   View,
 } from '@gluestack-ui/themed';
-
-import { Sep24Transaction } from '@/types/Sep24Transaction';
 
 import { LoadingModal } from './LoadingModal';
 
 type Props = {
   title: string;
   isOpen: boolean;
-  assetCode: string;
-  transaction: Sep24Transaction;
+  children: React.ReactNode;
   onPress: () => void;
   onClose: () => void;
   testID?: string;
@@ -34,8 +29,7 @@ type Props = {
 export const ConfirmationModal: React.FC<Props> = ({
   title,
   isOpen,
-  assetCode,
-  transaction,
+  children,
   onPress,
   onClose,
   testID = 'confirmation-modal',
@@ -62,22 +56,7 @@ export const ConfirmationModal: React.FC<Props> = ({
               <Heading size="lg">{title}</Heading>
             </HStack>
           </ModalHeader>
-          <ModalBody>
-            <Text size="lg" mb="$4">
-              Are you sure you want to withdraw?
-            </Text>
-            <VStack space="xs">
-              <Text>
-                Requested: {transaction.amount_in} {assetCode}
-              </Text>
-              <Text>
-                Fee: {transaction.amount_fee} {assetCode}
-              </Text>
-              <Text bold>
-                You will receive: {transaction.amount_out} {assetCode}
-              </Text>
-            </VStack>
-          </ModalBody>
+          <ModalBody>{children}</ModalBody>
           <ModalFooter>
             <ButtonGroup>
               <Button variant="outline" action="secondary" onPress={onClose}>

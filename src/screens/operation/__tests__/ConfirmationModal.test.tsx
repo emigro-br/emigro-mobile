@@ -1,53 +1,21 @@
 import React from 'react';
+import { Text } from 'react-native';
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { Sep24Transaction } from '@/types/Sep24Transaction';
-import { TransactionStatus } from '@/types/TransactionStatus';
-
 import { ConfirmationModal } from '../modals/ConfirmationModal';
-
-const mockTransaction: Sep24Transaction = {
-  amount_in: '100',
-  amount_fee: '1',
-  amount_out: '99',
-  completed_at: '2022-01-01T00:00:00Z',
-  external_transaction_id: '123',
-  from: 'test',
-  id: '1',
-  kind: 'withdrawal',
-  status: TransactionStatus.COMPLETED,
-  to: 'test',
-  message: '',
-  more_info_url: '',
-  refunded: false,
-  started_at: '',
-  status_eta: null,
-  stellar_transaction_id: null,
-  withdraw_anchor_account: '',
-  withdraw_memo: '',
-  withdraw_memo_type: '',
-};
 
 // FIXME: This test is not working because the modal is not being rendered
 describe.skip('ConfirmationModal', () => {
   it('renders correctly', () => {
     const { getByText, getByTestId } = render(
-      <ConfirmationModal
-        title="Confirm the transaction"
-        isOpen
-        assetCode="USD"
-        transaction={mockTransaction}
-        onPress={jest.fn()}
-        onClose={jest.fn()}
-      />,
+      <ConfirmationModal title="Confirm the transaction" isOpen onPress={jest.fn()} onClose={jest.fn()}>
+        <Text>Are you sure you want to withdraw?</Text>
+      </ConfirmationModal>,
     );
     expect(getByTestId('confirmation-modal')).toBeOnTheScreen();
     expect(getByText('Confirm the transaction')).toBeOnTheScreen();
     expect(getByText('Are you sure you want to withdraw?')).toBeOnTheScreen();
-    expect(getByText('Requested: 100 USD')).toBeOnTheScreen();
-    expect(getByText('Fee: 1 USD')).toBeTruthy();
-    expect(getByText('You will receive: 99 USD')).toBeTruthy();
     expect(getByText('Confirm')).toBeTruthy();
     expect(getByText('Cancel')).toBeTruthy();
   });
@@ -55,14 +23,9 @@ describe.skip('ConfirmationModal', () => {
   it('calls onPress when the Confirm button is pressed', async () => {
     const onPress = jest.fn();
     const { getByText } = render(
-      <ConfirmationModal
-        title="Confirm the transaction"
-        isOpen
-        assetCode="USD"
-        transaction={mockTransaction}
-        onPress={onPress}
-        onClose={jest.fn()}
-      />,
+      <ConfirmationModal title="Confirm the transaction" isOpen onPress={onPress} onClose={jest.fn()}>
+        <Text>Are you sure you want to withdraw?</Text>
+      </ConfirmationModal>,
     );
     fireEvent.press(getByText('Confirm'));
 
@@ -74,14 +37,9 @@ describe.skip('ConfirmationModal', () => {
   it('calls onClose when the Cancel button is pressed', () => {
     const onClose = jest.fn();
     const { getByText } = render(
-      <ConfirmationModal
-        title="Confirm the transaction"
-        isOpen
-        assetCode="USD"
-        transaction={mockTransaction}
-        onPress={jest.fn()}
-        onClose={onClose}
-      />,
+      <ConfirmationModal title="Confirm the transaction" isOpen onPress={jest.fn()} onClose={onClose}>
+        <Text>Are you sure you want to withdraw?</Text>
+      </ConfirmationModal>,
     );
     fireEvent.press(getByText('Cancel'));
     expect(onClose).toHaveBeenCalled();
@@ -89,14 +47,9 @@ describe.skip('ConfirmationModal', () => {
 
   it('shows a loading modal when processing', async () => {
     const { getByText, getByTestId } = render(
-      <ConfirmationModal
-        title="Confirm the transaction"
-        isOpen
-        assetCode="USD"
-        transaction={mockTransaction}
-        onPress={jest.fn()}
-        onClose={jest.fn()}
-      />,
+      <ConfirmationModal title="Confirm the transaction" isOpen onPress={jest.fn()} onClose={jest.fn()}>
+        <Text>Are you sure you want to withdraw?</Text>
+      </ConfirmationModal>,
     );
     fireEvent.press(getByText('Confirm'));
 
