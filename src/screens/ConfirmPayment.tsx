@@ -9,16 +9,16 @@ import { useVendor } from '@/contexts/VendorContext';
 import { IVendor } from '@/types/IVendor';
 import { CryptoAsset } from '@/types/assets';
 
+import { ConfirmationModal } from '@components/modals/ConfirmationModal';
+import { ErrorModal } from '@components/modals/ErrorModal';
+import { LoadingModal } from '@components/modals/LoadingModal';
+import { SuccessModal } from '@components/modals/SuccessModal';
+
 import useCurrencyChange from '@hooks/useCurrencyChange';
 import useGetUserBalance from '@hooks/useGetUserBalance';
 import usePayment from '@hooks/usePayment';
 
 import { AssetToCurrency } from '@utils/assets';
-
-import { ConfirmationModal } from './operation/modals/ConfirmationModal';
-import { ErrorModal } from './operation/modals/ErrorModal';
-import { LoadingModal } from './operation/modals/LoadingModal';
-import { SuccessModal } from './operation/modals/SuccessModal';
 
 export type RootStackParamList = {
   ConfirmPayment: { scannedVendor: IVendor };

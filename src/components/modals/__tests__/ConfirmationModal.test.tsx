@@ -3,7 +3,7 @@ import { Text } from 'react-native';
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { ConfirmationModal } from '../modals/ConfirmationModal';
+import { ConfirmationModal } from '../ConfirmationModal';
 
 // FIXME: This test is not working because the modal is not being rendered
 describe.skip('ConfirmationModal', () => {

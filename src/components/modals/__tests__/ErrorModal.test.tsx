@@ -2,7 +2,7 @@ import React from 'react';
 
 import { fireEvent, render } from '@testing-library/react-native';
 
-import { ErrorModal } from '../modals/ErrorModal';
+import { ErrorModal } from '../ErrorModal';
 
 describe.skip('ErrorModal', () => {
   it('renders correctly', () => {

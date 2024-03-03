@@ -19,6 +19,11 @@ import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { TransactionStatus } from '@/types/TransactionStatus';
 import { CryptoAsset } from '@/types/assets';
 
+import { ConfirmationModal } from '@components/modals/ConfirmationModal';
+import { ErrorModal } from '@components/modals/ErrorModal';
+import { LoadingModal } from '@components/modals/LoadingModal';
+import { SuccessModal } from '@components/modals/SuccessModal';
+
 import { OperationType } from '@constants/constants';
 
 import { CallbackType, ConfirmWithdrawDto, confirmWithdraw, getInteractiveUrl, getTransaction } from '@services/anchor';
@@ -26,11 +31,6 @@ import { CallbackType, ConfirmWithdrawDto, confirmWithdraw, getInteractiveUrl, g
 import { sessionStore } from '@stores/SessionStore';
 
 import { iconFor } from '@utils/assets';
-
-import { ConfirmationModal } from './modals/ConfirmationModal';
-import { ErrorModal } from './modals/ErrorModal';
-import { LoadingModal } from './modals/LoadingModal';
-import { SuccessModal } from './modals/SuccessModal';
 
 enum TransactionStep {
   NONE = 'none',

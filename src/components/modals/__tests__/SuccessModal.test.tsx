@@ -3,7 +3,7 @@ import { Linking } from 'react-native';
 
 import { fireEvent, render } from '@testing-library/react-native';
 
-import { SuccessModal } from '../modals/SuccessModal';
+import { SuccessModal } from '../SuccessModal';
 
 describe.skip('SuccessModal', () => {
   it('renders correctly', () => {

@@ -4,8 +4,8 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonSpinner, ButtonText, Card, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
 
-import { ErrorDialog } from '@components/ErrorDialog';
-import { SuccessDialog } from '@components/SuccessDialog';
+import { ErrorDialog } from '@components/dialogs/ErrorDialog';
+import { SuccessDialog } from '@components/dialogs/SuccessDialog';
 
 import { RootStackParamList } from '@navigation/index';
 

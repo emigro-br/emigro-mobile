@@ -4,9 +4,9 @@ import { NavigationProp } from '@react-navigation/native';
 
 import { Box, Button, ButtonText, Card, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
 
-import { RootStackParamList } from '@navigation/index';
+import { ErrorModal } from '@components/modals/ErrorModal';
 
-import { ErrorModal } from '@screens/operation/modals/ErrorModal';
+import { RootStackParamList } from '@navigation/index';
 
 import { paymentStore as bloc } from '@stores/PaymentStore';
 

@@ -9,6 +9,9 @@ import { observer } from 'mobx-react-lite';
 import { IAnchorParams } from '@/types/IAnchorParams';
 import { CryptoAsset } from '@/types/assets';
 
+import { LoadingModal } from '@components/modals/LoadingModal';
+import { OpenURLModal } from '@components/modals/OpenURLModal';
+
 import { OperationType } from '@constants/constants';
 
 import { CallbackType, getInteractiveUrl } from '@services/anchor';
@@ -16,9 +19,6 @@ import { CallbackType, getInteractiveUrl } from '@services/anchor';
 import { sessionStore } from '@stores/SessionStore';
 
 import { iconFor } from '@utils/assets';
-
-import { LoadingModal } from './modals/LoadingModal';
-import { OpenURLModal } from './modals/OpenURLModal';
 
 const defaultErrorMessage = 'Something went wrong. Please try again';
 

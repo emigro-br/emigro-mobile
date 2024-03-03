@@ -2,7 +2,7 @@ import React from 'react';
 
 import { render } from '@testing-library/react-native';
 
-import { LoadingModal } from '../modals/LoadingModal';
+import { LoadingModal } from '../LoadingModal';
 
 // FIXME: gluestack is not rendering Modal on test
 describe.skip('LoadingModal', () => {
