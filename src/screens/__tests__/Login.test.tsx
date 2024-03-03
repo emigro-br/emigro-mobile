@@ -4,7 +4,7 @@ import { IAuthSession } from '@/types/IAuthSession';
 
 import { Provider } from '@components/Provider';
 
-import Login from '@screens/welcome/Login';
+import Login from '@screens/Login';
 
 import * as auth from '@services/auth';
 

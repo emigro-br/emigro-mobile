@@ -5,7 +5,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import * as anchor from '@services/anchor';
 
-import Withdraw from '../operation/Withdraw';
+import Withdraw from '../Withdraw';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 

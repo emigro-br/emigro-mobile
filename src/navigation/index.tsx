@@ -1,18 +1,18 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import ConfirmPayment from '@screens/ConfirmPayment';
-import Deposit from '@screens/operation/Deposit';
-import Withdraw from '@screens/operation/Withdraw';
+import Deposit from '@screens/Deposit';
+import Login from '@screens/Login';
+import { Welcome } from '@screens/Welcome';
+import Withdraw from '@screens/Withdraw';
+import ConfirmPayment from '@screens/payments/ConfirmPayment';
 import DeleteAccount from '@screens/profile/DeleteAccount';
+import ConfirmAccount from '@screens/signup/ConfirmAccount';
+import CreateAccount from '@screens/signup/CreateAccount';
 import { DetailsSwap } from '@screens/swap/DetailsSwap';
 import { Swap } from '@screens/swap/Swap';
 import ReviewTransfer from '@screens/transfers/ReviewTransfer';
 import SendAsset from '@screens/transfers/SendAsset';
 import Transfers from '@screens/transfers/Transfers';
-import ConfirmAccount from '@screens/welcome/ConfirmAccount';
-import CreateAccount from '@screens/welcome/CreateAccount';
-import Login from '@screens/welcome/Login';
-import { Welcome } from '@screens/welcome/Welcome';
 
 import BottomTabNavigator from './BottomTabNavigator';
 
@@ -21,7 +21,7 @@ export type RootStackParamList = {
   SignUp: undefined;
   Login: undefined;
   Root: undefined;
-  MakePayment: undefined;
+  Payments: undefined;
   ConfirmPayment: undefined;
   Wallet: undefined;
   ConfirmAccount: {
@@ -61,7 +61,7 @@ function RootNavigator({ isSignedIn }: Props) {
 
           {/* Transaction screens */}
           <Stack.Group>
-            <Stack.Screen name="MakePayment" component={BottomTabNavigator} options={{ headerShown: false }} />
+            <Stack.Screen name="Payments" component={BottomTabNavigator} options={{ headerShown: false }} />
             <Stack.Screen
               name="ConfirmPayment"
               component={ConfirmPayment}

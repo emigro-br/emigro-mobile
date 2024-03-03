@@ -11,9 +11,9 @@ import QRCodeScanner from '@components/QRCodeScanner';
 
 import { RootStackParamList } from '@navigation/index';
 
-type MakePaymentProps = BottomTabScreenProps<RootStackParamList, 'MakePayment'>;
+type Props = BottomTabScreenProps<RootStackParamList, 'Payments'>;
 
-const MakePayment: React.FC<MakePaymentProps> = ({ navigation }) => {
+const Payments: React.FC<Props> = ({ navigation }) => {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   const handleScanPress = () => {
@@ -45,4 +45,4 @@ const MakePayment: React.FC<MakePaymentProps> = ({ navigation }) => {
   );
 };
 
-export default MakePayment;
+export default Payments;

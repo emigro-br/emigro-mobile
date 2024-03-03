@@ -5,7 +5,7 @@ import { Provider } from '@components/Provider';
 
 import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 
-import CreateAccount from '@screens/welcome/CreateAccount';
+import CreateAccount from '@screens/signup/CreateAccount';
 
 import * as auth from '@services/auth';
 

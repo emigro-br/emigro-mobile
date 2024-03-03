@@ -5,14 +5,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Header from '@components/Header';
 
-import Location from '@screens/LocationScreen';
-import MakePayment from '@screens/MakePayment';
+import Location from '@screens/Location';
+import Wallet from '@screens/Wallet';
+import Payments from '@screens/payments/Payments';
 import Profile from '@screens/profile/Profile';
-import Wallet from '@screens/wallet/Wallet';
 
 export type TabNavParamList = {
   Wallet: undefined;
-  MakePayment: undefined;
+  Payments: undefined;
   Location: undefined;
   Profile: undefined;
 };
@@ -40,8 +40,8 @@ const BottomTabNavigator = () => {
       />
 
       <Tab.Screen
-        name="MakePayment"
-        component={MakePayment}
+        name="Payments"
+        component={Payments}
         options={() => ({
           title: 'Payment',
           tabBarIcon: ({ color, size }) => <IconsOutline.QrCodeIcon size={size} color={color} />,

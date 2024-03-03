@@ -7,9 +7,9 @@ import { fireEvent, render } from '@testing-library/react-native';
 
 import { Provider } from '@components/Provider';
 
-import CreateAccount from '@screens/welcome/CreateAccount';
-import Login from '@screens/welcome/Login';
-import { Welcome } from '@screens/welcome/Welcome';
+import Login from '@screens/Login';
+import { Welcome } from '@screens/Welcome';
+import CreateAccount from '@screens/signup/CreateAccount';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 

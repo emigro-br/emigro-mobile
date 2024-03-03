@@ -5,7 +5,7 @@ import { CONFIRM_ACCOUNT_ERROR } from '@constants/errorMessages';
 
 import * as auth from '@services/auth';
 
-import ConfirmAccount from '../welcome/ConfirmAccount';
+import ConfirmAccount from '../signup/ConfirmAccount';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
