@@ -1,13 +1,18 @@
 import React from 'react';
 
-import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonGroup, ButtonText, Center, Image, Text } from '@gluestack-ui/themed';
 
 import emigroLogo from '@assets/images/emigro-logo.png';
 
-export const Welcome: React.FunctionComponent = () => {
-  const navigation = useNavigation();
+import { AnonStackParamList } from '@navigation/AnonStack';
+
+type Props = {
+  navigation: NativeStackNavigationProp<AnonStackParamList, 'Welcome'>;
+};
+
+export const Welcome = ({ navigation }: Props) => {
   return (
     <Box flex={1} bg="$white">
       <Box bg="$primary500" pt="$40" pb="$20">
@@ -25,10 +30,10 @@ export const Welcome: React.FunctionComponent = () => {
       </Box>
 
       <ButtonGroup flexDirection="column" mx="$4" mt="$10">
-        <Button onPress={() => navigation.navigate('Login' as never)} variant="solid" size="lg">
+        <Button onPress={() => navigation.push('Login')} variant="solid" size="lg">
           <ButtonText>Login</ButtonText>
         </Button>
-        <Button onPress={() => navigation.navigate('SignUp' as never)} variant="outline" size="lg">
+        <Button onPress={() => navigation.push('SignUp')} variant="outline" size="lg">
           <ButtonText>Create an Account</ButtonText>
         </Button>
       </ButtonGroup>

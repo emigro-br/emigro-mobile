@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
   Avatar,
@@ -24,6 +25,8 @@ import {
 import * as Application from 'expo-application';
 import * as Clipboard from 'expo-clipboard';
 
+import { ProfileStackParamList } from '@navigation/ProfileStack';
+
 import { getUserProfile } from '@services/emigro';
 import { CustomError } from '@services/errors';
 
@@ -31,8 +34,11 @@ import { sessionStore } from '@stores/SessionStore';
 
 import { maskWallet } from '@utils/masks';
 
-const Profile = () => {
-  const navigation = useNavigation();
+type Props = {
+  navigation: NativeStackNavigationProp<ProfileStackParamList, 'Profile'>;
+};
+
+const Profile = ({ navigation }: Props) => {
   const toast = useToast();
   const [userInformation, setUserInformation] = useState<any>(null);
 
@@ -132,12 +138,7 @@ const Profile = () => {
 
           <Divider />
 
-          <Button
-            onPress={() => navigation.navigate('DeleteAccount' as never)}
-            variant="link"
-            size="sm"
-            alignSelf="flex-start"
-          >
+          <Button onPress={() => navigation.push('DeleteAccount')} variant="link" size="sm" alignSelf="flex-start">
             <ButtonText>Delete account</ButtonText>
           </Button>
         </VStack>

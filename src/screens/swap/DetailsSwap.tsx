@@ -6,7 +6,7 @@ import { Box, Button, ButtonText, Card, HStack, Heading, Text, VStack } from '@g
 
 import { ErrorModal } from '@components/modals/ErrorModal';
 
-import { RootStackParamList } from '@navigation/index';
+import { RootStackParamList } from '@navigation/RootStack';
 
 import { paymentStore as bloc } from '@stores/PaymentStore';
 

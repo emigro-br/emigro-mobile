@@ -12,12 +12,6 @@ import { sessionStore } from '@stores/SessionStore';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
-jest.mock('@react-navigation/native', () => ({
-  useNavigation: () => ({
-    navigate: jest.fn(),
-  }),
-}));
-
 jest.mock('@stores/SessionStore', () => ({
   sessionStore: {
     session: {},
@@ -31,7 +25,16 @@ jest.mock('@services/emigro', () => ({
   getUserPublicKey: jest.fn(),
 }));
 
+const mockNavigattion: any = {
+  navigate: jest.fn(),
+  push: jest.fn(),
+};
+
 describe('Login screen', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   test('Should call signIn with correct credentials', async () => {
     const signInMock = jest.spyOn(auth, 'signIn');
     const authSession: IAuthSession = {
@@ -46,7 +49,7 @@ describe('Login screen', () => {
 
     const { getByTestId } = render(
       <Provider>
-        <Login />
+        <Login navigation={mockNavigattion} />
       </Provider>,
     );
 

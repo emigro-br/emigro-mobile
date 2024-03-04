@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowPathIcon } from 'react-native-heroicons/solid';
 
-import { NavigationProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonText, Center, Heading, Pressable, Text, VStack } from '@gluestack-ui/themed';
 
 import { IQuoteRequest } from '@/types/IQuoteRequest';
 import { CryptoAsset } from '@/types/assets';
 
-import { RootStackParamList } from '@navigation/index';
+import { WalletStackParamList } from '@navigation/WalletStack';
 
 import { handleQuote } from '@services/emigro';
 
@@ -19,7 +19,7 @@ import { AssetSwap } from './AssetSwap';
 import { SwapType } from './types';
 
 type SwapProps = {
-  navigation: NavigationProp<RootStackParamList>;
+  navigation: NativeStackNavigationProp<WalletStackParamList, 'SwapRoot'>;
 };
 
 export const Swap = ({ navigation }: SwapProps) => {
@@ -124,7 +124,9 @@ export const Swap = ({ navigation }: SwapProps) => {
       fees: 0, // TODO: add fees
     };
     bloc.setSwap(transaction);
-    navigation.navigate('DetailsSwap');
+    navigation.push('SwapRoot', {
+      screen: 'SwapReview',
+    });
   };
 
   const isButtonEnabled = () => sellValue > 0 && sellValue <= balanceStore.get(sellAsset) && buyValue > 0;

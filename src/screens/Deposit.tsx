@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 
-import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Card, FormControlErrorText, Heading, Text, VStack } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
@@ -15,14 +15,19 @@ import { OpenURLModal } from '@components/modals/OpenURLModal';
 
 import { OperationType } from '@constants/constants';
 
+import { WalletStackParamList } from '@navigation/WalletStack';
+
 import { CallbackType, getInteractiveUrl } from '@services/anchor';
 
 import { sessionStore } from '@stores/SessionStore';
 
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
-const Deposit: React.FC = observer(() => {
-  const navigation = useNavigation();
+type Props = {
+  navigation: NativeStackNavigationProp<WalletStackParamList, 'Deposit'>;
+};
+
+const Deposit = observer(({ navigation }: Props) => {
   // const [transactionId, setTransactionId] = useState<string | null>(null);
   const [url, setUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -80,7 +85,7 @@ const Deposit: React.FC = observer(() => {
 
   const handleModalPressed = () => {
     Linking.openURL(url!);
-    navigation.goBack();
+    navigation.popToTop();
   };
 
   return (

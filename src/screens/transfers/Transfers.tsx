@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Card, Heading, Text, VStack } from '@gluestack-ui/themed';
 
@@ -8,9 +8,11 @@ import { CryptoAsset } from '@/types/assets';
 
 import { AssetList } from '@components/AssetList';
 
-import { RootStackParamList } from '@navigation/index';
+import { WalletStackParamList } from '@navigation/WalletStack';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Transfers'>;
+type Props = {
+  navigation: NativeStackNavigationProp<WalletStackParamList, 'TransfersRoot'>;
+};
 
 export const Transfers = ({ navigation }: Props) => {
   const data = Object.values(CryptoAsset);
@@ -24,8 +26,11 @@ export const Transfers = ({ navigation }: Props) => {
           <AssetList
             data={data}
             onPress={(item) =>
-              navigation.push('SendAsset', {
-                asset: item,
+              navigation.push('TransfersRoot', {
+                screen: 'SendAsset',
+                params: {
+                  asset: item,
+                },
               })
             }
           />

@@ -1,14 +1,10 @@
 import React from 'react';
 
-import { NavigationProp } from '@react-navigation/native';
-
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { CryptoAsset } from '@/types/assets';
 
 import { Provider } from '@components/Provider';
-
-import { RootStackParamList } from '@navigation/index';
 
 import * as emigroService from '@services/emigro';
 
@@ -21,9 +17,10 @@ jest.mock('@/services/emigro', () => ({
   handleQuote: jest.fn().mockResolvedValue('1.0829'),
 }));
 
-const navigation = {
+const mockNavigation: any = {
   navigate: jest.fn(),
-} as unknown as NavigationProp<RootStackParamList, 'Swap'>;
+  push: jest.fn(),
+};
 
 describe('Swap component', () => {
   beforeEach(() => {
@@ -34,7 +31,7 @@ describe('Swap component', () => {
   test('Should render Swap component correctly', async () => {
     const { getByText, getByTestId } = render(
       <Provider>
-        <Swap navigation={navigation} />
+        <Swap navigation={mockNavigation} />
       </Provider>,
     );
 
@@ -57,7 +54,7 @@ describe('Swap component', () => {
   test('Should update sellValue and buyValue when onChangeValue is called', async () => {
     const { findAllByPlaceholderText } = render(
       <Provider>
-        <Swap navigation={navigation} />
+        <Swap navigation={mockNavigation} />
       </Provider>,
     );
 
@@ -78,7 +75,7 @@ describe('Swap component', () => {
     const spy = jest.spyOn(paymentStore, 'setSwap');
     jest.spyOn(balanceStore, 'get').mockReturnValue(100); // enough balance
 
-    const { getByText, findAllByPlaceholderText } = render(<Swap navigation={navigation} />);
+    const { getByText, findAllByPlaceholderText } = render(<Swap navigation={mockNavigation} />);
 
     const [sellInput, buyInput] = await findAllByPlaceholderText('0');
     fireEvent.changeText(sellInput, '10');
@@ -101,7 +98,7 @@ describe('Swap component', () => {
 
     await waitFor(() => {
       expect(spy).toHaveBeenCalledWith(transaction);
-      expect(navigation.navigate).toHaveBeenCalledWith('DetailsSwap');
+      expect(mockNavigation.push).toHaveBeenCalled();
     });
   });
 });

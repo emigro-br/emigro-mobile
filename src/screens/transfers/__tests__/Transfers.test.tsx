@@ -11,13 +11,11 @@ const navigationMock: any = {
   push: jest.fn(),
 };
 
-const routeMock: any = {};
-
 describe('Transfers component', () => {
   test('Should render the component correctly', () => {
     const { getByText } = render(
       <Provider>
-        <Transfers navigation={navigationMock} route={routeMock} />
+        <Transfers navigation={navigationMock} />
       </Provider>,
     );
 
@@ -29,15 +27,18 @@ describe('Transfers component', () => {
   test('Should navigate to SendAsset screen when an asset is pressed', () => {
     const { getByText } = render(
       <Provider>
-        <Transfers navigation={navigationMock} route={routeMock} />
+        <Transfers navigation={navigationMock} />
       </Provider>,
     );
     const assetButton = getByText('XLM');
 
     fireEvent.press(assetButton);
 
-    expect(navigationMock.push).toHaveBeenCalledWith('SendAsset', {
-      asset: 'XLM',
+    expect(navigationMock.push).toHaveBeenCalledWith('TransfersRoot', {
+      screen: 'SendAsset',
+      params: {
+        asset: 'XLM',
+      },
     });
   });
 });

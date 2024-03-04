@@ -1,8 +1,6 @@
 import React from 'react';
 import { Linking } from 'react-native';
 
-import { useNavigation } from '@react-navigation/native';
-
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import mockConsole from 'jest-mock-console';
 
@@ -13,12 +11,11 @@ import { getInteractiveUrl } from '@services/anchor';
 import Deposit from '../Deposit';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
+
 jest.mock('react-native/Libraries/Linking/Linking', () => ({
   openURL: jest.fn(),
 }));
-jest.mock('@react-navigation/native', () => ({
-  useNavigation: jest.fn(),
-}));
+
 jest.mock('@stores/SessionStore', () => ({
   sessionStore: {
     accessToken: 'accessToken',
@@ -26,6 +23,7 @@ jest.mock('@stores/SessionStore', () => ({
     fetchPublicKey: jest.fn(),
   },
 }));
+
 jest.mock('@services/anchor', () => ({
   getInteractiveUrl: jest.fn(() => ({
     url: 'https://anchor.url',
@@ -33,6 +31,13 @@ jest.mock('@services/anchor', () => ({
   })),
   CallbackType: {},
 }));
+
+const mockNavigattion: any = {
+  navigate: jest.fn(),
+  push: jest.fn(),
+  goBack: jest.fn(),
+  popToTop: jest.fn(),
+};
 
 describe('Deposit screen', () => {
   beforeEach(() => {
@@ -46,7 +51,7 @@ describe('Deposit screen', () => {
   test('Should display available assets', () => {
     const { getByText } = render(
       <Provider>
-        <Deposit />
+        <Deposit navigation={mockNavigattion} />
       </Provider>,
     );
     const asset1 = getByText('ARS');
@@ -61,7 +66,7 @@ describe('Deposit screen', () => {
   test('Should show loading modal when asset is chosen', async () => {
     const { getByText, getByTestId } = render(
       <Provider>
-        <Deposit />
+        <Deposit navigation={mockNavigattion} />
       </Provider>,
     );
     const asset = getByText('ARS');
@@ -74,11 +79,7 @@ describe('Deposit screen', () => {
   });
 
   test.skip('Should open URL and navigate back when modal is pressed', async () => {
-    (useNavigation as jest.Mock).mockReturnValue({
-      goBack: jest.fn(),
-    });
-
-    const { getByText, getByTestId } = render(<Deposit />);
+    const { getByText, getByTestId } = render(<Deposit navigation={mockNavigattion} />);
     const asset = getByText('ARS');
     fireEvent.press(asset);
 
@@ -99,7 +100,7 @@ describe('Deposit screen', () => {
     expect(Linking.openURL).toHaveBeenCalledWith('https://anchor.url');
 
     // Assert that navigation.goBack is called
-    expect(useNavigation().goBack).toHaveBeenCalled();
+    expect(mockNavigattion.popToTop).toHaveBeenCalled();
   });
 
   test('Should display default error message when an error occurs', async () => {
@@ -112,7 +113,7 @@ describe('Deposit screen', () => {
 
     const { getByText } = render(
       <Provider>
-        <Deposit />
+        <Deposit navigation={mockNavigattion} />
       </Provider>,
     );
     const asset = getByText('ARS');

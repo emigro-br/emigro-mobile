@@ -11,11 +11,10 @@ import * as auth from '@services/auth';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
-jest.mock('@react-navigation/native', () => ({
-  useNavigation: () => ({
-    navigate: jest.fn(),
-  }),
-}));
+const mockNavigattion: any = {
+  navigate: jest.fn(),
+  push: jest.fn(),
+};
 
 describe('CreateAccount component', () => {
   beforeEach(() => {
@@ -44,7 +43,7 @@ describe('CreateAccount component', () => {
 
     const { getByTestId } = render(
       <Provider>
-        <CreateAccount navigation={{}} />
+        <CreateAccount navigation={mockNavigattion} />
       </Provider>,
     );
 
@@ -81,7 +80,7 @@ describe('CreateAccount component', () => {
     const restoreConsole = mockConsole();
     const error = new Error();
     jest.spyOn(auth, 'signUp').mockRejectedValue(error);
-    const { getByTestId, findByText } = render(<CreateAccount navigation={{}} />);
+    const { getByTestId, findByText } = render(<CreateAccount navigation={mockNavigattion} />);
 
     const emailInput = getByTestId('email');
     const passwordInput = getByTestId('password');

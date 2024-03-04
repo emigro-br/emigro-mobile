@@ -11,7 +11,7 @@ import { VendorContextProvider } from '@/contexts/VendorContext';
 
 import { config } from '@config/gluestack-ui.config';
 
-import RootNavigator from '@navigation/index';
+import RootStack from '@navigation/RootStack';
 
 import { SplashScreen } from '@screens/Splash';
 
@@ -56,7 +56,7 @@ export default observer(function App() {
         <VendorContextProvider>
           <StatusBar style="dark" />
           <NavigationContainer>
-            <RootNavigator isSignedIn={isSignedIn} />
+            <RootStack isSignedIn={isSignedIn} />
           </NavigationContainer>
         </VendorContextProvider>
       </SafeAreaProvider>

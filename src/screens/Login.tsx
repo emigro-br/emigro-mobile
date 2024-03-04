@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
   AlertCircleIcon,
@@ -31,6 +31,8 @@ import { FormField } from '@/types/FormField';
 
 import { SIGNIN_ERROR_MESSAGE, SIGN_IN_FIELDS_ERROR } from '@constants/errorMessages';
 
+import { AnonStackParamList } from '@navigation/AnonStack';
+
 import { signIn } from '@services/auth';
 
 import { sessionStore } from '@stores/SessionStore';
@@ -56,9 +58,11 @@ type FormData = {
   [key in FormField['name']]: string;
 };
 
-const Login: React.FunctionComponent = () => {
-  const navigation = useNavigation();
+type Props = {
+  navigation: NativeStackNavigationProp<AnonStackParamList, 'Login'>;
+};
 
+const Login = ({ navigation }: Props) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>({
     email: '',
@@ -146,7 +150,7 @@ const Login: React.FunctionComponent = () => {
         <Center>
           <Text size="xl">
             Don't have an account?
-            <Link onPress={() => navigation.navigate('SignUp' as never)}>
+            <Link onPress={() => navigation.replace('SignUp')}>
               <Text size="xl" color="$primary500" ml="$2" bold>
                 Sign up
               </Text>
