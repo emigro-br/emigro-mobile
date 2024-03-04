@@ -1,0 +1,28 @@
+import React from 'react';
+
+import { Box, FlatList, Pressable } from '@gluestack-ui/themed';
+
+import { CryptoOrFiat } from '@/types/assets';
+
+import { AssetListTile } from './AssetListTile';
+
+type Props = {
+  data: CryptoOrFiat[];
+  onPress: (item: CryptoOrFiat) => void;
+};
+
+export const AssetList = ({ data, onPress }: Props) => {
+  return (
+    <FlatList
+      data={data}
+      renderItem={({ item }: { item: CryptoOrFiat }) => (
+        <Pressable onPress={() => onPress(item)}>
+          <Box py="$4">
+            <AssetListTile item={item} />
+          </Box>
+        </Pressable>
+      )}
+      keyExtractor={(item: CryptoOrFiat) => item}
+    />
+  );
+};
