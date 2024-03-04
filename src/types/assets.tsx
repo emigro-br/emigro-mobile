@@ -12,3 +12,5 @@ export enum FiatCurrency {
   BRL = 'BRL', // Brazilian Real
   ARS = 'ARS', // Argentine Peso
 }
+
+export type CryptoOrFiat = CryptoAsset | FiatCurrency;

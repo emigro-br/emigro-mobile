@@ -1,24 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  Card,
-  FormControlErrorText,
-  HStack,
-  Image,
-  Pressable,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
+import { Box, Button, ButtonText, Card, FormControlErrorText, Heading, Text, VStack } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 
 import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { TransactionStatus } from '@/types/TransactionStatus';
 import { CryptoAsset } from '@/types/assets';
 
+import { AssetList } from '@components/AssetList';
 import { ConfirmationModal } from '@components/modals/ConfirmationModal';
 import { ErrorModal } from '@components/modals/ErrorModal';
 import { LoadingModal } from '@components/modals/LoadingModal';
@@ -29,8 +19,6 @@ import { OperationType } from '@constants/constants';
 import { CallbackType, ConfirmWithdrawDto, confirmWithdraw, getInteractiveUrl, getTransaction } from '@services/anchor';
 
 import { sessionStore } from '@stores/SessionStore';
-
-import { iconFor } from '@utils/assets';
 
 enum TransactionStep {
   NONE = 'none',
@@ -185,7 +173,7 @@ const Withdraw: React.FC = observer(() => {
   };
 
   return (
-    <Box flex={1}>
+    <>
       <LoadingModal isOpen={!sessionStore.publicKey || isLoading} />
       <LoadingModal
         isOpen={step === TransactionStep.STARTED}
@@ -237,34 +225,27 @@ const Withdraw: React.FC = observer(() => {
         onClose={() => setStep(TransactionStep.NONE)}
       />
 
-      <VStack p="$4" space="lg">
-        <Text size="xl">Select the currency you want to withdraw:</Text>
-        <HStack space="lg">
-          {availableAssets.map((asset) => (
-            <Card key={`asset-${asset}`}>
-              <Pressable onPress={() => handleOnPress(asset)}>
-                <HStack alignItems="center" flexWrap="wrap">
-                  <Image source={iconFor(asset)} size="xs" alt={asset} />
-                  <Text size="xl" bold ml="$2">
-                    {asset}
-                  </Text>
-                </HStack>
-              </Pressable>
-            </Card>
-          ))}
-        </HStack>
-        {transactionId && step === TransactionStep.PENDING_USER && (
-          <Button
-            variant="link"
-            onPress={() => waitWithdrawOnAnchorComplete(transactionId, selectedAsset!)}
-            alignSelf="flex-start"
-          >
-            <ButtonText>Check pending transaction: {transactionId}</ButtonText>
-          </Button>
-        )}
-        {errorMessage && <FormControlErrorText>{errorMessage}</FormControlErrorText>}
-      </VStack>
-    </Box>
+      <Box flex={1}>
+        <VStack p="$4" space="md">
+          <Heading size="xl">Withdraw Funds</Heading>
+          <Text>Choose the asset you want to withdraw</Text>
+          <Card size="md" py="$1" variant="filled" bg="$white">
+            <AssetList data={availableAssets} onPress={(item) => handleOnPress(item as CryptoAsset)} />
+          </Card>
+
+          {transactionId && step === TransactionStep.PENDING_USER && (
+            <Button
+              variant="link"
+              onPress={() => waitWithdrawOnAnchorComplete(transactionId, selectedAsset!)}
+              alignSelf="flex-start"
+            >
+              <ButtonText>Check pending transaction: {transactionId}</ButtonText>
+            </Button>
+          )}
+          {errorMessage && <FormControlErrorText>{errorMessage}</FormControlErrorText>}
+        </VStack>
+      </Box>
+    </>
   );
 });
 
