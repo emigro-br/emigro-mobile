@@ -2,7 +2,7 @@ import React from 'react';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import { Box, Card, Heading, VStack } from '@gluestack-ui/themed';
+import { Box, Card, Heading, Text, VStack } from '@gluestack-ui/themed';
 
 import { CryptoAsset } from '@/types/assets';
 
@@ -17,8 +17,9 @@ export const Transfers = ({ navigation }: Props) => {
 
   return (
     <Box flex={1}>
-      <VStack p="$4" space="lg">
+      <VStack p="$4" space="md">
         <Heading size="xl">Send money</Heading>
+        <Text>Choose the currency you want to send</Text>
         <Card size="md" py="$1" variant="filled" bg="$white">
           <AssetList
             data={data}

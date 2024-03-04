@@ -3,12 +3,13 @@ import { Linking } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 
-import { Box, Card, FormControlErrorText, HStack, Image, Pressable, Text, VStack } from '@gluestack-ui/themed';
+import { Box, Card, FormControlErrorText, Heading, Text, VStack } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 
 import { IAnchorParams } from '@/types/IAnchorParams';
 import { CryptoAsset } from '@/types/assets';
 
+import { AssetList } from '@components/AssetList';
 import { LoadingModal } from '@components/modals/LoadingModal';
 import { OpenURLModal } from '@components/modals/OpenURLModal';
 
@@ -17,8 +18,6 @@ import { OperationType } from '@constants/constants';
 import { CallbackType, getInteractiveUrl } from '@services/anchor';
 
 import { sessionStore } from '@stores/SessionStore';
-
-import { iconFor } from '@utils/assets';
 
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
@@ -85,29 +84,21 @@ const Deposit: React.FC = observer(() => {
   };
 
   return (
-    <Box flex={1}>
+    <>
       <LoadingModal isOpen={!sessionStore.publicKey || isLoading} text="Connecting to anchor..." />
       <OpenURLModal isOpen={!!url} onConfirm={handleModalPressed} />
-      <VStack p="$4" space="lg">
-        <Text size="xl">Choose which one you would like to deposit:</Text>
-        <HStack space="lg">
-          {availableAssets.map((asset) => (
-            <Card key={`asset-${asset}`}>
-              <Pressable onPress={() => handleAssetChoosen(asset)}>
-                <HStack alignItems="center" flexWrap="wrap">
-                  <Image source={iconFor(asset)} size="xs" alt={asset} />
-                  <Text size="xl" bold ml="$2">
-                    {asset}
-                  </Text>
-                </HStack>
-              </Pressable>
-            </Card>
-          ))}
-        </HStack>
-        {errorMessage && <FormControlErrorText>{errorMessage}</FormControlErrorText>}
-      </VStack>
-    </Box>
+
+      <Box flex={1}>
+        <VStack p="$4" space="md">
+          <Heading size="xl">Add money</Heading>
+          <Text>Choose the currency you want to deposit</Text>
+          <Card size="md" py="$1" variant="filled" bg="$white">
+            <AssetList data={availableAssets} onPress={(item) => handleAssetChoosen(item as CryptoAsset)} />
+          </Card>
+          {errorMessage && <FormControlErrorText>{errorMessage}</FormControlErrorText>}
+        </VStack>
+      </Box>
+    </>
   );
 });
-
 export default Deposit;

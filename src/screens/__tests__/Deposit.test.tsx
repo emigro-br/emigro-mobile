@@ -44,7 +44,11 @@ describe('Deposit screen', () => {
   });
 
   test('Should display available assets', () => {
-    const { getByText } = render(<Deposit />);
+    const { getByText } = render(
+      <Provider>
+        <Deposit />
+      </Provider>,
+    );
     const asset1 = getByText('ARS');
     const asset2 = getByText('BRL');
     const asset3 = getByText('EURC');

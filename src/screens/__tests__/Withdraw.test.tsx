@@ -3,6 +3,8 @@ import { Linking } from 'react-native';
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
+import { Provider } from '@components/Provider';
+
 import * as anchor from '@services/anchor';
 
 import Withdraw from '../Withdraw';
@@ -42,7 +44,11 @@ describe('Withdraw', () => {
   });
 
   it('Should render correctly', async () => {
-    const { queryByText } = render(<Withdraw />);
+    const { queryByText } = render(
+      <Provider>
+        <Withdraw />
+      </Provider>,
+    );
 
     await waitFor(() => {
       // only because of the useEffect
