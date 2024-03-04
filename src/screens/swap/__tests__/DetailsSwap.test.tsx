@@ -8,7 +8,7 @@ import { CryptoAsset } from '@/types/assets';
 
 import { Provider } from '@components/Provider';
 
-import { RootStackParamList } from '@navigation/index';
+import { RootStackParamList } from '@navigation/RootStack';
 
 import { paymentStore } from '@stores/PaymentStore';
 

@@ -26,7 +26,7 @@ import * as Clipboard from 'expo-clipboard';
 
 import { CryptoAsset } from '@/types/assets';
 
-import { RootStackParamList } from '@navigation/index';
+import { RootStackParamList } from '@navigation/RootStack';
 
 import { balanceStore } from '@stores/BalanceStore';
 import { paymentStore as bloc } from '@stores/PaymentStore';

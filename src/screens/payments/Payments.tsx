@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { QrCodeIcon } from 'react-native-heroicons/solid';
 
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonIcon, ButtonText, Center, Image, VStack } from '@gluestack-ui/themed';
 
@@ -9,9 +9,11 @@ import qrImage from '@assets/images/qr-code.png';
 
 import QRCodeScanner from '@components/QRCodeScanner';
 
-import { RootStackParamList } from '@navigation/index';
+import { PaymentStackParamList } from '@navigation/PaymentsStack';
 
-type Props = BottomTabScreenProps<RootStackParamList, 'Payments'>;
+type Props = {
+  navigation: NativeStackNavigationProp<PaymentStackParamList, 'Payments'>;
+};
 
 const Payments: React.FC<Props> = ({ navigation }) => {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -25,9 +27,7 @@ const Payments: React.FC<Props> = ({ navigation }) => {
   };
 
   if (isScannerOpen) {
-    return (
-      <QRCodeScanner onCancel={handleCancelPress} onProceedToPayment={() => navigation.navigate('ConfirmPayment')} />
-    );
+    return <QRCodeScanner onCancel={handleCancelPress} onProceedToPayment={() => navigation.push('ConfirmPayment')} />;
   }
 
   return (

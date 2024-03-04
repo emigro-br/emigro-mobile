@@ -27,7 +27,7 @@ import {
 
 import { CONFIRM_ACCOUNT_ERROR, WRONG_CODE_ERROR } from '@constants/errorMessages';
 
-import { RootStackParamList } from '@navigation/index';
+import { RootStackParamList } from '@navigation/RootStack';
 
 import { confirmAccount } from '@services/auth';
 

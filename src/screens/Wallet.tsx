@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { RefreshControl } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, ScrollView, VStack } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
@@ -9,9 +10,15 @@ import { observer } from 'mobx-react-lite';
 import Balance from '@components/Balance';
 import OperationButtons from '@components/OperationButtons';
 
+import { WalletStackParamList } from '@navigation/WalletStack';
+
 import { balanceStore } from '@stores/BalanceStore';
 
-const Wallet: React.FC = observer(() => {
+type Props = {
+  navigation: NativeStackNavigationProp<WalletStackParamList>;
+};
+
+const Wallet = observer(({ navigation }: Props) => {
   const [refreshing, setRefreshing] = useState(false);
 
   useFocusEffect(
@@ -36,7 +43,7 @@ const Wallet: React.FC = observer(() => {
     >
       <VStack p="$4" space="lg">
         <Box py="$8">
-          <OperationButtons />
+          <OperationButtons navigation={navigation} />
         </Box>
         <Balance userBalance={balanceStore.userBalance} />
       </VStack>

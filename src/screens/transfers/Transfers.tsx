@@ -1,4 +1,4 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
   Avatar,
@@ -15,7 +15,7 @@ import {
 
 import { CryptoAsset } from '@/types/assets';
 
-import { RootStackParamList } from '@navigation/index';
+import { WalletStackParamList } from '@navigation/WalletStack';
 
 import { AssetToName, iconFor } from '@utils/assets';
 
@@ -26,7 +26,9 @@ interface Item {
   fullName: string;
 }
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Transfers'>;
+type Props = {
+  navigation: NativeStackNavigationProp<WalletStackParamList, 'TransfersRoot'>;
+};
 
 export const Transfers = ({ navigation }: Props) => {
   const data: Item[] = [];
@@ -51,8 +53,11 @@ export const Transfers = ({ navigation }: Props) => {
             renderItem={({ item }: { item: Item }) => (
               <Pressable
                 onPress={() =>
-                  navigation.push('SendAsset', {
-                    asset: item.code,
+                  navigation.push('TransfersRoot', {
+                    screen: 'SendAsset',
+                    params: {
+                      asset: item.code,
+                    },
                   })
                 }
               >

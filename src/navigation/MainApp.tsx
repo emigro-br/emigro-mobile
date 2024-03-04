@@ -3,75 +3,71 @@ import * as IconsSolid from 'react-native-heroicons/solid';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import Header from '@components/Header';
-
 import Location from '@screens/Location';
-import Wallet from '@screens/Wallet';
-import Payments from '@screens/payments/Payments';
-import Profile from '@screens/profile/Profile';
+
+import { PaymentStack } from './PaymentsStack';
+import { ProfileStack } from './ProfileStack';
+import { WalletStack } from './WalletStack';
 
 export type TabNavParamList = {
-  Wallet: undefined;
-  Payments: undefined;
-  Location: undefined;
-  Profile: undefined;
+  WalletTab: undefined;
+  PaymentsTab: undefined;
+  LocationTab: undefined;
+  ProfileTab: undefined;
 };
 
 const Tab = createBottomTabNavigator<TabNavParamList>();
 const enableLocation = false;
 
-const BottomTabNavigator = () => {
+const MainApp = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Wallet"
+      initialRouteName="WalletTab"
       screenOptions={{
-        tabBarActiveTintColor: 'red',
+        headerShown: false,
+        tabBarActiveTintColor: '#FF033E',
         tabBarInactiveTintColor: 'grey',
       }}
     >
       <Tab.Screen
-        name="Wallet"
-        component={Wallet}
+        name="WalletTab"
+        component={WalletStack}
         options={() => ({
           title: 'Wallet',
           tabBarIcon: ({ color, size, focused }) => <IconsSolid.WalletIcon size={size} color={color} />,
-          header: () => <Header />,
         })}
       />
 
       <Tab.Screen
-        name="Payments"
-        component={Payments}
+        name="PaymentsTab"
+        component={PaymentStack}
         options={() => ({
           title: 'Payment',
           tabBarIcon: ({ color, size }) => <IconsOutline.QrCodeIcon size={size} color={color} />,
-          header: () => <Header />,
         })}
       />
 
       {enableLocation && (
         <Tab.Screen
-          name="Location"
+          name="LocationTab"
           component={Location}
           options={() => ({
             title: 'Location',
             tabBarIcon: ({ size, color, focused }) => <IconsSolid.MapIcon size={size} color={color} />,
-            header: () => <Header />,
           })}
         />
       )}
 
       <Tab.Screen
-        name="Profile"
-        component={Profile}
+        name="ProfileTab"
+        component={ProfileStack}
         options={() => ({
           title: 'Profile',
           tabBarIcon: ({ color, size, focused }) => <IconsOutline.UserCircleIcon size={size} color={color} />,
-          header: () => <Header />,
         })}
       />
     </Tab.Navigator>
   );
 };
 
-export default BottomTabNavigator;
+export default MainApp;

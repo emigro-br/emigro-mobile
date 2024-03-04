@@ -7,7 +7,7 @@ import { Box, Button, ButtonSpinner, ButtonText, Card, HStack, Heading, Text, VS
 import { ErrorDialog } from '@components/dialogs/ErrorDialog';
 import { SuccessDialog } from '@components/dialogs/SuccessDialog';
 
-import { RootStackParamList } from '@navigation/index';
+import { RootStackParamList } from '@navigation/RootStack';
 
 import { paymentStore as bloc } from '@stores/PaymentStore';
 

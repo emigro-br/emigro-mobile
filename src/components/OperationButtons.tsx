@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
   ArrowDownIcon,
@@ -14,15 +14,19 @@ import {
   VStack,
 } from '@gluestack-ui/themed';
 
-const OperationButtons = () => {
-  const navigation = useNavigation();
+import { WalletStackParamList } from '@navigation/WalletStack';
 
+type Props = {
+  navigation: NativeStackNavigationProp<WalletStackParamList>;
+};
+
+const OperationButtons = ({ navigation }: Props) => {
   return (
     <ButtonGroup justifyContent="space-around">
-      <ButtonItem title="Deposit" icon={ArrowDownIcon} onPress={() => navigation.navigate('Deposit' as never)} />
-      <ButtonItem title="Withdraw" icon={ArrowUpIcon} onPress={() => navigation.navigate('Withdraw' as never)} />
-      <ButtonItem title="Send" icon={ArrowRightIcon} onPress={() => navigation.navigate('Transfers' as never)} />
-      <ButtonItem title="Swap" icon={RepeatIcon} onPress={() => navigation.navigate('Swap' as never)} />
+      <ButtonItem title="Deposit" icon={ArrowDownIcon} onPress={() => navigation.push('Deposit')} />
+      <ButtonItem title="Withdraw" icon={ArrowUpIcon} onPress={() => navigation.push('Withdraw')} />
+      <ButtonItem title="Send" icon={ArrowRightIcon} onPress={() => navigation.push('TransfersRoot')} />
+      <ButtonItem title="Swap" icon={RepeatIcon} onPress={() => navigation.push('SwapRoot')} />
     </ButtonGroup>
   );
 };
