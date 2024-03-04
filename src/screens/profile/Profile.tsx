@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
   Avatar,
@@ -34,7 +34,9 @@ import { sessionStore } from '@stores/SessionStore';
 
 import { maskWallet } from '@utils/masks';
 
-type Props = NativeStackScreenProps<ProfileStackParamList, 'Profile'>;
+type Props = {
+  navigation: NativeStackNavigationProp<ProfileStackParamList, 'Profile'>;
+};
 
 const Profile = ({ navigation }: Props) => {
   const toast = useToast();

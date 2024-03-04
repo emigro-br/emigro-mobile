@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import DropDownPicker from 'react-native-dropdown-picker';
 
-import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonText, HStack, Heading, Input, InputField, Text, VStack } from '@gluestack-ui/themed';
 
 import { useVendor } from '@/contexts/VendorContext';
-import { IVendor } from '@/types/IVendor';
 import { CryptoAsset } from '@/types/assets';
 
 import { ConfirmationModal } from '@components/modals/ConfirmationModal';
@@ -18,14 +17,16 @@ import useCurrencyChange from '@hooks/useCurrencyChange';
 import useGetUserBalance from '@hooks/useGetUserBalance';
 import usePayment from '@hooks/usePayment';
 
+import { PaymentStackParamList } from '@navigation/PaymentsStack';
+import { WalletStackParamList } from '@navigation/WalletStack';
+
 import { AssetToCurrency } from '@utils/assets';
 
-export type RootStackParamList = {
-  ConfirmPayment: { scannedVendor: IVendor };
+type Props = {
+  navigation: NativeStackNavigationProp<WalletStackParamList & PaymentStackParamList, 'ConfirmPayment'>;
 };
 
-const ConfirmPayment: React.FunctionComponent = () => {
-  const navigation = useNavigation();
+const ConfirmPayment = ({ navigation }: Props) => {
   const { scannedVendor } = useVendor();
   const [open, setOpen] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState('');
@@ -49,7 +50,7 @@ const ConfirmPayment: React.FunctionComponent = () => {
   };
 
   const handleNavigateWallet = () => {
-    navigation.navigate('Wallet' as never);
+    navigation.navigate('Wallet');
     setIsTransactionCompletedModalVisible(false);
   };
 

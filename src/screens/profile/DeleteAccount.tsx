@@ -1,26 +1,28 @@
 import React from 'react';
 
-import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonGroup, ButtonText, Heading, Text, VStack } from '@gluestack-ui/themed';
+
+import { ProfileStackParamList } from '@navigation/ProfileStack';
 
 import { deleteAccount } from '@services/auth';
 
 import { sessionStore } from '@stores/SessionStore';
 
-const DeleteAccount = () => {
-  const navigation = useNavigation();
+type Props = {
+  navigation: NativeStackNavigationProp<ProfileStackParamList, 'Profile'>;
+};
 
+const DeleteAccount = ({ navigation }: Props) => {
   const handleDeleteAccount = async () => {
     const session = sessionStore.session;
     if (!session) {
-      navigation.navigate('Welcome' as never);
       return;
     }
     try {
       await deleteAccount(session);
-      sessionStore.clear();
-      navigation.navigate('Welcome' as never);
+      await sessionStore.clear();
     } catch (error) {
       console.error(error);
     }
@@ -54,7 +56,7 @@ const DeleteAccount = () => {
           <Button variant="solid" onPress={handleDeleteAccount}>
             <ButtonText>Yes, delete my account permanently</ButtonText>
           </Button>
-          <Button variant="link" onPress={() => navigation.goBack()}>
+          <Button variant="link" onPress={() => navigation.popToTop()}>
             <ButtonText>No, keep my account</ButtonText>
           </Button>
         </ButtonGroup>

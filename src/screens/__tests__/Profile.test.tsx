@@ -49,13 +49,17 @@ const renderWithProviders = (component: JSX.Element) => {
   );
 };
 
+const mockNavigattion: any = {
+  push: jest.fn(),
+};
+
 describe('Profile screen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   test('Should appear loading screen while fetching the user information', async () => {
-    const { getByTestId } = renderWithProviders(<Profile />);
+    const { getByTestId } = renderWithProviders(<Profile navigation={mockNavigattion} />);
 
     await waitFor(() => {
       expect(getByTestId('loading')).toBeOnTheScreen();
@@ -63,7 +67,7 @@ describe('Profile screen', () => {
   });
 
   test('Should render the Profile screen correctly', async () => {
-    const { getByText, queryAllByText } = renderWithProviders(<Profile />);
+    const { getByText, queryAllByText } = renderWithProviders(<Profile navigation={mockNavigattion} />);
 
     await waitFor(() => {
       expect(getByText('Full Name')).toBeOnTheScreen();
@@ -78,7 +82,7 @@ describe('Profile screen', () => {
   });
 
   test('Should trigger the Logout action and clear the storage', async () => {
-    const { getByText } = renderWithProviders(<Profile />);
+    const { getByText } = renderWithProviders(<Profile navigation={mockNavigattion} />);
 
     await waitFor(() => {
       expect(getByText('Full Name')).toBeOnTheScreen();
