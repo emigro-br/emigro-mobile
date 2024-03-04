@@ -19,7 +19,7 @@ export type TabNavParamList = {
 const Tab = createBottomTabNavigator<TabNavParamList>();
 const enableLocation = false;
 
-const MainApp = () => {
+export const MainApp = () => {
   return (
     <Tab.Navigator
       initialRouteName="WalletTab"
@@ -69,5 +69,3 @@ const MainApp = () => {
     </Tab.Navigator>
   );
 };
-
-export default MainApp;

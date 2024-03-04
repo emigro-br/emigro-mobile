@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
 import {
   AlertCircleIcon,
   Box,
@@ -33,10 +35,12 @@ import { IRegisterUser } from '@/types/IRegisterUser';
 import { Role } from '@constants/constants';
 import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 
+import { AnonStackParamList } from '@navigation/AnonStack';
+
 import { signUp } from '@services/auth';
 
-type SignUpProps = {
-  navigation: any; // FIXME: set the correct type
+type Props = {
+  navigation: NativeStackNavigationProp<AnonStackParamList, 'SignUp'>;
 };
 
 type ConfirmationParams = {
@@ -58,7 +62,7 @@ const formFields: FormField[] = [
   { name: 'address', label: 'Address', placeholder: 'e.g., 123 Main St, Anytown', keyboardType: 'default' },
 ];
 
-const CreateAccount = ({ navigation }: SignUpProps) => {
+const CreateAccount = ({ navigation }: Props) => {
   const [formData, setFormData] = useState<IRegisterUser>({
     email: '',
     password: '',
@@ -106,8 +110,10 @@ const CreateAccount = ({ navigation }: SignUpProps) => {
   };
 
   const handleCloseModal = () => {
+    if (confirmationParams) {
+      navigation.push('ConfirmAccount', confirmationParams);
+    }
     setConfirmationParams(null);
-    navigation.navigate('ConfirmAccount', confirmationParams);
   };
 
   return (
@@ -150,7 +156,7 @@ const CreateAccount = ({ navigation }: SignUpProps) => {
         <Center>
           <Text size="xl">
             Already have an account?
-            <Link onPress={() => navigation.navigate('Login' as never)}>
+            <Link onPress={() => navigation.replace('Login')}>
               <Text size="xl" color="$primary500" ml="$2" bold>
                 Sign in
               </Text>
