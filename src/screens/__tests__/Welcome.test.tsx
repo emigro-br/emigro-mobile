@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { fireEvent, render } from '@testing-library/react-native';
 
-import { Provider } from '@components/Provider';
+import { withTheme } from '@/__utils__/helpers';
 
 import Login from '@screens/Login';
 import { Welcome } from '@screens/Welcome';
@@ -14,17 +14,16 @@ import CreateAccount from '@screens/signup/CreateAccount';
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
 const Stack = createNativeStackNavigator();
-const TestNavigator = () => (
-  <Provider>
+const TestNavigator = () =>
+  withTheme(
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Welcome">
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="SignUp" component={CreateAccount} />
       </Stack.Navigator>
-    </NavigationContainer>
-  </Provider>
-);
+    </NavigationContainer>,
+  );
 
 describe('Welcome screen', () => {
   test('Should render the Welcome screen correctly', () => {

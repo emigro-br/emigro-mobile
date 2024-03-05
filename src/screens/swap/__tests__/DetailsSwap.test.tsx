@@ -1,14 +1,11 @@
-import { NavigationContainer, NavigationProp } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
+import { withTheme } from '@/__utils__/helpers';
 import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { CryptoAsset } from '@/types/assets';
-
-import { Provider } from '@components/Provider';
-
-import { RootStackParamList } from '@navigation/RootStack';
 
 import { paymentStore } from '@stores/PaymentStore';
 
@@ -21,9 +18,9 @@ jest.mock('@services/emigro', () => ({
 const Stack = createNativeStackNavigator();
 
 describe('DetailsSwap', () => {
-  const navigation = {
+  const navigation: any = {
     navigate: jest.fn(),
-  } as unknown as NavigationProp<RootStackParamList, 'DetailsSwap'>;
+  };
 
   const transaction = {
     from: CryptoAsset.EURC,
@@ -35,11 +32,7 @@ describe('DetailsSwap', () => {
   };
 
   // Create a separate component
-  const DetailsSwapScreen = () => (
-    <Provider>
-      <DetailsSwap navigation={navigation} />
-    </Provider>
-  );
+  const DetailsSwapScreen = () => withTheme(<DetailsSwap navigation={navigation} />);
 
   beforeAll(() => {
     jest.useFakeTimers();

@@ -2,9 +2,8 @@ import React from 'react';
 
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
+import { withTheme } from '@/__utils__/helpers';
 import { CryptoAsset } from '@/types/assets';
-
-import { Provider } from '@components/Provider';
 
 import * as emigroService from '@services/emigro';
 
@@ -29,11 +28,7 @@ describe('Swap component', () => {
   });
 
   test('Should render Swap component correctly', async () => {
-    const { getByText, getByTestId } = render(
-      <Provider>
-        <Swap navigation={mockNavigation} />
-      </Provider>,
-    );
+    const { getByText, getByTestId } = render(withTheme(<Swap navigation={mockNavigation} />));
 
     // check title
     const sellText = getByText(`Sell ${CryptoAsset.EURC}`);
@@ -52,11 +47,7 @@ describe('Swap component', () => {
   });
 
   test('Should update sellValue and buyValue when onChangeValue is called', async () => {
-    const { findAllByPlaceholderText } = render(
-      <Provider>
-        <Swap navigation={mockNavigation} />
-      </Provider>,
-    );
+    const { findAllByPlaceholderText } = render(withTheme(<Swap navigation={mockNavigation} />));
 
     const [sellInput, buyInput] = await findAllByPlaceholderText('0');
 

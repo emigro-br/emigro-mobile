@@ -2,7 +2,7 @@ import React from 'react';
 
 import { fireEvent, render } from '@testing-library/react-native';
 
-import { Provider } from '@components/Provider';
+import { withTheme } from '@/__utils__/helpers';
 
 import { paymentStore } from '@stores/PaymentStore';
 
@@ -37,9 +37,7 @@ const validAddress = 'G'.repeat(56);
 describe('SendAsset component', () => {
   test('Should render SendAsset component', () => {
     const { getByText, getByPlaceholderText } = render(
-      <Provider>
-        <SendAsset navigation={navigationMock} route={routeMock} />
-      </Provider>,
+      withTheme(<SendAsset navigation={navigationMock} route={routeMock} />),
     );
 
     expect(getByText('Send XLM')).toBeDefined();
@@ -49,9 +47,7 @@ describe('SendAsset component', () => {
 
   test('Should show form error when balance exceeds', () => {
     const { getByText, getByPlaceholderText } = render(
-      <Provider>
-        <SendAsset navigation={navigationMock} route={routeMock} />
-      </Provider>,
+      withTheme(<SendAsset navigation={navigationMock} route={routeMock} />),
     );
 
     const amountInput = getByPlaceholderText('0 XLM');
@@ -63,9 +59,7 @@ describe('SendAsset component', () => {
 
   test('Should show not form error when balance not exceeds', () => {
     const { queryByText, getByPlaceholderText } = render(
-      <Provider>
-        <SendAsset navigation={navigationMock} route={routeMock} />
-      </Provider>,
+      withTheme(<SendAsset navigation={navigationMock} route={routeMock} />),
     );
 
     const amountInput = getByPlaceholderText('0 XLM');
@@ -76,9 +70,7 @@ describe('SendAsset component', () => {
 
   test('Should show form error when address is invalid', () => {
     const { getByText, getByPlaceholderText } = render(
-      <Provider>
-        <SendAsset navigation={navigationMock} route={routeMock} />
-      </Provider>,
+      withTheme(<SendAsset navigation={navigationMock} route={routeMock} />),
     );
 
     const addressInput = getByPlaceholderText('Enter the wallet address here');
@@ -90,9 +82,7 @@ describe('SendAsset component', () => {
 
   test('Should not show form error when address is valid', () => {
     const { queryByText, getByPlaceholderText } = render(
-      <Provider>
-        <SendAsset navigation={navigationMock} route={routeMock} />
-      </Provider>,
+      withTheme(<SendAsset navigation={navigationMock} route={routeMock} />),
     );
 
     const addressInput = getByPlaceholderText('Enter the wallet address here');
@@ -104,9 +94,7 @@ describe('SendAsset component', () => {
 
   test('Should enable and call handler when Continue button is pressed', () => {
     const { getByText, getByPlaceholderText } = render(
-      <Provider>
-        <SendAsset navigation={navigationMock} route={routeMock} />
-      </Provider>,
+      withTheme(<SendAsset navigation={navigationMock} route={routeMock} />),
     );
 
     const addressInput = getByPlaceholderText('Enter the wallet address here');
