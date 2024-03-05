@@ -14,7 +14,7 @@ import { paymentStore } from '@stores/PaymentStore';
 
 import { DetailsSwap } from '../DetailsSwap';
 
-jest.mock('@/services/emigro', () => ({
+jest.mock('@services/emigro', () => ({
   getUserPublicKey: jest.fn().mockReturnValue('mockedPublicKey'),
 }));
 

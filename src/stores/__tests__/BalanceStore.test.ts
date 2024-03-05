@@ -6,7 +6,7 @@ import * as BalanceModule from '@services/emigro';
 
 import { BalanceStore } from '../BalanceStore';
 
-jest.mock('@/services/emigro', () => ({
+jest.mock('@services/emigro', () => ({
   getUserBalance: jest.fn(),
 }));
 

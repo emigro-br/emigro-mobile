@@ -20,7 +20,7 @@ describe('SwapBloc', () => {
   });
 
   it('should call swap with correct parameters', async () => {
-    const emigro = jest.requireMock('@/services/emigro');
+    const emigro = jest.requireMock('@services/emigro');
 
     const transaction: SwapTransaction = {
       from: CryptoAsset.EURC,

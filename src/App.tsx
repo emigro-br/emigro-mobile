@@ -3,11 +3,10 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { NavigationContainer } from '@react-navigation/native';
 
+import { VendorContextProvider } from '@contexts/VendorContext';
 import { GluestackUIProvider } from '@gluestack-ui/themed';
 import { StatusBar } from 'expo-status-bar';
 import { observer } from 'mobx-react-lite';
-
-import { VendorContextProvider } from '@/contexts/VendorContext';
 
 import { config } from '@config/gluestack-ui.config';
 

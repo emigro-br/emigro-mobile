@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 
+import { useVendor } from '@contexts/VendorContext';
 import { Box, Center } from '@gluestack-ui/themed';
-
-import { useVendor } from '@/contexts/VendorContext';
 
 const MapScreen: React.FunctionComponent = () => {
   const { scannedVendor } = useVendor();

@@ -13,7 +13,7 @@ import { paymentStore } from '@stores/PaymentStore';
 
 import { Swap } from '../Swap';
 
-jest.mock('@/services/emigro', () => ({
+jest.mock('@services/emigro', () => ({
   handleQuote: jest.fn().mockResolvedValue('1.0829'),
 }));
 

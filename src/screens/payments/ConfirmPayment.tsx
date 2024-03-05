@@ -3,9 +3,9 @@ import DropDownPicker from 'react-native-dropdown-picker';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
+import { useVendor } from '@contexts/VendorContext';
 import { Box, Button, ButtonText, HStack, Heading, Input, InputField, Text, VStack } from '@gluestack-ui/themed';
 
-import { useVendor } from '@/contexts/VendorContext';
 import { CryptoAsset } from '@/types/assets';
 
 import { ConfirmationModal } from '@components/modals/ConfirmationModal';
