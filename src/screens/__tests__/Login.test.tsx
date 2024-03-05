@@ -35,6 +35,23 @@ describe('Login screen', () => {
     jest.clearAllMocks();
   });
 
+  test('Should render correctly', async () => {
+    const { getByTestId } = render(
+      <Provider>
+        <Login navigation={mockNavigattion} />
+      </Provider>,
+    );
+
+    const emailInput = getByTestId('email');
+    const passwordInput = getByTestId('password');
+    const signInButton = getByTestId('signin-button');
+
+    expect(emailInput).toBeOnTheScreen();
+    expect(passwordInput).toBeOnTheScreen();
+    expect(signInButton).toBeOnTheScreen();
+    expect(signInButton).toHaveAccessibilityState({ disabled: true });
+  });
+
   test('Should call signIn with correct credentials', async () => {
     const signInMock = jest.spyOn(auth, 'signIn');
     const authSession: IAuthSession = {
@@ -60,6 +77,8 @@ describe('Login screen', () => {
     fireEvent.changeText(passwordInput, 'password123');
 
     const signInButton = getByTestId('signin-button');
+    expect(signInButton).toHaveAccessibilityState({ disabled: false });
+
     fireEvent.press(signInButton);
 
     await waitFor(() => {

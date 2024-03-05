@@ -16,14 +16,40 @@ const mockNavigattion: any = {
   push: jest.fn(),
 };
 
+jest.mock('@services/auth', () => ({
+  signUp: jest.fn(),
+}));
+
 describe('CreateAccount component', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
     jest.clearAllMocks();
   });
 
   afterAll(() => {
     jest.restoreAllMocks();
+  });
+
+  test('Should render correctly', async () => {
+    const { getByTestId } = render(
+      <Provider>
+        <CreateAccount navigation={mockNavigattion} />
+      </Provider>,
+    );
+
+    const firstNameInput = getByTestId('firstName');
+    const lastNameInput = getByTestId('lastName');
+    const emailInput = getByTestId('email');
+    const passwordInput = getByTestId('password');
+    const addressInput = getByTestId('address');
+    const createButton = getByTestId('create-button');
+
+    expect(firstNameInput).toBeOnTheScreen();
+    expect(lastNameInput).toBeOnTheScreen();
+    expect(emailInput).toBeOnTheScreen();
+    expect(passwordInput).toBeOnTheScreen();
+    expect(addressInput).toBeOnTheScreen();
+    expect(createButton).toBeOnTheScreen();
+    expect(createButton).toHaveAccessibilityState({ disabled: true });
   });
 
   test('Should call signUp with correct information', async () => {
@@ -60,6 +86,8 @@ describe('CreateAccount component', () => {
     fireEvent.changeText(addressInput, '123 Main St');
 
     const createButton = getByTestId('create-button');
+    expect(createButton).toHaveAccessibilityState({ disabled: false });
+
     fireEvent.press(createButton);
 
     const signUpBodyMock = {
@@ -88,11 +116,11 @@ describe('CreateAccount component', () => {
     const lastNameInput = getByTestId('lastName');
     const addressInput = getByTestId('address');
 
+    fireEvent.changeText(firstNameInput, 'John');
+    fireEvent.changeText(lastNameInput, 'Doe');
     fireEvent.changeText(emailInput, 'test@example.com');
     fireEvent.changeText(passwordInput, 'password123');
-    fireEvent.changeText(firstNameInput, 'John');
-    fireEvent.changeText(lastNameInput, '');
-    fireEvent.changeText(addressInput, '');
+    fireEvent.changeText(addressInput, 'Address');
 
     const createButton = getByTestId('create-button');
     fireEvent.press(createButton);

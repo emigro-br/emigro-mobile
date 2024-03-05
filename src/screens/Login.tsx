@@ -63,28 +63,33 @@ type Props = {
 };
 
 const Login = ({ navigation }: Props) => {
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [formData, setFormData] = useState<FormData>({
-    email: '',
-    password: '',
-  });
 
   const [error, setError] = useState<string>('');
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
 
-  const handleChange = (name: string, value: string) => {
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+  const handleValueChange = (name: string, value: string) => {
+    if (name === 'email') {
+      setEmail(value);
+    } else if (name === 'password') {
+      setPassword(value);
+    }
   };
+
+  // TODO: improve this validation
+  const isValidForm = !!email && !!password;
 
   const handleSignIn = async () => {
     setIsLoggingIn(true);
     try {
-      if (!formData.email || !formData.password) {
+      if (!isValidForm) {
         setError(SIGN_IN_FIELDS_ERROR);
         setIsLoggingIn(false);
         return;
       }
-      const authSession = await signIn(formData.email, formData.password);
+      const authSession = await signIn(email, password);
       await sessionStore.save(authSession);
       sessionStore.fetchPublicKey();
       setError('');
@@ -102,6 +107,11 @@ const Login = ({ navigation }: Props) => {
     });
   };
 
+  const formValue: FormData = {
+    email,
+    password,
+  };
+
   return (
     <Box flex={1}>
       <VStack p="$4" space="lg">
@@ -116,8 +126,8 @@ const Login = ({ navigation }: Props) => {
                 <Input size="xl">
                   <InputField
                     placeholder={field.placeholder}
-                    value={formData[field.name]}
-                    onChangeText={(text) => handleChange(field.name, text)}
+                    value={formValue[field.name]}
+                    onChangeText={(text) => handleValueChange(field.name, text)}
                     type={field.secureTextEntry && !showPassword ? 'password' : 'text'}
                     keyboardType={field.keyboardType}
                     autoCapitalize={field.autoCapitalize}
@@ -142,7 +152,7 @@ const Login = ({ navigation }: Props) => {
                 <FormControlErrorText>{error}</FormControlErrorText>
               </FormControlError>
             </FormControl>
-            <Button onPress={handleSignIn} isDisabled={isLoggingIn} size="xl" testID="signin-button">
+            <Button onPress={handleSignIn} isDisabled={!isValidForm || isLoggingIn} size="xl" testID="signin-button">
               <ButtonText>{isLoggingIn ? 'Signing in...' : 'Sign in'}</ButtonText>
             </Button>
           </VStack>

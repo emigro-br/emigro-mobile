@@ -91,10 +91,17 @@ const CreateAccount = ({ navigation }: Props) => {
     });
   };
 
+  // TODO: improve the validation
+  const isValidForm = formData.firstName && formData.lastName && formData.email && formData.password;
+
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
       setError('');
+      if (!isValidForm) {
+        setError('Invalid form values');
+        return;
+      }
       const { username } = await signUp(formData);
       if (!username) {
         throw new Error(SIGNUP_ERROR_MESSAGE);
@@ -148,7 +155,7 @@ const CreateAccount = ({ navigation }: Props) => {
               </FormControlError>
             </FormControl>
 
-            <Button onPress={handleSubmit} isDisabled={isLoading} size="xl" testID="create-button">
+            <Button onPress={handleSubmit} isDisabled={!isValidForm || isLoading} size="xl" testID="create-button">
               <ButtonText>{isLoading ? 'Creating account...' : 'Create Account'}</ButtonText>
             </Button>
           </VStack>
