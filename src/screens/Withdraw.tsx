@@ -12,6 +12,7 @@ import { AssetList } from '@components/AssetList';
 import { ConfirmationModal } from '@components/modals/ConfirmationModal';
 import { ErrorModal } from '@components/modals/ErrorModal';
 import { LoadingModal } from '@components/modals/LoadingModal';
+import { OpenURLModal } from '@components/modals/OpenURLModal';
 import { SuccessModal } from '@components/modals/SuccessModal';
 
 import { OperationType } from '@constants/constants';
@@ -33,11 +34,10 @@ enum TransactionStep {
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
 const Withdraw: React.FC = observer(() => {
-  // const [url, setUrl] = useState<string | null>(null);
+  const [url, setUrl] = useState<string | null>(null);
   const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
   const [transactionId, setTransactionId] = useState<string | null>(null);
   const [transaction, setTransaction] = useState<Sep24Transaction | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset | null>(null);
   const availableAssets = [CryptoAsset.ARS, CryptoAsset.BRL, CryptoAsset.EURC];
@@ -49,55 +49,58 @@ const Withdraw: React.FC = observer(() => {
   }, []);
 
   const cleanUp = () => {
-    // setTransactionId(null);
-    // setUrl(null);
-    setIsLoading(false);
+    setTransactionId(null);
+    setUrl(null);
     setErrorMessage(null);
+    setStep(TransactionStep.NONE);
   };
 
   const handleOnPress = async (asset: CryptoAsset) => {
-    setIsLoading(true);
     setSelectedAsset(asset);
     setTransactionId(null);
 
     if (!sessionStore.accessToken || !sessionStore.publicKey) {
       setErrorMessage('Invalid session');
-      setIsLoading(false);
+      setStep(TransactionStep.ERROR);
       return;
     }
 
-    const anchorParams = {
-      account: sessionStore.publicKey,
-      operation: OperationType.WITHDRAW,
-      asset_code: asset,
-      cognito_token: sessionStore.accessToken,
-    };
+    setStep(TransactionStep.STARTED);
 
     try {
+      const anchorParams = {
+        account: sessionStore.publicKey,
+        operation: OperationType.WITHDRAW,
+        asset_code: asset,
+        cognito_token: sessionStore.accessToken,
+      };
       //TODO: webview change navigation thwors error for CallbackType.CALLBACK_URL
       const { url, id } = await getInteractiveUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
 
-      if (id) {
+      if (id && url) {
         setTransactionId(id);
-        waitWithdrawOnAnchorComplete(id, asset);
-      }
-
-      if (url) {
-        // with Modal
-        // setUrl(url);
-        // setStep(TransactionStep.STARTED);
-
-        // without Modal
-        Linking.openURL(url);
-      } else if (!url && !id) {
-        setErrorMessage(defaultErrorMessage);
+        setUrl(url);
+      } else {
+        throw new Error('Can not fetch the interactive url');
       }
     } catch (error) {
       console.warn(error);
       setErrorMessage(defaultErrorMessage);
-    } finally {
-      setIsLoading(false);
+      setStep(TransactionStep.ERROR);
     }
+  };
+
+  const handleOpenUrlPressed = () => {
+    if (url && transactionId && selectedAsset) {
+      setStep(TransactionStep.WAITING);
+      waitWithdrawOnAnchorComplete(transactionId, selectedAsset);
+      Linking.openURL(url);
+    }
+  };
+
+  const handleCloseWait = () => {
+    stopFetchingTransaction();
+    setStep(TransactionStep.PENDING_USER);
   };
 
   const handleConfirmTransaction = async (transactionId: string, assetCode: CryptoAsset) => {
@@ -167,19 +170,21 @@ const Withdraw: React.FC = observer(() => {
     }
   };
 
-  const handleCloseWait = () => {
-    stopFetchingTransaction();
-    setStep(TransactionStep.PENDING_USER);
-  };
-
   return (
     <>
-      <LoadingModal isOpen={!sessionStore.publicKey || isLoading} />
+      <LoadingModal isOpen={!sessionStore.publicKey} />
+
       <LoadingModal
-        isOpen={step === TransactionStep.STARTED}
+        isOpen={step === TransactionStep.STARTED && !url}
         text="Connecting to anchor..."
         testID="loading-url-modal"
       />
+      <OpenURLModal
+        isOpen={step === TransactionStep.STARTED && !!url}
+        onClose={cleanUp}
+        onConfirm={handleOpenUrlPressed}
+      />
+
       <LoadingModal
         isOpen={step === TransactionStep.WAITING}
         text="Awaiting transaction completion..."
