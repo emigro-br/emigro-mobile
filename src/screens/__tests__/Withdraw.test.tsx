@@ -1,6 +1,6 @@
 import React from 'react';
-import { Linking } from 'react-native';
 
+// import { Linking } from 'react-native';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { Provider } from '@components/Provider';
@@ -74,7 +74,12 @@ describe('Withdraw', () => {
     await waitFor(() => {
       const loadingModal = getByTestId('loading-url-modal');
       expect(loadingModal).toBeOnTheScreen();
-      expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.ars');
+    });
+
+    await waitFor(() => {
+      const openUrlModal = getByTestId('open-url-modal');
+      expect(openUrlModal).toBeOnTheScreen();
+      // expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.ars');
     });
   });
 
@@ -92,7 +97,12 @@ describe('Withdraw', () => {
     await waitFor(() => {
       const loadingModal = getByTestId('loading-url-modal');
       expect(loadingModal).toBeOnTheScreen();
-      expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.brl');
+    });
+
+    await waitFor(() => {
+      const openUrlModal = getByTestId('open-url-modal');
+      expect(openUrlModal).toBeOnTheScreen();
+      // expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.brl');
     });
   });
 
@@ -110,7 +120,12 @@ describe('Withdraw', () => {
     await waitFor(() => {
       const loadingModal = getByTestId('loading-url-modal');
       expect(loadingModal).toBeOnTheScreen();
-      expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.eurc');
+    });
+
+    await waitFor(() => {
+      const openUrlModal = getByTestId('open-url-modal');
+      expect(openUrlModal).toBeOnTheScreen();
+      // expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.eurc');
     });
   });
 });

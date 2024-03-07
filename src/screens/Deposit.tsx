@@ -91,7 +91,7 @@ const Deposit = observer(({ navigation }: Props) => {
   return (
     <>
       <LoadingModal isOpen={!sessionStore.publicKey || isLoading} text="Connecting to anchor..." />
-      <OpenURLModal isOpen={!!url} onConfirm={handleModalPressed} />
+      <OpenURLModal isOpen={!!url} onClose={() => setUrl(null)} onConfirm={handleModalPressed} />
 
       <Box flex={1}>
         <VStack p="$4" space="md">
