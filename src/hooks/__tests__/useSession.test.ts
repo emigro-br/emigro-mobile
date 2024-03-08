@@ -1,4 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
+import mockConsole from 'jest-mock-console';
 
 import { IAuthSession } from '@/types/IAuthSession';
 
@@ -21,6 +22,12 @@ jest.mock('@stores/SessionStore', () => ({
 }));
 
 describe('useSession', () => {
+  const restoreConsole = mockConsole();
+
+  afterAll(() => {
+    restoreConsole();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     (sessionStore.load as jest.Mock).mockResolvedValue(mockSession);
