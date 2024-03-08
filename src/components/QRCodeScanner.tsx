@@ -30,12 +30,12 @@ import AskCamera from '@screens/AskCamera';
 
 import { AssetToCurrency } from '@utils/assets';
 
-type QRCodeScannerProps = {
+type Props = {
   onCancel: () => void;
   onProceedToPayment: () => void;
 };
 
-const QRCodeScanner: React.FunctionComponent<QRCodeScannerProps> = ({ onCancel, onProceedToPayment }) => {
+export const QRCodeScanner: React.FC<Props> = ({ onCancel, onProceedToPayment }) => {
   const { scannedVendor, setScannedVendor } = useVendor();
   const [cameraPermission, setCameraPermission] = useState<PermissionResponse | null>(null);
   const [isScanned, setIsScanned] = useState(false);
@@ -177,5 +177,3 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
 });
-
-export default QRCodeScanner;

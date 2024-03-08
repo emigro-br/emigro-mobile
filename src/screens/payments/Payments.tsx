@@ -10,7 +10,7 @@ import { CryptoAsset } from '@/types/assets';
 import qrImage from '@assets/images/qr-code.png';
 
 import { AssetListActionSheet } from '@components/AssetListActionSheet';
-import QRCodeScanner from '@components/QRCodeScanner';
+import { QRCodeScanner } from '@components/QRCodeScanner';
 
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
 
@@ -18,7 +18,7 @@ type Props = {
   navigation: NativeStackNavigationProp<PaymentStackParamList, 'Payments'>;
 };
 
-const Payments: React.FC<Props> = ({ navigation }) => {
+export const Payments: React.FC<Props> = ({ navigation }) => {
   const [assetListOpen, setAssetListOpen] = useState(false);
   const [isScannerOpen, setIsScannerOpen] = useState(false);
 
@@ -66,5 +66,3 @@ const Payments: React.FC<Props> = ({ navigation }) => {
     </Box>
   );
 };
-
-export default Payments;
