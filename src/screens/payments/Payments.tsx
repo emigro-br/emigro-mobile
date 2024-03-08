@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { QrCodeIcon } from 'react-native-heroicons/solid';
+import { CameraIcon, QrCodeIcon } from 'react-native-heroicons/solid';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { Box, Button, ButtonIcon, ButtonText, Center, Image, VStack } from '@gluestack-ui/themed';
+import { Box, Button, ButtonGroup, ButtonIcon, ButtonText, Center, Image, VStack } from '@gluestack-ui/themed';
 
 import qrImage from '@assets/images/qr-code.png';
 
@@ -36,10 +36,16 @@ const Payments: React.FC<Props> = ({ navigation }) => {
         <Center my="$8">
           <Image source={qrImage} size="2xl" alt="QR Code" />
         </Center>
-        <Button onPress={handleScanPress}>
-          <ButtonIcon as={QrCodeIcon} mr="$2" />
-          <ButtonText>Scan a Payment</ButtonText>
-        </Button>
+        <ButtonGroup flexDirection="column">
+          <Button onPress={handleScanPress}>
+            <ButtonIcon as={CameraIcon} mr="$2" />
+            <ButtonText>Scan a Payment</ButtonText>
+          </Button>
+          <Button onPress={() => navigation.push('RequestPayment')}>
+            <ButtonIcon as={QrCodeIcon} mr="$2" />
+            <ButtonText>Request with a QR Code</ButtonText>
+          </Button>
+        </ButtonGroup>
       </VStack>
     </Box>
   );
