@@ -21,7 +21,7 @@ export const RequestPayment = ({ navigation, route }: Props) => {
     <Box flex={1} bg="$white">
       <VStack p="$4" space="lg">
         <Heading>How much will you request?</Heading>
-        <AssetInput asset={asset} value={value} onChangeValue={setValue} fontSize={36} />
+        <AssetInput asset={asset} value={value} onChangeValue={setValue} fontSize={36} testID="asset-input" />
 
         <Button
           onPress={() =>
@@ -31,6 +31,7 @@ export const RequestPayment = ({ navigation, route }: Props) => {
             })
           }
           isDisabled={!value}
+          testID="generate-qr-code-button"
         >
           <ButtonText>Generate QR Code</ButtonText>
         </Button>
