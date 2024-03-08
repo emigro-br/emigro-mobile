@@ -1,0 +1,41 @@
+import {
+  Actionsheet,
+  ActionsheetBackdrop,
+  ActionsheetContent,
+  ActionsheetDragIndicator,
+  ActionsheetDragIndicatorWrapper,
+  ActionsheetItem,
+  ActionsheetItemText,
+} from '@gluestack-ui/themed';
+
+import { CryptoOrFiat } from '@/types/assets';
+
+import { labelFor } from '@utils/assets';
+
+import { AssetAvatar } from './AssetAvatar';
+
+type Props = {
+  assets: CryptoOrFiat[];
+  isOpen: boolean;
+  onClose: () => void;
+  onItemPress: (asset: CryptoOrFiat) => void;
+};
+
+export const AssetListActionSheet = ({ assets, isOpen, onClose, onItemPress }: Props) => {
+  return (
+    <Actionsheet isOpen={isOpen} onClose={onClose} zIndex={999}>
+      <ActionsheetBackdrop />
+      <ActionsheetContent h="$72" zIndex={999}>
+        <ActionsheetDragIndicatorWrapper>
+          <ActionsheetDragIndicator />
+        </ActionsheetDragIndicatorWrapper>
+        {assets.map((asset) => (
+          <ActionsheetItem key={asset} onPress={() => onItemPress(asset)}>
+            <AssetAvatar item={asset} size="xs" />
+            <ActionsheetItemText>{labelFor(asset)}</ActionsheetItemText>
+          </ActionsheetItem>
+        ))}
+      </ActionsheetContent>
+    </Actionsheet>
+  );
+};

@@ -10,7 +10,9 @@ import { RequestWithQRCode } from '@screens/payments/RequestWithQRCode';
 export type PaymentStackParamList = {
   Payments: undefined;
   ConfirmPayment: undefined;
-  RequestPayment: undefined;
+  RequestPayment: {
+    asset: string;
+  };
   RequestWithQRCode: {
     asset: string;
     value: number;

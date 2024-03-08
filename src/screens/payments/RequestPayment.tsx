@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonText, Heading, VStack } from '@gluestack-ui/themed';
 
@@ -10,13 +10,13 @@ import { AssetInput } from '@components/AssetInput';
 
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
 
-type Props = {
-  navigation: NativeStackNavigationProp<PaymentStackParamList, 'RequestPayment'>;
-};
+type Props = NativeStackScreenProps<PaymentStackParamList, 'RequestPayment'>;
 
-export const RequestPayment = ({ navigation }: Props) => {
-  const [asset, setAsset] = useState(CryptoAsset.XLM);
-  const [value, setValue] = useState(0);
+export const RequestPayment = ({ navigation, route }: Props) => {
+  const [value, setValue] = useState<number | null>(0);
+
+  const asset: CryptoAsset = route.params.asset as CryptoAsset;
+
   return (
     <Box flex={1} bg="$white">
       <VStack p="$4" space="lg">
@@ -27,7 +27,7 @@ export const RequestPayment = ({ navigation }: Props) => {
           onPress={() =>
             navigation.push('RequestWithQRCode', {
               asset,
-              value,
+              value: value!,
             })
           }
           isDisabled={!value}

@@ -20,7 +20,7 @@ export const AssetInput = ({ asset, value, onChangeValue, precision = 2, ...prop
   let suffix = '';
 
   if (asset in FiatCurrency && asset in CryptoAsset) {
-    prefix = `${AssetToSymbol[asset]} `;
+    suffix = ` ${asset}`; // Crypto asset is priority
   } else if (asset in FiatCurrency) {
     prefix = `${AssetToSymbol[asset]} `;
   } else if (asset in CryptoAsset) {
