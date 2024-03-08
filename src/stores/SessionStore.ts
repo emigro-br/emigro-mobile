@@ -1,20 +1,29 @@
 import * as SecureStore from 'expo-secure-store';
-import { action, makeAutoObservable, observable } from 'mobx';
+import { action, flow, makeAutoObservable, observable } from 'mobx';
+
+import { IUserProfile } from '@/types/IUserProfile';
 
 import { refresh as refreshSession } from '@services/auth';
-import { getUserPublicKey } from '@services/emigro';
+import { getUserProfile, getUserPublicKey } from '@services/emigro';
 
 import { IAuthSession } from '../types/IAuthSession';
 
 export class SessionStore {
   // Observable state
   session: IAuthSession | null = null;
+  profile: IUserProfile | null = null;
 
   constructor() {
     makeAutoObservable(this, {
+      // session
       session: observable,
       setSession: action,
       setPublicKey: action,
+      fetchPublicKey: flow,
+      // profile
+      profile: observable,
+      setProfile: action,
+      fetchProfile: flow,
     });
   }
 
@@ -39,14 +48,28 @@ export class SessionStore {
     }
   }
 
-  async fetchPublicKey() {
-    console.debug('Fetching user public key');
+  setProfile(profile: IUserProfile | null) {
+    this.profile = profile;
+  }
+
+  async *fetchPublicKey() {
+    console.debug('Fetching user public key...');
     const publicKey = await getUserPublicKey();
     if (this.session && publicKey) {
       this.setPublicKey(publicKey); // action will be called
       await this.save(this.session);
     }
     return publicKey;
+  }
+
+  async *fetchProfile() {
+    if (this.session) {
+      console.debug('Fetching user profile...');
+      const profile = await getUserProfile(this.session);
+      if (profile) {
+        this.setProfile(profile); // action will be called
+      }
+    }
   }
 
   get isTokenExpired(): boolean {

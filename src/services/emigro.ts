@@ -145,7 +145,7 @@ export const getUserProfile = async (session: IAuthSession): Promise<IUserProfil
       throw new Error(res.statusText);
     }
 
-    return json;
+    return json as IUserProfile;
   } catch (error) {
     console.error(error);
     throw error;

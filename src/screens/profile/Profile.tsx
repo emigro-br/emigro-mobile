@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
 import { View } from 'react-native';
 
-import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
@@ -27,9 +25,6 @@ import * as Clipboard from 'expo-clipboard';
 
 import { ProfileStackParamList } from '@navigation/ProfileStack';
 
-import { getUserProfile } from '@services/emigro';
-import { CustomError } from '@services/errors';
-
 import { sessionStore } from '@stores/SessionStore';
 
 import { maskWallet } from '@utils/masks';
@@ -40,34 +35,10 @@ type Props = {
 
 const Profile = ({ navigation }: Props) => {
   const toast = useToast();
-  const [userInformation, setUserInformation] = useState<any>(null);
 
   const handleLogout = async () => {
     await sessionStore.clear();
   };
-
-  const fetchUserInformation = async () => {
-    try {
-      console.debug('fetching user information');
-      const userProfile = await getUserProfile(sessionStore.session!);
-      if (userProfile) {
-        setUserInformation(userProfile);
-      }
-    } catch (error) {
-      console.warn('Can not load the profile', error);
-      if (error instanceof CustomError) {
-        if (['UnauthorizedException', 'BadRequestException'].includes(error.name)) {
-          handleLogout();
-        }
-      }
-    }
-  };
-
-  useFocusEffect(() => {
-    if (!userInformation) {
-      fetchUserInformation();
-    }
-  });
 
   const publicKey = sessionStore.publicKey;
 
@@ -84,7 +55,8 @@ const Profile = ({ navigation }: Props) => {
     }
   };
 
-  if (!userInformation) {
+  const profileInfo = sessionStore.profile;
+  if (!profileInfo) {
     return (
       <Center flex={1} bg="$backgroundLight0">
         <Spinner size="large" testID="loading" />
@@ -92,7 +64,7 @@ const Profile = ({ navigation }: Props) => {
     );
   }
 
-  const fullName = `${userInformation.given_name} ${userInformation.family_name}`;
+  const fullName = `${profileInfo.given_name} ${profileInfo.family_name}`;
 
   return (
     <Box flex={1} bg="$white" justifyContent="space-between">
@@ -124,7 +96,7 @@ const Profile = ({ navigation }: Props) => {
             <Text size="sm" color="$textLight500">
               Email address
             </Text>
-            <Text>{userInformation.email}</Text>
+            <Text>{profileInfo.email}</Text>
           </View>
 
           <Divider />
@@ -133,7 +105,7 @@ const Profile = ({ navigation }: Props) => {
             <Text size="sm" color="$textLight500">
               Address
             </Text>
-            <Text>{userInformation.address}</Text>
+            <Text>{profileInfo.address}</Text>
           </View>
 
           <Divider />

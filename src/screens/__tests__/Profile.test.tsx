@@ -23,16 +23,10 @@ jest.mock('@stores/SessionStore', () => ({
   sessionStore: {
     clear: jest.fn(),
     publicKey: 'test-public',
+    get profile() {
+      return null;
+    },
   },
-}));
-
-jest.mock('@services/emigro', () => ({
-  getUserProfile: jest.fn().mockResolvedValue({
-    given_name: 'Test Name',
-    family_name: 'Test Last Name',
-    email: 'test@email.com',
-    address: 'Test Address',
-  } as IUserProfile),
 }));
 
 const renderWithProviders = (component: JSX.Element) => {
@@ -55,6 +49,7 @@ describe('Profile screen', () => {
   });
 
   test('Should appear loading screen while fetching the user information', async () => {
+    jest.spyOn(sessionStore, 'profile', 'get').mockReturnValue(null);
     const { getByTestId } = renderWithProviders(<Profile navigation={mockNavigattion} />);
 
     await waitFor(() => {
@@ -63,6 +58,12 @@ describe('Profile screen', () => {
   });
 
   test('Should render the Profile screen correctly', async () => {
+    jest.spyOn(sessionStore, 'profile', 'get').mockReturnValue({
+      given_name: 'Test Name',
+      family_name: 'Test Last Name',
+      email: 'test@email.com',
+      address: 'Test Address',
+    } as IUserProfile);
     const { getByText, queryAllByText } = renderWithProviders(<Profile navigation={mockNavigattion} />);
 
     await waitFor(() => {
