@@ -2,8 +2,6 @@ import { render } from 'test-utils';
 
 import { CryptoAsset } from '@/types/assets';
 
-import { AssetToName } from '@utils/assets';
-
 import { AssetListTile } from '../AssetListTile';
 
 describe('AssetListTile', () => {
@@ -12,7 +10,7 @@ describe('AssetListTile', () => {
     const { getByText, getByTestId } = render(<AssetListTile item={item} />);
 
     const assetName = getByText(item);
-    const assetType = getByText(AssetToName[item]);
+    const assetType = getByText('USD Coin');
     const assetAvatar = getByTestId('asset-avatar');
 
     expect(assetName).toBeOnTheScreen();

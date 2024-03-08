@@ -2,7 +2,7 @@ import { HStack, Text, VStack } from '@gluestack-ui/themed';
 
 import { CryptoOrFiat } from '@/types/assets';
 
-import { AssetToName } from '@utils/assets';
+import { labelFor } from '@utils/assets';
 
 import { AssetAvatar } from './AssetAvatar';
 
@@ -19,7 +19,7 @@ export const AssetListTile = ({ item }: Props) => {
           {item}
         </Text>
         <Text size="sm" color="$coolGray500" $dark-color="$warmGray200">
-          {AssetToName[item]}
+          {labelFor(item)}
         </Text>
       </VStack>
     </HStack>

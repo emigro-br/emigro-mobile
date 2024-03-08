@@ -1,11 +1,11 @@
-import { CryptoAsset, FiatCurrency } from '@/types/assets';
+import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
 
 // https://uxwing.com/
 import arsIcon from '@assets/images/icons/argentina-flag-round-circle-icon.png';
 import brlIcon from '@assets/images/icons/brazil-flag-round-circle-icon.png';
 import eurIcon from '@assets/images/icons/european-union-flag-round-circle-icon.png';
-import usdIcon from '@assets/images/icons/usa-flag-round-circle-icon.png';
 import xlmIcon from '@assets/images/icons/stellar-xlm-icon.png';
+import usdIcon from '@assets/images/icons/usa-flag-round-circle-icon.png';
 
 // convert asset code to currency code
 export const AssetToCurrency = {
@@ -16,14 +16,27 @@ export const AssetToCurrency = {
   [CryptoAsset.ARS]: FiatCurrency.ARS,
 };
 
-export const AssetToName = {
+const AssetToName = {
   [CryptoAsset.XLM]: 'Stellar Lumens',
   [CryptoAsset.USDC]: 'USD Coin',
   [CryptoAsset.EURC]: 'Euro Coin',
+  [CryptoAsset.BRL]: 'Brazilian Real Coin',
+  [CryptoAsset.ARS]: 'Argentine Peso Coin',
+};
+
+const FiatToName = {
   [FiatCurrency.EUR]: 'Euro',
   [FiatCurrency.USD]: 'US Dollar',
   [FiatCurrency.BRL]: 'Brazilian Real',
   [FiatCurrency.ARS]: 'Argentine Peso',
+};
+
+export const labelFor = (asset: CryptoOrFiat): string | undefined => {
+  if (asset in CryptoAsset) {
+    return AssetToName[asset as CryptoAsset];
+  } else if (asset in FiatCurrency) {
+    return FiatToName[asset as FiatCurrency];
+  }
 };
 
 export const AssetToSymbol = {
@@ -38,7 +51,7 @@ export const AssetToSymbol = {
   [FiatCurrency.ARS]: '$',
 };
 
-const AssetToIcon: Record<CryptoAsset | FiatCurrency, any> = {
+const AssetToIcon: Record<CryptoOrFiat, any> = {
   [CryptoAsset.EURC]: eurIcon,
   [CryptoAsset.USDC]: usdIcon,
   [CryptoAsset.ARS]: arsIcon,
@@ -51,6 +64,6 @@ const AssetToIcon: Record<CryptoAsset | FiatCurrency, any> = {
   // [FiatCurrencies.ARS]: arsIcon,
 };
 
-export const iconFor = (asset: CryptoAsset | FiatCurrency) => {
+export const iconFor = (asset: CryptoOrFiat) => {
   return AssetToIcon[asset];
 };

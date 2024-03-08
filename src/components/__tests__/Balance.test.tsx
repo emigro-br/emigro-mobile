@@ -13,7 +13,7 @@ describe('Balance component', () => {
 
   it('Should display the correct asset codes and balances', () => {
     render(<Balance userBalance={userBalance} />);
-    const brlAsset = screen.getByText('Brazilian Real');
+    const brlAsset = screen.getByText('Brazilian Real Coin');
     const usdcAsset = screen.getByText('USD Coin');
     const eurocAsset = screen.getByText('Euro Coin');
     const brlBalance = screen.getByText('R$ 10.00');

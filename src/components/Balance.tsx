@@ -1,9 +1,11 @@
-import { Avatar, AvatarImage, Card, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
+import { Card, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
 
 import { IBalance } from '@/types/IBalance';
 import { CryptoAsset } from '@/types/assets';
 
-import { AssetToName, AssetToSymbol, iconFor } from '@utils/assets';
+import { AssetToSymbol, labelFor } from '@utils/assets';
+
+import { AssetAvatar } from './AssetAvatar';
 
 interface Props {
   userBalance: IBalance[];
@@ -20,11 +22,9 @@ const Balance: React.FC<Props> = ({ userBalance }) => {
           <Card key={index} size="lg" variant="outline">
             <HStack justifyContent="space-between">
               <HStack space="md">
-                <Avatar size="sm" bg="$transparent">
-                  <AvatarImage source={iconFor(asset)} alt={AssetToName[asset]} />
-                </Avatar>
+                <AssetAvatar item={asset} />
                 <Text bold size="lg">
-                  {AssetToName[asset]}
+                  {labelFor(asset)}
                 </Text>
               </HStack>
               <Text>
