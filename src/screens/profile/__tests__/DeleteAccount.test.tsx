@@ -32,13 +32,25 @@ describe('DeleteAccount component', () => {
     jest.clearAllMocks();
   });
 
-  it('Should delete account and navigate to Welcome screen', async () => {
+  it('Should delete account and clear the session', async () => {
     sessionStore.session = {
       accessToken: 'accessToken',
     } as IAuthSession;
-    const { getByText } = render(<DeleteAccount navigation={mockNavigattion} />);
+    const { getByText, getByTestId } = render(<DeleteAccount navigation={mockNavigattion} />);
 
+    const checkbox = getByTestId('checkbox');
     const deleteButton = getByText('Yes, delete my account permanently');
+    expect(checkbox).toBeOnTheScreen();
+    expect(
+      getByText('I have read and understand the risks associated with deleting my account permanently.'),
+    ).toBeOnTheScreen();
+    expect(deleteButton).toBeOnTheScreen();
+
+    // expect(deleteButton).toHaveAccessibilityState({ disabled: true });
+
+    fireEvent.press(checkbox);
+
+    expect(deleteButton).toHaveAccessibilityState({ disabled: false });
     fireEvent.press(deleteButton);
 
     await waitFor(() => {
@@ -47,10 +59,13 @@ describe('DeleteAccount component', () => {
     });
   });
 
-  it('Should navigate to Welcome screen if session is not found', async () => {
+  it('Should not delete any account if session is not found', async () => {
     sessionStore.session = null;
 
-    const { getByText } = render(<DeleteAccount navigation={mockNavigattion} />);
+    const { getByText, getByTestId } = render(<DeleteAccount navigation={mockNavigattion} />);
+
+    const checkbox = getByTestId('checkbox');
+    fireEvent.press(checkbox);
 
     const deleteButton = getByText('Yes, delete my account permanently');
     fireEvent.press(deleteButton);
@@ -68,7 +83,10 @@ describe('DeleteAccount component', () => {
 
     (deleteAccount as jest.Mock).mockRejectedValue(new Error('Delete account error'));
 
-    const { getByText } = render(<DeleteAccount navigation={mockNavigattion} />);
+    const { getByText, getByTestId } = render(<DeleteAccount navigation={mockNavigattion} />);
+
+    const checkbox = getByTestId('checkbox');
+    fireEvent.press(checkbox);
 
     const deleteButton = getByText('Yes, delete my account permanently');
     fireEvent.press(deleteButton);
