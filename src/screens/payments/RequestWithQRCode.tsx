@@ -49,7 +49,7 @@ export const RequestWithQRCode = ({ navigation, route }: Props) => {
   const toast = useToast();
   const { asset, value } = route.params;
   const profile = sessionStore.profile;
-  const fullname = `${profile?.given_name} ${profile?.family_name}`;
+  const fullname = `${profile?.given_name || ''} ${profile?.family_name || ''}`.trim();
   const request: QRCodeRequest = {
     name: fullname || 'Unknown',
     address: profile?.address,
@@ -75,13 +75,13 @@ export const RequestWithQRCode = ({ navigation, route }: Props) => {
     <SafeAreaView bg="$white">
       <ScrollView>
         <Box flex={1}>
-          <ModalCloseButton onPress={() => navigation.popToTop()} position="absolute" right="$2">
+          <ModalCloseButton onPress={() => navigation.popToTop()} position="absolute" right="$2" testID="close-button">
             <CloseIcon size="lg" />
           </ModalCloseButton>
           <VStack p="$4" space="lg">
             <Heading>Request with QR Code</Heading>
             <Text>Show this QR code or copy and share with who will make this payment</Text>
-            <Center my="$4">
+            <Center my="$4" testID="qr-code">
               <QRCode value={encodedCode} size={QRCodeSize.MEDIUM} />
             </Center>
 
