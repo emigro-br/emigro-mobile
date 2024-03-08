@@ -44,7 +44,10 @@ describe('Withdraw', () => {
   });
 
   it('Should render correctly', async () => {
-    const { queryByText } = render(<Withdraw />);
+    const { getByText, queryByText } = render(<Withdraw />);
+
+    expect(getByText('Withdraw money')).toBeOnTheScreen();
+    expect(getByText('Choose the currency you want to withdraw')).toBeOnTheScreen();
 
     await waitFor(() => {
       // only because of the useEffect

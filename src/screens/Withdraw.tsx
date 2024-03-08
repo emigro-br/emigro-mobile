@@ -232,8 +232,8 @@ const Withdraw: React.FC = observer(() => {
 
       <Box flex={1}>
         <VStack p="$4" space="md">
-          <Heading size="xl">Withdraw Funds</Heading>
-          <Text>Choose the asset you want to withdraw</Text>
+          <Heading size="xl">Withdraw money</Heading>
+          <Text>Choose the currency you want to withdraw</Text>
           <Card size="md" py="$1" variant="filled" bg="$white">
             <AssetList data={availableAssets} onPress={(item) => handleOnPress(item as CryptoAsset)} />
           </Card>
