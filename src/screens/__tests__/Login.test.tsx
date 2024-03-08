@@ -1,6 +1,7 @@
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
 
-import { withTheme } from '@/__utils__/helpers';
+import { render } from 'test-utils';
+
 import { IAuthSession } from '@/types/IAuthSession';
 
 import Login from '@screens/Login';
@@ -35,7 +36,7 @@ describe('Login screen', () => {
   });
 
   test('Should render correctly', async () => {
-    const { getByTestId } = render(withTheme(<Login navigation={mockNavigattion} />));
+    const { getByTestId } = render(<Login navigation={mockNavigattion} />);
 
     const emailInput = getByTestId('email');
     const passwordInput = getByTestId('password');
@@ -59,7 +60,7 @@ describe('Login screen', () => {
 
     signInMock.mockResolvedValue(Promise.resolve(authSession));
 
-    const { getByTestId } = render(withTheme(<Login navigation={mockNavigattion} />));
+    const { getByTestId } = render(<Login navigation={mockNavigattion} />);
 
     const emailInput = getByTestId('email');
     const passwordInput = getByTestId('password');

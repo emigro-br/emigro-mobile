@@ -1,9 +1,10 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
 
-import { withTheme } from '@/__utils__/helpers';
+import { render } from 'test-utils';
+
 import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { CryptoAsset } from '@/types/assets';
 
@@ -32,7 +33,7 @@ describe('DetailsSwap', () => {
   };
 
   // Create a separate component
-  const DetailsSwapScreen = () => withTheme(<DetailsSwap navigation={navigation} />);
+  const DetailsSwapScreen = () => <DetailsSwap navigation={navigation} />;
 
   beforeAll(() => {
     jest.useFakeTimers();

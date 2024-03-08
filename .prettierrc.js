@@ -7,6 +7,7 @@ module.exports = {
     "^react(.*)$",
     "^@react(.*)$",
     "<THIRD_PARTY_MODULES>",
+    "test-utils",
     "^@/(.*)$",
     "^@api/(.*)$",
     "^@assets/(.*)$",

@@ -26,6 +26,7 @@
     "module": "es6",
     "types":["@testing-library/jest-native", "jest", "node"],
     "paths": {
+      "test-utils": ["./src/__utils__/test-utils"],
       "@api/*": [
         "./src/api/*"
       ],

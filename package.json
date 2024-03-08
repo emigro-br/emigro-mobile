@@ -16,11 +16,16 @@
   },
   "jest": {
     "preset": "jest-expo",
+    "testPathIgnorePatterns": ["/__fixtures__/", "__mocks__", "/__utils__/"],
     "transformIgnorePatterns": [
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|@gluestack-ui|@legendapp)"
     ],
     "setupFilesAfterEnv": [
       "@testing-library/jest-native/extend-expect"
+    ],
+    "moduleDirectories": [
+      "node_modules",
+      "__utils__"
     ]
   },
   "lint-staged": {

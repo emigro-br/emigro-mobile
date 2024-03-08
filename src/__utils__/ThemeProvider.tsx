@@ -8,6 +8,10 @@ import { config } from '@config/gluestack-ui.config';
 const TempProvider = createProvider({ StyledProvider }) as any;
 TempProvider.displayName = 'ThemeProvider';
 
-export const ThemeProvider = ({ children }: any) => {
-  return <TempProvider config={config}>{children}</TempProvider>;
+export const ThemeProvider = ({ children, theme }: any) => {
+  return (
+    <TempProvider config={config} theme={theme}>
+      {children}
+    </TempProvider>
+  );
 };
