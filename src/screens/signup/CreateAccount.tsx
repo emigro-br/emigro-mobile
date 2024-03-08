@@ -25,6 +25,7 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
+  ScrollView,
   Text,
   VStack,
 } from '@gluestack-ui/themed';
@@ -124,54 +125,56 @@ const CreateAccount = ({ navigation }: Props) => {
   };
 
   return (
-    <Box flex={1}>
-      <ConfirmationModal isOpen={!!confirmationParams} onConfirm={handleCloseModal} />
-      <VStack p="$4" space="lg">
-        <Heading size="xl">Sign up to Emigro</Heading>
-        <Card>
-          <VStack space="xl">
-            {formFields.map((field) => (
-              <FormControl key={field.name}>
-                <FormControlLabel mb="$1">
-                  <FormControlLabelText>{field.label}</FormControlLabelText>
-                </FormControlLabel>
-                <Input size="xl">
-                  <InputField
-                    placeholder={field.placeholder}
-                    value={formData[field.name]}
-                    onChangeText={(text) => handleChange(field.name, text)}
-                    secureTextEntry={field.secureTextEntry}
-                    keyboardType={field.keyboardType}
-                    testID={field.name}
-                  />
-                </Input>
+    <ScrollView>
+      <Box flex={1}>
+        <ConfirmationModal isOpen={!!confirmationParams} onConfirm={handleCloseModal} />
+        <VStack p="$4" space="lg">
+          <Heading size="xl">Sign up to Emigro</Heading>
+          <Card>
+            <VStack space="xl">
+              {formFields.map((field) => (
+                <FormControl key={field.name}>
+                  <FormControlLabel mb="$1">
+                    <FormControlLabelText>{field.label}</FormControlLabelText>
+                  </FormControlLabel>
+                  <Input size="xl">
+                    <InputField
+                      placeholder={field.placeholder}
+                      value={formData[field.name]}
+                      onChangeText={(text) => handleChange(field.name, text)}
+                      secureTextEntry={field.secureTextEntry}
+                      keyboardType={field.keyboardType}
+                      testID={field.name}
+                    />
+                  </Input>
+                </FormControl>
+              ))}
+
+              <FormControl isInvalid={!!error}>
+                <FormControlError>
+                  <FormControlErrorIcon as={AlertCircleIcon} />
+                  <FormControlErrorText>{error}</FormControlErrorText>
+                </FormControlError>
               </FormControl>
-            ))}
 
-            <FormControl isInvalid={!!error}>
-              <FormControlError>
-                <FormControlErrorIcon as={AlertCircleIcon} />
-                <FormControlErrorText>{error}</FormControlErrorText>
-              </FormControlError>
-            </FormControl>
-
-            <Button onPress={handleSubmit} isDisabled={!isValidForm || isLoading} size="xl" testID="create-button">
-              <ButtonText>{isLoading ? 'Creating account...' : 'Create Account'}</ButtonText>
-            </Button>
-          </VStack>
-        </Card>
-        <Center>
-          <Text size="xl">
-            Already have an account?
-            <Link onPress={() => navigation.replace('Login')}>
-              <Text size="xl" color="$primary500" ml="$2" bold>
-                Sign in
-              </Text>
-            </Link>
-          </Text>
-        </Center>
-      </VStack>
-    </Box>
+              <Button onPress={handleSubmit} isDisabled={!isValidForm || isLoading} size="xl" testID="create-button">
+                <ButtonText>{isLoading ? 'Creating account...' : 'Create Account'}</ButtonText>
+              </Button>
+            </VStack>
+          </Card>
+          <Center>
+            <Text size="xl">
+              Already have an account?
+              <Link onPress={() => navigation.replace('Login')}>
+                <Text size="xl" color="$primary500" ml="$2" bold>
+                  Sign in
+                </Text>
+              </Link>
+            </Text>
+          </Center>
+        </VStack>
+      </Box>
+    </ScrollView>
   );
 };
 
