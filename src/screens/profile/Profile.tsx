@@ -98,7 +98,7 @@ const Profile = ({ navigation }: Props) => {
     <Box flex={1} bg="$white" justifyContent="space-between">
       <VStack p="$4" space="lg">
         <Center>
-          <Avatar bgColor="$amber600" size="xl" borderRadius="$full">
+          <Avatar bgColor="$primary300" size="xl" borderRadius="$full">
             <AvatarFallbackText>{fullName}</AvatarFallbackText>
           </Avatar>
           <Heading py="$2">{fullName}</Heading>
