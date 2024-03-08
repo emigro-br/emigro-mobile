@@ -6,7 +6,7 @@ import { iconFor, labelFor } from '@utils/assets';
 
 type Props = {
   item: CryptoOrFiat;
-  size: 'xs' | 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
   testID?: string;
 };
 
