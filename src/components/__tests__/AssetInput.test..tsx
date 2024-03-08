@@ -5,18 +5,22 @@ import { CryptoAsset, FiatCurrency } from '@/types/assets';
 import { AssetInput } from '../AssetInput';
 
 describe('AssetInput component', () => {
-  it('Should render placeholder correctly for crypto', () => {
+  it('Should render placeholder correctly for crypto with value zero', () => {
     render(<AssetInput asset={CryptoAsset.USDC} value={0} onChangeValue={() => {}} />);
-    const inputElement = screen.getByPlaceholderText('0 USDC');
+    const placeholder = screen.getByPlaceholderText('0 USDC');
+    expect(placeholder).toBeTruthy();
 
-    expect(inputElement).toBeTruthy();
+    const inputValue = screen.queryByDisplayValue('0.00 USDC');
+    expect(inputValue).toBeNull();
   });
 
-  it('Should render placeholder correctly for currency', () => {
+  it('Should render placeholder correctly for currency with value zero', () => {
     render(<AssetInput asset={FiatCurrency.USD} value={0} onChangeValue={() => {}} />);
-    const inputElement = screen.getByPlaceholderText('$ 0');
+    const placeholder = screen.getByPlaceholderText('$ 0');
+    expect(placeholder).toBeTruthy();
 
-    expect(inputElement).toBeTruthy();
+    const inputValue = screen.queryByDisplayValue('$ 0.00');
+    expect(inputValue).toBeNull();
   });
 
   it('Should call onChangeValue when input value changes', () => {

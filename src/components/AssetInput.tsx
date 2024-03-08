@@ -32,7 +32,7 @@ export const AssetInput = ({ asset, value, onChangeValue, precision = 2, ...prop
   return (
     <Input variant="underlined" size="xl" my="$3" borderBottomWidth={0}>
       <CurrencyInput
-        value={value}
+        value={value || null}
         onChangeValue={onChangeValue}
         renderTextInput={(textInputProps) => (
           <InputField
