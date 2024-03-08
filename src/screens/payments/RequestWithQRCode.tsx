@@ -14,8 +14,12 @@ import {
   SafeAreaView,
   ScrollView,
   Text,
+  Toast,
+  ToastDescription,
   VStack,
+  useToast,
 } from '@gluestack-ui/themed';
+import * as Clipboard from 'expo-clipboard';
 
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
 
@@ -42,13 +46,29 @@ const encodeQRCode = (request: QRCodeRequest): string => {
 type Props = NativeStackScreenProps<PaymentStackParamList, 'RequestWithQRCode'>;
 
 export const RequestWithQRCode = ({ navigation, route }: Props) => {
+  const toast = useToast();
   const { asset, value } = route.params;
+  const profile = sessionStore.profile;
+  const fullname = `${profile?.given_name} ${profile?.family_name}`;
   const request: QRCodeRequest = {
-    name: 'Scanned Name',
-    address: 'Scanned Address',
+    name: fullname || 'Unknown',
+    address: profile?.address,
     publicKey: sessionStore.publicKey!,
     amount: value,
     assetCode: asset,
+  };
+
+  const encodedCode = encodeQRCode(request);
+
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync(encodedCode);
+    toast.show({
+      render: ({ id }) => (
+        <Toast nativeID={`toast-${id}`} action="info" variant="solid">
+          <ToastDescription>Copied to clipboard</ToastDescription>
+        </Toast>
+      ),
+    });
   };
 
   return (
@@ -62,22 +82,19 @@ export const RequestWithQRCode = ({ navigation, route }: Props) => {
             <Heading>Request with QR Code</Heading>
             <Text>Show this QR code or copy and share with who will make this payment</Text>
             <Center my="$4">
-              <QRCode value={encodeQRCode(request)} size={QRCodeSize.MEDIUM} />
+              <QRCode value={encodedCode} size={QRCodeSize.MEDIUM} />
             </Center>
 
             <Box>
               <Text bold>Requested value</Text>
-              <Text size="4xl">
+              <Text size="4xl" color="$textLight800" bold>
                 {request.amount} {request.assetCode}
               </Text>
               <Text>For {request.name}</Text>
             </Box>
             <ButtonGroup flexDirection="column">
-              <Button onPress={() => navigation.popToTop()}>
+              <Button onPress={copyToClipboard}>
                 <ButtonText>Copy the code</ButtonText>
-              </Button>
-              <Button action="secondary" onPress={() => navigation.popToTop()}>
-                <ButtonText>Send payment link</ButtonText>
               </Button>
             </ButtonGroup>
           </VStack>
