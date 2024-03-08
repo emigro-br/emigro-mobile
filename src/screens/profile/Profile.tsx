@@ -105,7 +105,7 @@ const Profile = ({ navigation }: Props) => {
           {publicKey && (
             <Button size="md" variant="link" action="primary" onPress={copyToClipboard}>
               <ButtonText>{maskWallet(publicKey)}</ButtonText>
-              <ButtonIcon as={CopyIcon} />
+              <ButtonIcon as={CopyIcon} ml="$2" />
             </Button>
           )}
         </Center>
