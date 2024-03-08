@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
+
+import { render } from 'test-utils';
 
 import { CryptoAsset } from '@/types/assets';
-
-import { Provider } from '@components/Provider';
 
 import { AssetSwap } from '../AssetSwap';
 import { SwapType } from '../types';
@@ -15,15 +15,13 @@ describe('AssetSwap component', () => {
     const mockOnChangeValue = jest.fn();
 
     const { getByText } = render(
-      <Provider>
-        <AssetSwap
-          asset={CryptoAsset.BRL}
-          balance={1.0}
-          onChangeAsset={mockSetAsset}
-          sellOrBuy={SwapType.SELL}
-          onChangeValue={mockOnChangeValue}
-        />
-      </Provider>,
+      <AssetSwap
+        asset={CryptoAsset.BRL}
+        balance={1.0}
+        onChangeAsset={mockSetAsset}
+        sellOrBuy={SwapType.SELL}
+        onChangeValue={mockOnChangeValue}
+      />,
     );
 
     const assetSwapText = getByText('BRL');

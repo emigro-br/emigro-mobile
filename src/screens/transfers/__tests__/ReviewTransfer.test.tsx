@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
 
-import { Provider } from '@components/Provider';
+import { render } from 'test-utils';
 
 import { paymentStore } from '@stores/PaymentStore';
 
@@ -32,11 +32,7 @@ const routeMock: any = {};
 
 describe('ReviewTransfer component', () => {
   test('Should render review transfer details', () => {
-    const { getByText } = render(
-      <Provider>
-        <ReviewTransfer navigation={navigationMock} route={routeMock} />
-      </Provider>,
-    );
+    const { getByText } = render(<ReviewTransfer navigation={navigationMock} route={routeMock} />);
 
     expect(getByText('Review Transfer')).toBeOnTheScreen();
     expect(getByText('You Pay')).toBeOnTheScreen();
@@ -50,11 +46,7 @@ describe('ReviewTransfer component', () => {
     // mock pay function
     (paymentStore.pay as jest.Mock).mockResolvedValue({ transactionHash: 'hash' });
 
-    const { getByText } = render(
-      <Provider>
-        <ReviewTransfer navigation={navigationMock} route={routeMock} />
-      </Provider>,
-    );
+    const { getByText } = render(<ReviewTransfer navigation={navigationMock} route={routeMock} />);
     const sendButton = getByText('Send');
 
     fireEvent.press(sendButton);
@@ -71,9 +63,7 @@ describe('ReviewTransfer component', () => {
   //   (paymentStore.pay as jest.Mock).mockRejectedValue(new Error('Error'));
 
   //   const { getByText } = render(
-  //     <Provider>
   //       <ReviewTransfer navigation={navigationMock} route={routeMock} />
-  //     </Provider>
   //   );
   //   const sendButton = getByText('Send');
 

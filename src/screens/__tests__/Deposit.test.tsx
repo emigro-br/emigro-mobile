@@ -1,10 +1,10 @@
 import React from 'react';
 import { Linking } from 'react-native';
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
 import mockConsole from 'jest-mock-console';
 
-import { Provider } from '@components/Provider';
+import { render } from 'test-utils';
 
 import { getInteractiveUrl } from '@services/anchor';
 
@@ -49,11 +49,7 @@ describe('Deposit screen', () => {
   });
 
   test('Should display available assets', () => {
-    const { getByText } = render(
-      <Provider>
-        <Deposit navigation={mockNavigattion} />
-      </Provider>,
-    );
+    const { getByText } = render(<Deposit navigation={mockNavigattion} />);
     const asset1 = getByText('ARS');
     const asset2 = getByText('BRL');
     const asset3 = getByText('EURC');
@@ -64,11 +60,7 @@ describe('Deposit screen', () => {
   });
 
   test('Should show loading modal when asset is chosen', async () => {
-    const { getByText, getByTestId } = render(
-      <Provider>
-        <Deposit navigation={mockNavigattion} />
-      </Provider>,
-    );
+    const { getByText, getByTestId } = render(<Deposit navigation={mockNavigattion} />);
     const asset = getByText('ARS');
     fireEvent.press(asset);
 
@@ -111,11 +103,7 @@ describe('Deposit screen', () => {
       throw error;
     });
 
-    const { getByText } = render(
-      <Provider>
-        <Deposit navigation={mockNavigattion} />
-      </Provider>,
-    );
+    const { getByText } = render(<Deposit navigation={mockNavigattion} />);
     const asset = getByText('ARS');
     fireEvent.press(asset);
 

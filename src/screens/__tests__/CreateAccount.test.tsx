@@ -1,7 +1,7 @@
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
 import mockConsole from 'jest-mock-console';
 
-import { Provider } from '@components/Provider';
+import { render } from 'test-utils';
 
 import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 
@@ -30,11 +30,7 @@ describe('CreateAccount component', () => {
   });
 
   test('Should render correctly', async () => {
-    const { getByTestId } = render(
-      <Provider>
-        <CreateAccount navigation={mockNavigattion} />
-      </Provider>,
-    );
+    const { getByTestId } = render(<CreateAccount navigation={mockNavigattion} />);
 
     const firstNameInput = getByTestId('firstName');
     const lastNameInput = getByTestId('lastName');
@@ -67,11 +63,7 @@ describe('CreateAccount component', () => {
 
     signUpMock.mockResolvedValue(mockResponse);
 
-    const { getByTestId } = render(
-      <Provider>
-        <CreateAccount navigation={mockNavigattion} />
-      </Provider>,
-    );
+    const { getByTestId } = render(<CreateAccount navigation={mockNavigattion} />);
 
     const emailInput = getByTestId('email');
     const passwordInput = getByTestId('password');

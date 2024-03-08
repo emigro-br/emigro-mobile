@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent } from '@testing-library/react-native';
+
+import { render } from 'test-utils';
 
 import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
-
-import { Provider } from '@components/Provider';
 
 import { AssetList } from '../AssetList';
 
@@ -13,11 +13,7 @@ describe('AssetList component', () => {
 
   it('renders the list of assets correctly', () => {
     const onPressMock = jest.fn();
-    const { getByText, getByLabelText } = render(
-      <Provider>
-        <AssetList data={mockData} onPress={onPressMock} />
-      </Provider>,
-    );
+    const { getByText, getByLabelText } = render(<AssetList data={mockData} onPress={onPressMock} />);
 
     // Check if the list items are rendered correctly
     expect(getByText('EUR')).toBeOnTheScreen();

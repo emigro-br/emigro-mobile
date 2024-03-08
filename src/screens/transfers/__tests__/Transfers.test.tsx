@@ -1,8 +1,8 @@
 import React from 'react';
 
-import { fireEvent, render } from '@testing-library/react-native';
+import { fireEvent } from '@testing-library/react-native';
 
-import { Provider } from '@components/Provider';
+import { render } from 'test-utils';
 
 import { Transfers } from '../Transfers';
 
@@ -13,11 +13,7 @@ const navigationMock: any = {
 
 describe('Transfers component', () => {
   test('Should render the component correctly', () => {
-    const { getByText } = render(
-      <Provider>
-        <Transfers navigation={navigationMock} />
-      </Provider>,
-    );
+    const { getByText } = render(<Transfers navigation={navigationMock} />);
 
     expect(getByText('Send money')).toBeOnTheScreen();
     expect(getByText('XLM')).toBeOnTheScreen();
@@ -25,11 +21,7 @@ describe('Transfers component', () => {
   });
 
   test('Should navigate to SendAsset screen when an asset is pressed', () => {
-    const { getByText } = render(
-      <Provider>
-        <Transfers navigation={navigationMock} />
-      </Provider>,
-    );
+    const { getByText } = render(<Transfers navigation={navigationMock} />);
     const assetButton = getByText('XLM');
 
     fireEvent.press(assetButton);

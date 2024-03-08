@@ -2,11 +2,11 @@ import React from 'react';
 
 import { NavigationContext } from '@react-navigation/native';
 
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
+
+import { render } from 'test-utils';
 
 import { IUserProfile } from '@/types/IUserProfile';
-
-import { Provider } from '@components/Provider';
 
 import Profile from '@screens/profile/Profile';
 
@@ -42,11 +42,7 @@ const renderWithProviders = (component: JSX.Element) => {
     // addListener returns an unscubscribe function.
     addListener: jest.fn(() => jest.fn()),
   };
-  return render(
-    <NavigationContext.Provider value={navContext}>
-      <Provider>{component}</Provider>
-    </NavigationContext.Provider>,
-  );
+  return render(<NavigationContext.Provider value={navContext}>{component}</NavigationContext.Provider>);
 };
 
 const mockNavigattion: any = {
