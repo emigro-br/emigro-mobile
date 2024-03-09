@@ -12,7 +12,6 @@ import {
   Heading,
   ModalCloseButton,
   SafeAreaView,
-  ScrollView,
   Text,
   Toast,
   ToastDescription,
@@ -74,42 +73,40 @@ export const RequestWithQRCode = ({ navigation, route }: Props) => {
   };
 
   return (
-    <SafeAreaView bg="$white">
-      <ScrollView>
-        <Box flex={1} mt="$4">
-          <ModalCloseButton
-            onPress={() => navigation.popToTop()}
-            position="absolute"
-            top="$4"
-            right="$4"
-            testID="close-button"
-          >
-            <CloseIcon size="lg" />
-          </ModalCloseButton>
-          <VStack p="$4" space="lg">
-            <Heading>Request with QR Code</Heading>
-            <Text>Show this QR code or copy and share with who will make this payment</Text>
-            <Center my="$4" testID="qr-code">
-              <QRCode value={encodedCode} size={QRCodeSize.MEDIUM} />
-            </Center>
+    <SafeAreaView flex={1} bg="$white">
+      <Box flex={1} mt="$4">
+        <ModalCloseButton
+          onPress={() => navigation.popToTop()}
+          position="absolute"
+          top="$4"
+          right="$4"
+          testID="close-button"
+        >
+          <CloseIcon size="lg" />
+        </ModalCloseButton>
+        <VStack p="$4" space="lg">
+          <Heading>Request with QR Code</Heading>
+          <Text>Show this QR code or copy and share with who will make this payment</Text>
+          <Center my="$4" testID="qr-code">
+            <QRCode value={encodedCode} size={QRCodeSize.SMALL} />
+          </Center>
 
-            <Box>
-              <Text bold>Requested value</Text>
-              <Text size="4xl" color="$textLight800" bold>
-                {request.amount} {request.assetCode}
-              </Text>
-              <Text>For {request.name}</Text>
-            </Box>
-            {enableCopy && (
-              <ButtonGroup flexDirection="column">
-                <Button onPress={copyToClipboard}>
-                  <ButtonText>Copy the code</ButtonText>
-                </Button>
-              </ButtonGroup>
-            )}
-          </VStack>
-        </Box>
-      </ScrollView>
+          <Box>
+            <Text bold>Requested value</Text>
+            <Text size="4xl" color="$textLight800" bold>
+              {request.amount} {request.assetCode}
+            </Text>
+            <Text>For {request.name}</Text>
+          </Box>
+          {enableCopy && (
+            <ButtonGroup flexDirection="column">
+              <Button onPress={copyToClipboard}>
+                <ButtonText>Copy the code</ButtonText>
+              </Button>
+            </ButtonGroup>
+          )}
+        </VStack>
+      </Box>
     </SafeAreaView>
   );
 };
