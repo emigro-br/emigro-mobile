@@ -1,4 +1,6 @@
-import { render, screen } from '@testing-library/react-native';
+import { screen } from '@testing-library/react-native';
+
+import { render } from 'test-utils';
 
 import { userBalance } from '../../__mocks__/mock-balance';
 import Balance from '../Balance';
@@ -7,15 +9,17 @@ describe('Balance component', () => {
   it('Should render the balance component correctly', () => {
     render(<Balance userBalance={userBalance} />);
     const balanceElement = screen.getByText('Accounts');
+    expect(balanceElement).toBeOnTheScreen();
 
-    expect(balanceElement).toBeTruthy();
+    const disclaimerElement = screen.getByText('All values are in equivalent stablecoin currency.');
+    expect(disclaimerElement).toBeOnTheScreen();
   });
 
   it('Should display the correct asset codes and balances', () => {
     render(<Balance userBalance={userBalance} />);
-    const brlAsset = screen.getByText('Brazilian Real Coin');
-    const usdcAsset = screen.getByText('USD Coin');
-    const eurocAsset = screen.getByText('Euro Coin');
+    const brlAsset = screen.getByText('Brazilian Real');
+    const usdcAsset = screen.getByText('US Dollar');
+    const eurocAsset = screen.getByText('Euro');
     const brlBalance = screen.getByText('R$ 10.00');
     const usdcBalance = screen.getByText('$ 30.00');
     const euroBalance = screen.getByText('€ 0.00');

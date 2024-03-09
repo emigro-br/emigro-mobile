@@ -9,7 +9,7 @@ import usdIcon from '@assets/images/icons/usa-flag-round-circle-icon.png';
 
 // convert asset code to currency code
 export const AssetToCurrency = {
-  [CryptoAsset.XLM]: 'XLM',
+  [CryptoAsset.XLM]: CryptoAsset.XLM,
   [CryptoAsset.USDC]: FiatCurrency.USD,
   [CryptoAsset.EURC]: FiatCurrency.EUR,
   [CryptoAsset.BRL]: FiatCurrency.BRL,
@@ -32,10 +32,11 @@ const FiatToName = {
 };
 
 export const labelFor = (asset: CryptoOrFiat): string | undefined => {
-  if (asset in CryptoAsset) {
-    return AssetToName[asset as CryptoAsset];
-  } else if (asset in FiatCurrency) {
+  // FIXME: Fiat is prioritized over Crypto due name collision
+  if (asset in FiatCurrency) {
     return FiatToName[asset as FiatCurrency];
+  } else if (asset in CryptoAsset) {
+    return AssetToName[asset as CryptoAsset];
   }
 };
 
