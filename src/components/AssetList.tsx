@@ -18,7 +18,7 @@ export const AssetList = ({ data, onPress }: Props) => {
       renderItem={({ item }: { item: CryptoOrFiat }) => (
         <Pressable onPress={() => onPress(item)}>
           <Box py="$4">
-            <AssetListTile item={item} />
+            <AssetListTile asset={item} />
           </Box>
         </Pressable>
       )}

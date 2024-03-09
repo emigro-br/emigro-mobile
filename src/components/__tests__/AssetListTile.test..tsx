@@ -1,20 +1,46 @@
 import { render } from 'test-utils';
 
-import { CryptoAsset } from '@/types/assets';
+import { CryptoAsset, FiatCurrency } from '@/types/assets';
 
 import { AssetListTile } from '../AssetListTile';
 
 describe('AssetListTile', () => {
-  test('renders asset name and type', () => {
+  test('renders correctly for crypto', () => {
     const item = CryptoAsset.USDC;
-    const { getByText, getByTestId } = render(<AssetListTile item={item} />);
+    const { getByText, getByTestId } = render(<AssetListTile asset={item} />);
 
-    const assetName = getByText(item);
-    const assetType = getByText('USD Coin');
+    const assetCode = getByText('USDC');
+    const assetName = getByText('USD Coin');
     const assetAvatar = getByTestId('asset-avatar');
 
+    expect(assetCode).toBeOnTheScreen();
     expect(assetName).toBeOnTheScreen();
-    expect(assetType).toBeOnTheScreen();
     expect(assetAvatar).toBeOnTheScreen();
+  });
+
+  test('renders correctly for currency', () => {
+    const item = FiatCurrency.EUR;
+    const { getByText, getByTestId } = render(<AssetListTile asset={item} />);
+
+    const assetCode = getByText('EUR');
+    const assetName = getByText('Euro');
+    const assetAvatar = getByTestId('asset-avatar');
+
+    expect(assetCode).toBeOnTheScreen();
+    expect(assetName).toBeOnTheScreen();
+    expect(assetAvatar).toBeOnTheScreen();
+  });
+
+  test('renders correctly with dense prop', () => {
+    const item = CryptoAsset.USDC;
+    const { queryByText, getByTestId } = render(<AssetListTile asset={item} dense />);
+
+    const assetCode = queryByText('USDC');
+    const assetName = queryByText('USD Coin');
+    const assetAvatar = getByTestId('asset-avatar');
+
+    expect(assetCode).toBeNull();
+    expect(assetAvatar).toBeOnTheScreen();
+    expect(assetName).toBeOnTheScreen();
   });
 });

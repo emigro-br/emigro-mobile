@@ -7,20 +7,23 @@ import { labelFor } from '@utils/assets';
 import { AssetAvatar } from './AssetAvatar';
 
 type Props = {
-  item: CryptoOrFiat;
+  asset: CryptoOrFiat;
+  dense?: boolean;
 };
 
-export const AssetListTile = ({ item }: Props) => {
+export const AssetListTile = ({ asset, dense }: Props) => {
   return (
-    <HStack space="md">
-      <AssetAvatar item={item} />
+    <HStack space="md" alignItems="center">
+      <AssetAvatar asset={asset} size={dense ? 'sm' : 'md'} />
       <VStack>
         <Text color="$coolGray800" fontWeight="500" $dark-color="$warmGray100">
-          {item}
+          {dense ? labelFor(asset) : asset}
         </Text>
-        <Text size="sm" color="$coolGray500" $dark-color="$warmGray200">
-          {labelFor(item)}
-        </Text>
+        {!dense && (
+          <Text size="sm" color="$coolGray500" $dark-color="$warmGray200">
+            {labelFor(asset)}
+          </Text>
+        )}
       </VStack>
     </HStack>
   );

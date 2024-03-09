@@ -10,7 +10,7 @@ describe('AssetAvatar component', () => {
   const mockItem = CryptoAsset.USDC;
 
   it('renders the asset avatar correctly', () => {
-    const { getByTestId, getByLabelText } = render(<AssetAvatar item={mockItem} />);
+    const { getByTestId, getByLabelText } = render(<AssetAvatar asset={mockItem} />);
 
     expect(getByTestId('asset-avatar')).toBeTruthy();
     expect(getByLabelText('USD Coin')).toBeTruthy();
