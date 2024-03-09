@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { BackHandler } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -48,6 +50,12 @@ export const RequestWithQRCode = ({ navigation, route }: Props) => {
   const toast = useToast();
   const { asset, value } = route.params;
   const enableCopy = false;
+
+  // prevent back navigation
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true);
+    return () => backHandler.remove();
+  }, []);
 
   const profile = sessionStore.profile;
   const fullname = `${profile?.given_name || ''} ${profile?.family_name || ''}`.trim();

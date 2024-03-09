@@ -33,6 +33,7 @@ export function PaymentStack() {
         options={{
           title: 'Request with QR Code',
           headerShown: false,
+          gestureEnabled: false, // disable swap back gesture
         }}
       />
     </Stack.Navigator>
