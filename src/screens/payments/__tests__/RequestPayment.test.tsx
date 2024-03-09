@@ -1,0 +1,48 @@
+import { fireEvent, render, screen } from '@testing-library/react-native';
+
+import { RequestPayment } from '../RequestPayment';
+
+describe('RequestPayment component', () => {
+  const navigation: any = {
+    push: jest.fn(),
+  };
+  const route: any = {
+    params: {
+      asset: 'BRL',
+    },
+  };
+
+  beforeEach(() => {
+    render(<RequestPayment navigation={navigation} route={route} />);
+  });
+
+  it('Should render the component correctly', () => {
+    const heading = screen.getByText('How much will you request?');
+    expect(heading).toBeOnTheScreen();
+
+    const assetInput = screen.getByTestId('asset-input');
+    expect(assetInput).toBeOnTheScreen();
+
+    const generateQRCodeButton = screen.getByTestId('generate-qr-code-button');
+    expect(generateQRCodeButton).toBeOnTheScreen();
+    expect(generateQRCodeButton).toHaveTextContent('Generate QR Code');
+    expect(generateQRCodeButton).toHaveAccessibilityState({ disabled: true });
+  });
+
+  it('Should navigate to RequestWithQRCode screen when Generate QR Code button is pressed', () => {
+    // fill input to enable button
+    const assetInput = screen.getByTestId('asset-input');
+    fireEvent.changeText(assetInput, '100'); // 1.00 BRL (mask put 2 decimal places)
+
+    // button enabled
+    const generateQRCodeButton = screen.getByTestId('generate-qr-code-button');
+    expect(generateQRCodeButton).toHaveAccessibilityState({ disabled: false });
+
+    fireEvent.press(generateQRCodeButton);
+
+    expect(navigation.push).toHaveBeenCalledWith('RequestWithQRCode', {
+      asset: 'BRL',
+      value: 1,
+    });
+  });
+});

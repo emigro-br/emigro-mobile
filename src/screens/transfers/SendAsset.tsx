@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import CurrencyInput from 'react-native-currency-input';
 import { ClipboardDocumentIcon } from 'react-native-heroicons/solid';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -26,12 +25,14 @@ import * as Clipboard from 'expo-clipboard';
 
 import { CryptoAsset } from '@/types/assets';
 
-import { RootStackParamList } from '@navigation/RootStack';
+import { AssetInput } from '@components/AssetInput';
+
+import { TransferStackParamList } from '@navigation/TrasnsferStack';
 
 import { balanceStore } from '@stores/BalanceStore';
 import { paymentStore as bloc } from '@stores/PaymentStore';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'SendAsset'>;
+type Props = NativeStackScreenProps<TransferStackParamList, 'SendAsset'>;
 
 export const SendAsset = ({ route, navigation }: Props) => {
   const [amount, setAmount] = useState<number | null>(null);
@@ -78,27 +79,14 @@ export const SendAsset = ({ route, navigation }: Props) => {
             <Text size="xs">
               Balance: {balance} {asset}
             </Text>
-            <Input variant="underlined" size="xl" my="$3" borderBottomWidth={0}>
-              <CurrencyInput
-                value={amount}
-                onChangeValue={setAmount}
-                renderTextInput={(textInputProps) => (
-                  <InputField
-                    {...textInputProps}
-                    placeholder={`0 ${asset}`}
-                    // keyboardType='numeric'
-                    textAlign="center"
-                    fontSize={36}
-                    fontWeight="bold"
-                  />
-                )}
-                suffix={` ${asset}`}
-                delimiter=","
-                separator="."
-                precision={2}
-                autoFocus
-              />
-            </Input>
+            <AssetInput
+              asset={asset}
+              value={amount}
+              onChangeValue={setAmount}
+              textAlign="center"
+              fontSize={36}
+              fontWeight="bold"
+            />
             <Center>
               <FormControlError>
                 <FormControlErrorText>Exceeds Balance</FormControlErrorText>
