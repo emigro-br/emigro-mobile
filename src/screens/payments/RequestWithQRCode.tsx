@@ -48,6 +48,8 @@ type Props = NativeStackScreenProps<PaymentStackParamList, 'RequestWithQRCode'>;
 export const RequestWithQRCode = ({ navigation, route }: Props) => {
   const toast = useToast();
   const { asset, value } = route.params;
+  const enableCopy = false;
+
   const profile = sessionStore.profile;
   const fullname = `${profile?.given_name || ''} ${profile?.family_name || ''}`.trim();
   const request: QRCodeRequest = {
@@ -92,11 +94,13 @@ export const RequestWithQRCode = ({ navigation, route }: Props) => {
               </Text>
               <Text>For {request.name}</Text>
             </Box>
-            <ButtonGroup flexDirection="column">
-              <Button onPress={copyToClipboard}>
-                <ButtonText>Copy the code</ButtonText>
-              </Button>
-            </ButtonGroup>
+            {enableCopy && (
+              <ButtonGroup flexDirection="column">
+                <Button onPress={copyToClipboard}>
+                  <ButtonText>Copy the code</ButtonText>
+                </Button>
+              </ButtonGroup>
+            )}
           </VStack>
         </Box>
       </ScrollView>
