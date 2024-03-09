@@ -76,8 +76,14 @@ export const RequestWithQRCode = ({ navigation, route }: Props) => {
   return (
     <SafeAreaView bg="$white">
       <ScrollView>
-        <Box flex={1}>
-          <ModalCloseButton onPress={() => navigation.popToTop()} position="absolute" right="$2" testID="close-button">
+        <Box flex={1} mt="$4">
+          <ModalCloseButton
+            onPress={() => navigation.popToTop()}
+            position="absolute"
+            top="$4"
+            right="$4"
+            testID="close-button"
+          >
             <CloseIcon size="lg" />
           </ModalCloseButton>
           <VStack p="$4" space="lg">
