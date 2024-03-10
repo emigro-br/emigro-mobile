@@ -15,7 +15,7 @@ export const useSession = () => {
           if (!newSession) {
             throw new Error('Can not refresh the session');
           }
-          sessionStore.fetchProfile();
+          sessionStore.fetchProfile(); // update profile in background
         }
       } catch (error) {
         console.warn('Can not load the token, cleaning session', error);

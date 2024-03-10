@@ -1,6 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 
 import { IAuthSession } from '@/types/IAuthSession';
+import { IUserProfile } from '@/types/IUserProfile';
 
 import { refresh as refreshSession } from '@services/auth';
 import { getUserPublicKey } from '@services/emigro';
@@ -55,9 +56,22 @@ describe('SessionStore', () => {
     const loadedSession = await sessionStore.load();
 
     expect(loadedSession).toEqual(session);
+    expect(sessionStore.session).toEqual(session);
   });
 
-  it('should clear session', async () => {
+  it('should save and load profile', async () => {
+    const profile = {
+      given_name: 'test',
+      email: 'email@examle.com',
+    } as IUserProfile;
+
+    sessionStore.saveProfile(profile);
+    const loadedProfile = await sessionStore.loadProfile();
+    expect(loadedProfile).toEqual(profile);
+    expect(sessionStore.profile).toEqual(profile);
+  });
+
+  it('should clear session and profile', async () => {
     const session = {
       accessToken: 'access_token',
       refreshToken: 'refresh_token',
@@ -67,11 +81,19 @@ describe('SessionStore', () => {
       publicKey: 'public_key',
     };
 
+    const profile = {
+      given_name: 'test',
+      email: 'teste@example.com',
+    } as IUserProfile;
+
     await sessionStore.save(session);
+    await sessionStore.saveProfile(profile);
     await sessionStore.clear();
     const loadedSession = await sessionStore.load();
 
     expect(loadedSession).toBeNull();
+    expect(sessionStore.session).toBeNull();
+    expect(sessionStore.profile).toBeNull();
   });
 
   it('should get access token', () => {

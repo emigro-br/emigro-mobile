@@ -13,6 +13,16 @@ export class SessionStore {
   session: IAuthSession | null = null;
   profile: IUserProfile | null = null;
 
+  private authKeys: string[] = [
+    'auth.accessToken',
+    'auth.refreshToken',
+    'auth.idToken',
+    'auth.tokenExpirationDate',
+    'auth.email',
+    'auth.publicKey',
+  ];
+  private profileKey = 'user.profile';
+
   constructor() {
     makeAutoObservable(this, {
       // session
@@ -68,7 +78,9 @@ export class SessionStore {
       const profile = await getUserProfile(this.session);
       if (profile) {
         this.setProfile(profile); // action will be called
+        await this.saveProfile(profile);
       }
+      return profile;
     }
   }
 
@@ -81,19 +93,24 @@ export class SessionStore {
     await Promise.all(
       Object.entries(session)
         .filter(([, value]) => value !== undefined)
-        .map(([key, value]) => SecureStore.setItemAsync(key, JSON.stringify(value))),
+        .map(([key, value]) => SecureStore.setItemAsync(`auth.${key}`, JSON.stringify(value))),
     );
   }
 
+  async saveProfile(profile: IUserProfile) {
+    // this.setProfile(profile);
+    await SecureStore.setItemAsync(this.profileKey, JSON.stringify(profile));
+  }
+
   async load(): Promise<IAuthSession | null> {
-    const keys = ['accessToken', 'refreshToken', 'idToken', 'tokenExpirationDate', 'email', 'publicKey'];
     const session: Partial<IAuthSession> = {};
     await Promise.all(
-      keys.map(async (key) => {
+      this.authKeys.map(async (key) => {
         const value = await SecureStore.getItemAsync(key);
         if (value) {
-          session[key as keyof IAuthSession] = JSON.parse(value);
-          if (key === 'tokenExpirationDate') {
+          const [, attr] = key.split('.');
+          session[attr as keyof IAuthSession] = JSON.parse(value);
+          if (attr === 'tokenExpirationDate') {
             session.tokenExpirationDate = new Date(session.tokenExpirationDate!);
           }
         }
@@ -106,14 +123,26 @@ export class SessionStore {
     if (!session.refreshToken || !session.idToken || !session.tokenExpirationDate) {
       throw new Error('Invalid session');
     }
+
     this.setSession(session as IAuthSession);
+    this.loadProfile(); // load profile in background
     return this.session;
   }
 
+  async loadProfile(): Promise<IUserProfile | null> {
+    const profile = await SecureStore.getItemAsync(this.profileKey);
+    if (profile) {
+      this.setProfile(JSON.parse(profile));
+    }
+    return this.profile;
+  }
+
   async clear() {
-    const keys = ['accessToken', 'refreshToken', 'idToken', 'tokenExpirationDate', 'email', 'publicKey'];
-    await Promise.all(keys.map((key) => SecureStore.deleteItemAsync(key)));
+    await Promise.all(this.authKeys.map((key) => SecureStore.deleteItemAsync(key)));
     this.setSession(null);
+
+    await SecureStore.deleteItemAsync(this.profileKey);
+    this.setProfile(null);
   }
 
   async refresh() {
