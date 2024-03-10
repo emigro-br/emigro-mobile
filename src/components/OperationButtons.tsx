@@ -22,7 +22,7 @@ type Props = {
 
 const OperationButtons = ({ navigation }: Props) => {
   return (
-    <ButtonGroup justifyContent="space-around">
+    <ButtonGroup justifyContent="space-around" py="$2">
       <ButtonItem title="Deposit" icon={ArrowDownIcon} onPress={() => navigation.push('Deposit')} />
       <ButtonItem title="Withdraw" icon={ArrowUpIcon} onPress={() => navigation.push('Withdraw')} />
       <ButtonItem title="Send" icon={ArrowRightIcon} onPress={() => navigation.push('TransfersRoot')} />

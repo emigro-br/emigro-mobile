@@ -11,7 +11,7 @@ describe('Balance component', () => {
     const balanceElement = screen.getByText('Accounts');
     expect(balanceElement).toBeOnTheScreen();
 
-    const disclaimerElement = screen.getByText('All values are in equivalent stablecoin currency.');
+    const disclaimerElement = screen.getByText('All values are in equivalent stablecoin currency');
     expect(disclaimerElement).toBeOnTheScreen();
   });
 

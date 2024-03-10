@@ -4,7 +4,7 @@ import { RefreshControl } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { Box, ScrollView, VStack } from '@gluestack-ui/themed';
+import { ScrollView, VStack } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 
 import Balance from '@components/Balance';
@@ -41,10 +41,8 @@ const Wallet = observer(({ navigation }: Props) => {
       bg="$white"
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} title="Refreshing..." />}
     >
-      <VStack p="$4" space="lg">
-        <Box py="$8">
-          <OperationButtons navigation={navigation} />
-        </Box>
+      <VStack space="lg" p="$4">
+        <OperationButtons navigation={navigation} />
         <Balance userBalance={balanceStore.userBalance} />
       </VStack>
     </ScrollView>

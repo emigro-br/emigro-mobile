@@ -33,7 +33,7 @@ const Balance: React.FC<Props> = ({ userBalance }) => {
         </VStack>
       </Card>
       <Text size="xs" italic>
-        All values are in equivalent stablecoin currency.
+        All values are in equivalent stablecoin currency
       </Text>
     </VStack>
   );
