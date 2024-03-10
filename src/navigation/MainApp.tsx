@@ -42,7 +42,7 @@ export const MainApp = () => {
         name="PaymentsTab"
         component={PaymentStack}
         options={() => ({
-          title: 'Payment',
+          title: 'Payments',
           tabBarIcon: ({ color, size }) => <IconsOutline.QrCodeIcon size={size} color={color} />,
         })}
       />
