@@ -29,16 +29,17 @@ export const ConfigurePIN = ({ navigation }: Props) => {
       setPin(enteredPin);
       setIsReEnter(true);
     } else {
-      if (enteredPin === pin) {
-        await sessionStore.savePin(enteredPin);
-        navigation.popToTop();
-      } else {
-        // setError('PINs do not match');
-        setIsReEnter(false);
-        setPin('');
-      }
+      await sessionStore.savePin(enteredPin);
+      navigation.popToTop();
     }
 
+    pinRef.current?.clear();
+  };
+
+  const handlePinFail = () => {
+    setIsReEnter(false);
+    setPin('');
+    // setError('PINs do not match');
     pinRef.current?.clear();
   };
 
@@ -47,9 +48,10 @@ export const ConfigurePIN = ({ navigation }: Props) => {
       <PIN
         ref={pinRef}
         title={isReEnter ? 'Re-enter your PIN code' : 'Enter your new PIN code'}
+        verifyPin={isReEnter ? async (enteredPin) => enteredPin === pin : () => Promise.resolve(true)}
         btnLabel="Submit"
         onPinSuccess={handlePinSuccess}
-        onPinFail={() => console.log('PIN fail')}
+        onPinFail={handlePinFail}
       />
       {/* {error && <Text color="$error500">{error}</Text>} */}
     </Box>

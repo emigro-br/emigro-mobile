@@ -27,7 +27,7 @@ describe('ConfigurePIN component', () => {
     expect(inputFields).toHaveLength(4);
   });
 
-  it('Should display the correct title based on isReEnter state', () => {
+  it('Should display the correct title based on isReEnter state', async () => {
     const enterTitle = screen.getByText('Enter your new PIN code');
     expect(enterTitle).toBeOnTheScreen();
 
@@ -36,8 +36,10 @@ describe('ConfigurePIN component', () => {
     const submitButton = screen.getByTestId('submit-button');
     fireEvent.press(submitButton);
 
-    const reEnterTitle = screen.getByText('Re-enter your PIN code');
-    expect(reEnterTitle).toBeOnTheScreen();
+    await waitFor(() => {
+      const reEnterTitle = screen.getByText('Re-enter your PIN code');
+      expect(reEnterTitle).toBeOnTheScreen();
+    });
   });
 
   it('Should navigate to the next screen when PINs match', async () => {
@@ -47,32 +49,47 @@ describe('ConfigurePIN component', () => {
     fillWithPIN(screen, '1234');
     fireEvent.press(submitButton);
 
+    await waitFor(() => {
+      expect(screen.getByText('Re-enter your PIN code')).toBeOnTheScreen();
+    });
+
     // set the second PIN
     fillWithPIN(screen, '1234');
     fireEvent.press(submitButton);
 
     // check success
-    expect(sessionStore.savePin).toHaveBeenCalledWith('1234');
     await waitFor(() => {
+      expect(sessionStore.savePin).toHaveBeenCalledWith('1234');
       expect(mockNavigation.popToTop).toHaveBeenCalled();
     });
   });
 
-  it('Should clear the PIN input when PINs do not match', () => {
+  it('Should clear the PIN input when PINs do not match', async () => {
     const submitButton = screen.getByTestId('submit-button');
 
     // set the first PIN
     fillWithPIN(screen, '1234');
     fireEvent.press(submitButton);
 
+    await waitFor(() => {
+      expect(screen.getByText('Re-enter your PIN code')).toBeOnTheScreen();
+    });
+
     // set the second PIN (wrong PIN)
     fillWithPIN(screen, '5678');
     fireEvent.press(submitButton);
 
     // check failure
-    expect(mockNavigation.popToTop).not.toHaveBeenCalled();
+    await waitFor(() => {
+      const error = screen.getByText('Invalid PIN');
+      expect(error).toBeOnTheScreen();
+    });
+
     const enterTitle = screen.getByText('Enter your new PIN code');
     expect(enterTitle).toBeOnTheScreen();
+
+    expect(sessionStore.savePin).not.toHaveBeenCalled();
+    expect(mockNavigation.popToTop).not.toHaveBeenCalled();
   });
 });
 

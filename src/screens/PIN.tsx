@@ -6,11 +6,12 @@ import { Box, Button, ButtonText, HStack, Heading, Input, InputField, Text, VSta
 type Props = {
   title?: string;
   btnLabel?: string;
+  verifyPin?: (pin: string) => Promise<boolean>;
   onPinSuccess: (pin: string) => void;
   onPinFail: () => void;
 };
 
-export const PIN = forwardRef(({ title, btnLabel, onPinSuccess, onPinFail }: Props, ref) => {
+export const PIN = forwardRef(({ title, btnLabel, verifyPin, onPinSuccess, onPinFail }: Props, ref) => {
   const pinSize = 4;
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
@@ -38,7 +39,10 @@ export const PIN = forwardRef(({ title, btnLabel, onPinSuccess, onPinFail }: Pro
     setLoading(true);
     try {
       // Make API call to verify PIN
-      // ...
+      const isPinCorrect = await verifyPin?.(pin);
+      if (!isPinCorrect) {
+        throw new Error('Invalid PIN');
+      }
       // If PIN is correct
       onPinSuccess(pin);
     } catch (e) {
@@ -53,7 +57,7 @@ export const PIN = forwardRef(({ title, btnLabel, onPinSuccess, onPinFail }: Pro
   };
 
   return (
-    <Box flex={1}>
+    <Box flex={1} bg="$white">
       <VStack space="4xl" p="$4">
         <Heading size="xl">{title ?? 'Enter your PIN code'}</Heading>
         <HStack space="xl" justifyContent="center">
@@ -89,7 +93,7 @@ export const PIN = forwardRef(({ title, btnLabel, onPinSuccess, onPinFail }: Pro
                 fontWeight="bold"
                 textAlign="center"
                 keyboardType="number-pad"
-                // secureTextEntry
+                secureTextEntry
                 autoComplete="off"
               />
             </Input>

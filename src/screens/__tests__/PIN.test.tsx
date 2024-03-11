@@ -7,9 +7,11 @@ import { PIN } from '../PIN';
 describe('PIN component', () => {
   const onPinSuccess = jest.fn();
   const onPinFail = jest.fn();
+  const verifyPin = jest.fn();
 
   beforeEach(() => {
-    render(<PIN onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
+    jest.clearAllMocks();
+    render(<PIN verifyPin={verifyPin} onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
   });
 
   it('Should render the PIN component correctly', () => {
@@ -42,18 +44,23 @@ describe('PIN component', () => {
     expect(screen.getByTestId('submit-button')).toHaveAccessibilityState({ disabled: false });
   });
 
-  it('Should call onPinSuccess when the submit button is pressed with a valid PIN', () => {
+  it('Should call onPinSuccess when the submit button is pressed with a valid PIN', async () => {
+    verifyPin.mockResolvedValue(true);
     fillWithPIN(screen, '1234');
     const submitButton = screen.getByTestId('submit-button');
     fireEvent.press(submitButton);
-    expect(onPinSuccess).toHaveBeenCalled();
+    expect(verifyPin).toHaveBeenCalledWith('1234');
+
+    await waitFor(() => {
+      expect(onPinSuccess).toHaveBeenCalled();
+    });
   });
 
   it('Should call onPinFail when throw error on submit', async () => {
-    const onPinSuccess = jest.fn().mockImplementation(() => {
+    const verifyPin = jest.fn().mockImplementation(() => {
       throw new Error('Invalid PIN');
     });
-    render(<PIN onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
+    render(<PIN verifyPin={verifyPin} onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
     fillWithPIN(screen, '1234');
     const submitButton = screen.getByTestId('submit-button');
     fireEvent.press(submitButton);
