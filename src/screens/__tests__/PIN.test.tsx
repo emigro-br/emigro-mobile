@@ -17,7 +17,20 @@ describe('PIN component', () => {
     expect(heading).toBeOnTheScreen();
 
     const button = screen.getByTestId('submit-button');
+    expect(button).toBeOnTheScreen();
+    expect(button).toHaveTextContent('Submit');
     expect(button).toHaveAccessibilityState({ disabled: true });
+  });
+
+  it('Should render the PIN component correctly with custom labels', () => {
+    const title = 'Re-Enter your PIN code';
+    const btnLabel = 'Submit PIN';
+    render(<PIN title={title} btnLabel={btnLabel} onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
+    const heading = screen.getByText(title);
+    expect(heading).toBeOnTheScreen();
+
+    const button = screen.getByText(btnLabel);
+    expect(button).toBeOnTheScreen();
   });
 
   it('Should update the PIN when input fields are changed and enable the button', () => {
@@ -39,7 +52,7 @@ describe('PIN component', () => {
     fireEvent.changeText(inputFields[1], '2');
     fireEvent.changeText(inputFields[2], '3');
     fireEvent.changeText(inputFields[3], '4');
-    const submitButton = screen.getByText('Submit');
+    const submitButton = screen.getByTestId('submit-button');
     fireEvent.press(submitButton);
     expect(onPinSuccess).toHaveBeenCalled();
   });
@@ -54,7 +67,7 @@ describe('PIN component', () => {
     fireEvent.changeText(inputFields[1], '2');
     fireEvent.changeText(inputFields[2], '3');
     fireEvent.changeText(inputFields[3], '4');
-    const submitButton = screen.getByText('Submit');
+    const submitButton = screen.getByTestId('submit-button');
     fireEvent.press(submitButton);
     await waitFor(() => {
       expect(onPinFail).toHaveBeenCalled();

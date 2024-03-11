@@ -1,14 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { TextInput } from 'react-native';
 
 import { Box, Button, ButtonText, HStack, Heading, Input, InputField, Text, VStack } from '@gluestack-ui/themed';
 
 type Props = {
-  onPinSuccess: () => void;
+  title?: string;
+  btnLabel?: string;
+  onPinSuccess: (pin: string) => void;
   onPinFail: () => void;
 };
 
-export const PIN = ({ onPinSuccess, onPinFail }: Props) => {
+export const PIN = forwardRef(({ title, btnLabel, onPinSuccess, onPinFail }: Props, ref) => {
   const pinSize = 4;
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
@@ -18,6 +20,15 @@ export const PIN = ({ onPinSuccess, onPinFail }: Props) => {
   useEffect(() => {
     inputRefs.current[0].focus();
   }, []);
+
+  useImperativeHandle(ref, () => ({
+    clear,
+  }));
+
+  const clear = () => {
+    setPin('');
+    inputRefs.current[0].focus();
+  };
 
   const handlePress = async () => {
     if (pin.length !== pinSize) {
@@ -29,7 +40,7 @@ export const PIN = ({ onPinSuccess, onPinFail }: Props) => {
       // Make API call to verify PIN
       // ...
       // If PIN is correct
-      onPinSuccess();
+      onPinSuccess(pin);
     } catch (e) {
       // If PIN is incorrect
       onPinFail();
@@ -43,8 +54,8 @@ export const PIN = ({ onPinSuccess, onPinFail }: Props) => {
 
   return (
     <Box flex={1}>
-      <VStack space="4xl" p="$4" mt="$16">
-        <Heading size="xl">Enter your PIN code</Heading>
+      <VStack space="4xl" p="$4">
+        <Heading size="xl">{title ?? 'Enter your PIN code'}</Heading>
         <HStack space="xl" justifyContent="center">
           {[...Array(pinSize)].map((_, i) => (
             <Input key={i} variant="underlined" size="xl" w="$10">
@@ -86,9 +97,9 @@ export const PIN = ({ onPinSuccess, onPinFail }: Props) => {
         </HStack>
         {error && <Text color="$error500">{error}</Text>}
         <Button size="xl" onPress={handlePress} isDisabled={pin.length < pinSize || loading} testID="submit-button">
-          <ButtonText>Submit</ButtonText>
+          <ButtonText>{btnLabel ?? 'Submit'}</ButtonText>
         </Button>
       </VStack>
     </Box>
   );
-};
+});
