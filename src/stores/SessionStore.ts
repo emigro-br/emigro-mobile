@@ -176,7 +176,7 @@ export class SessionStore {
   async verifyPin(pin: string): Promise<boolean> {
     const hashedPin = await this.loadPin();
     if (!hashedPin) {
-      return false;
+      throw new Error('PIN not set');
     }
 
     // Hash the input PIN and compare it with the stored hashed PIN

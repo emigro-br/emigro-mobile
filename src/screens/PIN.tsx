@@ -8,7 +8,7 @@ type Props = {
   btnLabel?: string;
   verifyPin?: (pin: string) => Promise<boolean>;
   onPinSuccess: (pin: string) => void;
-  onPinFail: () => void;
+  onPinFail: (error: Error) => void;
 };
 
 export const PIN = forwardRef(({ title, btnLabel, verifyPin, onPinSuccess, onPinFail }: Props, ref) => {
@@ -47,7 +47,7 @@ export const PIN = forwardRef(({ title, btnLabel, verifyPin, onPinSuccess, onPin
       onPinSuccess(pin);
     } catch (e) {
       // If PIN is incorrect
-      onPinFail();
+      onPinFail(e as Error);
       if (e instanceof Error) {
         setError(e.message);
       }
