@@ -1,34 +1,40 @@
 import React, { useState } from 'react';
 
-import { NavigationProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonText, Card, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
 
 import { ErrorModal } from '@components/modals/ErrorModal';
 
-import { RootStackParamList } from '@navigation/RootStack';
+import { TabNavParamList } from '@navigation/MainApp';
+import { SwapStackParamList } from '@navigation/SwapStack';
+
+import { PIN } from '@screens/PIN';
 
 import { paymentStore as bloc } from '@stores/PaymentStore';
+import { sessionStore } from '@stores/SessionStore';
 
 interface DetailsSwapProps {
-  navigation: NavigationProp<RootStackParamList>;
+  navigation: NativeStackNavigationProp<TabNavParamList & SwapStackParamList, 'SwapReview'>;
 }
 
 export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [showPinScreen, setShowPinScreen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const { from, to, rate, fees } = bloc.transaction!;
   const toValue = from.value * rate;
   const estimated = toValue - fees;
 
-  const handlePress = async () => {
+  const handleConfirmTransaction = async () => {
+    setShowPinScreen(false);
     setIsLoading(true);
 
     try {
       const result = await bloc.pay();
       if (result.transactionHash) {
-        navigation.navigate('Wallet');
+        navigation.navigate('WalletTab');
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -41,9 +47,29 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
     }
   };
 
+  if (showPinScreen) {
+    return (
+      <PIN
+        title="Enter your PIN code"
+        btnLabel="Confirm"
+        verifyPin={async (pin) => await sessionStore.verifyPin(pin)}
+        onPinSuccess={handleConfirmTransaction}
+        onPinFail={(error) => {
+          setErrorMessage(error.message);
+          setShowPinScreen(false);
+        }}
+      />
+    );
+  }
+
   return (
     <>
-      <ErrorModal errorMessage={errorMessage} isVisible={!!errorMessage} onClose={() => navigation.goBack()} />
+      <ErrorModal
+        title="Swap failed"
+        errorMessage={errorMessage}
+        isOpen={!!errorMessage}
+        onClose={() => navigation.goBack()}
+      />
       <Box flex={1}>
         <VStack p="$4" space="lg">
           <Heading>Confirm Swap</Heading>
@@ -57,7 +83,7 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
             </VStack>
           </Card>
           <Text size="xs">The final amount is estimated and may change.</Text>
-          <Button onPress={handlePress} isDisabled={isLoading}>
+          <Button onPress={() => setShowPinScreen(true)} isDisabled={isLoading}>
             <ButtonText>{isLoading ? 'Processing...' : `Swap ${from.asset} for ${to.asset}`}</ButtonText>
           </Button>
         </VStack>
