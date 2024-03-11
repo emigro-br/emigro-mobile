@@ -1,0 +1,64 @@
+import { fireEvent, screen, waitFor } from '@testing-library/react-native';
+
+import { render } from 'test-utils';
+
+import { PIN } from '../PIN';
+
+describe('PIN component', () => {
+  const onPinSuccess = jest.fn();
+  const onPinFail = jest.fn();
+
+  beforeEach(() => {
+    render(<PIN onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
+  });
+
+  it('Should render the PIN component correctly', () => {
+    const heading = screen.getByText('Enter your PIN code');
+    expect(heading).toBeOnTheScreen();
+
+    const button = screen.getByTestId('submit-button');
+    expect(button).toHaveAccessibilityState({ disabled: true });
+  });
+
+  it('Should update the PIN when input fields are changed and enable the button', () => {
+    const inputFields = screen.getAllByLabelText('Input Field');
+    fireEvent.changeText(inputFields[0], '1');
+    fireEvent.changeText(inputFields[1], '2');
+    fireEvent.changeText(inputFields[2], '3');
+    fireEvent.changeText(inputFields[3], '4');
+    expect(inputFields[0].props.value).toBe('1');
+    expect(inputFields[1].props.value).toBe('2');
+    expect(inputFields[2].props.value).toBe('3');
+    expect(inputFields[3].props.value).toBe('4');
+    expect(screen.getByTestId('submit-button')).toHaveAccessibilityState({ disabled: false });
+  });
+
+  it('Should call onPinSuccess when the submit button is pressed with a valid PIN', () => {
+    const inputFields = screen.getAllByLabelText('Input Field');
+    fireEvent.changeText(inputFields[0], '1');
+    fireEvent.changeText(inputFields[1], '2');
+    fireEvent.changeText(inputFields[2], '3');
+    fireEvent.changeText(inputFields[3], '4');
+    const submitButton = screen.getByText('Submit');
+    fireEvent.press(submitButton);
+    expect(onPinSuccess).toHaveBeenCalled();
+  });
+
+  it('Should call onPinFail when throw error on submit', async () => {
+    const onPinSuccess = jest.fn().mockImplementation(() => {
+      throw new Error('Invalid PIN');
+    });
+    render(<PIN onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
+    const inputFields = screen.getAllByLabelText('Input Field');
+    fireEvent.changeText(inputFields[0], '1');
+    fireEvent.changeText(inputFields[1], '2');
+    fireEvent.changeText(inputFields[2], '3');
+    fireEvent.changeText(inputFields[3], '4');
+    const submitButton = screen.getByText('Submit');
+    fireEvent.press(submitButton);
+    await waitFor(() => {
+      expect(onPinFail).toHaveBeenCalled();
+    });
+    expect(screen.getByText('Invalid PIN')).toBeOnTheScreen();
+  });
+});
