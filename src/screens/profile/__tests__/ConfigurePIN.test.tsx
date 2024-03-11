@@ -1,8 +1,16 @@
-import { fireEvent, screen } from '@testing-library/react-native';
+import { fireEvent, screen, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
+import { sessionStore } from '@stores/SessionStore';
+
 import { ConfigurePIN } from '../ConfigurePIN';
+
+jest.mock('@stores/SessionStore', () => ({
+  sessionStore: {
+    savePin: jest.fn(),
+  },
+}));
 
 describe('ConfigurePIN component', () => {
   const mockNavigation: any = {
@@ -20,7 +28,7 @@ describe('ConfigurePIN component', () => {
   });
 
   it('Should display the correct title based on isReEnter state', () => {
-    const enterTitle = screen.getByText('Enter your PIN code');
+    const enterTitle = screen.getByText('Enter your new PIN code');
     expect(enterTitle).toBeOnTheScreen();
 
     fillWithPIN(screen, '1234');
@@ -32,7 +40,7 @@ describe('ConfigurePIN component', () => {
     expect(reEnterTitle).toBeOnTheScreen();
   });
 
-  it('Should navigate to the next screen when PINs match', () => {
+  it('Should navigate to the next screen when PINs match', async () => {
     const submitButton = screen.getByTestId('submit-button');
 
     // set the first PIN
@@ -44,7 +52,10 @@ describe('ConfigurePIN component', () => {
     fireEvent.press(submitButton);
 
     // check success
-    expect(mockNavigation.popToTop).toHaveBeenCalled();
+    expect(sessionStore.savePin).toHaveBeenCalledWith('1234');
+    await waitFor(() => {
+      expect(mockNavigation.popToTop).toHaveBeenCalled();
+    });
   });
 
   it('Should clear the PIN input when PINs do not match', () => {
@@ -60,7 +71,7 @@ describe('ConfigurePIN component', () => {
 
     // check failure
     expect(mockNavigation.popToTop).not.toHaveBeenCalled();
-    const enterTitle = screen.getByText('Enter your PIN code');
+    const enterTitle = screen.getByText('Enter your new PIN code');
     expect(enterTitle).toBeOnTheScreen();
   });
 });

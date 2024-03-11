@@ -1,3 +1,4 @@
+import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 import { action, flow, makeAutoObservable, observable } from 'mobx';
 
@@ -156,6 +157,31 @@ export class SessionStore {
       await this.save(newSession);
       return this.session;
     }
+  }
+
+  async savePin(pin: string) {
+    // Hash the PIN before saving it
+    const hashedPin = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, pin);
+    await SecureStore.setItemAsync('pin', hashedPin);
+  }
+
+  async loadPin(): Promise<string | null> {
+    return await SecureStore.getItemAsync('pin');
+  }
+
+  async clearPin() {
+    await SecureStore.deleteItemAsync('pin');
+  }
+
+  async verifyPin(pin: string): Promise<boolean> {
+    const hashedPin = await this.loadPin();
+    if (!hashedPin) {
+      return false;
+    }
+
+    // Hash the input PIN and compare it with the stored hashed PIN
+    const inputHashedPin = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, pin);
+    return hashedPin === inputHashedPin;
   }
 }
 

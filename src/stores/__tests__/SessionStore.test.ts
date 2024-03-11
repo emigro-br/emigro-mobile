@@ -1,3 +1,4 @@
+import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 
 import { IAuthSession } from '@/types/IAuthSession';
@@ -199,5 +200,55 @@ describe('SessionStore', () => {
     const updatedSession = await sessionStore.load();
 
     expect(updatedSession?.publicKey).toBe(mockPublicKey);
+  });
+
+  describe('PIN', () => {
+    it('should save PIN', async () => {
+      const pin = '1234';
+      const hashedPin = 'hashed_1234';
+
+      jest.spyOn(Crypto, 'digestStringAsync').mockResolvedValue(hashedPin);
+
+      await sessionStore.savePin(pin);
+
+      expect(Crypto.digestStringAsync).toHaveBeenCalledWith(Crypto.CryptoDigestAlgorithm.SHA256, pin);
+      expect(SecureStore.setItemAsync).toHaveBeenCalledWith('pin', hashedPin);
+    });
+
+    it('should load PIN', async () => {
+      const pin = '1234';
+      const hashedPin = 'hashed_1234';
+      jest.spyOn(Crypto, 'digestStringAsync').mockResolvedValue(hashedPin);
+
+      await sessionStore.savePin(pin);
+      const loadedPin = await sessionStore.loadPin();
+
+      expect(loadedPin).toBe(hashedPin);
+    });
+
+    it('should return null if there is no PIN', async () => {
+      const loadedPin = await sessionStore.loadPin();
+
+      expect(loadedPin).toBeUndefined();
+    });
+
+    it('should clear PIN', async () => {
+      await sessionStore.savePin('1234');
+      await sessionStore.clearPin();
+
+      expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith('pin');
+    });
+
+    // test verifyPin
+    it('should return true if the PIN is correct', async () => {
+      const pin = '1234';
+      const hashedPin = 'hashed_1234';
+      jest.spyOn(Crypto, 'digestStringAsync').mockResolvedValue(hashedPin);
+
+      await sessionStore.savePin(pin);
+      const result = await sessionStore.verifyPin(pin);
+
+      expect(result).toBe(true);
+    });
   });
 });

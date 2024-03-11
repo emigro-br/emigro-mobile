@@ -8,6 +8,8 @@ import { ProfileStackParamList } from '@navigation/ProfileStack';
 
 import { PIN } from '@screens/PIN';
 
+import { sessionStore } from '@stores/SessionStore';
+
 type PinRefType = {
   clear: () => void;
 };
@@ -22,14 +24,13 @@ export const ConfigurePIN = ({ navigation }: Props) => {
   // const [error, setError] = useState('');
   const [isReEnter, setIsReEnter] = useState(false);
 
-  const handlePinSuccess = (enteredPin: string) => {
+  const handlePinSuccess = async (enteredPin: string) => {
     if (!isReEnter) {
       setPin(enteredPin);
       setIsReEnter(true);
     } else {
       if (enteredPin === pin) {
-        console.log('PIN set: ', pin);
-        // Save the PIN and navigate to the next screen
+        await sessionStore.savePin(enteredPin);
         navigation.popToTop();
       } else {
         // setError('PINs do not match');
@@ -45,7 +46,7 @@ export const ConfigurePIN = ({ navigation }: Props) => {
     <Box flex={1} bg="$white">
       <PIN
         ref={pinRef}
-        title={isReEnter ? 'Re-enter your PIN code' : 'Enter your PIN code'}
+        title={isReEnter ? 'Re-enter your PIN code' : 'Enter your new PIN code'}
         btnLabel="Submit"
         onPinSuccess={handlePinSuccess}
         onPinFail={() => console.log('PIN fail')}
