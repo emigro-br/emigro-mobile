@@ -110,13 +110,28 @@ const Profile = ({ navigation }: Props) => {
 
           <Divider />
 
-          <Button onPress={() => navigation.push('DeleteAccount')} variant="link" size="sm" alignSelf="flex-start">
+          <Button
+            onPress={() => navigation.push('ConfigurePIN')}
+            variant="link"
+            action="secondary"
+            alignSelf="flex-start"
+          >
+            <ButtonText>Configure your PIN</ButtonText>
+          </Button>
+
+          <Button
+            onPress={() => navigation.push('DeleteAccount')}
+            variant="link"
+            action="negative"
+            size="sm"
+            alignSelf="flex-start"
+          >
             <ButtonText>Delete account</ButtonText>
           </Button>
         </VStack>
       </VStack>
       <Box alignItems="center" py="$4">
-        <Button onPress={handleLogout} variant="link" size="lg">
+        <Button onPress={handleLogout} variant="link" action="negative">
           <ButtonText>Logout</ButtonText>
         </Button>
         <Text size="sm">
