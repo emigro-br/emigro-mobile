@@ -18,7 +18,7 @@ describe('UnlockScreen component', () => {
     expect(screen.getByText('Enter your PIN')).toBeOnTheScreen();
     expect(navigation.replace).not.toHaveBeenCalledWith('Root');
 
-    inputPIN(screen, '1234');
+    inputPIN('1234');
 
     await waitFor(() => {
       expect(navigation.replace).toHaveBeenCalledWith('Root');

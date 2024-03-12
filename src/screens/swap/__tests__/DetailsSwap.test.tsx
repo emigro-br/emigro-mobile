@@ -1,9 +1,9 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { fireEvent, screen, waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
 
-import { render } from 'test-utils';
+import { inputPIN, render } from 'test-utils';
 
 import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { CryptoAsset } from '@/types/assets';
@@ -94,7 +94,7 @@ describe('DetailsSwap', () => {
 
     fireEvent.press(getByText('Swap EURC for BRL'));
 
-    fillWithPIN(screen, '1234');
+    inputPIN('1234');
 
     expect(verifyPinSpy).toHaveBeenCalledWith('1234');
 
@@ -117,7 +117,7 @@ describe('DetailsSwap', () => {
 
     fireEvent.press(getByText('Swap EURC for BRL'));
 
-    fillWithPIN(screen, '1234');
+    inputPIN('1234');
 
     await waitFor(() => {
       //FIXME: the error-modal testID is aways rendering
@@ -125,15 +125,3 @@ describe('DetailsSwap', () => {
     });
   });
 });
-
-const fillWithPIN = (screen: any, pin: string) => {
-  const inputFields = screen.getAllByLabelText('Input Field');
-
-  for (let i = 0; i < 4; i++) {
-    fireEvent.changeText(inputFields[i], pin[i]);
-  }
-
-  const submitButton = screen.getByTestId('submit-button');
-  fireEvent.press(submitButton);
-  return inputFields;
-};

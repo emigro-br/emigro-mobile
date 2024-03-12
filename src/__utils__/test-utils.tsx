@@ -1,6 +1,6 @@
 import { JSX, JSXElementConstructor, ReactElement } from 'react';
 
-import { RenderOptions, fireEvent, render } from '@testing-library/react-native';
+import { RenderOptions, fireEvent, render, screen } from '@testing-library/react-native';
 
 import { ThemeProvider } from './ThemeProvider';
 
@@ -21,7 +21,7 @@ export * from '@testing-library/react-native';
 
 export { customRender as render };
 
-export const inputPIN = (screen: any, pin: string, labelText: string = 'Input Field') => {
+export const inputPIN = (pin: string, labelText: string = 'Input Field') => {
   const inputFields = screen.getAllByLabelText(labelText);
 
   for (let i = 0; i < pin.length; i++) {
