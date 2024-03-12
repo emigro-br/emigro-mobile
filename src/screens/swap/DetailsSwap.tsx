@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 
-import { NavigationProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonText, Card, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
 
 import { ErrorModal } from '@components/modals/ErrorModal';
 
-import { RootStackParamList } from '@navigation/RootStack';
+import { SwapStackParamList } from '@navigation/SwapStack';
+import { WalletStackParamList } from '@navigation/WalletStack';
 
 import { paymentStore as bloc } from '@stores/PaymentStore';
 
 interface DetailsSwapProps {
-  navigation: NavigationProp<RootStackParamList>;
+  navigation: NativeStackNavigationProp<WalletStackParamList & SwapStackParamList, 'SwapReview'>;
 }
 
 export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
@@ -43,7 +44,12 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
 
   return (
     <>
-      <ErrorModal errorMessage={errorMessage} isVisible={!!errorMessage} onClose={() => navigation.goBack()} />
+      <ErrorModal
+        title="Swap failed"
+        errorMessage={errorMessage}
+        isOpen={!!errorMessage}
+        onClose={() => navigation.goBack()}
+      />
       <Box flex={1}>
         <VStack p="$4" space="lg">
           <Heading>Confirm Swap</Heading>

@@ -7,13 +7,14 @@ import { Box, Button, ButtonSpinner, ButtonText, Card, HStack, Heading, Text, VS
 import { ErrorDialog } from '@components/dialogs/ErrorDialog';
 import { SuccessDialog } from '@components/dialogs/SuccessDialog';
 
-import { RootStackParamList } from '@navigation/RootStack';
+import { TransferStackParamList } from '@navigation/TrasnsferStack';
+import { WalletStackParamList } from '@navigation/WalletStack';
 
 import { paymentStore as bloc } from '@stores/PaymentStore';
 
 import { maskWallet } from '@utils/masks';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'ReviewTransfer'>;
+type Props = NativeStackScreenProps<WalletStackParamList & TransferStackParamList, 'ReviewTransfer'>;
 
 export const ReviewTransfer = ({ navigation }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
