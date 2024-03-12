@@ -10,7 +10,8 @@ import { getUserProfile, getUserPublicKey } from '@services/emigro';
 import { IAuthSession } from '../types/IAuthSession';
 
 export class SessionStore {
-  // Observable state
+  // Observable states
+  justLoggedIn = false;
   session: IAuthSession | null = null;
   profile: IUserProfile | null = null;
 
@@ -35,6 +36,9 @@ export class SessionStore {
       profile: observable,
       setProfile: action,
       fetchProfile: flow,
+      // loggedIn
+      justLoggedIn: observable,
+      setJustLoggedIn: action,
     });
   }
 
@@ -61,6 +65,10 @@ export class SessionStore {
 
   setProfile(profile: IUserProfile | null) {
     this.profile = profile;
+  }
+
+  setJustLoggedIn(justLoggedIn: boolean) {
+    this.justLoggedIn = justLoggedIn;
   }
 
   async *fetchPublicKey() {
@@ -144,6 +152,23 @@ export class SessionStore {
 
     await SecureStore.deleteItemAsync(this.profileKey);
     this.setProfile(null);
+
+    // await this.clearPin();
+    this.setJustLoggedIn(false);
+  }
+
+  async signIn(session: IAuthSession) {
+    this.setSession(session);
+    this.save(session);
+    this.setJustLoggedIn(true);
+
+    // Fetch the user data in background
+    this.fetchPublicKey();
+    this.fetchProfile();
+  }
+
+  async signOut() {
+    await this.clear();
   }
 
   async refresh() {

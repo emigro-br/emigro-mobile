@@ -17,6 +17,7 @@ jest.mock('@services/auth', () => ({
 
 jest.mock('@services/emigro', () => ({
   getUserPublicKey: jest.fn(),
+  getUserProfile: jest.fn(),
 }));
 
 describe('SessionStore', () => {
@@ -200,6 +201,42 @@ describe('SessionStore', () => {
     const updatedSession = await sessionStore.load();
 
     expect(updatedSession?.publicKey).toBe(mockPublicKey);
+  });
+
+  it('should sign in correctly', async () => {
+    jest.spyOn(sessionStore, 'fetchPublicKey').mockResolvedValueOnce('public_key' as never);
+    jest.spyOn(sessionStore, 'fetchProfile').mockResolvedValueOnce({} as never);
+
+    const session: IAuthSession = {
+      accessToken: 'access_token',
+      refreshToken: 'refresh_token',
+      idToken: 'id_token',
+      tokenExpirationDate: new Date(),
+      email: 'test@example.com',
+      publicKey: 'public_key',
+    };
+
+    await sessionStore.signIn(session);
+    const loadedSession = await sessionStore.load();
+
+    expect(loadedSession).toEqual(session);
+    expect(sessionStore.session).toEqual(session);
+
+    // should set just logged in flag to true
+    const justLoggedIn = sessionStore.justLoggedIn;
+    expect(justLoggedIn).toBe(true);
+
+    // should fetch public key and profile
+    expect(sessionStore.fetchPublicKey).toHaveBeenCalledTimes(1);
+    expect(sessionStore.fetchProfile).toHaveBeenCalledTimes(1);
+  });
+
+  it('should sign out correctly', async () => {
+    jest.spyOn(sessionStore, 'clear').mockResolvedValueOnce(undefined as never);
+
+    await sessionStore.signOut();
+
+    expect(sessionStore.clear).toHaveBeenCalledTimes(1);
   });
 
   describe('PIN', () => {
