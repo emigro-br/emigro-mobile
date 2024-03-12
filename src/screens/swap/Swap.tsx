@@ -24,7 +24,7 @@ type SwapProps = {
 
 export const Swap = ({ navigation }: SwapProps) => {
   const [active, setActive] = useState<SwapType>(SwapType.SELL);
-  const [sellAsset, setSellAsset] = useState<CryptoAsset>(CryptoAsset.EURC);
+  const [sellAsset, setSellAsset] = useState<CryptoAsset>(CryptoAsset.USDC);
   const [buyAsset, setBuyAsset] = useState<CryptoAsset>(CryptoAsset.BRL);
   const [sellValue, setSellValue] = useState(0);
   const [buyValue, setBuyValue] = useState(0);
