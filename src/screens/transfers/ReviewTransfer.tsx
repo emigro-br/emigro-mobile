@@ -31,14 +31,11 @@ export const ReviewTransfer = ({ navigation }: Props) => {
   const asset = to.asset;
 
   const handleConfirmTransaction = async () => {
-    console.log('handleConfirmTransaction');
-    setShowPinScreen(false);
     setIsLoading(true);
     const defaultError = 'Failed on execute transfer. Please try again.';
     try {
       // Send the transaction
       const result = await bloc.pay();
-      console.log('result', result);
       if (result.transactionHash) {
         setIsSuccessDialogOpen(true);
       } else {
@@ -67,7 +64,10 @@ export const ReviewTransfer = ({ navigation }: Props) => {
         title="Enter your PIN code"
         btnLabel="Confirm"
         verifyPin={async (pin) => await sessionStore.verifyPin(pin)}
-        onPinSuccess={handleConfirmTransaction}
+        onPinSuccess={() => {
+          setShowPinScreen(false);
+          handleConfirmTransaction();
+        }}
         onPinFail={(error) => {
           setErrorMessage(error.message);
           setShowPinScreen(false);

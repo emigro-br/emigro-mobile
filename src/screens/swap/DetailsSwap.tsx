@@ -28,7 +28,6 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
   const estimated = toValue - fees;
 
   const handleConfirmTransaction = async () => {
-    setShowPinScreen(false);
     setIsLoading(true);
 
     try {
@@ -53,7 +52,10 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
         title="Enter your PIN code"
         btnLabel="Confirm"
         verifyPin={async (pin) => await sessionStore.verifyPin(pin)}
-        onPinSuccess={handleConfirmTransaction}
+        onPinSuccess={() => {
+          setShowPinScreen(false);
+          handleConfirmTransaction();
+        }}
         onPinFail={(error) => {
           setErrorMessage(error.message);
           setShowPinScreen(false);
