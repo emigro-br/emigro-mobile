@@ -2,19 +2,19 @@ import { fireEvent, screen, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
-import { PIN } from '../PIN';
+import { PinScreen } from '../PinScreen';
 
-describe('PIN component', () => {
+describe('PinScreen', () => {
   const onPinSuccess = jest.fn();
   const onPinFail = jest.fn();
   const verifyPin = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
-    render(<PIN verifyPin={verifyPin} onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
+    render(<PinScreen verifyPin={verifyPin} onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
   });
 
-  it('Should render the PIN component correctly', () => {
+  it('Should render the PIN correctly', () => {
     const heading = screen.getByText('Enter your PIN code');
     expect(heading).toBeOnTheScreen();
 
@@ -24,10 +24,10 @@ describe('PIN component', () => {
     expect(button).toHaveAccessibilityState({ disabled: true });
   });
 
-  it('Should render the PIN component correctly with custom labels', () => {
+  it('Should render the PIN correctly with custom labels', () => {
     const title = 'Re-Enter your PIN code';
     const btnLabel = 'Submit PIN';
-    render(<PIN title={title} btnLabel={btnLabel} onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
+    render(<PinScreen title={title} btnLabel={btnLabel} onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
     const heading = screen.getByText(title);
     expect(heading).toBeOnTheScreen();
 
@@ -60,7 +60,7 @@ describe('PIN component', () => {
     const verifyPin = jest.fn().mockImplementation(() => {
       throw new Error('Invalid PIN');
     });
-    render(<PIN verifyPin={verifyPin} onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
+    render(<PinScreen verifyPin={verifyPin} onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
     fillWithPIN(screen, '1234');
     const submitButton = screen.getByTestId('submit-button');
     fireEvent.press(submitButton);

@@ -9,7 +9,7 @@ import { ErrorModal } from '@components/modals/ErrorModal';
 import { TabNavParamList } from '@navigation/MainApp';
 import { SwapStackParamList } from '@navigation/SwapStack';
 
-import { PIN } from '@screens/PIN';
+import { PinScreen } from '@screens/PinScreen';
 
 import { paymentStore as bloc } from '@stores/PaymentStore';
 import { sessionStore } from '@stores/SessionStore';
@@ -49,7 +49,7 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
 
   if (showPinScreen) {
     return (
-      <PIN
+      <PinScreen
         title="Enter your PIN code"
         btnLabel="Confirm"
         verifyPin={async (pin) => await sessionStore.verifyPin(pin)}

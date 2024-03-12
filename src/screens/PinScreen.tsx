@@ -11,7 +11,7 @@ type Props = {
   onPinFail: (error: Error) => void;
 };
 
-export const PIN = forwardRef(({ title, btnLabel, verifyPin, onPinSuccess, onPinFail }: Props, ref) => {
+export const PinScreen = forwardRef(({ title, btnLabel, verifyPin, onPinSuccess, onPinFail }: Props, ref) => {
   const pinSize = 4;
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');

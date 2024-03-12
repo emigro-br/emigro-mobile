@@ -6,7 +6,7 @@ import { Box } from '@gluestack-ui/themed';
 
 import { ProfileStackParamList } from '@navigation/ProfileStack';
 
-import { PIN } from '@screens/PIN';
+import { PinScreen } from '@screens/PinScreen';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -44,8 +44,8 @@ export const ConfigurePIN = ({ navigation }: Props) => {
   };
 
   return (
-    <Box flex={1} bg="$white">
-      <PIN
+    <Box flex={1}>
+      <PinScreen
         ref={pinRef}
         title={isReEnter ? 'Re-enter your PIN code' : 'Enter your new PIN code'}
         verifyPin={isReEnter ? async (enteredPin) => enteredPin === pin : () => Promise.resolve(true)}
