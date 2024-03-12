@@ -5,6 +5,14 @@ import { IVendor } from '@/types/IVendor';
 
 import { getUserBalance, handleQuote, sendTransaction } from '@services/emigro';
 
+export enum TransactionStep {
+  NONE = 'none',
+  CONFIRM_PAYMENT = 'confirm_payment',
+  PROCESSING = 'processing',
+  SUCCESS = 'success',
+  ERROR = 'error',
+}
+
 interface TransactionValue {
   message: string;
 }
@@ -17,8 +25,8 @@ const usePayment = (
 ) => {
   const [transactionValue, setTransactionValue] = useState<number | TransactionValue>(0);
   const [maxAmountToSend, setMaxAmountToSend] = useState<string>('0');
-  const [isTransactionLoading, setIsTransactionLoading] = useState(false);
-  const [isTransactionCompletedModalVisible, setIsTransactionCompletedModalVisible] = useState(false);
+  const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
+
   const [transactionError, setTransactionError] = useState<Error | unknown>(null);
 
   useEffect(() => {
@@ -57,7 +65,7 @@ const usePayment = (
 
   const handleConfirmPayment = async () => {
     try {
-      setIsTransactionLoading(true);
+      setStep(TransactionStep.PROCESSING);
       const transactionRequest: ITransactionRequest = {
         maxAmountToSend,
         destinationAmount: paymentAmount,
@@ -66,23 +74,21 @@ const usePayment = (
         destinationAssetCode,
       };
       const paymentResponse = await sendTransaction(transactionRequest);
+      setStep(TransactionStep.SUCCESS);
       return paymentResponse;
     } catch (error) {
-      setTransactionError(error);
       console.error('[handleConfirmPayment]', error);
-    } finally {
-      setIsTransactionLoading(false);
-      setIsTransactionCompletedModalVisible(true);
+      setStep(TransactionStep.ERROR);
+      setTransactionError(error);
     }
   };
 
   return {
     transactionValue,
-    isTransactionLoading,
-    isTransactionCompletedModalVisible,
     transactionError,
-    setIsTransactionCompletedModalVisible,
     handleConfirmPayment,
+    step,
+    setStep,
   };
 };
 
