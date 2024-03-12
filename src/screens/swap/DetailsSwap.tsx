@@ -6,8 +6,8 @@ import { Box, Button, ButtonText, Card, HStack, Heading, Text, VStack } from '@g
 
 import { ErrorModal } from '@components/modals/ErrorModal';
 
-import { TabNavParamList } from '@navigation/MainApp';
 import { SwapStackParamList } from '@navigation/SwapStack';
+import { WalletStackParamList } from '@navigation/WalletStack';
 
 import { PinScreen } from '@screens/PinScreen';
 
@@ -15,7 +15,7 @@ import { paymentStore as bloc } from '@stores/PaymentStore';
 import { sessionStore } from '@stores/SessionStore';
 
 interface DetailsSwapProps {
-  navigation: NativeStackNavigationProp<TabNavParamList & SwapStackParamList, 'SwapReview'>;
+  navigation: NativeStackNavigationProp<WalletStackParamList & SwapStackParamList, 'SwapReview'>;
 }
 
 export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
@@ -34,7 +34,7 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
     try {
       const result = await bloc.pay();
       if (result.transactionHash) {
-        navigation.navigate('WalletTab');
+        navigation.navigate('Wallet');
       }
     } catch (error) {
       if (error instanceof Error) {
