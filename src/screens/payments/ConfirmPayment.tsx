@@ -15,7 +15,7 @@ import { SuccessModal } from '@components/modals/SuccessModal';
 
 import useCurrencyChange from '@hooks/useCurrencyChange';
 import useGetUserBalance from '@hooks/useGetUserBalance';
-import usePayment from '@hooks/usePayment';
+import usePayment, { TransactionStep } from '@hooks/usePayment';
 
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
 import { WalletStackParamList } from '@navigation/WalletStack';
@@ -35,28 +35,25 @@ const ConfirmPayment = ({ navigation }: Props) => {
   const [open, setOpen] = useState(false);
   const [showPinScreen, setShowPinScreen] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState('');
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const { userBalance, setUserBalance } = useGetUserBalance();
   const { currency, setCurrency, selectedBalance, handleCurrencyChange } = useCurrencyChange(userBalance);
 
   const destinationAssetCode = scannedVendor.assetCode;
 
-  const {
-    transactionValue,
-    isTransactionLoading,
-    isTransactionCompletedModalVisible,
-    transactionError,
-    setIsTransactionCompletedModalVisible,
-    handleConfirmPayment,
-  } = usePayment(paymentAmount, scannedVendor, currency, destinationAssetCode);
+  const { transactionValue, transactionError, step, setStep, handleConfirmPayment } = usePayment(
+    paymentAmount,
+    scannedVendor,
+    currency,
+    destinationAssetCode,
+  );
 
-  const handleOpenModal = () => {
-    setIsModalVisible(true);
+  const handleContinue = () => {
+    setStep(TransactionStep.CONFIRM_PAYMENT);
   };
 
-  const handleNavigateWallet = () => {
+  const handleCloseFinishedModal = () => {
+    setStep(TransactionStep.NONE);
     navigation.navigate('Wallet');
-    setIsTransactionCompletedModalVisible(false);
   };
 
   const insuficcientBalance = Number(selectedBalance.balance) < Number(paymentAmount);
@@ -152,18 +149,18 @@ const ConfirmPayment = ({ navigation }: Props) => {
           )}
         </Box>
 
-        <Button onPress={handleOpenModal} isDisabled={insuficcientBalance}>
-          <ButtonText>Send Money</ButtonText>
+        <Button onPress={handleContinue} isDisabled={insuficcientBalance}>
+          <ButtonText>Continue</ButtonText>
         </Button>
       </VStack>
 
       {/* TODO: check it is necessary since ConfirmationModal has internal loading */}
-      <LoadingModal isOpen={isTransactionLoading} text="Processing..." />
+      <LoadingModal isOpen={step === TransactionStep.PROCESSING} text="Processing..." />
 
       <ConfirmationModal
         title="Confirm Payment"
-        isOpen={isModalVisible && !isTransactionCompletedModalVisible}
-        onClose={() => setIsModalVisible(false)}
+        isOpen={step === TransactionStep.CONFIRM_PAYMENT}
+        onClose={() => setStep(TransactionStep.NONE)}
         onPress={() => setShowPinScreen(true)}
       >
         <VStack space="md">
@@ -179,17 +176,17 @@ const ConfirmPayment = ({ navigation }: Props) => {
       </ConfirmationModal>
 
       <SuccessModal
-        isOpen={isTransactionCompletedModalVisible && !transactionError}
+        isOpen={step === TransactionStep.SUCCESS}
         title="Transaction completed"
         publicKey={scannedVendor.publicKey}
-        onClose={handleNavigateWallet}
+        onClose={handleCloseFinishedModal}
       />
 
       <ErrorModal
-        isOpen={isTransactionCompletedModalVisible && !!transactionError}
+        isOpen={step === TransactionStep.ERROR}
         title="Transaction error"
-        errorMessage="Failed to complete your payment!"
-        onClose={handleNavigateWallet}
+        errorMessage={`Failed to complete your payment:\n ${transactionError}`}
+        onClose={handleCloseFinishedModal}
       />
     </Box>
   );
