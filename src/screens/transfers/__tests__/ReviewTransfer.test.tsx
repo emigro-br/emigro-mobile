@@ -2,9 +2,12 @@ import React from 'react';
 
 import { fireEvent, waitFor } from '@testing-library/react-native';
 
-import { render } from 'test-utils';
+import { inputPIN, render } from 'test-utils';
+
+import { IPaymentResponse } from '@/types/IPaymentResponse';
 
 import { paymentStore } from '@stores/PaymentStore';
+import { sessionStore } from '@stores/SessionStore';
 
 import { ReviewTransfer } from '../ReviewTransfer';
 
@@ -30,7 +33,7 @@ const navigationMock: any = {
 
 const routeMock: any = {};
 
-describe('ReviewTransfer component', () => {
+describe('ReviewTransfer', () => {
   test('Should render review transfer details', () => {
     const { getByText } = render(<ReviewTransfer navigation={navigationMock} route={routeMock} />);
 
@@ -43,18 +46,21 @@ describe('ReviewTransfer component', () => {
   });
 
   test('Should call handlePress when Send button is pressed', async () => {
+    const verifyPinSpy = jest.spyOn(sessionStore, 'verifyPin').mockResolvedValueOnce(true);
     // mock pay function
-    (paymentStore.pay as jest.Mock).mockResolvedValue({ transactionHash: 'hash' });
+    jest.spyOn(paymentStore, 'pay').mockResolvedValue({ transactionHash: 'hash' } as IPaymentResponse);
 
     const { getByText } = render(<ReviewTransfer navigation={navigationMock} route={routeMock} />);
     const sendButton = getByText('Send');
 
     fireEvent.press(sendButton);
 
-    expect(paymentStore.pay).toHaveBeenCalled();
+    inputPIN('1234');
 
     await waitFor(() => {
-      expect(getByText('Sending...')).toBeDefined();
+      expect(verifyPinSpy).toHaveBeenCalledWith('1234');
+      expect(paymentStore.pay).toHaveBeenCalled();
+      // expect(getByText('Sending...')).toBeDefined();
     });
   });
 

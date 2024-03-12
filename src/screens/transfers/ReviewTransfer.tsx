@@ -7,16 +7,21 @@ import { Box, Button, ButtonSpinner, ButtonText, Card, HStack, Heading, Text, VS
 import { ErrorDialog } from '@components/dialogs/ErrorDialog';
 import { SuccessDialog } from '@components/dialogs/SuccessDialog';
 
-import { RootStackParamList } from '@navigation/RootStack';
+import { TransferStackParamList } from '@navigation/TrasnsferStack';
+import { WalletStackParamList } from '@navigation/WalletStack';
+
+import { PinScreen } from '@screens/PinScreen';
 
 import { paymentStore as bloc } from '@stores/PaymentStore';
+import { sessionStore } from '@stores/SessionStore';
 
 import { maskWallet } from '@utils/masks';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'ReviewTransfer'>;
+type Props = NativeStackScreenProps<WalletStackParamList & TransferStackParamList, 'ReviewTransfer'>;
 
 export const ReviewTransfer = ({ navigation }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [showPinScreen, setShowPinScreen] = useState(false);
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -25,12 +30,15 @@ export const ReviewTransfer = ({ navigation }: Props) => {
   const amount = to.value;
   const asset = to.asset;
 
-  const handlePress = async () => {
+  const handleConfirmTransaction = async () => {
+    console.log('handleConfirmTransaction');
+    setShowPinScreen(false);
     setIsLoading(true);
     const defaultError = 'Failed on execute transfer. Please try again.';
     try {
       // Send the transaction
       const result = await bloc.pay();
+      console.log('result', result);
       if (result.transactionHash) {
         setIsSuccessDialogOpen(true);
       } else {
@@ -53,6 +61,21 @@ export const ReviewTransfer = ({ navigation }: Props) => {
     navigation.navigate('Wallet');
   };
 
+  if (showPinScreen) {
+    return (
+      <PinScreen
+        title="Enter your PIN code"
+        btnLabel="Confirm"
+        verifyPin={async (pin) => await sessionStore.verifyPin(pin)}
+        onPinSuccess={handleConfirmTransaction}
+        onPinFail={(error) => {
+          setErrorMessage(error.message);
+          setShowPinScreen(false);
+        }}
+      />
+    );
+  }
+
   return (
     <>
       <SuccessDialog isOpen={isSuccessDialogOpen} publicKey={from.wallet} onClose={handleCloseModal} />
@@ -67,7 +90,7 @@ export const ReviewTransfer = ({ navigation }: Props) => {
               <Row label="Recipient" value={maskWallet(destinationWallet)} />
             </VStack>
           </Card>
-          <Button onPress={() => handlePress()} isDisabled={isLoading}>
+          <Button onPress={() => setShowPinScreen(true)} isDisabled={isLoading}>
             {isLoading && <ButtonSpinner mr="$1" />}
             <ButtonText>{isLoading ? 'Sending...' : 'Send'}</ButtonText>
           </Button>
