@@ -22,6 +22,7 @@ import {
 } from '@gluestack-ui/themed';
 import * as Application from 'expo-application';
 import * as Clipboard from 'expo-clipboard';
+import { observer } from 'mobx-react-lite';
 
 import { ProfileStackParamList } from '@navigation/ProfileStack';
 
@@ -33,7 +34,7 @@ type Props = {
   navigation: NativeStackNavigationProp<ProfileStackParamList, 'Profile'>;
 };
 
-const Profile = ({ navigation }: Props) => {
+const Profile = observer(({ navigation }: Props) => {
   const toast = useToast();
 
   const handleLogout = async () => {
@@ -140,6 +141,6 @@ const Profile = ({ navigation }: Props) => {
       </Box>
     </Box>
   );
-};
+});
 
 export default Profile;

@@ -47,8 +47,8 @@
     "preview": {
       "extends": "production",
       "android": {
-        "track": "internal",
-        "releaseStatus": "draft"
+        "track": "alpha",
+        "releaseStatus": "completed"
       }
     }
   }

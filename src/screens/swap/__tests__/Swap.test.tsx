@@ -23,6 +23,9 @@ const mockNavigation: any = {
 };
 
 describe('Swap component', () => {
+  const fromAsset = CryptoAsset.USDC;
+  const toAsset = CryptoAsset.BRL;
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
@@ -32,7 +35,7 @@ describe('Swap component', () => {
     const { getByText, getByTestId } = render(<Swap navigation={mockNavigation} />);
 
     // check title
-    const sellText = getByText(`Sell ${CryptoAsset.EURC}`);
+    const sellText = getByText(`Sell ${fromAsset}`);
     expect(sellText).toBeDefined();
 
     // check arrow icon
@@ -41,7 +44,7 @@ describe('Swap component', () => {
 
     await waitFor(() => {
       // check rate
-      const buyText = getByText(`1 ${CryptoAsset.EURC} ≈ 1.082900 ${CryptoAsset.BRL}`);
+      const buyText = getByText(`1 ${fromAsset} ≈ 1.082900 ${toAsset}`);
       expect(buyText).toBeDefined();
       expect(emigroService.handleQuote).toHaveBeenCalledTimes(1);
     });
@@ -80,9 +83,9 @@ describe('Swap component', () => {
     fireEvent.press(button);
 
     const transaction = {
-      from: CryptoAsset.EURC,
+      from: fromAsset,
       fromValue: 10,
-      to: CryptoAsset.BRL,
+      to: toAsset,
       toValue: 10.829,
       rate: 1.0829,
       fees: 0,
