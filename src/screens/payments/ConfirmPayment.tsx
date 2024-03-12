@@ -53,6 +53,7 @@ const ConfirmPayment = ({ navigation }: Props) => {
 
   const handleCloseFinishedModal = () => {
     setStep(TransactionStep.NONE);
+    navigation.popToTop(); // clean the stack backing to Payments
     navigation.navigate('Wallet');
   };
 
