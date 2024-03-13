@@ -32,6 +32,7 @@ import {
 
 import { FormField } from '@/types/FormField';
 import { IRegisterUser } from '@/types/IRegisterUser';
+import { BadRequestException } from '@/types/errors';
 
 import { Role } from '@constants/constants';
 import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
@@ -110,8 +111,14 @@ const CreateAccount = ({ navigation }: Props) => {
       setConfirmationParams({ email: formData.email, username });
       clearForm();
     } catch (error) {
-      console.error(error);
-      setError(SIGNUP_ERROR_MESSAGE);
+      if (error instanceof BadRequestException) {
+        console.warn('Error', error);
+        setError(SIGNUP_ERROR_MESSAGE);
+      } else if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError(SIGNUP_ERROR_MESSAGE);
+      }
     } finally {
       setIsLoading(false);
     }

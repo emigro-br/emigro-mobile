@@ -28,6 +28,7 @@ import {
 } from '@gluestack-ui/themed';
 
 import { FormField } from '@/types/FormField';
+import { BadRequestException } from '@/types/errors';
 
 import { SIGNIN_ERROR_MESSAGE, SIGN_IN_FIELDS_ERROR } from '@constants/errorMessages';
 
@@ -96,8 +97,14 @@ const Login = ({ navigation }: Props) => {
       await sessionStore.signIn(authSession);
       setError('');
     } catch (error) {
-      console.error(error, SIGNIN_ERROR_MESSAGE);
-      setError(SIGNIN_ERROR_MESSAGE);
+      if (error instanceof BadRequestException) {
+        console.warn('Error', error);
+        setError(SIGNIN_ERROR_MESSAGE);
+      } else if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unknown error occurred');
+      }
     } finally {
       setIsLoggingIn(false);
     }

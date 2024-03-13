@@ -9,7 +9,7 @@ import { IUserProfile } from '@/types/IUserProfile';
 
 import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
 
-import { CustomError } from './errors';
+import { CustomError } from '../types/errors';
 import { fetchWithTokenCheck } from './utils';
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;

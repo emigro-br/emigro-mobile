@@ -1,4 +1,4 @@
-import { NotAuhtorized } from './errors';
+import { NotAuhtorized } from '../types/errors';
 
 export const fetchWithTokenCheck = async (url: string, options: RequestInit): Promise<Response> => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
