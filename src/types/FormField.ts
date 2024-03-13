@@ -7,4 +7,5 @@ export type FormField = {
   label?: string;
   keyboardType: KeyboardType;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  returnKeyType?: 'done' | 'go' | 'next' | 'search' | 'send';
 };

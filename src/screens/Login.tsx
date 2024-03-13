@@ -44,6 +44,7 @@ const formFields: FormField[] = [
     placeholder: 'example@email.com',
     keyboardType: 'email-address',
     autoCapitalize: 'none',
+    returnKeyType: 'next',
   },
   {
     name: 'password',
@@ -51,6 +52,8 @@ const formFields: FormField[] = [
     placeholder: 'Enter your password',
     secureTextEntry: true,
     keyboardType: 'default',
+    autoCapitalize: 'none',
+    returnKeyType: 'done',
   },
 ];
 
@@ -117,19 +120,33 @@ const Login = ({ navigation }: Props) => {
         <Heading size="xl">Sign in to Emigro</Heading>
         <Card>
           <VStack space="xl">
-            {formFields.map((field) => (
+            {formFields.map((field, index) => (
               <FormControl key={field.name}>
                 <FormControlLabel mb="$1">
                   <FormControlLabelText>{field.label}</FormControlLabelText>
                 </FormControlLabel>
                 <Input size="xl">
                   <InputField
+                    ref={(input) => {
+                      this[field.name] = input;
+                    }}
                     placeholder={field.placeholder}
                     value={formValue[field.name]}
                     onChangeText={(text) => handleValueChange(field.name, text)}
                     type={field.secureTextEntry && !showPassword ? 'password' : 'text'}
                     keyboardType={field.keyboardType}
                     autoCapitalize={field.autoCapitalize}
+                    returnKeyType={field.returnKeyType}
+                    onSubmitEditing={() => {
+                      if (index < formFields.length - 1) {
+                        // If this is not the last field, move the focus to the next field
+                        this[formFields[index + 1].name].focus();
+                      } else {
+                        // If this is the last field, submit the form
+                        handleSignIn();
+                      }
+                    }}
+                    blurOnSubmit={index === formFields.length - 1}
                     testID={field.name}
                   />
                   {field.secureTextEntry && (
