@@ -9,7 +9,10 @@ import { ErrorModal } from '@components/modals/ErrorModal';
 import { SwapStackParamList } from '@navigation/SwapStack';
 import { WalletStackParamList } from '@navigation/WalletStack';
 
+import { PinScreen } from '@screens/PinScreen';
+
 import { paymentStore as bloc } from '@stores/PaymentStore';
+import { sessionStore } from '@stores/SessionStore';
 
 interface DetailsSwapProps {
   navigation: NativeStackNavigationProp<WalletStackParamList & SwapStackParamList, 'SwapReview'>;
@@ -17,13 +20,14 @@ interface DetailsSwapProps {
 
 export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [showPinScreen, setShowPinScreen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const { from, to, rate, fees } = bloc.transaction!;
   const toValue = from.value * rate;
   const estimated = toValue - fees;
 
-  const handlePress = async () => {
+  const handleConfirmTransaction = async () => {
     setIsLoading(true);
 
     try {
@@ -41,6 +45,24 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
       setIsLoading(false);
     }
   };
+
+  if (showPinScreen) {
+    return (
+      <PinScreen
+        tagline="Enter your PIN code"
+        btnLabel="Confirm"
+        verifyPin={async (pin) => await sessionStore.verifyPin(pin)}
+        onPinSuccess={() => {
+          setShowPinScreen(false);
+          handleConfirmTransaction();
+        }}
+        onPinFail={(error) => {
+          setErrorMessage(error.message);
+          setShowPinScreen(false);
+        }}
+      />
+    );
+  }
 
   return (
     <>
@@ -63,7 +85,7 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
             </VStack>
           </Card>
           <Text size="xs">The final amount is estimated and may change.</Text>
-          <Button onPress={handlePress} isDisabled={isLoading}>
+          <Button onPress={() => setShowPinScreen(true)} isDisabled={isLoading}>
             <ButtonText>{isLoading ? 'Processing...' : `Swap ${from.asset} for ${to.asset}`}</ButtonText>
           </Button>
         </VStack>

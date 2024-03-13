@@ -20,6 +20,10 @@ import usePayment, { TransactionStep } from '@hooks/usePayment';
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
 import { WalletStackParamList } from '@navigation/WalletStack';
 
+import { PinScreen } from '@screens/PinScreen';
+
+import { sessionStore } from '@stores/SessionStore';
+
 import { AssetToCurrency } from '@utils/assets';
 
 type Props = {
@@ -29,6 +33,7 @@ type Props = {
 const ConfirmPayment = ({ navigation }: Props) => {
   const { scannedVendor } = useVendor();
   const [open, setOpen] = useState(false);
+  const [showPinScreen, setShowPinScreen] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState('');
   const { userBalance, setUserBalance } = useGetUserBalance();
   const { currency, setCurrency, selectedBalance, handleCurrencyChange } = useCurrencyChange(userBalance);
@@ -58,6 +63,24 @@ const ConfirmPayment = ({ navigation }: Props) => {
     setCurrency(scannedVendor.assetCode);
     setPaymentAmount(scannedVendor.amount);
   }, [scannedVendor]);
+
+  if (showPinScreen) {
+    return (
+      <PinScreen
+        tagline="Enter your PIN code"
+        btnLabel="Confirm"
+        verifyPin={async (pin) => await sessionStore.verifyPin(pin)}
+        onPinSuccess={() => {
+          setShowPinScreen(false);
+          handleConfirmPayment();
+        }}
+        onPinFail={(error) => {
+          console.warn('Error on pay transfer', error); // FIXME:
+          setShowPinScreen(false);
+        }}
+      />
+    );
+  }
 
   return (
     <Box flex={1} bg="$white">
@@ -139,7 +162,7 @@ const ConfirmPayment = ({ navigation }: Props) => {
         title="Confirm Payment"
         isOpen={step === TransactionStep.CONFIRM_PAYMENT}
         onClose={() => setStep(TransactionStep.NONE)}
-        onPress={handleConfirmPayment}
+        onPress={() => setShowPinScreen(true)}
       >
         <VStack space="md">
           <Text>{scannedVendor?.name} will receive:</Text>

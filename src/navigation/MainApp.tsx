@@ -2,18 +2,19 @@ import * as IconsOutline from 'react-native-heroicons/outline';
 import * as IconsSolid from 'react-native-heroicons/solid';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigatorScreenParams } from '@react-navigation/native';
 
 import Location from '@screens/Location';
 
-import { PaymentStack } from './PaymentsStack';
-import { ProfileStack } from './ProfileStack';
+import { PaymentStack, PaymentStackParamList } from './PaymentsStack';
+import { ProfileStack, ProfileStackParamList } from './ProfileStack';
 import { WalletStack } from './WalletStack';
 
 export type TabNavParamList = {
   WalletTab: undefined;
-  PaymentsTab: undefined;
+  PaymentsTab: NavigatorScreenParams<PaymentStackParamList> | undefined;
   LocationTab: undefined;
-  ProfileTab: undefined;
+  ProfileTab: NavigatorScreenParams<ProfileStackParamList> | undefined;
 };
 
 const Tab = createBottomTabNavigator<TabNavParamList>();

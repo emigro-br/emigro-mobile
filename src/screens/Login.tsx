@@ -90,8 +90,7 @@ const Login = ({ navigation }: Props) => {
         return;
       }
       const authSession = await signIn(email, password);
-      await sessionStore.save(authSession);
-      sessionStore.fetchPublicKey();
+      await sessionStore.signIn(authSession);
       setError('');
     } catch (error) {
       console.error(error, SIGNIN_ERROR_MESSAGE);

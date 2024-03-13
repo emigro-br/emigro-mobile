@@ -3,12 +3,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { fireEvent, waitFor } from '@testing-library/react-native';
 
-import { render } from 'test-utils';
+import { inputPIN, render } from 'test-utils';
 
 import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { CryptoAsset } from '@/types/assets';
 
 import { paymentStore } from '@stores/PaymentStore';
+import { sessionStore } from '@stores/SessionStore';
 
 import { DetailsSwap } from '../DetailsSwap';
 
@@ -81,7 +82,8 @@ describe('DetailsSwap', () => {
     expect(getByText('Swap EURC for BRL')).toBeOnTheScreen();
   });
 
-  it('navigates on button press', async () => {
+  it('show PIN on button press and pay when confirm', async () => {
+    const verifyPinSpy = jest.spyOn(sessionStore, 'verifyPin').mockResolvedValueOnce(true);
     const { getByText } = render(
       <NavigationContainer>
         <Stack.Navigator>
@@ -92,13 +94,18 @@ describe('DetailsSwap', () => {
 
     fireEvent.press(getByText('Swap EURC for BRL'));
 
+    inputPIN('1234');
+
+    expect(verifyPinSpy).toHaveBeenCalledWith('1234');
+
     await waitFor(() => {
+      // expect(getByText('Processing...')).toBeOnTheScreen();
       expect(paymentStore.pay).toHaveBeenCalled();
     });
   });
 
   it('shows error message', async () => {
-    jest.spyOn(paymentStore, 'pay').mockRejectedValue(new Error('error message'));
+    jest.spyOn(paymentStore, 'pay').mockRejectedValueOnce(new Error('error message'));
 
     const { getByText, getByTestId } = render(
       <NavigationContainer>
@@ -110,7 +117,10 @@ describe('DetailsSwap', () => {
 
     fireEvent.press(getByText('Swap EURC for BRL'));
 
+    inputPIN('1234');
+
     await waitFor(() => {
+      //FIXME: the error-modal testID is aways rendering
       expect(getByTestId('error-modal')).toBeOnTheScreen();
     });
   });

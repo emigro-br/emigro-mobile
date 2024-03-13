@@ -17,7 +17,7 @@ jest.mock('@stores/SessionStore', () => ({
     session: {},
     clear: jest.fn(),
     save: jest.fn(),
-    fetchPublicKey: jest.fn(),
+    signIn: jest.fn(),
   },
 }));
 
@@ -75,8 +75,7 @@ describe('Login screen', () => {
 
     await waitFor(() => {
       expect(signInMock).toHaveBeenCalledWith('test@example.com', 'password123');
-      expect(sessionStore.save).toHaveBeenCalledWith(authSession);
-      expect(sessionStore.fetchPublicKey).toHaveBeenCalled();
+      expect(sessionStore.signIn).toHaveBeenCalledWith(authSession);
     });
   });
 });
