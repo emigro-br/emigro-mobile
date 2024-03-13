@@ -57,17 +57,29 @@ describe('PinScreen', () => {
   });
 
   it('Should call onPinFail when throw error on submit', async () => {
+    const error = new Error('Boom');
     const verifyPin = jest.fn().mockImplementation(() => {
-      throw new Error('Invalid PIN');
+      throw error;
     });
     render(<PinScreen verifyPin={verifyPin} onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
     fillWithPIN(screen, '1234');
     const submitButton = screen.getByTestId('submit-button');
     fireEvent.press(submitButton);
     await waitFor(() => {
-      expect(onPinFail).toHaveBeenCalled();
+      expect(onPinFail).toHaveBeenCalledWith(error);
     });
-    expect(screen.getByText('Invalid PIN')).toBeOnTheScreen();
+  });
+
+  it('Should call onPinFail when the PIN is incorrect', async () => {
+    verifyPin.mockResolvedValue(false);
+    fillWithPIN(screen, '1234');
+    const submitButton = screen.getByTestId('submit-button');
+    fireEvent.press(submitButton);
+    expect(verifyPin).toHaveBeenCalledWith('1234');
+
+    await waitFor(() => {
+      expect(screen.getByText('PIN is incorrect')).toBeOnTheScreen();
+    });
   });
 });
 

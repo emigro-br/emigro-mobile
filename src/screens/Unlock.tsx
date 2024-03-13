@@ -23,6 +23,10 @@ export const UnlockScreen = ({ navigation }: Props) => {
     }
   }, [unlocked, navigation]);
 
+  const handlePinFail = (error: Error) => {
+    sessionStore.signOut();
+  };
+
   return (
     <Box flex={1} pt="$12">
       <PinScreen
@@ -30,7 +34,7 @@ export const UnlockScreen = ({ navigation }: Props) => {
         btnLabel="Unlock"
         verifyPin={(pin) => sessionStore.verifyPin(pin)}
         onPinSuccess={() => setUnlocked(true)}
-        onPinFail={() => {}}
+        onPinFail={handlePinFail}
       />
     </Box>
   );

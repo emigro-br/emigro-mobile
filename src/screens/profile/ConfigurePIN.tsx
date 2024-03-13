@@ -21,7 +21,6 @@ type Props = {
 export const ConfigurePIN = ({ navigation }: Props) => {
   const pinRef = useRef<PinRefType | null>(null);
   const [pin, setPin] = useState('');
-  // const [error, setError] = useState('');
   const [isReEnter, setIsReEnter] = useState(false);
 
   const handlePinSuccess = async (enteredPin: string) => {
@@ -39,8 +38,18 @@ export const ConfigurePIN = ({ navigation }: Props) => {
   const handlePinFail = () => {
     setIsReEnter(false);
     setPin('');
-    // setError('PINs do not match');
     pinRef.current?.clear();
+  };
+
+  const verifyPin = async (enteredPin: string) => {
+    if (!isReEnter) {
+      return true;
+    }
+
+    if (enteredPin === pin) {
+      return true;
+    }
+    throw new Error('PINs do not match');
   };
 
   return (
@@ -48,8 +57,9 @@ export const ConfigurePIN = ({ navigation }: Props) => {
       <PinScreen
         ref={pinRef}
         tagline={isReEnter ? 'Re-enter your PIN code' : 'Enter your new PIN code'}
-        verifyPin={isReEnter ? async (enteredPin) => enteredPin === pin : () => Promise.resolve(true)}
-        btnLabel="Submit"
+        verifyPin={verifyPin}
+        btnLabel={isReEnter ? 'Confirm PIN' : 'Next'}
+        maxAttempts={1}
         onPinSuccess={handlePinSuccess}
         onPinFail={handlePinFail}
       />

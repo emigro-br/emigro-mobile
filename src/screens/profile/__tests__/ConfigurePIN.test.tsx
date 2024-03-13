@@ -34,12 +34,14 @@ describe('ConfigurePIN component', () => {
     fillWithPIN(screen, '1234');
 
     const submitButton = screen.getByTestId('submit-button');
+    expect(submitButton).toHaveTextContent('Next');
     fireEvent.press(submitButton);
 
     await waitFor(() => {
       const reEnterTitle = screen.getByText('Re-enter your PIN code');
       expect(reEnterTitle).toBeOnTheScreen();
     });
+    expect(submitButton).toHaveTextContent('Confirm PIN');
   });
 
   it('Should navigate to the next screen when PINs match', async () => {
@@ -81,7 +83,7 @@ describe('ConfigurePIN component', () => {
 
     // check failure
     await waitFor(() => {
-      const error = screen.getByText('Invalid PIN');
+      const error = screen.getByText('PINs do not match');
       expect(error).toBeOnTheScreen();
     });
 
