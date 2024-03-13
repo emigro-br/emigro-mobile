@@ -21,6 +21,8 @@ import { CallbackType, getInteractiveUrl } from '@services/anchor';
 
 import { sessionStore } from '@stores/SessionStore';
 
+import { LoadingScreen } from './Loading';
+
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
 type Props = {
@@ -46,13 +48,12 @@ const Deposit = observer(({ navigation }: Props) => {
   };
 
   const handleAssetChoosen = async (asset: CryptoAsset) => {
-    setIsLoading(true);
-
     if (!sessionStore.accessToken || !sessionStore.publicKey) {
       setErrorMessage('Invalid session');
-      setIsLoading(false);
       return;
     }
+
+    setIsLoading(true);
 
     const anchorParams: IAnchorParams = {
       account: sessionStore.publicKey,
@@ -88,9 +89,14 @@ const Deposit = observer(({ navigation }: Props) => {
     navigation.popToTop();
   };
 
+  // if the session is not ready, show the loading screen
+  if (!sessionStore.accessToken || !sessionStore.publicKey) {
+    return <LoadingScreen />;
+  }
+
   return (
     <>
-      <LoadingModal isOpen={!sessionStore.publicKey || isLoading} text="Connecting to anchor..." />
+      <LoadingModal isOpen={isLoading} text="Connecting to anchor..." />
       <OpenURLModal isOpen={!!url} onClose={() => setUrl(null)} onConfirm={handleModalPressed} />
 
       <Box flex={1}>

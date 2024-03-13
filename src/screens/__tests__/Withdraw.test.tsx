@@ -7,6 +7,8 @@ import { render } from 'test-utils';
 
 import * as anchor from '@services/anchor';
 
+import { sessionStore } from '@stores/SessionStore';
+
 import Withdraw from '../Withdraw';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
@@ -28,8 +30,12 @@ jest.mock('@services/emigro', () => ({
 jest.mock('@stores/SessionStore', () => ({
   sessionStore: {
     session: {},
-    accessToken: 'someAccessToken',
-    publicKey: 'somePublicKey',
+    get accessToken() {
+      return 'accessToken';
+    },
+    get publicKey() {
+      return 'publicKey';
+    },
   },
 }));
 
@@ -41,6 +47,16 @@ describe('Withdraw', () => {
 
   afterAll(() => {
     jest.restoreAllMocks();
+  });
+
+  test('Should show loading screen when session is not ready', () => {
+    // session not ready
+    jest.spyOn(sessionStore, 'accessToken', 'get').mockReturnValueOnce(undefined);
+
+    const { getByTestId } = render(<Withdraw />);
+    const loadingSpinner = getByTestId('loading-spinner');
+
+    expect(loadingSpinner).toBeOnTheScreen();
   });
 
   it('Should render correctly', async () => {

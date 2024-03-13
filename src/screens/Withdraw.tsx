@@ -21,6 +21,8 @@ import { CallbackType, ConfirmWithdrawDto, confirmWithdraw, getInteractiveUrl, g
 
 import { sessionStore } from '@stores/SessionStore';
 
+import { LoadingScreen } from './Loading';
+
 enum TransactionStep {
   NONE = 'none',
   STARTED = 'started',
@@ -56,14 +58,13 @@ const Withdraw: React.FC = observer(() => {
   };
 
   const handleOnPress = async (asset: CryptoAsset) => {
-    setSelectedAsset(asset);
-    setTransactionId(null);
-
     if (!sessionStore.accessToken || !sessionStore.publicKey) {
       setErrorMessage('Invalid session');
-      setStep(TransactionStep.ERROR);
       return;
     }
+
+    setSelectedAsset(asset);
+    setTransactionId(null);
 
     setStep(TransactionStep.STARTED);
 
@@ -170,10 +171,13 @@ const Withdraw: React.FC = observer(() => {
     }
   };
 
+  // if the session is not ready, show the loading screen
+  if (!sessionStore.accessToken || !sessionStore.publicKey) {
+    return <LoadingScreen />;
+  }
+
   return (
     <>
-      <LoadingModal isOpen={!sessionStore.publicKey} />
-
       <LoadingModal
         isOpen={step === TransactionStep.STARTED && !url}
         text="Connecting to anchor..."
