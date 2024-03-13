@@ -3,7 +3,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 
 import { Box, Card, HStack, Input, InputField, Pressable, Text } from '@gluestack-ui/themed';
 
-import { CryptoAsset } from '@/types/assets';
+import { CryptoAsset, cryptoAssets } from '@/types/assets';
 
 import { AssetToSymbol } from '@utils/assets';
 
@@ -88,7 +88,7 @@ export const AssetSwap = (props: AssetSwapProps) => {
     }
   };
 
-  const filteredAssets = Object.values(CryptoAsset);
+  const filteredAssets = cryptoAssets();
 
   const data = filteredAssets.map((asset) => ({
     label: asset,

@@ -5,7 +5,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonGroup, ButtonIcon, ButtonText, Center, Image, VStack } from '@gluestack-ui/themed';
 
-import { CryptoAsset } from '@/types/assets';
+import { cryptoAssets } from '@/types/assets';
 
 import qrImage from '@assets/images/qr-code.png';
 
@@ -34,7 +34,7 @@ export const Payments: React.FC<Props> = ({ navigation }) => {
     return <QRCodeScanner onCancel={handleCancelPress} onProceedToPayment={() => navigation.push('ConfirmPayment')} />;
   }
 
-  const availableAssets = Object.values(CryptoAsset);
+  const availableAssets = cryptoAssets();
 
   return (
     <Box flex={1} bg="$white">

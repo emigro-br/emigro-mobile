@@ -14,3 +14,11 @@ export enum FiatCurrency {
 }
 
 export type CryptoOrFiat = CryptoAsset | FiatCurrency;
+
+export function cryptoAssets() {
+  const allAssets = Object.values(CryptoAsset);
+  if (__DEV__) {
+    return allAssets;
+  }
+  return allAssets.filter((asset) => asset !== CryptoAsset.XLM);
+}

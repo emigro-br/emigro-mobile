@@ -4,7 +4,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Card, Heading, Text, VStack } from '@gluestack-ui/themed';
 
-import { CryptoAsset } from '@/types/assets';
+import { cryptoAssets } from '@/types/assets';
 
 import { AssetList } from '@components/AssetList';
 
@@ -15,7 +15,7 @@ type Props = {
 };
 
 export const Transfers = ({ navigation }: Props) => {
-  const data = Object.values(CryptoAsset);
+  const data = cryptoAssets();
 
   return (
     <Box flex={1}>
