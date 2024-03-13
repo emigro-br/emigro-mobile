@@ -43,7 +43,7 @@ const Wallet = observer(({ navigation }: Props) => {
     >
       <VStack space="lg" p="$4">
         <OperationButtons navigation={navigation} />
-        <Balance userBalance={balanceStore.userBalance} />
+        {balanceStore.userBalance.length > 0 && <Balance userBalance={balanceStore.userBalance} />}
       </VStack>
     </ScrollView>
   );
