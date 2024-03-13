@@ -96,6 +96,10 @@ describe('SessionStore', () => {
     expect(loadedSession).toBeNull();
     expect(sessionStore.session).toBeNull();
     expect(sessionStore.profile).toBeNull();
+    expect(sessionStore.justLoggedIn).toBe(false);
+    expect(sessionStore.publicKey).toBeUndefined();
+    expect(sessionStore.accessToken).toBeUndefined();
+    expect(sessionStore.loadPin()).resolves.toBeUndefined();
   });
 
   it('should get access token', () => {

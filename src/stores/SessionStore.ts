@@ -153,7 +153,7 @@ export class SessionStore {
     await SecureStore.deleteItemAsync(this.profileKey);
     this.setProfile(null);
 
-    // await this.clearPin();
+    await this.clearPin();
     this.setJustLoggedIn(false);
   }
 
