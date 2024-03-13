@@ -27,7 +27,7 @@ describe('PinScreen', () => {
   it('Should render the PIN correctly with custom labels', () => {
     const title = 'Re-Enter your PIN code';
     const btnLabel = 'Submit PIN';
-    render(<PinScreen title={title} btnLabel={btnLabel} onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
+    render(<PinScreen tagline={title} btnLabel={btnLabel} onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
     const heading = screen.getByText(title);
     expect(heading).toBeOnTheScreen();
 

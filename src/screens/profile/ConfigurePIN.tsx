@@ -47,7 +47,7 @@ export const ConfigurePIN = ({ navigation }: Props) => {
     <Box flex={1}>
       <PinScreen
         ref={pinRef}
-        title={isReEnter ? 'Re-enter your PIN code' : 'Enter your new PIN code'}
+        tagline={isReEnter ? 'Re-enter your PIN code' : 'Enter your new PIN code'}
         verifyPin={isReEnter ? async (enteredPin) => enteredPin === pin : () => Promise.resolve(true)}
         btnLabel="Submit"
         onPinSuccess={handlePinSuccess}

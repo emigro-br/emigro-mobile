@@ -4,14 +4,14 @@ import { TextInput } from 'react-native';
 import { Box, Button, ButtonText, HStack, Heading, Input, InputField, Text, VStack } from '@gluestack-ui/themed';
 
 type Props = {
-  title?: string;
+  tagline?: string;
   btnLabel?: string;
   verifyPin?: (pin: string) => Promise<boolean>;
   onPinSuccess: (pin: string) => void;
   onPinFail: (error: Error) => void;
 };
 
-export const PinScreen = forwardRef(({ title, btnLabel, verifyPin, onPinSuccess, onPinFail }: Props, ref) => {
+export const PinScreen = forwardRef(({ tagline, btnLabel, verifyPin, onPinSuccess, onPinFail }: Props, ref) => {
   const pinSize = 4;
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
@@ -59,7 +59,7 @@ export const PinScreen = forwardRef(({ title, btnLabel, verifyPin, onPinSuccess,
   return (
     <Box flex={1} bg="$white">
       <VStack space="4xl" p="$4">
-        <Heading size="xl">{title ?? 'Enter your PIN code'}</Heading>
+        <Heading size="xl">{tagline ?? 'Enter your PIN code'}</Heading>
         <HStack space="xl" justifyContent="center">
           {[...Array(pinSize)].map((_, i) => (
             <Input key={i} variant="underlined" size="xl" w="$10">

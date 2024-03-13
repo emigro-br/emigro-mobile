@@ -26,7 +26,7 @@ export const UnlockScreen = ({ navigation }: Props) => {
   return (
     <Box flex={1} pt="$12">
       <PinScreen
-        title="Enter your PIN"
+        tagline="Enter your PIN"
         btnLabel="Unlock"
         verifyPin={(pin) => sessionStore.verifyPin(pin)}
         onPinSuccess={() => setUnlocked(true)}

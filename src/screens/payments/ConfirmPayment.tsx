@@ -67,7 +67,7 @@ const ConfirmPayment = ({ navigation }: Props) => {
   if (showPinScreen) {
     return (
       <PinScreen
-        title="Enter your PIN code"
+        tagline="Enter your PIN code"
         btnLabel="Confirm"
         verifyPin={async (pin) => await sessionStore.verifyPin(pin)}
         onPinSuccess={() => {
