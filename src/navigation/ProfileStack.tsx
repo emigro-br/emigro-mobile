@@ -9,7 +9,9 @@ import Profile from '@screens/profile/Profile';
 export type ProfileStackParamList = {
   Profile: undefined;
   DeleteAccount: undefined;
-  ConfigurePIN: undefined;
+  ConfigurePIN: {
+    backTo: string;
+  };
 };
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();

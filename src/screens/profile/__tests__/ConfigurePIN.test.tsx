@@ -14,12 +14,17 @@ jest.mock('@stores/SessionStore', () => ({
 
 describe('ConfigurePIN component', () => {
   const mockNavigation: any = {
+    replace: jest.fn(),
     popToTop: jest.fn(),
+  };
+
+  const mockRoute: any = {
+    params: {},
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    render(<ConfigurePIN navigation={mockNavigation} />);
+    render(<ConfigurePIN navigation={mockNavigation} route={mockRoute} />);
   });
 
   it('Should render the PIN input correctly', () => {

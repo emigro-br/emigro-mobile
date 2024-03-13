@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react';
 
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { CompositeScreenProps } from '@react-navigation/native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { Box } from '@gluestack-ui/themed';
 
 import { ProfileStackParamList } from '@navigation/ProfileStack';
+import { RootStackParamList } from '@navigation/RootStack';
 
 import { PinScreen } from '@screens/PinScreen';
 
@@ -14,11 +16,13 @@ type PinRefType = {
   clear: () => void;
 };
 
-type Props = {
-  navigation: NativeStackNavigationProp<ProfileStackParamList, 'ConfigurePIN'>;
-};
+type Props = CompositeScreenProps<
+  NativeStackScreenProps<ProfileStackParamList, 'ConfigurePIN'>,
+  NativeStackScreenProps<RootStackParamList>
+>;
 
-export const ConfigurePIN = ({ navigation }: Props) => {
+export const ConfigurePIN = ({ navigation, route }: Props) => {
+  const { backTo } = route.params;
   const pinRef = useRef<PinRefType | null>(null);
   const [pin, setPin] = useState('');
   const [isReEnter, setIsReEnter] = useState(false);
@@ -29,7 +33,11 @@ export const ConfigurePIN = ({ navigation }: Props) => {
       setIsReEnter(true);
     } else {
       await sessionStore.savePin(enteredPin);
-      navigation.popToTop();
+      if (backTo === 'Root') {
+        navigation.replace('Root');
+      } else {
+        navigation.popToTop();
+      }
     }
 
     pinRef.current?.clear();

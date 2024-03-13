@@ -29,8 +29,21 @@ describe('RootStack', () => {
     });
   });
 
-  it('should render Unlock when signed in and not just logged in', async () => {
-    sessionStore.justLoggedIn = false;
+  it('should render PinOnboardin when signed and has no pin', async () => {
+    jest.spyOn(sessionStore, 'loadPin').mockResolvedValue(null);
+
+    const { getByText } = render(
+      <NavigationContainer>
+        <RootStack isSignedIn />
+      </NavigationContainer>,
+    );
+
+    await waitFor(() => {
+      expect(getByText('Set up your mobile PIN')).toBeOnTheScreen();
+    });
+  });
+
+  it('should render Unlock when signed in and has pin', async () => {
     jest.spyOn(sessionStore, 'loadPin').mockResolvedValue('1234');
 
     const { getByText } = render(
@@ -41,37 +54,6 @@ describe('RootStack', () => {
 
     await waitFor(() => {
       expect(getByText('Unlock')).toBeOnTheScreen();
-    });
-  });
-
-  it('should not render Unlock when signed in and just logged in', async () => {
-    sessionStore.justLoggedIn = true;
-    jest.spyOn(sessionStore, 'loadPin').mockResolvedValue('1234');
-
-    const { queryByText } = render(
-      <NavigationContainer>
-        <RootStack isSignedIn />
-      </NavigationContainer>,
-    );
-
-    await waitFor(() => {
-      expect(queryByText('Unlock')).toBeNull();
-    });
-  });
-
-  // TODO: remove when force pin is implemented
-  it('should not render Unlock when signed in and not just logged in and user has no pin', async () => {
-    sessionStore.justLoggedIn = false;
-    jest.spyOn(sessionStore, 'loadPin').mockResolvedValue(null);
-
-    const { queryByText } = render(
-      <NavigationContainer>
-        <RootStack isSignedIn />
-      </NavigationContainer>,
-    );
-
-    await waitFor(() => {
-      expect(queryByText('Unlock')).toBeNull();
     });
   });
 });
