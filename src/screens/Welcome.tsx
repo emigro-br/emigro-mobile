@@ -29,11 +29,11 @@ export const Welcome = ({ navigation }: Props) => {
         </Center>
       </Box>
 
-      <ButtonGroup flexDirection="column" mx="$4" mt="$10">
-        <Button onPress={() => navigation.push('Login')} variant="solid" size="lg">
+      <ButtonGroup flexDirection="column" space="md" size="xl" mx="$4" mt="$8">
+        <Button onPress={() => navigation.push('Login')} variant="solid">
           <ButtonText>Login</ButtonText>
         </Button>
-        <Button onPress={() => navigation.push('SignUp')} variant="outline" size="lg">
+        <Button onPress={() => navigation.push('SignUp')} variant="outline">
           <ButtonText>Create an Account</ButtonText>
         </Button>
       </ButtonGroup>
