@@ -8,13 +8,13 @@ import {
   Button,
   ButtonText,
   Card,
-  Center,
   FormControl,
   FormControlError,
   FormControlErrorIcon,
   FormControlErrorText,
   FormControlLabel,
   FormControlLabelText,
+  HStack,
   Heading,
   Input,
   InputField,
@@ -162,16 +162,14 @@ const CreateAccount = ({ navigation }: Props) => {
               </Button>
             </VStack>
           </Card>
-          <Center>
-            <Text size="xl">
-              Already have an account?
-              <Link onPress={() => navigation.replace('Login')}>
-                <Text size="xl" color="$primary500" ml="$2" bold>
-                  Sign in
-                </Text>
-              </Link>
-            </Text>
-          </Center>
+          <HStack justifyContent="center">
+            <Text size="xl">Already have an account?</Text>
+            <Link onPress={() => navigation.replace('Login')}>
+              <Text size="xl" color="$primary500" ml="$2" bold>
+                Sign in
+              </Text>
+            </Link>
+          </HStack>
         </VStack>
       </Box>
     </ScrollView>
