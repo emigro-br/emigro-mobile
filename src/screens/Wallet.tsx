@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { RefreshControl } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
@@ -26,10 +26,6 @@ const Wallet = observer(({ navigation }: Props) => {
       balanceStore.fetchUserBalance();
     }, [balanceStore.fetchUserBalance]),
   );
-
-  useEffect(() => {
-    balanceStore.fetchUserBalance();
-  }, []);
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);

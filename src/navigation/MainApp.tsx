@@ -12,9 +12,9 @@ import { WalletStack } from './WalletStack';
 
 export type TabNavParamList = {
   WalletTab: undefined;
-  PaymentsTab: NavigatorScreenParams<PaymentStackParamList>;
+  PaymentsTab: NavigatorScreenParams<PaymentStackParamList> | undefined;
   LocationTab: undefined;
-  ProfileTab: NavigatorScreenParams<ProfileStackParamList>;
+  ProfileTab: NavigatorScreenParams<ProfileStackParamList> | undefined;
 };
 
 const Tab = createBottomTabNavigator<TabNavParamList>();

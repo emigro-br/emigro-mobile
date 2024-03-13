@@ -24,6 +24,7 @@ export const UnlockScreen = ({ navigation }: Props) => {
   }, [unlocked, navigation]);
 
   const handlePinFail = (error: Error) => {
+    console.warn('Pin verification failed', error);
     sessionStore.signOut();
   };
 
