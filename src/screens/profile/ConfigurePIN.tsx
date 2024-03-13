@@ -22,7 +22,10 @@ type Props = CompositeScreenProps<
 >;
 
 export const ConfigurePIN = ({ navigation, route }: Props) => {
-  const { backTo } = route.params;
+  let backTo: string | undefined;
+  if (route.params) {
+    backTo = route.params.backTo;
+  }
   const pinRef = useRef<PinRefType | null>(null);
   const [pin, setPin] = useState('');
   const [isReEnter, setIsReEnter] = useState(false);
