@@ -36,10 +36,11 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
         navigation.navigate('Wallet');
       }
     } catch (error) {
+      console.warn('Swap:', error);
       if (error instanceof Error) {
         setErrorMessage(error.message);
       } else {
-        setErrorMessage('An error occurred, please try again later.');
+        setErrorMessage('Could not complete the swap, please try again later.');
       }
     } finally {
       setIsLoading(false);

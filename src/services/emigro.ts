@@ -7,7 +7,7 @@ import { ITransaction } from '@/types/ITransaction';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IUserProfile } from '@/types/IUserProfile';
 
-import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR, TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
+import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR } from '@constants/errorMessages';
 
 import { CustomError } from '../types/errors';
 import { fetchWithTokenCheck } from './utils';
@@ -91,25 +91,20 @@ export const handleQuote = async (body: IQuoteRequest): Promise<IQuote> => {
 
 export const sendTransaction = async (transactionRequest: ITransactionRequest): Promise<IPaymentResponse> => {
   const url = `${backendUrl}/transaction`;
-  try {
-    const res = await fetchWithTokenCheck(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(transactionRequest),
-    });
+  const res = await fetchWithTokenCheck(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(transactionRequest),
+  });
 
-    const json = await res.json();
-    if (!res.ok) {
-      throw new Error(json.error?.message || res.statusText);
-    }
-
-    return json;
-  } catch (error) {
-    console.error(error);
-    throw new Error(TRANSACTION_ERROR_MESSAGE);
+  const json = await res.json();
+  if (!res.ok) {
+    throw new Error(json.error?.message || res.statusText);
   }
+
+  return json;
 };
 
 export const getUserPublicKey = async (): Promise<string> => {

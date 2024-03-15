@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IVendor } from '@/types/IVendor';
 
+import { TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
+
 import { getUserBalance, handleQuote, sendTransaction } from '@services/emigro';
 
 export enum TransactionStep {
@@ -79,7 +81,7 @@ const usePayment = (
     } catch (error) {
       console.error('[handleConfirmPayment]', error);
       setStep(TransactionStep.ERROR);
-      setTransactionError(error);
+      setTransactionError(TRANSACTION_ERROR_MESSAGE);
     }
   };
 
