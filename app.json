@@ -31,6 +31,13 @@
             "deploymentTarget": "13.4"
           }
         }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "emigro",
+          "project": "emigro-mobile"
+        }
       ]
     ],
     "splash": {
