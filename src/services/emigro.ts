@@ -1,7 +1,6 @@
 import { IAuthSession } from '@/types/IAuthSession';
 import { IBalance } from '@/types/IBalance';
 import { IPaymentResponse } from '@/types/IPaymentResponse';
-import { IQuote } from '@/types/IQuote';
 import { IQuoteRequest } from '@/types/IQuoteRequest';
 import { ITransaction } from '@/types/ITransaction';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
@@ -64,7 +63,7 @@ export const getUserBalance = async (): Promise<IBalance[]> => {
   }
 };
 
-export const handleQuote = async (body: IQuoteRequest): Promise<IQuote> => {
+export const handleQuote = async (body: IQuoteRequest): Promise<number> => {
   const url = `${backendUrl}/quote`;
 
   try {
@@ -82,7 +81,7 @@ export const handleQuote = async (body: IQuoteRequest): Promise<IQuote> => {
     }
 
     const { quote } = json;
-    return quote;
+    return Number(quote);
   } catch (error) {
     console.error(error);
     throw new Error(QUOTE_NOT_AVAILABLE_ERROR);

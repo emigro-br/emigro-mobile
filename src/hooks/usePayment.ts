@@ -40,7 +40,7 @@ const usePayment = (
           const transactionQuote = { from, to, amount: paymentAmount };
           const calculatedTransactionValue = await handleQuote(transactionQuote);
           if (calculatedTransactionValue) {
-            setTransactionValue(Number(calculatedTransactionValue));
+            setTransactionValue(calculatedTransactionValue);
           }
         }
       } catch (error) {

@@ -32,21 +32,23 @@ export const Swap = ({ navigation }: SwapProps) => {
 
   // TODO: disable the not active input while fetching the rate
   const fetchRate = async () => {
+    const amount = sellValue > 0 ? sellValue : 1;
+    // FIXME: we should invert sell and buy values for restrictSend and restrictReceive
     const data: IQuoteRequest = {
       from: sellAsset,
       to: buyAsset,
-      amount: '1', // FIXME: we should use sell or buy values for restrictSend and restrictReceive
+      amount: `${amount.toFixed(2)}`,
     };
     const quote = await handleQuote(data);
-    const rate = Number(quote);
-    if (isNaN(rate)) return;
+    if (isNaN(quote)) return;
+    const rate = quote / amount;
     setRate(rate);
     return rate;
   };
 
   useEffect(() => {
-    fetchRate();
-  }, [sellAsset, buyAsset]); // will update the rate when the assets change
+    fetchRate().catch(console.warn);
+  }, [sellAsset, buyAsset, sellValue]); // will update the rate when the assets change
 
   const onChangeValue = (value: number, type: SwapType) => {
     if (!rate) return;

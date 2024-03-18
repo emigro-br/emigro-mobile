@@ -14,7 +14,7 @@ import { paymentStore } from '@stores/PaymentStore';
 import { Swap } from '../Swap';
 
 jest.mock('@services/emigro', () => ({
-  handleQuote: jest.fn().mockResolvedValue('1.0829'),
+  handleQuote: jest.fn(),
 }));
 
 const mockNavigation: any = {
@@ -32,6 +32,7 @@ describe('Swap component', () => {
   });
 
   test('Should render Swap component correctly', async () => {
+    jest.spyOn(emigroService, 'handleQuote').mockResolvedValueOnce(1.0829);
     const { getByText, getByTestId } = render(<Swap navigation={mockNavigation} />);
 
     // check title
@@ -47,10 +48,17 @@ describe('Swap component', () => {
       const buyText = getByText(`1 ${fromAsset} ≈ 1.082900 ${toAsset}`);
       expect(buyText).toBeDefined();
       expect(emigroService.handleQuote).toHaveBeenCalledTimes(1);
+      expect(emigroService.handleQuote).toHaveBeenCalledWith({
+        from: fromAsset,
+        to: toAsset,
+        amount: '1.00',
+      });
     });
   });
 
   test('Should update sellValue and buyValue when onChangeValue is called', async () => {
+    jest.spyOn(emigroService, 'handleQuote').mockResolvedValueOnce(1.0829);
+    jest.spyOn(emigroService, 'handleQuote').mockResolvedValueOnce(10.829);
     const { findAllByPlaceholderText } = render(<Swap navigation={mockNavigation} />);
 
     const [sellInput, buyInput] = await findAllByPlaceholderText('0');
@@ -64,9 +72,25 @@ describe('Swap component', () => {
     await waitFor(() => {
       expect(buyInput.props.value).toBe('10.83');
     });
+
+    // calend twice to check if the rate is being called twice
+    expect(emigroService.handleQuote).toHaveBeenCalledTimes(2); // 1 for 1.00 and 1 for 10.00
+    expect(emigroService.handleQuote).toHaveBeenCalledWith({
+      from: fromAsset,
+      to: toAsset,
+      amount: '1.00',
+    });
+    expect(emigroService.handleQuote).toHaveBeenCalledWith({
+      from: fromAsset,
+      to: toAsset,
+      amount: '10.00',
+    });
   });
 
   test('Should update bloc and navigate to DetailsSwap when button is pressed', async () => {
+    jest.spyOn(emigroService, 'handleQuote').mockResolvedValueOnce(1.0829);
+    jest.spyOn(emigroService, 'handleQuote').mockResolvedValueOnce(10.829);
+
     const spy = jest.spyOn(paymentStore, 'setSwap');
     jest.spyOn(balanceStore, 'get').mockReturnValue(100); // enough balance
 
@@ -87,7 +111,7 @@ describe('Swap component', () => {
       fromValue: 10,
       to: toAsset,
       toValue: 10.829,
-      rate: 1.0829,
+      rate: 1.0829, // normalized rate
       fees: 0,
     };
 
