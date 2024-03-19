@@ -23,14 +23,14 @@ const Wallet = observer(({ navigation }: Props) => {
 
   useFocusEffect(
     React.useCallback(() => {
-      balanceStore.fetchUserBalance();
+      balanceStore.fetchUserBalance().catch(console.warn);
     }, [balanceStore.fetchUserBalance]),
   );
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     try {
-      await balanceStore.fetchUserBalance();
+      await balanceStore.fetchUserBalance().catch(console.warn);
     } finally {
       setRefreshing(false);
     }

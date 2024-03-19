@@ -6,6 +6,7 @@ import { getUserBalance } from '@services/emigro';
 
 export class BalanceStore {
   userBalance: IBalance[] = [];
+  lastUpdate: number | null = null;
 
   constructor() {
     makeAutoObservable(this, {
@@ -16,6 +17,7 @@ export class BalanceStore {
 
   setUserBalance(balance: IBalance[]): void {
     this.userBalance = balance;
+    this.lastUpdate = Date.now();
   }
 
   get(assetCode: string): number {
@@ -25,17 +27,16 @@ export class BalanceStore {
   }
 
   async fetchUserBalance(): Promise<IBalance[]> {
-    try {
+    const interval = 10 * 1000;
+    const now = Date.now();
+    if (this.lastUpdate === null || now - this.lastUpdate >= interval) {
       console.debug('Fetching user balance...');
       const balances = await getUserBalance();
       if (balances) {
         this.setUserBalance(balances);
       }
-      return balances;
-    } catch (error) {
-      console.warn('Failed to fetch user balance', error);
-      throw new Error('Failed to fetch user balance');
     }
+    return this.userBalance;
   }
 }
 

@@ -14,7 +14,7 @@ import RootStack from '../RootStack';
 describe('RootStack', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.spyOn(balanceStore, 'fetchUserBalance').mockImplementation(jest.fn());
+    jest.spyOn(balanceStore, 'fetchUserBalance').mockResolvedValue([]);
   });
 
   it('should render AnonRoot when not signed in', async () => {

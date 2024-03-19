@@ -1,8 +1,6 @@
-import mockConsole from 'jest-mock-console';
-
 import { IBalance } from '@/types/IBalance';
 
-import * as BalanceModule from '@services/emigro';
+import * as emigroApi from '@services/emigro';
 
 import { BalanceStore } from '../BalanceStore';
 
@@ -23,6 +21,7 @@ describe('BalanceStore', () => {
   ];
 
   beforeEach(() => {
+    jest.clearAllMocks();
     balanceStore = new BalanceStore();
   });
 
@@ -36,28 +35,36 @@ describe('BalanceStore', () => {
   });
 
   it('should fetch user balance', async () => {
-    (BalanceModule.getUserBalance as jest.Mock).mockResolvedValue(mockBalances);
+    (emigroApi.getUserBalance as jest.Mock).mockResolvedValue(mockBalances);
     jest.spyOn(balanceStore, 'setUserBalance');
 
     await balanceStore.fetchUserBalance();
 
-    expect(BalanceModule.getUserBalance).toHaveBeenCalled();
+    expect(emigroApi.getUserBalance).toHaveBeenCalledTimes(1);
     expect(balanceStore.setUserBalance).toHaveBeenCalledWith(mockBalances);
   });
 
+  it('should not call api twice on fetch user balance in short period', async () => {
+    (emigroApi.getUserBalance as jest.Mock).mockResolvedValue(mockBalances);
+    jest.spyOn(balanceStore, 'setUserBalance');
+
+    // call 2x
+    await balanceStore.fetchUserBalance();
+    await balanceStore.fetchUserBalance();
+
+    expect(emigroApi.getUserBalance).toHaveBeenCalledTimes(1);
+  });
+
   it('should throw an error when fetching user balance fails', async () => {
-    const restoreConsole = mockConsole();
     const message = 'Failed to fetch user balance';
     const error = new Error(message);
-    (BalanceModule.getUserBalance as jest.Mock).mockRejectedValue(error);
+    (emigroApi.getUserBalance as jest.Mock).mockRejectedValue(error);
     jest.spyOn(balanceStore, 'setUserBalance');
 
     await expect(balanceStore.fetchUserBalance()).rejects.toThrowError();
 
-    expect(BalanceModule.getUserBalance).toHaveBeenCalled();
+    expect(emigroApi.getUserBalance).toHaveBeenCalled();
     expect(balanceStore.setUserBalance).not.toHaveBeenCalled();
-    expect(console.warn).toHaveBeenCalledWith(message, error);
-    restoreConsole();
   });
 
   it('should return user balance', () => {
