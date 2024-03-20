@@ -28,6 +28,13 @@ export class BadRequestException extends CustomError {
   }
 }
 
+export class InvalidSessionError extends CustomError {
+  constructor() {
+    super('Invalid session');
+    this.name = 'InvalidSessionError';
+  }
+}
+
 interface ErrorClasses {
   [key: string]: typeof CustomError;
   // NotAuhtorized: typeof NotAuhtorized;

@@ -3,6 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import { action, flow, makeAutoObservable, observable } from 'mobx';
 
 import { IUserProfile } from '@/types/IUserProfile';
+import { InvalidSessionError } from '@/types/errors';
 
 import { refresh as refreshSession } from '@services/auth';
 import { getUserProfile, getUserPublicKey } from '@services/emigro';
@@ -173,7 +174,7 @@ export class SessionStore {
 
   async refresh() {
     if (!this.session) {
-      return null;
+      throw new InvalidSessionError();
     }
 
     const newSession = await refreshSession(this.session);
