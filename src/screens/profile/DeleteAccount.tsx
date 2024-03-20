@@ -31,15 +31,12 @@ type Props = {
 const DeleteAccount = ({ navigation }: Props) => {
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const handleDeleteAccount = async () => {
-    const session = sessionStore.session;
-    if (!session) {
-      return;
-    }
     try {
-      await deleteAccount(session);
+      await deleteAccount();
       await sessionStore.clear();
     } catch (error) {
       console.error(error);
+      //TODO: missing feedback to the user
     }
   };
 

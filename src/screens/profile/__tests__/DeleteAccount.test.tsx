@@ -54,24 +54,8 @@ describe('DeleteAccount component', () => {
     fireEvent.press(deleteButton);
 
     await waitFor(() => {
-      expect(deleteAccount).toHaveBeenCalled();
+      expect(deleteAccount).toHaveBeenCalledWith();
       expect(sessionStore.clear).toHaveBeenCalled();
-    });
-  });
-
-  it('Should not delete any account if session is not found', async () => {
-    sessionStore.session = null;
-
-    const { getByText, getByTestId } = render(<DeleteAccount navigation={mockNavigattion} />);
-
-    const checkbox = getByTestId('checkbox');
-    fireEvent.press(checkbox);
-
-    const deleteButton = getByText('Yes, delete my account permanently');
-    fireEvent.press(deleteButton);
-
-    await waitFor(() => {
-      expect(deleteAccount).not.toHaveBeenCalled();
     });
   });
 
@@ -81,7 +65,8 @@ describe('DeleteAccount component', () => {
       accessToken: 'accessToken',
     } as IAuthSession;
 
-    (deleteAccount as jest.Mock).mockRejectedValue(new Error('Delete account error'));
+    const error = new Error('Delete account error');
+    (deleteAccount as jest.Mock).mockRejectedValue(error);
 
     const { getByText, getByTestId } = render(<DeleteAccount navigation={mockNavigattion} />);
 
@@ -94,7 +79,7 @@ describe('DeleteAccount component', () => {
     await waitFor(() => {
       expect(deleteAccount).toHaveBeenCalled();
       expect(sessionStore.clear).not.toHaveBeenCalled();
-      expect(console.error).toHaveBeenCalledWith(new Error('Delete account error'));
+      expect(console.error).toHaveBeenCalledWith(error);
     });
     restoreConsole();
   });

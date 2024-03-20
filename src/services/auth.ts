@@ -7,6 +7,7 @@ import { Role } from '@constants/constants';
 import { REFRESH_SESSION_ERROR } from '@constants/errorMessages';
 
 import { CustomError } from '../types/errors';
+import { fetchWithTokenCheck } from './utils';
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -120,15 +121,14 @@ export const refresh = async (authSession: IAuthSession): Promise<IAuthSession> 
   }
 };
 
-export const deleteAccount = async (authSession: IAuthSession): Promise<void> => {
+export const deleteAccount = async (): Promise<void> => {
   const url = `${backendUrl}/auth`;
   try {
-    const res = await fetch(url, {
+    const res = await fetchWithTokenCheck(url, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(authSession),
     });
 
     const json = await res.json();
