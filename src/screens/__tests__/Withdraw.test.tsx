@@ -14,7 +14,7 @@ import Withdraw from '../Withdraw';
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
 jest.mock('@services/anchor', () => ({
-  getInteractiveUrl: jest.fn(),
+  getInteractiveWithdrawUrl: jest.fn(),
   getTransaction: jest.fn().mockResolvedValue({
     status: 'completed',
   }),
@@ -76,7 +76,7 @@ describe('Withdraw', () => {
   });
 
   it('Should call handleOnPress when ARS button is pressed', async () => {
-    (anchor.getInteractiveUrl as jest.Mock).mockResolvedValue({
+    (anchor.getInteractiveWithdrawUrl as jest.Mock).mockResolvedValue({
       url: 'http://anchor.ars',
       type: 'withdraw',
       id: 'someId',
@@ -99,7 +99,7 @@ describe('Withdraw', () => {
   });
 
   it('Should call handleOnPress when BRL button is pressed', async () => {
-    (anchor.getInteractiveUrl as jest.Mock).mockResolvedValue({
+    (anchor.getInteractiveWithdrawUrl as jest.Mock).mockResolvedValue({
       url: 'http://anchor.brl',
       type: 'withdraw',
       id: 'someId',
@@ -122,7 +122,7 @@ describe('Withdraw', () => {
   });
 
   it('Should call handleOnPress when EURC button is pressed', async () => {
-    (anchor.getInteractiveUrl as jest.Mock).mockResolvedValue({
+    (anchor.getInteractiveWithdrawUrl as jest.Mock).mockResolvedValue({
       url: 'http://anchor.eurc',
       type: 'withdraw',
       id: 'someId',

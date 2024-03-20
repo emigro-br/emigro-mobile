@@ -13,11 +13,9 @@ import { AssetList } from '@components/AssetList';
 import { LoadingModal } from '@components/modals/LoadingModal';
 import { OpenURLModal } from '@components/modals/OpenURLModal';
 
-import { OperationType } from '@constants/constants';
-
 import { WalletStackParamList } from '@navigation/WalletStack';
 
-import { CallbackType, getInteractiveUrl } from '@services/anchor';
+import { CallbackType, getInteractiveDepositUrl } from '@services/anchor';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -56,15 +54,12 @@ const Deposit = observer(({ navigation }: Props) => {
     setIsLoading(true);
 
     const anchorParams: IAnchorParams = {
-      account: sessionStore.publicKey,
-      operation: OperationType.DEPOSIT,
       asset_code: asset,
-      cognito_token: sessionStore.accessToken,
     };
 
     try {
       //TODO: webview change navigation thwors error for CallbackType.CALLBACK_URL
-      const { url, id } = await getInteractiveUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
+      const { url, id } = await getInteractiveDepositUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
 
       if (id) {
         console.debug('Transaction id:', id);

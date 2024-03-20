@@ -1,6 +1,4 @@
 export interface IAnchorParams {
-  account: string;
-  cognito_token: string | null;
   asset_code: string;
-  operation: string;
+  // keep this type, we can add more fields in the future
 }

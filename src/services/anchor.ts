@@ -3,6 +3,8 @@ import { IAnchorResponse } from '@/types/IAnchorResponse';
 import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { CryptoAsset } from '@/types/assets';
 
+import { OperationType } from '@constants/constants';
+
 import { fetchWithTokenCheck } from './utils';
 
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -18,13 +20,15 @@ export enum CallbackType {
   EVENT_POST_MESSAGE,
 }
 
-export const getInteractiveUrl = async (
+const getInteractiveUrl = async (
+  operation: OperationType,
   anchorParams: IAnchorParams,
   callback: CallbackType,
 ): Promise<IAnchorResponse> => {
-  const anchorUrl = `${backendUrl}/anchor/${anchorParams.operation}`;
+  const endpoint = operation === OperationType.WITHDRAW ? 'withdraw' : 'deposit';
+  const anchorUrl = `${backendUrl}/anchor/${endpoint}`;
   try {
-    const res = await fetch(anchorUrl, {
+    const res = await fetchWithTokenCheck(anchorUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -49,6 +53,14 @@ export const getInteractiveUrl = async (
     console.error(error);
     throw new Error('Could not get interactive url');
   }
+};
+
+export const getInteractiveDepositUrl = async (anchorParams: IAnchorParams, callback: CallbackType) => {
+  return getInteractiveUrl(OperationType.DEPOSIT, anchorParams, callback);
+};
+
+export const getInteractiveWithdrawUrl = async (anchorParams: IAnchorParams, callback: CallbackType) => {
+  return getInteractiveUrl(OperationType.WITHDRAW, anchorParams, callback);
 };
 
 export const getTransaction = async (id: string, assetCode: CryptoAsset): Promise<Sep24Transaction> => {
