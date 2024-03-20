@@ -24,14 +24,15 @@ import {
   Text,
   VStack,
 } from '@gluestack-ui/themed';
+import * as Sentry from '@sentry/react-native';
 
 import { CONFIRM_ACCOUNT_ERROR, WRONG_CODE_ERROR } from '@constants/errorMessages';
 
-import { RootStackParamList } from '@navigation/RootStack';
+import { AnonStackParamList } from '@navigation/AnonStack';
 
 import { confirmAccount } from '@services/auth';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'ConfirmAccount'>;
+type Props = NativeStackScreenProps<AnonStackParamList, 'ConfirmAccount'>;
 
 const ConfirmAccount = ({ route, navigation }: Props) => {
   const [confirmationCode, setConfirmationCode] = useState<string>('');
@@ -65,7 +66,8 @@ const ConfirmAccount = ({ route, navigation }: Props) => {
         setError(WRONG_CODE_ERROR);
       }
     } catch (error) {
-      console.error(error);
+      Sentry.captureException(error);
+      // FIXME: Whe user alread confirmed: ConfirmUserError: ConfirmUserWithCognitoError: Invalid code provided, please request a code again.
       setError(CONFIRM_ACCOUNT_ERROR);
     } finally {
       setIsLoading(false);

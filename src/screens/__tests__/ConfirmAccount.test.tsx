@@ -1,5 +1,5 @@
+import * as Sentry from '@sentry/react-native';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import mockConsole from 'jest-mock-console';
 
 import { CONFIRM_ACCOUNT_ERROR } from '@constants/errorMessages';
 
@@ -8,6 +8,10 @@ import * as auth from '@services/auth';
 import ConfirmAccount from '../signup/ConfirmAccount';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
+
+jest.mock('@sentry/react-native', () => ({
+  captureException: jest.fn(),
+}));
 
 const mockNavigation: any = {
   navigate: jest.fn(),
@@ -58,7 +62,6 @@ describe('ConfirmAccount component', () => {
   });
 
   it('Should handle error from confirmAccount', async () => {
-    const restoreConsole = mockConsole();
     jest.spyOn(auth, 'confirmAccount').mockRejectedValue(CONFIRM_ACCOUNT_ERROR);
 
     const { getByPlaceholderText, getByText, getByTestId } = render(
@@ -69,13 +72,15 @@ describe('ConfirmAccount component', () => {
     fireEvent.changeText(confirmationCodeInput, '654321');
 
     const confirmButton = getByText('Confirm Account');
+
     fireEvent.press(confirmButton);
 
     await waitFor(() => {
       const { children } = getByTestId('confirm-account-error');
       expect(children[0]).toEqual(CONFIRM_ACCOUNT_ERROR);
-      expect(console.error).toHaveBeenCalledWith(CONFIRM_ACCOUNT_ERROR);
     });
-    restoreConsole();
+
+    // check sentry
+    expect(Sentry.captureException).toHaveBeenCalled();
   });
 });

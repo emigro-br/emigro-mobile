@@ -4,7 +4,7 @@ import { IRegisterResponse } from '@/types/IRegisterResponse';
 import { IRegisterUser } from '@/types/IRegisterUser';
 
 import { Role } from '@constants/constants';
-import { CONFIRM_ACCOUNT_ERROR, REFRESH_SESSION_ERROR } from '@constants/errorMessages';
+import { REFRESH_SESSION_ERROR } from '@constants/errorMessages';
 
 import { CustomError } from '../types/errors';
 
@@ -67,19 +67,24 @@ export const signUp = async (registerUser: IRegisterUser): Promise<IRegisterResp
 
 export const confirmAccount = async (confirmUser: IConfirmUser): Promise<IRegisterResponse | undefined> => {
   const confirmUrl = `${backendUrl}/auth/confirm`;
-  try {
-    const response = await fetch(confirmUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(confirmUser),
-    });
-    return await response.json();
-  } catch (error) {
-    console.error(error);
-    throw new Error(CONFIRM_ACCOUNT_ERROR);
+  const res = await fetch(confirmUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(confirmUser),
+  });
+
+  const json = await res.json();
+  if (json.error) {
+    throw CustomError.fromJSON(json.error);
   }
+
+  if (!res.ok) {
+    throw new Error(res.statusText);
+  }
+
+  return json;
 };
 
 export const refresh = async (authSession: IAuthSession): Promise<IAuthSession> => {
