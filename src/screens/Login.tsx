@@ -22,6 +22,7 @@ import {
   InputIcon,
   InputSlot,
   Link,
+  LinkText,
   Text,
   VStack,
 } from '@gluestack-ui/themed';
@@ -166,6 +167,12 @@ const Login = ({ navigation }: Props) => {
               </Input>
             </FormControl>
           ))}
+
+          <Link onPress={() => navigation.push('PasswordRecovery')}>
+            <LinkText color="$primary500" textDecorationLine="none" textAlign="right">
+              Forgot your password?
+            </LinkText>
+          </Link>
 
           {error && (
             <FormControl isInvalid={!!error}>
