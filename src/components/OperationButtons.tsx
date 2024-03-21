@@ -3,7 +3,7 @@ import React from 'react';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {
-  ArrowDownIcon,
+  AddIcon,
   ArrowRightIcon,
   ArrowUpIcon,
   Button,
@@ -23,7 +23,7 @@ type Props = {
 const OperationButtons = ({ navigation }: Props) => {
   return (
     <ButtonGroup justifyContent="space-around" py="$2">
-      <ButtonItem title="Deposit" icon={ArrowDownIcon} onPress={() => navigation.push('Deposit')} />
+      <ButtonItem title="Deposit" icon={AddIcon} onPress={() => navigation.push('Deposit')} />
       <ButtonItem title="Withdraw" icon={ArrowUpIcon} onPress={() => navigation.push('Withdraw')} />
       <ButtonItem title="Send" icon={ArrowRightIcon} onPress={() => navigation.push('TransfersRoot')} />
       <ButtonItem title="Swap" icon={RepeatIcon} onPress={() => navigation.push('SwapRoot')} />
@@ -40,10 +40,18 @@ type ButtonItemProps = {
 const ButtonItem = ({ title, icon, onPress }: ButtonItemProps) => {
   return (
     <VStack alignItems="center">
-      <Button borderRadius="$full" size="lg" marginBottom="$1" height="$12" width="$12" onPress={onPress}>
+      <Button
+        bg="$primary400"
+        borderRadius="$full"
+        size="lg"
+        marginBottom="$1"
+        height="$12"
+        width="$12"
+        onPress={onPress}
+      >
         <ButtonIcon as={icon} size="xl" />
       </Button>
-      <Text>{title}</Text>
+      <Text color="$white">{title}</Text>
     </VStack>
   );
 };
