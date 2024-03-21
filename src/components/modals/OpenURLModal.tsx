@@ -36,13 +36,13 @@ export const OpenURLModal: React.FunctionComponent<Props> = ({
       <ModalBackdrop />
       <ModalContent>
         <ModalHeader>
-          <Heading size="lg">Redirect Notice</Heading>
+          <Heading size="lg">We're taking you to Anchor website</Heading>
           <ModalCloseButton onPress={onClose}>
             <Icon as={CloseIcon} />
           </ModalCloseButton>
         </ModalHeader>
         <ModalBody>
-          <Text>You will be redirected to the Anchor website to complete this transaction.</Text>
+          <Text>You'll be taken outside Emigro app to complete this transaction in the Anchor website.</Text>
         </ModalBody>
         <ModalFooter>
           <ButtonGroup>

@@ -40,10 +40,16 @@ enum TransactionStep {
 
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
+type WithdrawAction = {
+  transactionId: string;
+  assetCode: CryptoAsset;
+  anchorUrl: string;
+};
+
 const Withdraw: React.FC = observer(() => {
-  const [url, setUrl] = useState<string | null>(null);
   const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
-  const [transactionId, setTransactionId] = useState<string | null>(null);
+  const [currentAction, setCurrentAction] = useState<WithdrawAction | null>(null);
+  const [pendingAction, setPendingAction] = useState<WithdrawAction | null>(null);
   const [transaction, setTransaction] = useState<Sep24Transaction | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset | null>(null);
@@ -56,20 +62,21 @@ const Withdraw: React.FC = observer(() => {
   }, []);
 
   const cleanUp = () => {
-    setTransactionId(null);
-    setUrl(null);
+    setSelectedAsset(null);
+    // setTransactionId(null);
+    setCurrentAction(null);
+    setPendingAction(null);
     setErrorMessage(null);
     setStep(TransactionStep.NONE);
   };
 
-  const handleOnPress = async (asset: CryptoAsset) => {
+  const handleOpenUrlPressed = async (asset: CryptoAsset) => {
     if (!sessionStore.accessToken || !sessionStore.publicKey) {
       setErrorMessage('Invalid session');
       return;
     }
 
-    setSelectedAsset(asset);
-    setTransactionId(null);
+    // setTransactionId(null);
 
     setStep(TransactionStep.STARTED);
 
@@ -81,8 +88,12 @@ const Withdraw: React.FC = observer(() => {
       const { url, id } = await getInteractiveWithdrawUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
 
       if (id && url) {
-        setTransactionId(id);
-        setUrl(url);
+        // setTransactionId(id);
+        const action: WithdrawAction = { transactionId: id, assetCode: asset, anchorUrl: url };
+        setCurrentAction(action);
+        waitWithdrawOnAnchorComplete(action);
+        setStep(TransactionStep.WAITING);
+        Linking.openURL(url);
       } else {
         throw new Error('Can not fetch the interactive url');
       }
@@ -90,20 +101,16 @@ const Withdraw: React.FC = observer(() => {
       console.warn(error);
       setErrorMessage(defaultErrorMessage);
       setStep(TransactionStep.ERROR);
-    }
-  };
-
-  const handleOpenUrlPressed = () => {
-    if (url && transactionId && selectedAsset) {
-      setStep(TransactionStep.WAITING);
-      waitWithdrawOnAnchorComplete(transactionId, selectedAsset);
-      Linking.openURL(url);
+    } finally {
+      setSelectedAsset(null);
     }
   };
 
   const handleCloseWait = () => {
+    setPendingAction(currentAction);
+    setCurrentAction(null);
     stopFetchingTransaction();
-    setStep(TransactionStep.PENDING_USER);
+    setStep(TransactionStep.NONE);
   };
 
   const handleConfirmTransaction = async (transactionId: string, assetCode: CryptoAsset) => {
@@ -134,12 +141,14 @@ const Withdraw: React.FC = observer(() => {
   const stepRef = React.useRef(step);
   stepRef.current = step;
 
-  const waitWithdrawOnAnchorComplete = async (transactionId: string, assetCode: CryptoAsset) => {
+  const waitWithdrawOnAnchorComplete = async (action: WithdrawAction) => {
     if (stepRef.current !== TransactionStep.WAITING) {
       setStep(TransactionStep.WAITING);
+      setCurrentAction(action);
     }
 
     const endStatuses = [TransactionStatus.COMPLETED, TransactionStatus.ERROR];
+    const { transactionId, assetCode } = action;
 
     try {
       const transaction = await getTransaction(transactionId, assetCode);
@@ -161,7 +170,7 @@ const Withdraw: React.FC = observer(() => {
       // check again in few seconds only if the user still waiting
       if (stepRef.current === TransactionStep.WAITING) {
         console.log('Sleeping...');
-        const timeoutId = setTimeout(() => waitWithdrawOnAnchorComplete(transactionId, assetCode), 5000);
+        const timeoutId = setTimeout(() => waitWithdrawOnAnchorComplete(action), 5000);
         setTimeoutId(timeoutId);
       }
     } catch (error) {
@@ -180,29 +189,30 @@ const Withdraw: React.FC = observer(() => {
 
   return (
     <>
-      <LoadingModal
-        isOpen={step === TransactionStep.STARTED && !url}
-        text="Connecting to anchor..."
-        testID="loading-url-modal"
-      />
       <OpenURLModal
-        isOpen={step === TransactionStep.STARTED && !!url}
-        onClose={cleanUp}
-        onConfirm={handleOpenUrlPressed}
+        isOpen={step === TransactionStep.NONE && !!selectedAsset}
+        onClose={() => setSelectedAsset(null)}
+        onConfirm={() => handleOpenUrlPressed(selectedAsset!)}
       />
 
       <LoadingModal
-        isOpen={step === TransactionStep.WAITING}
+        isOpen={step === TransactionStep.STARTED && !currentAction}
+        text="Connecting to anchor..."
+        testID="loading-url-modal"
+      />
+
+      <LoadingModal
+        isOpen={step === TransactionStep.WAITING && !!currentAction}
         text="Awaiting transaction completion..."
         onClose={handleCloseWait}
         testID="waiting-transaction-modal"
       />
 
-      {transaction && (
+      {transaction && currentAction && (
         <ConfirmationModal
           title="Confirm the transaction"
           isOpen={step === TransactionStep.CONFIRM_TRANSFER}
-          onPress={() => handleConfirmTransaction(transactionId!, selectedAsset!)}
+          onPress={() => handleConfirmTransaction(currentAction.transactionId!, currentAction.assetCode!)}
           onClose={() => setStep(TransactionStep.NONE)}
         >
           <Text size="lg" mb="$4">
@@ -210,13 +220,13 @@ const Withdraw: React.FC = observer(() => {
           </Text>
           <VStack space="xs">
             <Text>
-              Requested: {transaction.amount_in} {selectedAsset}
+              Requested: {transaction.amount_in} {currentAction.assetCode}
             </Text>
             <Text>
-              Fee: {transaction.amount_fee} {selectedAsset}
+              Fee: {transaction.amount_fee} {currentAction.assetCode}
             </Text>
             <Text bold>
-              You will receive: {transaction.amount_out} {selectedAsset}
+              You will receive: {transaction.amount_out} {currentAction.assetCode}
             </Text>
           </VStack>
         </ConfirmationModal>
@@ -241,16 +251,12 @@ const Withdraw: React.FC = observer(() => {
           <Heading size="xl">Withdraw money</Heading>
           <Text>Choose the currency you want to withdraw</Text>
           <Card variant="flat">
-            <AssetList data={availableAssets} onPress={(item) => handleOnPress(item as CryptoAsset)} />
+            <AssetList data={availableAssets} onPress={(item) => setSelectedAsset(item as CryptoAsset)} />
           </Card>
 
-          {transactionId && step === TransactionStep.PENDING_USER && (
-            <Button
-              variant="link"
-              onPress={() => waitWithdrawOnAnchorComplete(transactionId, selectedAsset!)}
-              alignSelf="flex-start"
-            >
-              <ButtonText>Check pending transaction: {transactionId}</ButtonText>
+          {pendingAction && step === TransactionStep.NONE && (
+            <Button variant="link" onPress={() => waitWithdrawOnAnchorComplete(pendingAction)} alignSelf="flex-start">
+              <ButtonText>Check pending transaction: {pendingAction.transactionId}</ButtonText>
             </Button>
           )}
           {errorMessage && <FormControlErrorText>{errorMessage}</FormControlErrorText>}

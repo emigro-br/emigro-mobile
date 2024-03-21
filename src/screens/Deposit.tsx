@@ -29,7 +29,7 @@ type Props = {
 
 const Deposit = observer(({ navigation }: Props) => {
   // const [transactionId, setTransactionId] = useState<string | null>(null);
-  const [url, setUrl] = useState<string | null>(null);
+  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const availableAssets = [CryptoAsset.ARS, CryptoAsset.BRL, CryptoAsset.EURC];
@@ -40,12 +40,11 @@ const Deposit = observer(({ navigation }: Props) => {
 
   const cleanUp = () => {
     // setTransactionId(null);
-    setUrl(null);
     setIsLoading(false);
     setErrorMessage(null);
   };
 
-  const handleAssetChoosen = async (asset: CryptoAsset) => {
+  const handleOpenConfimed = async (asset: CryptoAsset) => {
     if (!sessionStore.accessToken || !sessionStore.publicKey) {
       setErrorMessage('Invalid session');
       return;
@@ -67,21 +66,18 @@ const Deposit = observer(({ navigation }: Props) => {
       }
 
       if (url) {
-        setUrl(url);
+        Linking.openURL(url!);
+        navigation.popToTop();
       } else {
         setErrorMessage(defaultErrorMessage);
       }
     } catch (error) {
-      console.warn(error);
       setErrorMessage(defaultErrorMessage);
+      throw error; // sentry
     } finally {
       setIsLoading(false);
+      setSelectedAsset(null);
     }
-  };
-
-  const handleModalPressed = () => {
-    Linking.openURL(url!);
-    navigation.popToTop();
   };
 
   // if the session is not ready, show the loading screen
@@ -92,14 +88,18 @@ const Deposit = observer(({ navigation }: Props) => {
   return (
     <>
       <LoadingModal isOpen={isLoading} text="Connecting to anchor..." />
-      <OpenURLModal isOpen={!!url} onClose={() => setUrl(null)} onConfirm={handleModalPressed} />
+      <OpenURLModal
+        isOpen={!!selectedAsset && !isLoading}
+        onClose={() => setSelectedAsset(null)}
+        onConfirm={() => handleOpenConfimed(selectedAsset!)}
+      />
 
       <Box flex={1}>
         <VStack p="$4" space="md">
           <Heading size="xl">Add money</Heading>
           <Text>Choose the currency you want to deposit</Text>
           <Card variant="flat">
-            <AssetList data={availableAssets} onPress={(item) => handleAssetChoosen(item as CryptoAsset)} />
+            <AssetList data={availableAssets} onPress={(item) => setSelectedAsset(item as CryptoAsset)} />
           </Card>
           {errorMessage && <FormControlErrorText>{errorMessage}</FormControlErrorText>}
         </VStack>
