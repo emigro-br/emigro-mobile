@@ -102,14 +102,18 @@ const Profile = observer(({ navigation }: Props) => {
 
           <Divider />
 
-          <View>
-            <Text size="sm" color="$textLight500">
-              Address
-            </Text>
-            <Text>{profileInfo.address}</Text>
-          </View>
+          {profileInfo.address && (
+            <>
+              <View>
+                <Text size="sm" color="$textLight500">
+                  Address
+                </Text>
+                <Text>{profileInfo.address}</Text>
+              </View>
 
-          <Divider />
+              <Divider />
+            </>
+          )}
 
           <Button
             onPress={() => navigation.push('ConfigurePIN')}

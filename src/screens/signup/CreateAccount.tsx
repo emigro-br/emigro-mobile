@@ -61,7 +61,6 @@ const formFields: FormField[] = [
     keyboardType: 'default',
     secureTextEntry: true,
   },
-  { name: 'address', label: 'Address', placeholder: 'e.g., 123 Main St, Anytown', keyboardType: 'default' },
 ];
 
 const CreateAccount = ({ navigation }: Props) => {
@@ -70,7 +69,6 @@ const CreateAccount = ({ navigation }: Props) => {
     password: '',
     firstName: '',
     lastName: '',
-    address: '',
     role: Role.CUSTOMER,
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -88,7 +86,6 @@ const CreateAccount = ({ navigation }: Props) => {
       password: '',
       firstName: '',
       lastName: '',
-      address: '',
       role: Role.CUSTOMER,
     });
   };
