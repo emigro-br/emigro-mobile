@@ -22,7 +22,7 @@ export const Transfers = ({ navigation }: Props) => {
       <VStack p="$4" space="md">
         <Heading size="xl">Send money</Heading>
         <Text>Choose the currency you want to send</Text>
-        <Card size="md" py="$1" variant="filled" bg="$white">
+        <Card variant="filled" bg="$white">
           <AssetList
             data={data}
             onPress={(item) =>

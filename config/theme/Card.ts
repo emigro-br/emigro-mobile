@@ -9,7 +9,7 @@ export const Card = createStyle({
       },
       md: {
         p: '$4',
-        borderRadius: '$md',
+        borderRadius: '$xl',
       },
       lg: {
         p: '$6',

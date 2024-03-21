@@ -17,12 +17,11 @@ export const AssetList = ({ data, onPress }: Props) => {
       data={data}
       renderItem={({ item }: { item: CryptoOrFiat }) => (
         <Pressable onPress={() => onPress(item)}>
-          <Box py="$4">
-            <AssetListTile asset={item} />
-          </Box>
+          <AssetListTile asset={item} />
         </Pressable>
       )}
       keyExtractor={(item: CryptoOrFiat) => item}
+      ItemSeparatorComponent={() => <Box h="$4" />}
     />
   );
 };

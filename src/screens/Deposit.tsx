@@ -98,7 +98,7 @@ const Deposit = observer(({ navigation }: Props) => {
         <VStack p="$4" space="md">
           <Heading size="xl">Add money</Heading>
           <Text>Choose the currency you want to deposit</Text>
-          <Card size="md" py="$1" variant="filled" bg="$white">
+          <Card variant="filled" bg="$white">
             <AssetList data={availableAssets} onPress={(item) => handleAssetChoosen(item as CryptoAsset)} />
           </Card>
           {errorMessage && <FormControlErrorText>{errorMessage}</FormControlErrorText>}
