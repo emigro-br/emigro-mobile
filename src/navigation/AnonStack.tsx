@@ -5,6 +5,8 @@ import { Welcome } from '@screens/Welcome';
 import ConfirmAccount from '@screens/signup/ConfirmAccount';
 import CreateAccount from '@screens/signup/CreateAccount';
 
+import screenOptions from './screenOptions';
+
 export type AnonStackParamList = {
   Welcome: undefined;
   SignUp: undefined;
@@ -22,7 +24,7 @@ export function AnonStack() {
     <Stack.Navigator
       initialRouteName="Welcome"
       screenOptions={{
-        headerTintColor: 'red',
+        ...screenOptions,
         headerBackTitleVisible: false,
       }}
     >

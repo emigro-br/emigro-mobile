@@ -7,6 +7,8 @@ import { Payments } from '@screens/payments/Payments';
 import { RequestPayment } from '@screens/payments/RequestPayment';
 import { RequestWithQRCode } from '@screens/payments/RequestWithQRCode';
 
+import screenOptions from './screenOptions';
+
 export type PaymentStackParamList = {
   Payments: undefined;
   ConfirmPayment: undefined;
@@ -23,7 +25,7 @@ const Stack = createNativeStackNavigator<PaymentStackParamList>();
 
 export function PaymentStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerTintColor: 'red' }}>
+    <Stack.Navigator screenOptions={screenOptions}>
       <Stack.Screen name="Payments" component={Payments} options={{ title: 'Payments', header: () => <Header /> }} />
       <Stack.Screen name="ConfirmPayment" component={ConfirmPayment} options={{ title: 'Confirm Payment' }} />
       <Stack.Screen name="RequestPayment" component={RequestPayment} options={{ title: 'Request Payment' }} />

@@ -9,6 +9,7 @@ import Withdraw from '@screens/Withdraw';
 
 import { SwapStack, SwapStackParamList } from './SwapStack';
 import { TransferStack, TransferStackParamList } from './TrasnsferStack';
+import screenOptions from './screenOptions';
 
 export type WalletStackParamList = {
   Wallet: undefined;
@@ -22,12 +23,7 @@ const Stack = createNativeStackNavigator<WalletStackParamList>();
 
 export function WalletStack() {
   return (
-    <Stack.Navigator
-      initialRouteName="Wallet"
-      screenOptions={{
-        headerTintColor: 'red',
-      }}
-    >
+    <Stack.Navigator initialRouteName="Wallet" screenOptions={screenOptions}>
       <Stack.Screen name="Wallet" component={Wallet} options={{ title: 'Wallet', header: () => <Header /> }} />
       <Stack.Screen name="Deposit" component={Deposit} options={{ title: 'Deposit' }} />
       <Stack.Screen name="Withdraw" component={Withdraw} options={{ title: 'Withdraw' }} />
