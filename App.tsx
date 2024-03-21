@@ -9,6 +9,7 @@ if (sentryDsn) {
     environment: __DEV__ ? 'development' : 'production',
     sampleRate: 1.0, // Send 100% of events for while developing
     tracesSampleRate: 0.5,
+    ignoreErrors: ['QueryFailedError'], // expo local development error
   });
 }
 
