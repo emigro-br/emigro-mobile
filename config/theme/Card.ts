@@ -47,6 +47,12 @@ export const Card = createStyle({
           bg: '$backgroundDark900',
         },
       },
+      flat: {
+        bg: '$white',
+        _dark: {
+          bg: '$backgroundDark900',
+        },
+      },
     },
   },
   defaultProps: {

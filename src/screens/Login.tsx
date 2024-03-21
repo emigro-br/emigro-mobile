@@ -7,7 +7,6 @@ import {
   Box,
   Button,
   ButtonText,
-  Card,
   EyeIcon,
   EyeOffIcon,
   FormControl,
@@ -122,72 +121,72 @@ const Login = ({ navigation }: Props) => {
   };
 
   return (
-    <Box flex={1}>
+    <Box flex={1} bg="$white">
       <VStack p="$4" space="lg">
         <Heading size="xl">Sign in to Emigro</Heading>
-        <Card>
-          <VStack space="xl">
-            {formFields.map((field, index) => (
-              <FormControl key={field.name}>
-                <FormControlLabel mb="$1">
-                  <FormControlLabelText>{field.label}</FormControlLabelText>
-                </FormControlLabel>
-                <Input size="xl">
-                  <InputField
-                    ref={(input) => {
-                      this[field.name] = input;
-                    }}
-                    placeholder={field.placeholder}
-                    value={formValue[field.name]}
-                    onChangeText={(text) => handleValueChange(field.name, text)}
-                    type={field.secureTextEntry && !showPassword ? 'password' : 'text'}
-                    keyboardType={field.keyboardType}
-                    autoCapitalize={field.autoCapitalize}
-                    returnKeyType={field.returnKeyType}
-                    onSubmitEditing={() => {
-                      if (index < formFields.length - 1) {
-                        // If this is not the last field, move the focus to the next field
-                        this[formFields[index + 1].name].focus();
-                      } else {
-                        // If this is the last field, submit the form
-                        handleSignIn();
-                      }
-                    }}
-                    blurOnSubmit={index === formFields.length - 1}
-                    testID={field.name}
-                  />
-                  {field.secureTextEntry && (
-                    <InputSlot pr="$3" onPress={handleState}>
-                      {/* EyeIcon, EyeOffIcon are both imported from 'lucide-react-native' */}
-                      <InputIcon
-                        as={showPassword ? EyeIcon : EyeOffIcon}
-                        color={showPassword ? '$primary500' : '$textLight500'}
-                      />
-                    </InputSlot>
-                  )}
-                </Input>
-              </FormControl>
-            ))}
+        <VStack space="2xl">
+          {formFields.map((field, index) => (
+            <FormControl key={field.name}>
+              <FormControlLabel mb="$1">
+                <FormControlLabelText>{field.label}</FormControlLabelText>
+              </FormControlLabel>
+              <Input size="xl">
+                <InputField
+                  ref={(input) => {
+                    this[field.name] = input;
+                  }}
+                  placeholder={field.placeholder}
+                  value={formValue[field.name]}
+                  onChangeText={(text) => handleValueChange(field.name, text)}
+                  type={field.secureTextEntry && !showPassword ? 'password' : 'text'}
+                  keyboardType={field.keyboardType}
+                  autoCapitalize={field.autoCapitalize}
+                  returnKeyType={field.returnKeyType}
+                  onSubmitEditing={() => {
+                    if (index < formFields.length - 1) {
+                      // If this is not the last field, move the focus to the next field
+                      this[formFields[index + 1].name].focus();
+                    } else {
+                      // If this is the last field, submit the form
+                      handleSignIn();
+                    }
+                  }}
+                  blurOnSubmit={index === formFields.length - 1}
+                  testID={field.name}
+                />
+                {field.secureTextEntry && (
+                  <InputSlot pr="$3" onPress={handleState}>
+                    {/* EyeIcon, EyeOffIcon are both imported from 'lucide-react-native' */}
+                    <InputIcon
+                      as={showPassword ? EyeIcon : EyeOffIcon}
+                      color={showPassword ? '$primary500' : '$textLight500'}
+                    />
+                  </InputSlot>
+                )}
+              </Input>
+            </FormControl>
+          ))}
 
+          {error && (
             <FormControl isInvalid={!!error}>
               <FormControlError>
                 <FormControlErrorIcon as={AlertCircleIcon} />
                 <FormControlErrorText>{error}</FormControlErrorText>
               </FormControlError>
             </FormControl>
-            <Button onPress={handleSignIn} isDisabled={!isValidForm || isLoggingIn} size="xl" testID="signin-button">
-              <ButtonText>{isLoggingIn ? 'Signing in...' : 'Sign in'}</ButtonText>
-            </Button>
-          </VStack>
-        </Card>
-        <HStack justifyContent="center">
-          <Text size="xl">Don't have an account?</Text>
-          <Link onPress={() => navigation.replace('SignUp')}>
-            <Text size="xl" color="$primary500" ml="$2" bold>
-              Sign up
-            </Text>
-          </Link>
-        </HStack>
+          )}
+          <Button onPress={handleSignIn} isDisabled={!isValidForm || isLoggingIn} size="xl" testID="signin-button">
+            <ButtonText>{isLoggingIn ? 'Signing in...' : 'Sign in'}</ButtonText>
+          </Button>
+          <HStack justifyContent="center">
+            <Text size="lg">Don't have an account?</Text>
+            <Link onPress={() => navigation.replace('SignUp')}>
+              <Text size="lg" color="$primary500" ml="$2" bold>
+                Sign up
+              </Text>
+            </Link>
+          </HStack>
+        </VStack>
       </VStack>
     </Box>
   );

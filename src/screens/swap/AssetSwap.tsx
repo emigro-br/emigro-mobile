@@ -98,9 +98,13 @@ export const AssetSwap = (props: AssetSwapProps) => {
   const fontColor = Number(value) > 0 ? '$black' : '$textLight500';
   const hasBalance = props.sellOrBuy === SwapType.SELL && Number(value) > balance;
 
+  const activeProps = isActive
+    ? { borderColor: '$primary500', borderWidth: 1, bg: '$backgroundLight50' }
+    : { bg: '$backgroundLight100' };
+
   return (
     <Pressable onPress={handlePress} testID="touchable">
-      <Card variant={isActive ? 'outline' : 'elevated'} borderColor="$red">
+      <Card variant="filled" {...activeProps}>
         <HStack>
           <Box w="$1/4">
             <Dropdown

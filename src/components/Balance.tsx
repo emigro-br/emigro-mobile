@@ -15,7 +15,7 @@ const Balance: React.FC<Props> = ({ userBalance }) => {
   return (
     <VStack space="sm">
       <Heading>Accounts</Heading>
-      <Card variant="outline">
+      <Card variant="flat">
         <VStack space="lg">
           {userBalance?.map(({ balance, assetCode, assetType }, index) => {
             const asset: CryptoAsset =

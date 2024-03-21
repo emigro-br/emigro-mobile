@@ -37,10 +37,7 @@ const Wallet = observer(({ navigation }: Props) => {
   }, [balanceStore.fetchUserBalance]);
 
   return (
-    <ScrollView
-      bg="$white"
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} title="Refreshing..." />}
-    >
+    <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} title="Refreshing..." />}>
       <VStack space="lg" p="$4">
         <OperationButtons navigation={navigation} />
         {balanceStore.userBalance.length > 0 && <Balance userBalance={balanceStore.userBalance} />}

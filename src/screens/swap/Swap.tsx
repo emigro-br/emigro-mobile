@@ -134,8 +134,8 @@ export const Swap = ({ navigation }: SwapProps) => {
   const isButtonEnabled = () => sellValue > 0 && sellValue <= balanceStore.get(sellAsset) && buyValue > 0;
 
   return (
-    <Box flex={1} bg="$white">
-      <VStack p="$4" space="lg">
+    <Box flex={1}>
+      <VStack p="$4" space="sm">
         <Heading size="xl">Sell {sellAsset}</Heading>
         <VStack space="sm">
           <Text size="xs">You sell</Text>
@@ -167,11 +167,11 @@ export const Swap = ({ navigation }: SwapProps) => {
             isActive={active === SwapType.BUY}
             onPress={() => setActive(SwapType.BUY)}
           />
-          <Text size="xs" color="$gray">
-            1 {sellAsset} ≈ {rate?.toFixed(6)} {buyAsset}
-          </Text>
         </VStack>
-        <Button onPress={handlePress} isDisabled={!isButtonEnabled()}>
+        <Text size="xs" color="$black" my="$1.5" ml="$1">
+          1 {sellAsset} ≈ {rate?.toFixed(6)} {buyAsset}
+        </Text>
+        <Button onPress={handlePress} isDisabled={!isButtonEnabled()} size="lg">
           <ButtonText>Review order</ButtonText>
         </Button>
       </VStack>

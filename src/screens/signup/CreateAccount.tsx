@@ -7,7 +7,6 @@ import {
   Box,
   Button,
   ButtonText,
-  Card,
   FormControl,
   FormControlError,
   FormControlErrorIcon,
@@ -129,51 +128,51 @@ const CreateAccount = ({ navigation }: Props) => {
   };
 
   return (
-    <ScrollView>
-      <Box flex={1}>
+    <ScrollView bg="$white">
+      <Box flex={1} bg="$white">
         <ConfirmationModal isOpen={!!confirmationParams} onConfirm={handleCloseModal} />
         <VStack p="$4" space="lg">
           <Heading size="xl">Sign up to Emigro</Heading>
-          <Card>
-            <VStack space="xl">
-              {formFields.map((field) => (
-                <FormControl key={field.name}>
-                  <FormControlLabel mb="$1">
-                    <FormControlLabelText>{field.label}</FormControlLabelText>
-                  </FormControlLabel>
-                  <Input size="xl">
-                    <InputField
-                      placeholder={field.placeholder}
-                      value={formData[field.name]}
-                      onChangeText={(text) => handleChange(field.name, text)}
-                      secureTextEntry={field.secureTextEntry}
-                      keyboardType={field.keyboardType}
-                      testID={field.name}
-                    />
-                  </Input>
-                </FormControl>
-              ))}
+          <VStack space="2xl">
+            {formFields.map((field) => (
+              <FormControl key={field.name}>
+                <FormControlLabel mb="$1">
+                  <FormControlLabelText>{field.label}</FormControlLabelText>
+                </FormControlLabel>
+                <Input size="xl">
+                  <InputField
+                    placeholder={field.placeholder}
+                    value={formData[field.name]}
+                    onChangeText={(text) => handleChange(field.name, text)}
+                    secureTextEntry={field.secureTextEntry}
+                    keyboardType={field.keyboardType}
+                    testID={field.name}
+                  />
+                </Input>
+              </FormControl>
+            ))}
 
+            {error && (
               <FormControl isInvalid={!!error}>
                 <FormControlError>
                   <FormControlErrorIcon as={AlertCircleIcon} />
                   <FormControlErrorText>{error}</FormControlErrorText>
                 </FormControlError>
               </FormControl>
+            )}
 
-              <Button onPress={handleSubmit} isDisabled={!isValidForm || isLoading} size="xl" testID="create-button">
-                <ButtonText>{isLoading ? 'Creating account...' : 'Create Account'}</ButtonText>
-              </Button>
-            </VStack>
-          </Card>
-          <HStack justifyContent="center">
-            <Text size="xl">Already have an account?</Text>
-            <Link onPress={() => navigation.replace('Login')}>
-              <Text size="xl" color="$primary500" ml="$2" bold>
-                Sign in
-              </Text>
-            </Link>
-          </HStack>
+            <Button onPress={handleSubmit} isDisabled={!isValidForm || isLoading} size="xl" testID="create-button">
+              <ButtonText>{isLoading ? 'Creating account...' : 'Create Account'}</ButtonText>
+            </Button>
+            <HStack justifyContent="center">
+              <Text size="lg">Already have an account?</Text>
+              <Link onPress={() => navigation.replace('Login')}>
+                <Text size="lg" color="$primary500" ml="$2" bold>
+                  Sign in
+                </Text>
+              </Link>
+            </HStack>
+          </VStack>
         </VStack>
       </Box>
     </ScrollView>
