@@ -1,3 +1,5 @@
+import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
+
 import { screen, waitFor } from '@testing-library/react-native';
 
 import { inputPIN, render } from 'test-utils';
@@ -5,6 +7,8 @@ import { inputPIN, render } from 'test-utils';
 import { sessionStore } from '@stores/SessionStore';
 
 import { UnlockScreen } from '../Unlock';
+
+jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
 describe('UnlockScreen component', () => {
   const navigation: any = {

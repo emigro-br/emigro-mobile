@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -15,6 +16,7 @@ type Props = {
 };
 
 export const UnlockScreen = ({ navigation }: Props) => {
+  const insets = useSafeAreaInsets();
   const [unlocked, setUnlocked] = useState(false);
 
   useEffect(() => {
@@ -29,7 +31,7 @@ export const UnlockScreen = ({ navigation }: Props) => {
   };
 
   return (
-    <Box flex={1} pt="$12">
+    <Box flex={1} bg="$white" pt={insets.top}>
       <PinScreen
         tagline="Enter your PIN"
         btnLabel="Unlock"
