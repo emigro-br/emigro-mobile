@@ -112,9 +112,10 @@ export const CreateNewPassword = ({ navigation, route }: Props) => {
   if (!pin) {
     return (
       <PinScreen
-        tagline="Password Reset Code"
         pinSize={6}
-        btnLabel="Validate"
+        tagline="Password Reset Code"
+        description="Enter the code you received in your email."
+        btnLabel="Continue"
         secureTextEntry={false}
         verifyPin={() => Promise.resolve(true)}
         onPinSuccess={setPin}
