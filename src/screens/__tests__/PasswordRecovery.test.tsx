@@ -1,3 +1,5 @@
+import { Keyboard } from 'react-native';
+
 import { useToast } from '@gluestack-ui/themed';
 import { fireEvent, waitFor } from '@testing-library/react-native';
 
@@ -11,6 +13,8 @@ jest.mock('@gluestack-ui/themed', () => ({
   ...jest.requireActual('@gluestack-ui/themed'),
   useToast: jest.fn().mockReturnValue({ show: jest.fn() }),
 }));
+
+jest.spyOn(Keyboard, 'dismiss');
 
 describe('PasswordRecovery', () => {
   const mockNavigation: any = {
@@ -40,6 +44,7 @@ describe('PasswordRecovery', () => {
     fireEvent.press(getByText('Send Email'));
 
     await waitFor(() => {
+      expect(Keyboard.dismiss).toHaveBeenCalled();
       expect(resetPassword).toHaveBeenCalledWith(invalidEmail);
       expect(mockNavigation.navigate).not.toHaveBeenCalled();
       expect(mockToastShow).toHaveBeenCalledWith({

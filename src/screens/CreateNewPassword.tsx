@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Keyboard } from 'react-native';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -62,6 +63,7 @@ export const CreateNewPassword = ({ navigation, route }: Props) => {
   };
 
   const handleCreatePassword = async () => {
+    Keyboard.dismiss();
     const defaultError = 'Could not create a new password, please try again later.';
     try {
       setIsSending(true);

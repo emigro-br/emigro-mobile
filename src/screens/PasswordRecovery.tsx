@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Keyboard } from 'react-native';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -40,6 +41,7 @@ export const PasswordRecovery = ({ navigation }: Props) => {
   };
 
   const handleSendEmail = async () => {
+    Keyboard.dismiss(); // to see the toast message
     try {
       setIsSending(true);
       const result = await resetPassword(email);
