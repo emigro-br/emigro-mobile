@@ -18,18 +18,44 @@ describe('PinScreen', () => {
     const heading = screen.getByText('Enter your PIN code');
     expect(heading).toBeOnTheScreen();
 
+    const inputFields = screen.getAllByLabelText('Input Field');
+    expect(inputFields).toHaveLength(4);
+
     const button = screen.getByTestId('submit-button');
     expect(button).toBeOnTheScreen();
     expect(button).toHaveTextContent('Submit');
     expect(button).toHaveAccessibilityState({ disabled: true });
   });
 
+  it('Should render the PIN correctly with custom size', () => {
+    const customSize = 6;
+    render(<PinScreen verifyPin={verifyPin} onPinSuccess={onPinSuccess} onPinFail={onPinFail} pinSize={customSize} />);
+    const heading = screen.getByText('Enter your PIN code');
+    expect(heading).toBeOnTheScreen();
+
+    const inputFields = screen.getAllByLabelText('Input Field');
+    expect(inputFields).toHaveLength(customSize);
+  });
+
   it('Should render the PIN correctly with custom labels', () => {
     const title = 'Re-Enter your PIN code';
+    const description = 'Please enter your PIN code to continue';
     const btnLabel = 'Submit PIN';
-    render(<PinScreen tagline={title} btnLabel={btnLabel} onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
+    render(
+      <PinScreen
+        tagline={title}
+        description={description}
+        btnLabel={btnLabel}
+        onPinSuccess={onPinSuccess}
+        onPinFail={onPinFail}
+      />,
+    );
+
     const heading = screen.getByText(title);
     expect(heading).toBeOnTheScreen();
+
+    const desc = screen.getByText(description);
+    expect(desc).toBeOnTheScreen();
 
     const button = screen.getByText(btnLabel);
     expect(button).toBeOnTheScreen();

@@ -9,6 +9,10 @@ import { REFRESH_SESSION_ERROR } from '@constants/errorMessages';
 import { CustomError } from '../types/errors';
 import { fetchWithTokenCheck } from './utils';
 
+type SuccessResponse = {
+  success: boolean;
+};
+
 const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 
 export const signIn = async (email: string, password: string): Promise<IAuthSession> => {
@@ -141,4 +145,52 @@ export const deleteAccount = async (): Promise<void> => {
     console.error(error);
     throw error;
   }
+};
+
+export const resetPassword = async (email: string): Promise<SuccessResponse> => {
+  const url = `${backendUrl}/auth/reset-password`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  const json = await res.json();
+  if (json.error) {
+    throw CustomError.fromJSON(json.error);
+  }
+
+  if (!res.ok) {
+    throw new Error(res.statusText);
+  }
+
+  return json;
+};
+
+export const confirmResetPassword = async (
+  email: string,
+  code: string,
+  newPassword: string,
+): Promise<SuccessResponse> => {
+  const url = `${backendUrl}/auth/confirm-reset-password`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, code, newPassword }),
+  });
+
+  const json = await res.json();
+  if (json.error) {
+    throw CustomError.fromJSON(json.error);
+  }
+
+  if (!res.ok) {
+    throw new Error(res.statusText);
+  }
+
+  return json;
 };

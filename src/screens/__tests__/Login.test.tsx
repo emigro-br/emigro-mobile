@@ -41,9 +41,11 @@ describe('Login screen', () => {
     const emailInput = getByTestId('email');
     const passwordInput = getByTestId('password');
     const signInButton = getByTestId('signin-button');
+    const forgotPasswordLink = getByTestId('forgot-password-link');
 
     expect(emailInput).toBeOnTheScreen();
     expect(passwordInput).toBeOnTheScreen();
+    expect(forgotPasswordLink).toBeOnTheScreen();
     expect(signInButton).toBeOnTheScreen();
     expect(signInButton).toHaveAccessibilityState({ disabled: true });
   });

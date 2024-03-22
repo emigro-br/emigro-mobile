@@ -15,16 +15,31 @@ const defaultMaxAttempts = 3;
 
 type Props = {
   tagline?: string;
+  description?: string;
   btnLabel?: string;
   verifyPin?: (pin: string) => Promise<boolean>;
   onPinSuccess: (pin: string) => void;
   onPinFail: (error: Error) => void;
   maxAttempts?: number;
+  pinSize?: number;
+  secureTextEntry?: boolean;
 };
 
 export const PinScreen = forwardRef(
-  ({ tagline, btnLabel, maxAttempts = defaultMaxAttempts, verifyPin, onPinSuccess, onPinFail }: Props, ref) => {
-    const pinSize = defaultPinSize;
+  (
+    {
+      tagline,
+      description,
+      btnLabel,
+      maxAttempts = defaultMaxAttempts,
+      pinSize = defaultPinSize,
+      secureTextEntry = true,
+      verifyPin,
+      onPinSuccess,
+      onPinFail,
+    }: Props,
+    ref,
+  ) => {
     const [pin, setPin] = useState('');
     const [attempts, setAttempts] = useState(0);
     const [error, setError] = useState('');
@@ -86,6 +101,7 @@ export const PinScreen = forwardRef(
       <Box flex={1} bg="$white">
         <VStack space="4xl" p="$4">
           <Heading size="xl">{tagline ?? 'Enter your PIN code'}</Heading>
+          {description && <Text>{description}</Text>}
           <HStack space="xl" justifyContent="center">
             {[...Array(pinSize)].map((_, i) => (
               <Input key={i} variant="underlined" size="xl" w="$10">
@@ -117,7 +133,7 @@ export const PinScreen = forwardRef(
                   fontWeight="bold"
                   textAlign="center"
                   keyboardType="number-pad"
-                  secureTextEntry
+                  secureTextEntry={secureTextEntry}
                   autoComplete="off"
                 />
               </Input>
