@@ -18,7 +18,9 @@ export type AnonStackParamList = {
     username: string;
   };
   PasswordRecovery: undefined;
-  CreateNewPassword: undefined;
+  CreateNewPassword: {
+    email: string;
+  };
 };
 
 const Stack = createNativeStackNavigator<AnonStackParamList>();
