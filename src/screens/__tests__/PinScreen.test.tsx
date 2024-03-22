@@ -39,10 +39,23 @@ describe('PinScreen', () => {
 
   it('Should render the PIN correctly with custom labels', () => {
     const title = 'Re-Enter your PIN code';
+    const description = 'Please enter your PIN code to continue';
     const btnLabel = 'Submit PIN';
-    render(<PinScreen tagline={title} btnLabel={btnLabel} onPinSuccess={onPinSuccess} onPinFail={onPinFail} />);
+    render(
+      <PinScreen
+        tagline={title}
+        description={description}
+        btnLabel={btnLabel}
+        onPinSuccess={onPinSuccess}
+        onPinFail={onPinFail}
+      />,
+    );
+
     const heading = screen.getByText(title);
     expect(heading).toBeOnTheScreen();
+
+    const desc = screen.getByText(description);
+    expect(desc).toBeOnTheScreen();
 
     const button = screen.getByText(btnLabel);
     expect(button).toBeOnTheScreen();

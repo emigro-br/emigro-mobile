@@ -15,6 +15,7 @@ const defaultMaxAttempts = 3;
 
 type Props = {
   tagline?: string;
+  description?: string;
   btnLabel?: string;
   verifyPin?: (pin: string) => Promise<boolean>;
   onPinSuccess: (pin: string) => void;
@@ -28,6 +29,7 @@ export const PinScreen = forwardRef(
   (
     {
       tagline,
+      description,
       btnLabel,
       maxAttempts = defaultMaxAttempts,
       pinSize = defaultPinSize,
@@ -99,6 +101,7 @@ export const PinScreen = forwardRef(
       <Box flex={1} bg="$white">
         <VStack space="4xl" p="$4">
           <Heading size="xl">{tagline ?? 'Enter your PIN code'}</Heading>
+          {description && <Text>{description}</Text>}
           <HStack space="xl" justifyContent="center">
             {[...Array(pinSize)].map((_, i) => (
               <Input key={i} variant="underlined" size="xl" w="$10">
