@@ -20,11 +20,24 @@ type Props = {
   onPinSuccess: (pin: string) => void;
   onPinFail: (error: Error) => void;
   maxAttempts?: number;
+  pinSize?: number;
+  secureTextEntry?: boolean;
 };
 
 export const PinScreen = forwardRef(
-  ({ tagline, btnLabel, maxAttempts = defaultMaxAttempts, verifyPin, onPinSuccess, onPinFail }: Props, ref) => {
-    const pinSize = defaultPinSize;
+  (
+    {
+      tagline,
+      btnLabel,
+      maxAttempts = defaultMaxAttempts,
+      pinSize = defaultPinSize,
+      secureTextEntry = true,
+      verifyPin,
+      onPinSuccess,
+      onPinFail,
+    }: Props,
+    ref,
+  ) => {
     const [pin, setPin] = useState('');
     const [attempts, setAttempts] = useState(0);
     const [error, setError] = useState('');
@@ -117,7 +130,7 @@ export const PinScreen = forwardRef(
                   fontWeight="bold"
                   textAlign="center"
                   keyboardType="number-pad"
-                  secureTextEntry
+                  secureTextEntry={secureTextEntry}
                   autoComplete="off"
                 />
               </Input>

@@ -18,10 +18,23 @@ describe('PinScreen', () => {
     const heading = screen.getByText('Enter your PIN code');
     expect(heading).toBeOnTheScreen();
 
+    const inputFields = screen.getAllByLabelText('Input Field');
+    expect(inputFields).toHaveLength(4);
+
     const button = screen.getByTestId('submit-button');
     expect(button).toBeOnTheScreen();
     expect(button).toHaveTextContent('Submit');
     expect(button).toHaveAccessibilityState({ disabled: true });
+  });
+
+  it('Should render the PIN correctly with custom size', () => {
+    const customSize = 6;
+    render(<PinScreen verifyPin={verifyPin} onPinSuccess={onPinSuccess} onPinFail={onPinFail} pinSize={customSize} />);
+    const heading = screen.getByText('Enter your PIN code');
+    expect(heading).toBeOnTheScreen();
+
+    const inputFields = screen.getAllByLabelText('Input Field');
+    expect(inputFields).toHaveLength(customSize);
   });
 
   it('Should render the PIN correctly with custom labels', () => {
