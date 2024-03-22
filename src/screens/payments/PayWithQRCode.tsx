@@ -6,32 +6,16 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useVendor } from '@contexts/VendorContext';
 import { Ionicons } from '@expo/vector-icons';
-import {
-  Box,
-  Button,
-  ButtonText,
-  Center,
-  FormControlErrorText,
-  HStack,
-  Heading,
-  Pressable,
-  Text,
-  VStack,
-  View,
-} from '@gluestack-ui/themed';
+import { Box, Center, FormControlErrorText, Heading, Pressable, Text, View } from '@gluestack-ui/themed';
 import { BarCodeScanner, PermissionResponse } from 'expo-barcode-scanner';
 import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
 import { CameraView, PermissionStatus, useCameraPermissions } from 'expo-camera/next';
-
-import { CryptoAsset } from '@/types/assets';
 
 import { INVALID_QR_CODE } from '@constants/errorMessages';
 
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
 
 import AskCamera from '@screens/AskCamera';
-
-import { AssetToCurrency } from '@utils/assets';
 
 type ScreenProps = {
   navigation: NativeStackNavigationProp<PaymentStackParamList, 'PayWithQRCode'>;
@@ -49,7 +33,7 @@ type Props = {
 };
 
 export const QRCodeScanner: React.FC<Props> = ({ onCancel, onProceedToPayment }) => {
-  const { scannedVendor, setScannedVendor } = useVendor();
+  const { setScannedVendor } = useVendor();
   const [cameraPermission, setCameraPermission] = useState<PermissionResponse | null>(null);
   const [isScanned, setIsScanned] = useState(false);
   const [error, setError] = useState('');
@@ -76,15 +60,12 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onProceedToPayment })
         throw new Error(INVALID_QR_CODE);
       }
       setScannedVendor(qrObject);
+      onProceedToPayment();
     } catch (error) {
       console.warn('[handleBarCodeScanned]', error);
       setError(INVALID_QR_CODE);
       setIsScanned(false);
     }
-  };
-
-  const handleProceedToPayment = () => {
-    onProceedToPayment();
   };
 
   if (cameraPermission?.status === PermissionStatus.UNDETERMINED) {
@@ -128,36 +109,7 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onProceedToPayment })
           <Heading>to pay the vendor</Heading>
         </Center>
       )}
-      {isScanned && scannedVendor.name ? (
-        <VStack p="$4" space="lg">
-          <Heading>Confirm the information below:</Heading>
-          <VStack space="sm">
-            <HStack>
-              <Text size="lg" bold>
-                Vendor:{' '}
-              </Text>
-              <Text size="lg">{scannedVendor.name}</Text>
-            </HStack>
-            <HStack>
-              <Text size="lg" bold>
-                Address:{' '}
-              </Text>
-              <Text size="lg">{scannedVendor.address}</Text>
-            </HStack>
-            <HStack>
-              <Text size="lg" bold>
-                Amount:{' '}
-              </Text>
-              <Text size="lg">
-                {scannedVendor.amount} {AssetToCurrency[scannedVendor.assetCode as CryptoAsset]}
-              </Text>
-            </HStack>
-          </VStack>
-          <Button onPress={handleProceedToPayment}>
-            <ButtonText>Proceed to payment</ButtonText>
-          </Button>
-        </VStack>
-      ) : (
+      {error && (
         <FormControlErrorText bold m="$4">
           {error}
         </FormControlErrorText>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IVendor } from '@/types/IVendor';
+import { CryptoAsset } from '@/types/assets';
 
 import { TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
 
@@ -15,17 +16,13 @@ export enum TransactionStep {
   ERROR = 'error',
 }
 
-interface TransactionValue {
-  message: string;
-}
-
 const usePayment = (
-  paymentAmount: string,
   scannedVendor: IVendor,
-  sourceAssetCode: string,
-  destinationAssetCode: string,
+  paymentAmount: number,
+  sourceAssetCode: CryptoAsset,
+  destinationAssetCode: CryptoAsset,
 ) => {
-  const [transactionValue, setTransactionValue] = useState<number | TransactionValue>(0);
+  const [transactionValue, setTransactionValue] = useState<number>(0);
   const [maxAmountToSend, setMaxAmountToSend] = useState<string>('0');
   const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
 
@@ -37,7 +34,7 @@ const usePayment = (
         if (paymentAmount) {
           const from = destinationAssetCode;
           const to = sourceAssetCode;
-          const transactionQuote = { from, to, amount: paymentAmount };
+          const transactionQuote = { from, to, amount: `${paymentAmount}` };
           const calculatedTransactionValue = await handleQuote(transactionQuote);
           if (calculatedTransactionValue) {
             setTransactionValue(calculatedTransactionValue);
@@ -70,7 +67,7 @@ const usePayment = (
       setStep(TransactionStep.PROCESSING);
       const transactionRequest: ITransactionRequest = {
         maxAmountToSend,
-        destinationAmount: paymentAmount,
+        destinationAmount: `${paymentAmount}`,
         destination: scannedVendor.publicKey,
         sourceAssetCode,
         destinationAssetCode,

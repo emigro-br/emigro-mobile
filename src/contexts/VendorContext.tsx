@@ -15,8 +15,8 @@ const initialVendor: IVendor = {
   name: '',
   address: '',
   publicKey: '',
-  amount: '',
-  assetCode: '',
+  amount: undefined,
+  assetCode: undefined,
 };
 
 const VendorContext = createContext<VendorContextType>({
