@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useVendor } from '@contexts/VendorContext';
 import { Ionicons } from '@expo/vector-icons';
@@ -26,9 +27,21 @@ import { CryptoAsset } from '@/types/assets';
 
 import { INVALID_QR_CODE } from '@constants/errorMessages';
 
+import { PaymentStackParamList } from '@navigation/PaymentsStack';
+
 import AskCamera from '@screens/AskCamera';
 
 import { AssetToCurrency } from '@utils/assets';
+
+type ScreenProps = {
+  navigation: NativeStackNavigationProp<PaymentStackParamList, 'PayWithQRCode'>;
+};
+
+export const PayWithQRCode = ({ navigation }: ScreenProps) => {
+  return (
+    <QRCodeScanner onCancel={() => navigation.goBack()} onProceedToPayment={() => navigation.push('ConfirmPayment')} />
+  );
+};
 
 type Props = {
   onCancel: () => void;
@@ -52,10 +65,6 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onProceedToPayment })
       // reset the scanner when the user comes back to the screen
       setIsScanned(false);
       setError('');
-      return () => {
-        // dismiss the scanner when the user leaves the screen
-        onCancel();
-      };
     }, []),
   );
 
@@ -76,7 +85,6 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onProceedToPayment })
 
   const handleProceedToPayment = () => {
     onProceedToPayment();
-    onCancel();
   };
 
   if (cameraPermission?.status === PermissionStatus.UNDETERMINED) {

@@ -4,20 +4,13 @@ import { CryptoAsset } from '@/types/assets';
 
 import { Payments } from '../Payments';
 
-// mock QRCodeScanner
-jest.mock('@components/QRCodeScanner', () => {
-  const { View } = jest.requireActual('react-native');
-  return {
-    QRCodeScanner: jest.fn(() => <View testID="qrcode-scanner" />),
-  };
-});
-
 describe('Payments component', () => {
   const navigation: any = {
     push: jest.fn(),
   };
 
   beforeEach(() => {
+    jest.resetAllMocks();
     render(<Payments navigation={navigation} />);
   });
 
@@ -31,7 +24,7 @@ describe('Payments component', () => {
   it('Should open the scanner when Scan a Payment button is pressed', () => {
     const scanButton = screen.getByText('Scan a Payment');
     fireEvent.press(scanButton);
-    expect(screen.getByTestId('qrcode-scanner')).toBeOnTheScreen();
+    expect(navigation.push).toHaveBeenCalledWith('PayWithQRCode');
   });
 
   it('Should open the asset list action sheet when Request with a QR Code button is pressed', () => {
