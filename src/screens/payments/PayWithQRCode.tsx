@@ -6,7 +6,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useVendor } from '@contexts/VendorContext';
 import { Ionicons } from '@expo/vector-icons';
-import { Box, Center, FormControlErrorText, Heading, Pressable, Text, View } from '@gluestack-ui/themed';
+import { Box, Center, Pressable, Text, View } from '@gluestack-ui/themed';
 import { BarCodeScanner, PermissionResponse } from 'expo-barcode-scanner';
 import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
 import { CameraView, PermissionStatus, useCameraPermissions } from 'expo-camera/next';
@@ -53,6 +53,11 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onProceedToPayment })
   );
 
   const handleBarCodeScanned = (result: BarCodeScanningResult) => {
+    // If a QR code has already been scanned, return early
+    if (isScanned) {
+      return;
+    }
+
     setIsScanned(true);
     try {
       const qrObject = JSON.parse(result.data);
@@ -85,55 +90,59 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onProceedToPayment })
     );
   }
 
+  const QRRectangule = () => <View style={styles.rectangle} />;
+  const CloseButton = () => (
+    <Pressable right={0} top={0} mt="$8" mr="$8" position="absolute" onPress={onCancel} p="$1">
+      <Ionicons name="close" size={36} color="white" />
+    </Pressable>
+  );
+
+  const InfoText = () => (
+    <Center mt="$8">
+      <Text size="xl" color="$white" bold>
+        Scan a QR code
+      </Text>
+      <Text size="xl" color="$white" bold mt="$6">
+        {error || ' '}
+      </Text>
+    </Center>
+  );
+
   return (
     <Box flex={1}>
-      <Box h="$72" w="$full">
-        <CameraView
-          onBarcodeScanned={handleBarCodeScanned}
-          style={[StyleSheet.absoluteFillObject]}
-          barcodeScannerSettings={{
-            barcodeTypes: [BarCodeScanner.Constants.BarCodeType.qr], // FIXME: "qr" string is not working
-          }}
-        >
-          <View style={styles.rectangleContainer}>
-            <Pressable right={0} top={0} mt="$8" mr="$8" position="absolute" onPress={onCancel}>
-              <Ionicons name="close" size={24} color="white" />
-            </Pressable>
-            <View style={styles.rectangle} />
-          </View>
-        </CameraView>
-      </Box>
-      {!isScanned && (
-        <Center mt="$8">
-          <Heading>Scan the QR code</Heading>
-          <Heading>to pay the vendor</Heading>
-        </Center>
-      )}
-      {error && (
-        <FormControlErrorText bold m="$4">
-          {error}
-        </FormControlErrorText>
-      )}
+      <CameraView
+        onBarcodeScanned={handleBarCodeScanned}
+        style={[StyleSheet.absoluteFillObject]}
+        barcodeScannerSettings={{
+          barcodeTypes: [BarCodeScanner.Constants.BarCodeType.qr], // FIXME: "qr" string is not working
+        }}
+      >
+        <View style={styles.rectangleContainer}>
+          <CloseButton />
+
+          <QRRectangule />
+
+          <InfoText />
+        </View>
+      </CameraView>
     </Box>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#000000',
-  },
   rectangleContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'transparent',
+    // backgroundColor: 'rgba(0, 0, 0, 0.6)', // not working
   },
   rectangle: {
-    height: 200,
-    width: 200,
-    borderWidth: 2,
+    height: 220,
+    width: 220,
+    borderWidth: 4,
     borderColor: '#FFFFFF',
     backgroundColor: 'transparent',
     borderRadius: 15,
+    borderStyle: 'dashed',
   },
 });
