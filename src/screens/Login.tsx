@@ -168,7 +168,7 @@ const Login = ({ navigation }: Props) => {
             </FormControl>
           ))}
 
-          <Link onPress={() => navigation.push('PasswordRecovery')}>
+          <Link onPress={() => navigation.push('PasswordRecovery')} testID="forgot-password-link">
             <LinkText color="$primary500" textDecorationLine="none" textAlign="right">
               Forgot your password?
             </LinkText>
