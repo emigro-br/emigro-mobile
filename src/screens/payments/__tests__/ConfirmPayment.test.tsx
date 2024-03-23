@@ -109,6 +109,7 @@ describe('ConfirmPayment component', () => {
     inputPIN('1234');
 
     await waitFor(() => {
+      // expect(getByText('Processing...')).toBeOnTheScreen(); // FIXME: changed to success, too fast to see it
       expect(getByTestId('success-modal')).toBeOnTheScreen(); // FIXME: it's always present
       expect(payMock).toHaveBeenCalled();
     });

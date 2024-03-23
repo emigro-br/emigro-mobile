@@ -3,14 +3,24 @@ import { Dropdown } from 'react-native-element-dropdown';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { Box, Button, ButtonText, Card, Divider, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
+import {
+  Box,
+  Button,
+  ButtonSpinner,
+  ButtonText,
+  Card,
+  Divider,
+  HStack,
+  Heading,
+  Text,
+  VStack,
+} from '@gluestack-ui/themed';
 import * as Sentry from '@sentry/react-native';
 
 import { IQuoteRequest } from '@/types/IQuoteRequest';
 import { CryptoAsset, cryptoAssets } from '@/types/assets';
 
 import { ErrorModal } from '@components/modals/ErrorModal';
-import { LoadingModal } from '@components/modals/LoadingModal';
 import { SuccessModal } from '@components/modals/SuccessModal';
 
 import { TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
@@ -143,10 +153,11 @@ export const ConfirmPayment = ({ navigation }: Props) => {
   const hasBalance = paymentQuote ? paymentQuote < balance : true;
   const vendorCurrency = AssetToCurrency[scannedVendor.assetCode as CryptoAsset];
 
+  const isProcesing = step === TransactionStep.PROCESSING;
+  const isPayDisabled = !paymentQuote || !hasBalance || step !== TransactionStep.NONE; // processing, success, error
+
   return (
     <>
-      <LoadingModal isOpen={step === TransactionStep.PROCESSING} text="Processing..." />
-
       <SuccessModal
         isOpen={step === TransactionStep.SUCCESS}
         title="Transaction completed"
@@ -199,6 +210,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
                   labelField="label"
                   valueField="value"
                   onChange={(selectedItem) => setSelectedAsset(selectedItem.value)}
+                  disable={isProcesing}
                 />
               </Box>
               <Box w="$3/4">
@@ -222,8 +234,9 @@ export const ConfirmPayment = ({ navigation }: Props) => {
           <Text size="xs">
             The seller will receive the exact value he set. The quantity that will be sent is computed automatically.
           </Text>
-          <Button size="lg" onPress={handlePressPay} isDisabled={!paymentQuote || !hasBalance}>
-            <ButtonText>Pay</ButtonText>
+          <Button size="lg" onPress={handlePressPay} isDisabled={isPayDisabled}>
+            {isProcesing && <ButtonSpinner mr="$1" />}
+            <ButtonText>{step === TransactionStep.PROCESSING ? 'Processing...' : 'Pay'} </ButtonText>
           </Button>
         </VStack>
       </Box>
