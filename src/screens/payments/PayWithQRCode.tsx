@@ -4,12 +4,13 @@ import { StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { useVendor } from '@contexts/VendorContext';
 import { Ionicons } from '@expo/vector-icons';
 import { Box, Center, Pressable, Text, View } from '@gluestack-ui/themed';
 import { BarCodeScanner, PermissionResponse } from 'expo-barcode-scanner';
 import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
 import { CameraView, PermissionStatus, useCameraPermissions } from 'expo-camera/next';
+
+import { IVendor } from '@/types/IVendor';
 
 import { INVALID_QR_CODE } from '@constants/errorMessages';
 
@@ -17,23 +18,30 @@ import { PaymentStackParamList } from '@navigation/PaymentsStack';
 
 import AskCamera from '@screens/AskCamera';
 
+import { paymentStore } from '@stores/PaymentStore';
+
 type ScreenProps = {
   navigation: NativeStackNavigationProp<PaymentStackParamList, 'PayWithQRCode'>;
 };
 
 export const PayWithQRCode = ({ navigation }: ScreenProps) => {
   return (
-    <QRCodeScanner onCancel={() => navigation.goBack()} onProceedToPayment={() => navigation.push('ConfirmPayment')} />
+    <QRCodeScanner
+      onCancel={() => navigation.goBack()}
+      onScanPayment={(payment) => {
+        paymentStore.setScannedPayment(payment);
+        navigation.push('ConfirmPayment');
+      }}
+    />
   );
 };
 
 type Props = {
   onCancel: () => void;
-  onProceedToPayment: () => void;
+  onScanPayment: (payment: IVendor) => void;
 };
 
-export const QRCodeScanner: React.FC<Props> = ({ onCancel, onProceedToPayment }) => {
-  const { setScannedVendor } = useVendor();
+export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
   const [cameraPermission, setCameraPermission] = useState<PermissionResponse | null>(null);
   const [isScanned, setIsScanned] = useState(false);
   const [error, setError] = useState('');
@@ -64,8 +72,7 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onProceedToPayment })
       if (!qrObject.name || !qrObject.amount || !qrObject.assetCode || !qrObject.publicKey) {
         throw new Error(INVALID_QR_CODE);
       }
-      setScannedVendor(qrObject);
-      onProceedToPayment();
+      onScanPayment(qrObject);
     } catch (error) {
       console.warn('[handleBarCodeScanned]', error);
       setError(INVALID_QR_CODE);

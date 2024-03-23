@@ -3,7 +3,6 @@ import { Dropdown } from 'react-native-element-dropdown';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { useVendor } from '@contexts/VendorContext';
 import { Box, Button, ButtonText, Card, Divider, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
 import * as Sentry from '@sentry/react-native';
 
@@ -24,7 +23,7 @@ import { PinScreen } from '@screens/PinScreen';
 import { handleQuote } from '@services/emigro';
 
 import { balanceStore } from '@stores/BalanceStore';
-import { paymentStore as bloc } from '@stores/PaymentStore';
+import { paymentStore as bloc, paymentStore } from '@stores/PaymentStore';
 import { sessionStore } from '@stores/SessionStore';
 
 import { AssetToCurrency, labelFor, symbolFor } from '@utils/assets';
@@ -42,7 +41,7 @@ type Props = {
 };
 
 export const ConfirmPayment = ({ navigation }: Props) => {
-  const { scannedVendor } = useVendor();
+  const scannedVendor = paymentStore.scannedPayment!; //FIXME:
   const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
   const [showPinScreen, setShowPinScreen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(scannedVendor.assetCode);

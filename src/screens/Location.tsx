@@ -1,8 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 
-import { useVendor } from '@contexts/VendorContext';
 import { Box, Center } from '@gluestack-ui/themed';
+
+import { IVendor } from '@/types/IVendor';
+
+// FIXME: mocked after deleting VendorContext
+const useVendor = () => {
+  const [scannedVendor, setScannedVendor] = useState<IVendor>();
+  return { scannedVendor, setScannedVendor };
+};
 
 const MapScreen: React.FunctionComponent = () => {
   const { scannedVendor } = useVendor();

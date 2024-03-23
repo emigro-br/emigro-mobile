@@ -2,7 +2,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { NavigationContainer } from '@react-navigation/native';
 
-import { VendorContextProvider } from '@contexts/VendorContext';
 import { GluestackUIProvider } from '@gluestack-ui/themed';
 import { StatusBar } from 'expo-status-bar';
 import { observer } from 'mobx-react-lite';
@@ -28,12 +27,10 @@ export default observer(function App() {
   return (
     <GluestackUIProvider config={config}>
       <SafeAreaProvider>
-        <VendorContextProvider>
-          <StatusBar style="dark" />
-          <NavigationContainer>
-            <RootStack isSignedIn={isSignedIn} />
-          </NavigationContainer>
-        </VendorContextProvider>
+        <StatusBar style="dark" />
+        <NavigationContainer>
+          <RootStack isSignedIn={isSignedIn} />
+        </NavigationContainer>
       </SafeAreaProvider>
     </GluestackUIProvider>
   );

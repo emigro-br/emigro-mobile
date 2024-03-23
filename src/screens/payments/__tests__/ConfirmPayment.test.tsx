@@ -5,6 +5,8 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 import { inputPIN, render } from 'test-utils';
 
 import { IPaymentResponse } from '@/types/IPaymentResponse';
+import { IVendor } from '@/types/IVendor';
+import { CryptoAsset } from '@/types/assets';
 
 import { paymentStore } from '@stores/PaymentStore';
 
@@ -23,17 +25,6 @@ jest.mock('@stores/BalanceStore', () => ({
   },
 }));
 
-jest.mock('@contexts/VendorContext', () => ({
-  useVendor: jest.fn().mockReturnValue({
-    scannedVendor: {
-      assetCode: 'USDC',
-      amount: 10,
-      name: 'John Doe',
-      address: '123 Main St',
-    },
-  }),
-}));
-
 jest.mock('@services/emigro', () => ({
   handleQuote: jest.fn().mockResolvedValue(10),
 }));
@@ -48,8 +39,17 @@ describe('ConfirmPayment component', () => {
     navigation: mockNavigation,
   };
 
+  const mockScannedVendor: IVendor = {
+    assetCode: CryptoAsset.USDC,
+    amount: 10,
+    name: 'John Doe',
+    address: '123 Main St',
+    publicKey: 'mokced-publicKey',
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
+    paymentStore.setScannedPayment(mockScannedVendor);
   });
 
   it('renders the component correctly', async () => {
