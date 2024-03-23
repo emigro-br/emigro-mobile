@@ -52,7 +52,8 @@ export const AssetToSymbol = {
   [FiatCurrency.ARS]: '$',
 };
 
-export const symbolFor = (asset: CryptoOrFiat, value: number = 0) => `${AssetToSymbol[asset]} ${value.toFixed(2)}`;
+export const symbolFor = (asset: CryptoOrFiat, value: number = 0) =>
+  `${AssetToSymbol[asset]} ${Number(value).toFixed(2)}`;
 
 const AssetToIcon: Record<CryptoOrFiat, any> = {
   [CryptoAsset.EURC]: eurIcon,

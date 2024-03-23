@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Dropdown } from 'react-native-element-dropdown';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -6,23 +6,35 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useVendor } from '@contexts/VendorContext';
 import { Box, Button, ButtonText, Card, Divider, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
 
+import { IQuoteRequest } from '@/types/IQuoteRequest';
 import { CryptoAsset, cryptoAssets } from '@/types/assets';
 
 import { ErrorModal } from '@components/modals/ErrorModal';
 import { LoadingModal } from '@components/modals/LoadingModal';
 import { SuccessModal } from '@components/modals/SuccessModal';
 
-import usePayment, { TransactionStep } from '@hooks/usePayment';
+import { TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
 
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
 import { WalletStackParamList } from '@navigation/WalletStack';
 
 import { PinScreen } from '@screens/PinScreen';
 
+import { handleQuote } from '@services/emigro';
+
 import { balanceStore } from '@stores/BalanceStore';
+import { paymentStore as bloc } from '@stores/PaymentStore';
 import { sessionStore } from '@stores/SessionStore';
 
 import { AssetToCurrency, labelFor, symbolFor } from '@utils/assets';
+
+enum TransactionStep {
+  NONE = 'none',
+  // CONFIRM_PAYMENT = 'confirm_payment',
+  PROCESSING = 'processing',
+  SUCCESS = 'success',
+  ERROR = 'error',
+}
 
 type Props = {
   navigation: NativeStackNavigationProp<WalletStackParamList & PaymentStackParamList, 'ConfirmPayment'>;
@@ -30,9 +42,11 @@ type Props = {
 
 const ConfirmPayment = ({ navigation }: Props) => {
   const { scannedVendor } = useVendor();
+  const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
   const [showPinScreen, setShowPinScreen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(scannedVendor.assetCode);
-  const [paymentAmount, setPaymentAmount] = useState<number>(scannedVendor.amount);
+  const [paymentQuote, setPaymentQuote] = useState<number | null>(scannedVendor.amount);
+  const [transactionError, setTransactionError] = useState<Error | unknown>(null);
 
   const availableAssets = cryptoAssets();
   const data = availableAssets.map((asset) => ({
@@ -40,18 +54,69 @@ const ConfirmPayment = ({ navigation }: Props) => {
     value: asset,
   }));
 
-  const destinationAssetCode = scannedVendor.assetCode;
+  // TODO: disable the not active input while fetching the rate
+  const fetchQuote = async () => {
+    setPaymentQuote(null);
+    const data: IQuoteRequest = {
+      // FIXME: we should invert values restrictReceive
+      to: selectedAsset,
+      from: scannedVendor.assetCode,
+      amount: `${scannedVendor.amount}`,
+    };
+    const quote = await handleQuote(data);
+    console.debug('data', data);
+    console.debug('quote', quote);
 
-  const { transactionValue, transactionError, step, setStep, handleConfirmPayment } = usePayment(
-    scannedVendor,
-    paymentAmount,
-    selectedAsset,
-    destinationAssetCode,
-  );
+    // no quotes found
+    if (quote === null || isNaN(quote)) {
+      return;
+    }
 
-  const balance = balanceStore.get(selectedAsset);
-  const hasBalance = transactionValue < balance;
-  const currencyAsset = AssetToCurrency[scannedVendor.assetCode as CryptoAsset];
+    setPaymentQuote(quote);
+  };
+
+  useEffect(() => {
+    fetchQuote().catch(console.warn);
+  }, [selectedAsset]);
+
+  const handlePressPay = () => {
+    if (!paymentQuote) {
+      console.warn('Payment amount is not set');
+      return;
+    }
+
+    const transaction = {
+      from: {
+        wallet: sessionStore.publicKey!,
+        asset: selectedAsset,
+        value: paymentQuote,
+      },
+      to: {
+        wallet: scannedVendor.publicKey,
+        asset: scannedVendor.assetCode,
+        value: scannedVendor.amount,
+      },
+      rate: paymentQuote / scannedVendor.amount,
+      fees: 0,
+    };
+
+    bloc.setTransaction(transaction);
+    setShowPinScreen(true);
+  };
+
+  const handleConfirmPayment = async () => {
+    setStep(TransactionStep.PROCESSING);
+    try {
+      const result = await bloc.pay();
+      if (result.transactionHash) {
+        setStep(TransactionStep.SUCCESS);
+      }
+    } catch (error) {
+      setStep(TransactionStep.ERROR);
+      setTransactionError(TRANSACTION_ERROR_MESSAGE);
+      throw error;
+    }
+  };
 
   const handleCloseFinishedModal = () => {
     setStep(TransactionStep.NONE);
@@ -76,6 +141,10 @@ const ConfirmPayment = ({ navigation }: Props) => {
       />
     );
   }
+
+  const balance = balanceStore.get(selectedAsset);
+  const hasBalance = paymentQuote ? paymentQuote < balance : true;
+  const currencyAsset = AssetToCurrency[scannedVendor.assetCode as CryptoAsset];
 
   return (
     <>
@@ -137,7 +206,7 @@ const ConfirmPayment = ({ navigation }: Props) => {
               </Box>
               <Box w="$3/4">
                 <Text textAlign="right" py="$1">
-                  {symbolFor(selectedAsset, transactionValue)}
+                  {paymentQuote && symbolFor(selectedAsset, paymentQuote)}
                 </Text>
               </Box>
             </HStack>
@@ -156,7 +225,7 @@ const ConfirmPayment = ({ navigation }: Props) => {
           <Text size="xs">
             The seller will receive the exact value he set. The quantity that will be sent is computed automatically.
           </Text>
-          <Button size="lg" onPress={() => setShowPinScreen(true)} isDisabled={!hasBalance}>
+          <Button size="lg" onPress={handlePressPay} isDisabled={!paymentQuote || !hasBalance}>
             <ButtonText>Pay</ButtonText>
           </Button>
         </VStack>
