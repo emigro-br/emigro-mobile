@@ -5,6 +5,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useVendor } from '@contexts/VendorContext';
 import { Box, Button, ButtonText, Card, Divider, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
+import * as Sentry from '@sentry/react-native';
 
 import { IQuoteRequest } from '@/types/IQuoteRequest';
 import { CryptoAsset, cryptoAssets } from '@/types/assets';
@@ -40,7 +41,7 @@ type Props = {
   navigation: NativeStackNavigationProp<WalletStackParamList & PaymentStackParamList, 'ConfirmPayment'>;
 };
 
-const ConfirmPayment = ({ navigation }: Props) => {
+export const ConfirmPayment = ({ navigation }: Props) => {
   const { scannedVendor } = useVendor();
   const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
   const [showPinScreen, setShowPinScreen] = useState(false);
@@ -109,9 +110,9 @@ const ConfirmPayment = ({ navigation }: Props) => {
         setStep(TransactionStep.SUCCESS);
       }
     } catch (error) {
+      Sentry.captureException(error);
       setStep(TransactionStep.ERROR);
       setTransactionError(TRANSACTION_ERROR_MESSAGE);
-      throw error;
     }
   };
 
@@ -230,5 +231,3 @@ const ConfirmPayment = ({ navigation }: Props) => {
     </>
   );
 };
-
-export default ConfirmPayment;
