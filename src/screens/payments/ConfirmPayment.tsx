@@ -161,9 +161,10 @@ export const ConfirmPayment = ({ navigation }: Props) => {
       <SuccessModal
         isOpen={step === TransactionStep.SUCCESS}
         title="Transaction completed"
-        publicKey={scannedVendor.publicKey}
         onClose={handleCloseFinishedModal}
-      />
+      >
+        <Text>Your payment was successfully completed. </Text>
+      </SuccessModal>
 
       <ErrorModal
         isOpen={step === TransactionStep.ERROR}

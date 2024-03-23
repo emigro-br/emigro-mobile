@@ -236,8 +236,12 @@ const Withdraw: React.FC = observer(() => {
         isOpen={step === TransactionStep.SUCCESS}
         title="Transaction successful!"
         onClose={() => setStep(TransactionStep.NONE)}
-        publicKey={sessionStore.publicKey!}
-      />
+      >
+        <Text>
+          Your withdrawal request has been successfully processed. The funds will be transferred to your account
+          shortly.
+        </Text>
+      </SuccessModal>
 
       <ErrorModal
         isOpen={step === TransactionStep.ERROR}
