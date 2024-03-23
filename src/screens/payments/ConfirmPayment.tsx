@@ -1,54 +1,128 @@
-import React, { useEffect, useState } from 'react';
-import DropDownPicker from 'react-native-dropdown-picker';
+import { useEffect, useState } from 'react';
+import { Dropdown } from 'react-native-element-dropdown';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { useVendor } from '@contexts/VendorContext';
-import { Box, Button, ButtonText, HStack, Heading, Input, InputField, Text, VStack } from '@gluestack-ui/themed';
+import {
+  Box,
+  Button,
+  ButtonSpinner,
+  ButtonText,
+  Card,
+  Divider,
+  HStack,
+  Heading,
+  Text,
+  VStack,
+} from '@gluestack-ui/themed';
+import * as Sentry from '@sentry/react-native';
 
-import { CryptoAsset } from '@/types/assets';
+import { IQuoteRequest } from '@/types/IQuoteRequest';
+import { CryptoAsset, cryptoAssets } from '@/types/assets';
 
-import { ConfirmationModal } from '@components/modals/ConfirmationModal';
 import { ErrorModal } from '@components/modals/ErrorModal';
-import { LoadingModal } from '@components/modals/LoadingModal';
 import { SuccessModal } from '@components/modals/SuccessModal';
 
-import useCurrencyChange from '@hooks/useCurrencyChange';
-import useGetUserBalance from '@hooks/useGetUserBalance';
-import usePayment, { TransactionStep } from '@hooks/usePayment';
+import { TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
 
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
 import { WalletStackParamList } from '@navigation/WalletStack';
 
 import { PinScreen } from '@screens/PinScreen';
 
+import { handleQuote } from '@services/emigro';
+
+import { balanceStore } from '@stores/BalanceStore';
+import { paymentStore as bloc, paymentStore } from '@stores/PaymentStore';
 import { sessionStore } from '@stores/SessionStore';
 
-import { AssetToCurrency } from '@utils/assets';
+import { AssetToCurrency, labelFor, symbolFor } from '@utils/assets';
+
+enum TransactionStep {
+  NONE = 'none',
+  // CONFIRM_PAYMENT = 'confirm_payment',
+  PROCESSING = 'processing',
+  SUCCESS = 'success',
+  ERROR = 'error',
+}
 
 type Props = {
   navigation: NativeStackNavigationProp<WalletStackParamList & PaymentStackParamList, 'ConfirmPayment'>;
 };
 
-const ConfirmPayment = ({ navigation }: Props) => {
-  const { scannedVendor } = useVendor();
-  const [open, setOpen] = useState(false);
+export const ConfirmPayment = ({ navigation }: Props) => {
+  const scannedVendor = paymentStore.scannedPayment!; //FIXME:
+  const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
   const [showPinScreen, setShowPinScreen] = useState(false);
-  const [paymentAmount, setPaymentAmount] = useState('');
-  const { userBalance, setUserBalance } = useGetUserBalance();
-  const { currency, setCurrency, selectedBalance, handleCurrencyChange } = useCurrencyChange(userBalance);
+  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(scannedVendor.assetCode);
+  const [paymentQuote, setPaymentQuote] = useState<number | null>(scannedVendor.amount);
+  const [transactionError, setTransactionError] = useState<Error | unknown>(null);
 
-  const destinationAssetCode = scannedVendor.assetCode;
+  const availableAssets = cryptoAssets();
+  const data = availableAssets.map((asset) => ({
+    label: asset,
+    value: asset,
+  }));
 
-  const { transactionValue, transactionError, step, setStep, handleConfirmPayment } = usePayment(
-    paymentAmount,
-    scannedVendor,
-    currency,
-    destinationAssetCode,
-  );
+  const fetchQuote = async () => {
+    setPaymentQuote(null);
+    const data: IQuoteRequest = {
+      // FIXME: use resctrictReceive and then invert these values
+      to: selectedAsset,
+      from: scannedVendor.assetCode,
+      amount: `${scannedVendor.amount}`,
+    };
+    const quote = await handleQuote(data);
 
-  const handleContinue = () => {
-    setStep(TransactionStep.CONFIRM_PAYMENT);
+    // no quotes found
+    if (quote === null || isNaN(quote)) {
+      return;
+    }
+
+    setPaymentQuote(quote);
+  };
+
+  useEffect(() => {
+    fetchQuote().catch(console.warn);
+  }, [selectedAsset]);
+
+  const handlePressPay = () => {
+    if (!paymentQuote) {
+      console.warn('Payment amount is not set');
+      return;
+    }
+
+    const transaction = {
+      from: {
+        wallet: sessionStore.publicKey!,
+        asset: selectedAsset,
+        value: paymentQuote,
+      },
+      to: {
+        wallet: scannedVendor.publicKey,
+        asset: scannedVendor.assetCode,
+        value: scannedVendor.amount,
+      },
+      rate: paymentQuote / scannedVendor.amount,
+      fees: 0,
+    };
+
+    bloc.setTransaction(transaction);
+    setShowPinScreen(true);
+  };
+
+  const handleConfirmPayment = async () => {
+    setStep(TransactionStep.PROCESSING);
+    try {
+      const result = await bloc.pay();
+      if (result.transactionHash) {
+        setStep(TransactionStep.SUCCESS);
+      }
+    } catch (error) {
+      Sentry.captureException(error);
+      setStep(TransactionStep.ERROR);
+      setTransactionError(TRANSACTION_ERROR_MESSAGE);
+    }
   };
 
   const handleCloseFinishedModal = () => {
@@ -56,13 +130,6 @@ const ConfirmPayment = ({ navigation }: Props) => {
     navigation.popToTop(); // clean the stack backing to Payments
     navigation.navigate('Wallet');
   };
-
-  const insuficcientBalance = Number(selectedBalance.balance) < Number(paymentAmount);
-
-  useEffect(() => {
-    setCurrency(scannedVendor.assetCode);
-    setPaymentAmount(scannedVendor.amount);
-  }, [scannedVendor]);
 
   if (showPinScreen) {
     return (
@@ -82,115 +149,98 @@ const ConfirmPayment = ({ navigation }: Props) => {
     );
   }
 
+  const balance = balanceStore.get(selectedAsset);
+  const hasBalance = paymentQuote ? paymentQuote < balance : true;
+  const vendorCurrency = AssetToCurrency[scannedVendor.assetCode as CryptoAsset];
+
+  const isProcesing = step === TransactionStep.PROCESSING;
+  const isPayDisabled = !paymentQuote || !hasBalance || step !== TransactionStep.NONE; // processing, success, error
+
   return (
-    <Box flex={1} bg="$white">
-      <VStack p="$4" space="lg">
-        <Heading>Vendor: {scannedVendor.name}</Heading>
-
-        <Text size="lg">
-          The seller will receive the exact value he set. The quantity that will be sent is computed automatically.
-        </Text>
-
-        <HStack>
-          <Box w="$1/4">
-            <DropDownPicker
-              open={open}
-              value={currency}
-              items={userBalance}
-              setOpen={setOpen}
-              setValue={setCurrency}
-              setItems={setUserBalance}
-              placeholder="Type"
-              style={{
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-                borderRightWidth: 0,
-              }}
-              onChangeValue={handleCurrencyChange}
-            />
-          </Box>
-          <Box w="$3/4">
-            <Input borderColor="$black" borderLeftWidth={0} h={50}>
-              <InputField
-                textAlign="right"
-                value={`${transactionValue}`}
-                onChangeText={setPaymentAmount}
-                placeholder="Amount"
-                keyboardType="numeric"
-                editable={false}
-              />
-            </Input>
-          </Box>
-        </HStack>
-
-        {selectedBalance.balance && (
-          <Box>
-            {selectedBalance && (
-              <Text color="$gray" textAlign="right" mb="$1">
-                Balance: {selectedBalance.balance} {selectedBalance.label}{' '}
-              </Text>
-            )}
-            {insuficcientBalance && (
-              <Text color="red" textAlign="right">
-                Insufficient funds
-              </Text>
-            )}
-          </Box>
-        )}
-
-        <Box>
-          {typeof transactionValue === 'object' ? (
-            <Text size="lg" mb="$1" color="red">
-              {transactionValue.message && 'No offers available'}
-            </Text>
-          ) : (
-            <Text size="lg" bold>
-              {scannedVendor.name} will receive: {paymentAmount} {AssetToCurrency[destinationAssetCode as CryptoAsset]}
-            </Text>
-          )}
-        </Box>
-
-        <Button onPress={handleContinue} isDisabled={insuficcientBalance}>
-          <ButtonText>Continue</ButtonText>
-        </Button>
-      </VStack>
-
-      {/* TODO: check it is necessary since ConfirmationModal has internal loading */}
-      <LoadingModal isOpen={step === TransactionStep.PROCESSING} text="Processing..." />
-
-      <ConfirmationModal
-        title="Confirm Payment"
-        isOpen={step === TransactionStep.CONFIRM_PAYMENT}
-        onClose={() => setStep(TransactionStep.NONE)}
-        onPress={() => setShowPinScreen(true)}
-      >
-        <VStack space="md">
-          <Text>{scannedVendor?.name} will receive:</Text>
-          <Text size="lg" color="$green" bold>
-            {paymentAmount} {AssetToCurrency[destinationAssetCode as CryptoAsset]}
-          </Text>
-          <Text>Transaction amount:</Text>
-          <Text size="lg" color="$red" bold>
-            {String(transactionValue)} {AssetToCurrency[currency as CryptoAsset]}
-          </Text>
-        </VStack>
-      </ConfirmationModal>
-
+    <>
       <SuccessModal
         isOpen={step === TransactionStep.SUCCESS}
         title="Transaction completed"
-        publicKey={scannedVendor.publicKey}
         onClose={handleCloseFinishedModal}
-      />
+      >
+        <Text>Your payment was successfully completed. </Text>
+      </SuccessModal>
 
       <ErrorModal
         isOpen={step === TransactionStep.ERROR}
         title="Transaction error"
         errorMessage={`Failed to complete your payment:\n ${transactionError}`}
-        onClose={handleCloseFinishedModal}
+        onClose={() => setStep(TransactionStep.NONE)}
       />
-    </Box>
+
+      <Box flex={1} bg="$white">
+        <VStack p="$4" space="lg">
+          <Heading size="xl">Review the details of this payment</Heading>
+
+          <Box>
+            <Text bold>Requested value</Text>
+            <Text size="4xl" color="$textLight800" bold>
+              {scannedVendor.amount} {labelFor(vendorCurrency)}
+            </Text>
+          </Box>
+
+          <VStack>
+            <Text size="lg">
+              for{' '}
+              <Text bold size="lg">
+                {scannedVendor.name}
+              </Text>
+            </Text>
+            {scannedVendor.address && (
+              <Text>
+                Location: <Text>{scannedVendor.address}</Text>
+              </Text>
+            )}
+          </VStack>
+
+          <Divider />
+
+          <Text>Select the account</Text>
+          <Card variant="filled" pb="$2">
+            <HStack>
+              <Box w="$1/4">
+                <Dropdown
+                  selectedTextStyle={{ fontWeight: '500' }}
+                  data={data}
+                  value={selectedAsset}
+                  labelField="label"
+                  valueField="value"
+                  onChange={(selectedItem) => setSelectedAsset(selectedItem.value)}
+                  disable={isProcesing}
+                />
+              </Box>
+              <Box w="$3/4">
+                <Text textAlign="right" py="$1">
+                  {paymentQuote && symbolFor(selectedAsset, paymentQuote)}
+                </Text>
+              </Box>
+            </HStack>
+            <HStack justifyContent="space-between">
+              <Text size="xs" color={`${hasBalance ? '$gray' : '$red'}`}>
+                Balance: {symbolFor(selectedAsset, balance)}
+              </Text>
+              {!hasBalance && (
+                <Text color="$red" size="xs">
+                  exceeds balance
+                </Text>
+              )}
+            </HStack>
+          </Card>
+
+          <Text size="xs">
+            The seller will receive the exact value he set. The quantity that will be sent is computed automatically.
+          </Text>
+          <Button size="lg" onPress={handlePressPay} isDisabled={isPayDisabled}>
+            {isProcesing && <ButtonSpinner mr="$1" />}
+            <ButtonText>{step === TransactionStep.PROCESSING ? 'Processing...' : 'Pay'} </ButtonText>
+          </Button>
+        </VStack>
+      </Box>
+    </>
   );
 };
-
-export default ConfirmPayment;

@@ -98,7 +98,7 @@ export const PinScreen = forwardRef(
     };
 
     return (
-      <Box flex={1} bg="$white">
+      <Box flex={1} bg="$white" testID="pin-screen">
         <VStack space="4xl" p="$4">
           <Heading size="xl">{tagline ?? 'Enter your PIN code'}</Heading>
           {description && <Text>{description}</Text>}

@@ -10,7 +10,6 @@ import { cryptoAssets } from '@/types/assets';
 import qrImage from '@assets/images/qr-code.png';
 
 import { AssetListActionSheet } from '@components/AssetListActionSheet';
-import { QRCodeScanner } from '@components/QRCodeScanner';
 
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
 
@@ -20,19 +19,6 @@ type Props = {
 
 export const Payments: React.FC<Props> = ({ navigation }) => {
   const [assetListOpen, setAssetListOpen] = useState(false);
-  const [isScannerOpen, setIsScannerOpen] = useState(false);
-
-  const handleScanPress = () => {
-    setIsScannerOpen(true);
-  };
-
-  const handleCancelPress = () => {
-    setIsScannerOpen(false);
-  };
-
-  if (isScannerOpen) {
-    return <QRCodeScanner onCancel={handleCancelPress} onProceedToPayment={() => navigation.push('ConfirmPayment')} />;
-  }
 
   const availableAssets = cryptoAssets();
 
@@ -43,7 +29,7 @@ export const Payments: React.FC<Props> = ({ navigation }) => {
           <Image source={qrImage} size="2xl" alt="QR Code" />
         </Center>
         <ButtonGroup flexDirection="column">
-          <Button onPress={handleScanPress}>
+          <Button onPress={() => navigation.push('PayWithQRCode')}>
             <ButtonIcon as={CameraIcon} mr="$2" />
             <ButtonText>Scan a Payment</ButtonText>
           </Button>

@@ -100,6 +100,7 @@ describe('ConfigurePIN component', () => {
   });
 });
 
+// TODO: use inputPIN from test-utils
 const fillWithPIN = (screen: any, pin: string) => {
   const inputFields = screen.getAllByLabelText('Input Field');
 

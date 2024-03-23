@@ -1,5 +1,4 @@
 import React from 'react';
-import { Linking } from 'react-native';
 
 import {
   Button,
@@ -14,15 +13,14 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Text,
   View,
 } from '@gluestack-ui/themed';
 
 type SuccessModalProps = {
   isOpen: boolean;
   title: string;
+  children?: React.ReactNode;
   onClose: () => void;
-  publicKey: string;
   testID?: string;
 };
 
@@ -30,7 +28,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
   isOpen,
   onClose,
   title,
-  publicKey,
+  children,
   testID = 'success-modal',
 }) => (
   <View testID={testID}>
@@ -43,17 +41,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
             <Heading size="lg">{title}</Heading>
           </HStack>
         </ModalHeader>
-        <ModalBody>
-          <Text>
-            You can check the status of your transaction in the{' '}
-            <Text
-              style={{ color: '#1D4ED8' }}
-              onPress={() => Linking.openURL(`https://stellar.expert/explorer/public/account/${publicKey}`)}
-            >
-              Stellar explorer
-            </Text>
-          </Text>
-        </ModalBody>
+        <ModalBody>{children}</ModalBody>
         <ModalFooter>
           <Button action="positive" onPress={onClose}>
             <ButtonText>Close</ButtonText>

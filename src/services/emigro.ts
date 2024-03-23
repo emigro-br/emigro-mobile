@@ -6,7 +6,7 @@ import { ITransaction } from '@/types/ITransaction';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IUserProfile } from '@/types/IUserProfile';
 
-import { GET_USER_BALANCE_ERROR, QUOTE_NOT_AVAILABLE_ERROR } from '@constants/errorMessages';
+import { GET_USER_BALANCE_ERROR } from '@constants/errorMessages';
 
 import { CustomError } from '../types/errors';
 import { fetchWithTokenCheck } from './utils';
@@ -63,7 +63,7 @@ export const getUserBalance = async (): Promise<IBalance[]> => {
   }
 };
 
-export const handleQuote = async (body: IQuoteRequest): Promise<number> => {
+export const handleQuote = async (body: IQuoteRequest): Promise<number | null> => {
   const url = `${backendUrl}/quote`;
 
   try {
@@ -83,9 +83,9 @@ export const handleQuote = async (body: IQuoteRequest): Promise<number> => {
     const { quote } = json;
     return Number(quote);
   } catch (error) {
-    console.error(error);
-    throw new Error(QUOTE_NOT_AVAILABLE_ERROR);
+    console.warn('[handleQuote]', error);
   }
+  return null;
 };
 
 export const sendTransaction = async (transactionRequest: ITransactionRequest): Promise<IPaymentResponse> => {

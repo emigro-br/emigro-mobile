@@ -1,8 +1,9 @@
+import { ViewStyle } from 'react-native';
 import * as IconsOutline from 'react-native-heroicons/outline';
 import * as IconsSolid from 'react-native-heroicons/solid';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigatorScreenParams } from '@react-navigation/native';
+import { NavigatorScreenParams, Route, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 import Location from '@screens/Location';
 
@@ -19,6 +20,16 @@ export type TabNavParamList = {
 
 const Tab = createBottomTabNavigator<TabNavParamList>();
 const enableLocation = false;
+
+const getTabBarStyle = (route: Partial<Route<string>>): ViewStyle => {
+  // https://stackoverflow.com/questions/51352081/react-navigation-how-to-hide-tabbar-from-inside-stack-navigation#comment121635652_64789273
+  const tabHiddenRoutes = ['PayWithQRCode', 'RequestWithQRCode'];
+  const routeName = getFocusedRouteNameFromRoute(route) ?? 'WalletTab';
+  if (tabHiddenRoutes.includes(routeName)) {
+    return { display: 'none' };
+  }
+  return { display: 'flex' };
+};
 
 export const MainApp = () => {
   return (
@@ -42,9 +53,10 @@ export const MainApp = () => {
       <Tab.Screen
         name="PaymentsTab"
         component={PaymentStack}
-        options={() => ({
+        options={({ route }) => ({
           title: 'Payments',
           tabBarIcon: ({ color, size }) => <IconsOutline.QrCodeIcon size={size} color={color} />,
+          tabBarStyle: getTabBarStyle(route),
         })}
       />
 
