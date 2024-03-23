@@ -1,6 +1,6 @@
 import { CryptoAsset, FiatCurrency } from '@/types/assets';
 
-import { iconFor, labelFor } from '../assets';
+import { iconFor, labelFor, symbolFor } from '../assets';
 
 describe('labelFor', () => {
   it('should return the label for a crypto asset', () => {
@@ -33,5 +33,27 @@ describe('iconFor', () => {
   it('should return undefined for an unknown asset', () => {
     const icon = iconFor('XYZ' as CryptoAsset);
     expect(icon).toBeUndefined();
+  });
+});
+
+describe('symbolFor', () => {
+  it('should return the symbol for a crypto asset with default value', () => {
+    const symbol = symbolFor(CryptoAsset.USDC);
+    expect(symbol).toBe('$ 0.00');
+  });
+
+  it('should return the symbol for a crypto asset with custom value', () => {
+    const symbol = symbolFor(CryptoAsset.USDC, 10);
+    expect(symbol).toBe('$ 10.00');
+  });
+
+  it('should return the symbol for a fiat currency with default value', () => {
+    const symbol = symbolFor(FiatCurrency.BRL);
+    expect(symbol).toBe('R$ 0.00');
+  });
+
+  it('should return the symbol for a fiat currency with custom value', () => {
+    const symbol = symbolFor(FiatCurrency.BRL, 20);
+    expect(symbol).toBe('R$ 20.00');
   });
 });
