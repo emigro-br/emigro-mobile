@@ -54,18 +54,15 @@ const ConfirmPayment = ({ navigation }: Props) => {
     value: asset,
   }));
 
-  // TODO: disable the not active input while fetching the rate
   const fetchQuote = async () => {
     setPaymentQuote(null);
     const data: IQuoteRequest = {
-      // FIXME: we should invert values restrictReceive
+      // FIXME: use resctrictReceive and then invert these values
       to: selectedAsset,
       from: scannedVendor.assetCode,
       amount: `${scannedVendor.amount}`,
     };
     const quote = await handleQuote(data);
-    console.debug('data', data);
-    console.debug('quote', quote);
 
     // no quotes found
     if (quote === null || isNaN(quote)) {
@@ -144,7 +141,7 @@ const ConfirmPayment = ({ navigation }: Props) => {
 
   const balance = balanceStore.get(selectedAsset);
   const hasBalance = paymentQuote ? paymentQuote < balance : true;
-  const currencyAsset = AssetToCurrency[scannedVendor.assetCode as CryptoAsset];
+  const vendorCurrency = AssetToCurrency[scannedVendor.assetCode as CryptoAsset];
 
   return (
     <>
@@ -171,7 +168,7 @@ const ConfirmPayment = ({ navigation }: Props) => {
           <Box>
             <Text bold>Requested value</Text>
             <Text size="4xl" color="$textLight800" bold>
-              {scannedVendor.amount} {labelFor(currencyAsset)}
+              {scannedVendor.amount} {labelFor(vendorCurrency)}
             </Text>
           </Box>
 
