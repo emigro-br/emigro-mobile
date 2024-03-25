@@ -46,6 +46,7 @@
     "@react-navigation/native-stack": "^6.9.12",
     "@sentry/react-native": "5.19.1",
     "amazon-cognito-identity-js": "^6.3.0",
+    "axios": "^1.6.8",
     "expo": "~50.0.13",
     "expo-application": "~5.8.3",
     "expo-barcode-scanner": "~12.9.3",
