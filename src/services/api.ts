@@ -15,21 +15,70 @@ export const api = (): AxiosInstance => {
   });
 
   // Alter defaults after instance has been created
-  // axios.defaults.headers.post['Content-Type'] = 'application/json';
   if (sessionStore.session) {
     instance.defaults.headers.common['Authorization'] = `Bearer ${sessionStore.accessToken}`;
   }
 
+  withRefreshTokenInterceptor(instance, sessionStore.refresh);
+
+  if (process.env.DEBUG === 'axios') {
+    withDebug(instance);
+  }
+
+  return instance;
+};
+
+const withDebug = (instance: AxiosInstance) => {
+  instance.interceptors.request.use((request) => {
+    console.debug('Starting Request', JSON.stringify(request, null, 2));
+    return request;
+  });
+
+  instance.interceptors.response.use((response) => {
+    console.debug('Response:', JSON.stringify(response, null, 2));
+    return response;
+  });
+};
+
+export function withRefreshTokenInterceptor(instance: AxiosInstance, refreshFn: () => Promise<string>) {
+  let isRefreshing = false;
+
   instance.interceptors.response.use(
     (response) => response,
-    (error) => {
-      // Do something with response error
-      if (error.response.data?.error) {
+    async (error) => {
+      const {
+        config,
+        response: { status },
+      } = error;
+      const originalRequest = config;
+
+      if (status === 401) {
+        if (!isRefreshing) {
+          isRefreshing = true;
+          try {
+            const newSession = await refreshFn();
+            if (newSession) {
+              instance.defaults.headers.common['Authorization'] = `Bearer ${newSession}`;
+              originalRequest.headers['Authorization'] = `Bearer ${newSession}`;
+              isRefreshing = false;
+            }
+          } catch (err) {
+            throw err;
+          } finally {
+            isRefreshing = false;
+          }
+        }
+
+        if (!originalRequest._retry) {
+          originalRequest._retry = true;
+          return instance(originalRequest);
+        }
+      }
+
+      if (error.response?.data?.error) {
         throw CustomError.fromJSON(error.response.data.error);
       }
       throw error;
     },
   );
-
-  return instance;
-};
+}
