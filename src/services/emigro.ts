@@ -6,142 +6,46 @@ import { ITransaction } from '@/types/ITransaction';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IUserProfile } from '@/types/IUserProfile';
 
-import { GET_USER_BALANCE_ERROR } from '@constants/errorMessages';
-
-import { CustomError } from '../types/errors';
-import { fetchWithTokenCheck } from './utils';
-
-const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
+import { api } from './api';
 
 export const getTransactions = async (): Promise<ITransaction[]> => {
-  const transactionsUrl = `${backendUrl}/transaction/all`;
-
-  try {
-    const response = await fetchWithTokenCheck(transactionsUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const { transactions } = await response.json();
-    return transactions;
-  } catch (error) {
-    console.error(error);
-    throw new Error();
-  }
+  const res = await api().get('/transaction/all');
+  const { transactions } = res.data;
+  return transactions;
 };
 
 export const getUserBalance = async (): Promise<IBalance[]> => {
-  const url = `${backendUrl}/user`;
-  try {
-    const res = await fetchWithTokenCheck(url, {
-      method: 'GET',
-    });
-    const json = await res.json();
-
-    if (!res.ok) {
-      if (json.error) {
-        throw new Error(json.error.message);
-      }
-      throw new Error(res.statusText);
-    }
-
-    const { balances } = json;
-    if (!balances) {
-      throw new Error('No balances found');
-    }
-    // workaround for the backend not returning the assetCode for native
-    for (const balance of balances) {
-      if (balance.assetType === 'native') {
-        balance.assetCode = 'XLM';
-      }
-    }
-    return balances;
-  } catch (error) {
-    console.error(error);
-    throw new Error(GET_USER_BALANCE_ERROR);
+  const res = await api().get('/user');
+  const { balances } = res.data;
+  if (!balances) {
+    throw new Error('No balances found');
   }
+  // workaround for the backend not returning the assetCode for native
+  for (const balance of balances) {
+    if (balance.assetType === 'native') {
+      balance.assetCode = 'XLM';
+    }
+  }
+  return balances;
 };
 
-export const handleQuote = async (body: IQuoteRequest): Promise<number | null> => {
-  const url = `${backendUrl}/quote`;
-
-  try {
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
-
-    const json = await res.json();
-    if (!res.ok) {
-      throw new Error(json.error?.message || res.statusText);
-    }
-
-    const { quote } = json;
-    return Number(quote);
-  } catch (error) {
-    console.warn('[handleQuote]', error);
-  }
-  return null;
+export const handleQuote = async (data: IQuoteRequest): Promise<number | null> => {
+  const res = await api().post('/quote', data);
+  const { quote } = res.data;
+  return Number(quote);
 };
 
-export const sendTransaction = async (transactionRequest: ITransactionRequest): Promise<IPaymentResponse> => {
-  const url = `${backendUrl}/transaction`;
-  const res = await fetchWithTokenCheck(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(transactionRequest),
-  });
-
-  const json = await res.json();
-  if (!res.ok) {
-    throw new Error(json.error?.message || res.statusText);
-  }
-
-  return json;
+export const sendTransaction = async (data: ITransactionRequest): Promise<IPaymentResponse> => {
+  const res = await api().post('/transaction', data);
+  return res.data;
 };
 
 export const getUserPublicKey = async (): Promise<string> => {
-  const url = `${backendUrl}/user`;
-
-  try {
-    const request = await fetchWithTokenCheck(url, {
-      method: 'GET',
-    });
-    const { publicKey } = await request.json();
-    return publicKey;
-  } catch (error) {
-    console.error(error);
-    throw error; // TODO: create new error message?
-  }
+  const res = await api().get('/user');
+  return res.data.publicKey;
 };
 
 export const getUserProfile = async (session: IAuthSession): Promise<IUserProfile> => {
-  const url = `${backendUrl}/user/profile`;
-  try {
-    const res = await fetchWithTokenCheck(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(session),
-    });
-    const json = await res.json();
-    if (!res.ok) {
-      if (json.error) {
-        throw CustomError.fromJSON(json.error);
-      }
-      throw new Error(res.statusText);
-    }
-
-    return json as IUserProfile;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  const res = await api().post('/user/profile', session);
+  return res.data;
 };
