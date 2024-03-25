@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 
 import { CustomError } from '@/types/errors';
 
-const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
+export const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 const defaultTimeout = 10000;
 
 export const api = (): AxiosInstance => {
