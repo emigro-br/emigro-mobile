@@ -1,7 +1,51 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, CreateAxiosDefaults } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import { withRefreshTokenInterceptor } from '../api';
+import { IAuthSession } from '@/types/IAuthSession';
+
+import { sessionStore } from '@stores/SessionStore';
+
+import { api, withRefreshTokenInterceptor } from '../api';
+
+jest.mock('@stores/SessionStore', () => ({
+  sessionStore: {
+    session: true,
+    accessToken: 'testAccessToken',
+    refresh: jest.fn().mockResolvedValue('newAccessToken'),
+  },
+}));
+
+describe('api', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should create an axios instance with the provided configuration', () => {
+    const config: CreateAxiosDefaults = {
+      baseURL: 'https://api.example.com',
+      timeout: 5000,
+    };
+
+    const result = api(config);
+
+    expect(result.defaults.baseURL).toBe('https://api.example.com');
+    expect(result.defaults.timeout).toBe(5000);
+  });
+
+  it('should not set the Authorization header if session doesnt exists', () => {
+    sessionStore.session = null;
+    const result = api();
+
+    expect(result.defaults.headers.common['Authorization']).toBeUndefined();
+  });
+
+  it('should set the Authorization header if session exists', () => {
+    sessionStore.session = { accessToken: 'testAccessToken' } as IAuthSession;
+    const result = api();
+
+    expect(result.defaults.headers.common['Authorization']).toBe('Bearer testAccessToken');
+  });
+});
 
 describe('withRefreshTokenInterceptor', () => {
   let mock: MockAdapter;
@@ -44,11 +88,25 @@ describe('withRefreshTokenInterceptor', () => {
     const response = await instance.get('/protected');
 
     // Verify that the refresh function was called
-    expect(refreshFn).toHaveBeenCalled();
+    expect(refreshFn).toHaveBeenCalledTimes(1);
 
     // Verify that the original request was retried and successful
     expect(response.status).toBe(200);
     expect(response.data).toEqual({ data: 'protectedData' });
+  });
+
+  it('should retry to refresh the token only one time', async () => {
+    const refreshFn = jest.fn().mockResolvedValue('newAccessToken');
+    withRefreshTokenInterceptor(instance, refreshFn);
+
+    // Mock to always 401 response
+    mock.onGet('/protected').reply(401);
+
+    // Make a request to the protected endpoint
+    await expect(instance.get('/protected')).rejects.toThrow('Request failed with status code 401');
+
+    // Verify that the refresh function was called only once
+    expect(refreshFn).toHaveBeenCalledTimes(1);
   });
 
   it('should throw an error if the refresh function fails', async () => {

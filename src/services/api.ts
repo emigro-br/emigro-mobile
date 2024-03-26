@@ -54,7 +54,8 @@ export function withRefreshTokenInterceptor(instance: AxiosInstance, refreshFn: 
 
       const originalRequest = config;
 
-      if (response.status === 401) {
+      const Unauthorized = 401;
+      if (response.status === Unauthorized && !originalRequest._retry) {
         if (!isRefreshing) {
           isRefreshing = true;
           try {
