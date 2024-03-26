@@ -46,13 +46,14 @@ export function withRefreshTokenInterceptor(instance: AxiosInstance, refreshFn: 
   instance.interceptors.response.use(
     (response) => response,
     async (error) => {
-      const {
-        config,
-        response: { status },
-      } = error;
+      const { config, response } = error;
+      if (!response) {
+        throw error;
+      }
+
       const originalRequest = config;
 
-      if (status === 401) {
+      if (response.status === 401) {
         if (!isRefreshing) {
           isRefreshing = true;
           try {
@@ -75,7 +76,7 @@ export function withRefreshTokenInterceptor(instance: AxiosInstance, refreshFn: 
         }
       }
 
-      if (error.response?.data?.error) {
+      if (error.response.data?.error) {
         throw CustomError.fromJSON(error.response.data.error);
       }
       throw error;
