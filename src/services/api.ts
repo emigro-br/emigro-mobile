@@ -1,17 +1,18 @@
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, CreateAxiosDefaults } from 'axios';
 
 import { CustomError } from '@/types/errors';
 
 export const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 const defaultTimeout = 10000;
 
-export const api = (): AxiosInstance => {
+export const api = (config: CreateAxiosDefaults = {}): AxiosInstance => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { sessionStore } = require('@stores/SessionStore'); // workaround to avoid circular dependency
 
   const instance = axios.create({
     baseURL: backendUrl,
     timeout: defaultTimeout,
+    ...config,
   });
 
   // Alter defaults after instance has been created

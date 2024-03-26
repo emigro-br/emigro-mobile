@@ -36,7 +36,8 @@ export const handleQuote = async (data: IQuoteRequest): Promise<number | null> =
 };
 
 export const sendTransaction = async (data: ITransactionRequest): Promise<IPaymentResponse> => {
-  const res = await api().post('/transaction', data);
+  const timeout = 30000; // some transactions may take longer
+  const res = await api({ timeout }).post('/transaction', data);
   return res.data;
 };
 
