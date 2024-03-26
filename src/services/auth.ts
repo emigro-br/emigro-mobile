@@ -4,41 +4,21 @@ import { IRegisterResponse } from '@/types/IRegisterResponse';
 import { IRegisterUser } from '@/types/IRegisterUser';
 
 import { Role } from '@constants/constants';
-import { REFRESH_SESSION_ERROR } from '@constants/errorMessages';
 
-import { CustomError } from '../types/errors';
-import { fetchWithTokenCheck } from './utils';
+import { api } from './api';
 
 type SuccessResponse = {
   success: boolean;
 };
 
-const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
-
 export const signIn = async (email: string, password: string): Promise<IAuthSession> => {
-  const signInUrl = `${backendUrl}/auth/login`;
-  const res = await fetch(signInUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      email,
-      password,
-      role: Role.CUSTOMER,
-    }),
+  const res = await api().post('/auth/login', {
+    email,
+    password,
+    role: Role.CUSTOMER,
   });
 
-  const json = await res.json();
-  if (json.error) {
-    throw CustomError.fromJSON(json.error);
-  }
-
-  if (!res.ok) {
-    throw new Error(res.statusText);
-  }
-
-  const { accessToken, refreshToken, idToken, tokenExpirationDate } = json;
+  const { accessToken, refreshToken, idToken, tokenExpirationDate } = res.data;
   const session: IAuthSession = {
     accessToken,
     refreshToken,
@@ -50,123 +30,37 @@ export const signIn = async (email: string, password: string): Promise<IAuthSess
 };
 
 export const signUp = async (registerUser: IRegisterUser): Promise<IRegisterResponse> => {
-  const registerUrl = `${backendUrl}/auth/register`;
-  const res = await fetch(registerUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(registerUser),
-  });
-
-  const json = await res.json();
-  if (json.error) {
-    throw CustomError.fromJSON(json.error);
-  }
-
-  if (!res.ok) {
-    throw new Error(res.statusText);
-  }
-  return json;
+  const res = await api().post('/auth/register', registerUser);
+  return res.data;
 };
 
 export const confirmAccount = async (confirmUser: IConfirmUser): Promise<IRegisterResponse | undefined> => {
-  const confirmUrl = `${backendUrl}/auth/confirm`;
-  const res = await fetch(confirmUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(confirmUser),
-  });
-
-  const json = await res.json();
-  if (json.error) {
-    throw CustomError.fromJSON(json.error);
-  }
-
-  if (!res.ok) {
-    throw new Error(res.statusText);
-  }
-
-  return json;
+  const res = await api().post('/auth/confirm', confirmUser);
+  return res.data;
 };
 
 export const refresh = async (authSession: IAuthSession): Promise<IAuthSession> => {
-  const url = `${backendUrl}/auth/refresh`;
-  try {
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(authSession),
-    });
-    const json = await res.json();
+  const res = await api().post('/auth/refresh', authSession);
 
-    if (!res.ok) {
-      throw new Error(json?.error?.message ?? res.statusText);
-    }
+  const { accessToken, refreshToken, idToken, tokenExpirationDate } = res.data;
+  const session: IAuthSession = {
+    accessToken,
+    refreshToken,
+    idToken,
+    tokenExpirationDate,
+    email: authSession.email,
+  };
 
-    const { accessToken, refreshToken, idToken, tokenExpirationDate } = json;
-
-    const session: IAuthSession = {
-      accessToken,
-      refreshToken,
-      idToken,
-      tokenExpirationDate,
-      email: authSession.email,
-    };
-
-    return session;
-  } catch (error) {
-    console.error(error);
-    throw new Error(REFRESH_SESSION_ERROR);
-  }
+  return session;
 };
 
 export const deleteAccount = async (): Promise<void> => {
-  const url = `${backendUrl}/auth`;
-  try {
-    const res = await fetchWithTokenCheck(url, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    const json = await res.json();
-    if (!res.ok) {
-      throw new Error(json?.error?.message ?? res.statusText);
-    }
-
-    return json;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  await api().delete('/auth');
 };
 
 export const resetPassword = async (email: string): Promise<SuccessResponse> => {
-  const url = `${backendUrl}/auth/reset-password`;
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email }),
-  });
-
-  const json = await res.json();
-  if (json.error) {
-    throw CustomError.fromJSON(json.error);
-  }
-
-  if (!res.ok) {
-    throw new Error(res.statusText);
-  }
-
-  return json;
+  const res = await api().post('/auth/reset-password', { email });
+  return res.data;
 };
 
 export const confirmResetPassword = async (
@@ -174,23 +68,6 @@ export const confirmResetPassword = async (
   code: string,
   newPassword: string,
 ): Promise<SuccessResponse> => {
-  const url = `${backendUrl}/auth/confirm-reset-password`;
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email, code, newPassword }),
-  });
-
-  const json = await res.json();
-  if (json.error) {
-    throw CustomError.fromJSON(json.error);
-  }
-
-  if (!res.ok) {
-    throw new Error(res.statusText);
-  }
-
-  return json;
+  const res = await api().post('/auth/confirm-reset-password', { email, code, newPassword });
+  return res.data;
 };

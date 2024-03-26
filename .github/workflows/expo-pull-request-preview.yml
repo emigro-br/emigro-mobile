@@ -1,7 +1,7 @@
 name: Expo Pull Request Preview
 on:
   pull_request:
-    types: [ labeled ]
+    types: [ labeled, opened, synchronize, reopened ]
     paths:
       - 'package.json'
       - 'app.json'
@@ -11,7 +11,7 @@ on:
 
 jobs:
   update:
-    if: ${{ github.event.label.name == 'preview' }}
+    if: contains(github.event.pull_request.labels.*.name, 'preview')
     name: EAS Update
     runs-on: ubuntu-latest
     permissions:
