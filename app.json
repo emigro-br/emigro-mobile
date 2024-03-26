@@ -46,8 +46,10 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
+      "url": "https://u.expo.dev/d84d8915-cdac-448c-bf38-fc1ebcbe8eac",
+      "enabled": true,
       "fallbackToCacheTimeout": 0,
-      "url": "https://u.expo.dev/d84d8915-cdac-448c-bf38-fc1ebcbe8eac"
+      "checkAutomatically": "ON_LOAD"
     },
     "assetBundlePatterns": [
       "**/*"

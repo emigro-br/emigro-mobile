@@ -52,13 +52,20 @@ type ConfirmationParams = {
 const formFields: FormField[] = [
   { name: 'firstName', label: 'First Name', placeholder: 'e.g. John', keyboardType: 'default' },
   { name: 'lastName', label: 'Last Name', placeholder: 'e.g. Doe', keyboardType: 'default' },
-  { name: 'email', label: 'Email', placeholder: 'john.doe@example.com', keyboardType: 'email-address' },
+  {
+    name: 'email',
+    label: 'Email',
+    placeholder: 'john.doe@example.com',
+    keyboardType: 'email-address',
+    autoCapitalize: 'none',
+  },
   {
     name: 'password',
     label: 'Password',
     placeholder: 'At least 6 characters',
     keyboardType: 'default',
     secureTextEntry: true,
+    returnKeyType: 'done',
   },
 ];
 
@@ -146,6 +153,8 @@ const CreateAccount = ({ navigation }: Props) => {
                     onChangeText={(text) => handleChange(field.name, text)}
                     secureTextEntry={field.secureTextEntry}
                     keyboardType={field.keyboardType}
+                    autoCapitalize={field.autoCapitalize}
+                    returnKeyType={field.returnKeyType || 'next'}
                     testID={field.name}
                   />
                 </Input>
