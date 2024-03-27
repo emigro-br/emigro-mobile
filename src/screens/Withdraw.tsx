@@ -53,9 +53,10 @@ const Withdraw: React.FC = observer(() => {
   const [transaction, setTransaction] = useState<Sep24Transaction | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset | null>(null);
-  const availableAssets = [CryptoAsset.ARS, CryptoAsset.BRL, CryptoAsset.EURC];
   // TODO: replace by useRef: https://react.dev/reference/react/useRef
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>(); // see: https://code.pieces.app/blog/resolving-react-setinterval-conflicts
+
+  const availableAssets = [CryptoAsset.USDC, CryptoAsset.EURC, CryptoAsset.BRL, CryptoAsset.ARS];
 
   useEffect(() => {
     return cleanUp;

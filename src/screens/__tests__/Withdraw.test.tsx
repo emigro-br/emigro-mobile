@@ -65,14 +65,11 @@ describe('Withdraw', () => {
     expect(getByText('Withdraw money')).toBeOnTheScreen();
     expect(getByText('Choose the currency you want to withdraw')).toBeOnTheScreen();
 
-    await waitFor(() => {
-      // only because of the useEffect
-      expect(queryByText('ARS')).toBeOnTheScreen();
-      expect(queryByText('BRL')).toBeOnTheScreen();
-      expect(queryByText('EURC')).toBeOnTheScreen();
-      expect(queryByText('USDC')).not.toBeOnTheScreen();
-      expect(queryByText('XML')).not.toBeOnTheScreen();
-    });
+    expect(getByText('ARS')).toBeOnTheScreen();
+    expect(getByText('BRL')).toBeOnTheScreen();
+    expect(getByText('EURC')).toBeOnTheScreen();
+    expect(getByText('USDC')).toBeOnTheScreen();
+    expect(queryByText('XML')).not.toBeOnTheScreen();
   });
 
   it('Should call handleOnPress when ARS button is pressed', async () => {

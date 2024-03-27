@@ -32,7 +32,7 @@ const Deposit = observer(({ navigation }: Props) => {
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const availableAssets = [CryptoAsset.ARS, CryptoAsset.BRL, CryptoAsset.EURC];
+  const availableAssets = [CryptoAsset.USDC, CryptoAsset.EURC, CryptoAsset.BRL, CryptoAsset.ARS];
 
   useEffect(() => {
     return cleanUp;

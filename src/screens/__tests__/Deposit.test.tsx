@@ -65,14 +65,13 @@ describe('Deposit screen', () => {
   });
 
   test('Should display available assets', () => {
-    const { getByText } = render(<Deposit navigation={mockNavigattion} />);
-    const asset1 = getByText('ARS');
-    const asset2 = getByText('BRL');
-    const asset3 = getByText('EURC');
+    const { getByText, queryByText } = render(<Deposit navigation={mockNavigattion} />);
 
-    expect(asset1).toBeOnTheScreen();
-    expect(asset2).toBeOnTheScreen();
-    expect(asset3).toBeOnTheScreen();
+    expect(getByText('ARS')).toBeOnTheScreen();
+    expect(getByText('BRL')).toBeOnTheScreen();
+    expect(getByText('EURC')).toBeOnTheScreen();
+    expect(getByText('USDC')).toBeOnTheScreen();
+    expect(queryByText('XML')).not.toBeOnTheScreen();
   });
 
   test('Should show loading modal when asset is chosen', async () => {
