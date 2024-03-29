@@ -2,19 +2,11 @@ import React from 'react';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import {
-  AddIcon,
-  ArrowRightIcon,
-  ArrowUpIcon,
-  Button,
-  ButtonGroup,
-  ButtonIcon,
-  RepeatIcon,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
+import { AddIcon, ArrowRightIcon, ArrowUpIcon, ButtonGroup, RepeatIcon } from '@gluestack-ui/themed';
 
 import { WalletStackParamList } from '@navigation/WalletStack';
+
+import { CircularButton } from './CircularButton';
 
 type Props = {
   navigation: NativeStackNavigationProp<WalletStackParamList>;
@@ -23,36 +15,11 @@ type Props = {
 const OperationButtons = ({ navigation }: Props) => {
   return (
     <ButtonGroup justifyContent="space-around" py="$2">
-      <ButtonItem title="Deposit" icon={AddIcon} onPress={() => navigation.push('Deposit')} />
-      <ButtonItem title="Withdraw" icon={ArrowUpIcon} onPress={() => navigation.push('Withdraw')} />
-      <ButtonItem title="Send" icon={ArrowRightIcon} onPress={() => navigation.push('TransfersRoot')} />
-      <ButtonItem title="Swap" icon={RepeatIcon} onPress={() => navigation.push('SwapRoot')} />
+      <CircularButton label="Deposit" bg="$white" icon={AddIcon} onPress={() => navigation.push('Deposit')} />
+      <CircularButton label="Withdraw" bg="$white" icon={ArrowUpIcon} onPress={() => navigation.push('Withdraw')} />
+      <CircularButton label="Send" bg="$white" icon={ArrowRightIcon} onPress={() => navigation.push('TransfersRoot')} />
+      <CircularButton label="Swap" bg="$white" icon={RepeatIcon} onPress={() => navigation.push('SwapRoot')} />
     </ButtonGroup>
-  );
-};
-
-type ButtonItemProps = {
-  title: string;
-  icon: any;
-  onPress: () => void;
-};
-
-const ButtonItem = ({ title, icon, onPress }: ButtonItemProps) => {
-  return (
-    <VStack alignItems="center">
-      <Button
-        bg="$primary400"
-        borderRadius="$full"
-        size="lg"
-        marginBottom="$1"
-        height="$12"
-        width="$12"
-        onPress={onPress}
-      >
-        <ButtonIcon as={icon} size="xl" />
-      </Button>
-      <Text color="$white">{title}</Text>
-    </VStack>
   );
 };
 
