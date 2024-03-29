@@ -66,6 +66,7 @@
     "lucide-react-native": "^0.363.0",
     "mobx": "^6.12.0",
     "mobx-react-lite": "^4.0.5",
+    "pix-utils": "^2.5.0",
     "promise": "^8.3.0",
     "react": "18.2.0",
     "react-native": "0.73.5",

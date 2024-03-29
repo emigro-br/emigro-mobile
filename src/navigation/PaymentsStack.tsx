@@ -3,10 +3,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Header from '@components/Header';
 
 import { ConfirmPayment } from '@screens/payments/ConfirmPayment';
+import { PayWithBRCode } from '@screens/payments/PayWithBRCode';
 import { PayWithQRCode } from '@screens/payments/PayWithQRCode';
 import { Payments } from '@screens/payments/Payments';
 import { RequestPayment } from '@screens/payments/RequestPayment';
 import { RequestWithQRCode } from '@screens/payments/RequestWithQRCode';
+import { ReviewPixPayment } from '@screens/payments/ReviewPixPayment';
 
 import screenOptions from './screenOptions';
 
@@ -20,6 +22,10 @@ export type PaymentStackParamList = {
   RequestWithQRCode: {
     asset: string;
     value: number;
+  };
+  PayWithBRCode: undefined;
+  ReviewPixPayment: {
+    brCode: string;
   };
 };
 
@@ -49,6 +55,8 @@ export function PaymentStack() {
           gestureEnabled: false, // disable swap back gesture
         }}
       />
+      <Stack.Screen name="PayWithBRCode" component={PayWithBRCode} options={{ title: 'Pay with Pix' }} />
+      <Stack.Screen name="ReviewPixPayment" component={ReviewPixPayment} options={{ title: 'Review Pix Payment' }} />
     </Stack.Navigator>
   );
 }
