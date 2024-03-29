@@ -1,4 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { fireEvent, screen } from '@testing-library/react-native';
+
+import { render } from 'test-utils';
 
 import { CryptoAsset } from '@/types/assets';
 
@@ -15,26 +17,26 @@ describe('Payments component', () => {
   });
 
   it('Should render correctly', () => {
-    const scanButton = screen.getByText('Scan a Payment');
-    const requestButton = screen.getByText('Request with a QR Code');
+    const scanButton = screen.getByText('Scan to Pay');
+    const requestButton = screen.getByText('Request Payment');
     expect(scanButton).toBeOnTheScreen();
     expect(requestButton).toBeOnTheScreen();
   });
 
   it('Should open the scanner when Scan a Payment button is pressed', () => {
-    const scanButton = screen.getByText('Scan a Payment');
+    const scanButton = screen.getByText('Scan to Pay');
     fireEvent.press(scanButton);
     expect(navigation.push).toHaveBeenCalledWith('PayWithQRCode');
   });
 
   it('Should open the asset list action sheet when Request with a QR Code button is pressed', () => {
-    const requestButton = screen.getByText('Request with a QR Code');
+    const requestButton = screen.getByText('Request Payment');
     fireEvent.press(requestButton);
     expect(screen.getByTestId('asset-list-action-sheet')).toBeOnTheScreen();
   });
 
   it.skip('Should close the asset list action sheet when an asset is selected', () => {
-    const requestButton = screen.getByText('Request with a QR Code');
+    const requestButton = screen.getByText('Request Payment');
     fireEvent.press(requestButton);
     const assetItem = screen.getByText(CryptoAsset.BRL);
     fireEvent.press(assetItem);
@@ -42,7 +44,7 @@ describe('Payments component', () => {
   });
 
   it.skip('Should navigate to RequestPayment screen when an asset is selected', () => {
-    const requestButton = screen.getByText('Request with a QR Code');
+    const requestButton = screen.getByText('Request Payment');
     fireEvent.press(requestButton);
     const assetItem = screen.getByText(CryptoAsset.BRL);
     fireEvent.press(assetItem);

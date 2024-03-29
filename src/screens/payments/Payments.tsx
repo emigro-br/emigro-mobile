@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { CameraIcon, QrCodeIcon } from 'react-native-heroicons/solid';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { Box, Button, ButtonGroup, ButtonIcon, ButtonText, Center, Image, VStack } from '@gluestack-ui/themed';
+import { Box, ButtonGroup, Heading, VStack } from '@gluestack-ui/themed';
+import { HandCoinsIcon, QrCodeIcon } from 'lucide-react-native';
 
 import { cryptoAssets } from '@/types/assets';
 
-import qrImage from '@assets/images/qr-code.png';
-
 import { AssetListActionSheet } from '@components/AssetListActionSheet';
+import { CircularButton } from '@components/CircularButton';
 
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
 
@@ -25,18 +24,20 @@ export const Payments: React.FC<Props> = ({ navigation }) => {
   return (
     <Box flex={1} bg="$white">
       <VStack p="$4" space="lg">
-        <Center my="$8">
-          <Image source={qrImage} size="2xl" alt="QR Code" />
-        </Center>
-        <ButtonGroup flexDirection="column">
-          <Button onPress={() => navigation.push('PayWithQRCode')}>
-            <ButtonIcon as={CameraIcon} mr="$2" />
-            <ButtonText>Scan a Payment</ButtonText>
-          </Button>
-          <Button onPress={() => setAssetListOpen(true)}>
-            <ButtonIcon as={QrCodeIcon} mr="$2" />
-            <ButtonText>Request with a QR Code</ButtonText>
-          </Button>
+        <Heading>Pick Your Payment Method</Heading>
+        <ButtonGroup space="md" mt="$8" justifyContent="space-around">
+          <CircularButton
+            icon={QrCodeIcon}
+            label="Scan to Pay"
+            size="lg"
+            onPress={() => navigation.push('PayWithQRCode')}
+          />
+          <CircularButton
+            icon={HandCoinsIcon}
+            label="Request Payment"
+            size="lg"
+            onPress={() => setAssetListOpen(true)}
+          />
         </ButtonGroup>
       </VStack>
 

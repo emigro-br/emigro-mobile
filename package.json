@@ -21,7 +21,11 @@
       "__mocks__",
       "/__utils__/"
     ],
-    "coveragePathIgnorePatterns": ["/node_modules/", "<rootDir>/config/", "<rootDir>/build/"],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/config/",
+      "<rootDir>/build/"
+    ],
     "transformIgnorePatterns": [
       "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|@sentry/.*|sentry-expo|native-base|react-native-svg|@gluestack-ui|@legendapp)"
     ],
@@ -59,6 +63,7 @@
     "expo-splash-screen": "~0.26.4",
     "expo-status-bar": "~1.11.1",
     "expo-updates": "~0.24.12",
+    "lucide-react-native": "^0.363.0",
     "mobx": "^6.12.0",
     "mobx-react-lite": "^4.0.5",
     "promise": "^8.3.0",
