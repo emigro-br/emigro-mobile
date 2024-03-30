@@ -1,7 +1,6 @@
 import { IAuthSession } from '@/types/IAuthSession';
 import { IBalance } from '@/types/IBalance';
 import { IPaymentResponse } from '@/types/IPaymentResponse';
-import { IQuoteRequest } from '@/types/IQuoteRequest';
 import { ITransaction } from '@/types/ITransaction';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IUserProfile } from '@/types/IUserProfile';
@@ -27,12 +26,6 @@ export const getUserBalance = async (): Promise<IBalance[]> => {
     }
   }
   return balances;
-};
-
-export const handleQuote = async (data: IQuoteRequest): Promise<number | null> => {
-  const res = await api().post('/quote', data);
-  const { quote } = res.data;
-  return Number(quote);
 };
 
 export const sendTransaction = async (data: ITransactionRequest): Promise<IPaymentResponse> => {

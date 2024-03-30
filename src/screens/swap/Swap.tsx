@@ -4,12 +4,11 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonIcon, ButtonText, Center, Heading, RepeatIcon, Text, VStack } from '@gluestack-ui/themed';
 
-import { IQuoteRequest } from '@/types/IQuoteRequest';
 import { CryptoAsset } from '@/types/assets';
 
 import { WalletStackParamList } from '@navigation/WalletStack';
 
-import { handleQuote } from '@services/emigro';
+import { IQuoteRequest, handleQuote } from '@services/quotes';
 
 import { balanceStore } from '@stores/BalanceStore';
 import { SwapTransaction, paymentStore as bloc } from '@stores/PaymentStore';
@@ -34,18 +33,18 @@ export const Swap = ({ navigation }: SwapProps) => {
   const fetchRate = async () => {
     setFetchingRate(true);
     setRate(null);
-    const amount = sellValue > 0 ? sellValue : 1;
-    // FIXME: we should invert sell and buy values for restrictSend and restrictReceive
+    const sourceAmount = sellValue > 0 ? sellValue : 1;
     const data: IQuoteRequest = {
       from: sellAsset,
       to: buyAsset,
-      amount: `${amount.toFixed(2)}`,
+      amount: `${sourceAmount.toFixed(2)}`,
     };
     const quote = await handleQuote(data);
-    if (!quote || isNaN(quote)) {
+    if (!quote) {
       return;
     }
-    const rate = amount / quote;
+    const destinationAmount = parseFloat(quote.destination_amount);
+    const rate = sourceAmount / destinationAmount;
     setRate(rate);
     return rate;
   };

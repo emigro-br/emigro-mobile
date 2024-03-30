@@ -2,19 +2,11 @@ import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
 import { IAuthSession } from '@/types/IAuthSession';
-import { IQuoteRequest } from '@/types/IQuoteRequest';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 
 import { api } from '@services/api';
 
-import {
-  getTransactions,
-  getUserBalance,
-  getUserProfile,
-  getUserPublicKey,
-  handleQuote,
-  sendTransaction,
-} from '../emigro';
+import { getTransactions, getUserBalance, getUserProfile, getUserPublicKey, sendTransaction } from '../emigro';
 
 jest.mock('../api', () => ({
   api: jest.fn(),
@@ -69,20 +61,6 @@ describe('emigro service', () => {
     it('should throw an error if no balances are found', async () => {
       mock.onGet('/user').reply(200, {});
       await expect(getUserBalance()).rejects.toThrow('No balances found');
-    });
-  });
-
-  describe('handleQuote', () => {
-    const mockRequest: IQuoteRequest = { from: 'me', to: 'you', amount: '100' };
-    const mockResponse = { quote: '50' };
-
-    it('should make a POST request to handle quote and return the quote value as a number', async () => {
-      const mockAxiosPost = jest.spyOn(instance, 'post');
-      mock.onPost('/quote').reply(200, mockResponse);
-      const result = await handleQuote(mockRequest);
-
-      expect(mockAxiosPost).toHaveBeenCalledWith('/quote', mockRequest);
-      expect(result).toEqual(50);
     });
   });
 
