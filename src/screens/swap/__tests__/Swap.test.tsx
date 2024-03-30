@@ -45,7 +45,7 @@ describe('Swap component', () => {
 
     await waitFor(() => {
       // check rate
-      const buyText = getByText(`1 ${fromAsset} ≈ 1.082900 ${toAsset}`);
+      const buyText = getByText(`1 ${toAsset} ≈ 0.923446 ${fromAsset}`);
       expect(buyText).toBeDefined();
       expect(emigroService.handleQuote).toHaveBeenCalledTimes(1);
       expect(emigroService.handleQuote).toHaveBeenCalledWith({
@@ -111,7 +111,7 @@ describe('Swap component', () => {
       fromValue: 10,
       to: toAsset,
       toValue: 10.829,
-      rate: 1.0829, // normalized rate
+      rate: 10 / 10.829, // normalized rate
       fees: 0,
     };
 

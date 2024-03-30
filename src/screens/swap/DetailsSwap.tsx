@@ -24,8 +24,7 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const { from, to, rate, fees } = bloc.transaction!;
-  const toValue = from.value * rate;
-  const estimated = toValue - fees;
+  const estimated = to.value - fees;
 
   const handleConfirmTransaction = async () => {
     setIsLoading(true);
@@ -79,8 +78,8 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
           <Card size="md" variant="elevated" bg="$white">
             <VStack space="md">
               <Row label="Amount" value={`${from.value.toFixed(2)} ${from.asset}`} />
-              <Row label="Rate" value={`1 ${from.asset} ≈ ${rate.toFixed(6)} ${to.asset}`} />
-              <Row label="Exchanged" value={`${toValue.toFixed(2)} ${to.asset}`} />
+              <Row label="Exchanged" value={`${to.value.toFixed(2)} ${to.asset}`} />
+              <Row label="Rate" value={`1 ${to.asset} ≈ ${rate.toFixed(6)} ${from.asset}`} />
               <Row label="Fees" value={fees} />
               <Row label="Final receive" value={`${estimated.toFixed(2)} ${to.asset}`} />
             </VStack>

@@ -64,7 +64,7 @@ describe('DetailsSwap', () => {
 
     // rate
     expect(getByText('Rate')).toBeOnTheScreen();
-    expect(getByText('1 EURC ≈ 1.200000 BRL')).toBeOnTheScreen();
+    expect(getByText('1 BRL ≈ 1.200000 EURC')).toBeOnTheScreen();
 
     // to: rate is 1.2, so 100 EURC = 120 BRL
     expect(getByText('Exchanged')).toBeOnTheScreen();

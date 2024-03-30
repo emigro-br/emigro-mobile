@@ -33,6 +33,7 @@ export const Swap = ({ navigation }: SwapProps) => {
   // TODO: disable the not active input while fetching the rate
   const fetchRate = async () => {
     setFetchingRate(true);
+    setRate(null);
     const amount = sellValue > 0 ? sellValue : 1;
     // FIXME: we should invert sell and buy values for restrictSend and restrictReceive
     const data: IQuoteRequest = {
@@ -42,28 +43,21 @@ export const Swap = ({ navigation }: SwapProps) => {
     };
     const quote = await handleQuote(data);
     if (!quote || isNaN(quote)) {
-      setRate(null);
       return;
     }
-    const rate = quote / amount;
+    const rate = amount / quote;
     setRate(rate);
     return rate;
   };
 
   useEffect(() => {
     fetchRate()
-      .catch(() => setRate(null))
+      .catch(() => {
+        setRate(null);
+        setBuyValue(0);
+      })
       .finally(() => setFetchingRate(false));
-  }, [sellAsset, buyAsset, sellValue]); // will update the rate when the assets change
-
-  const onChangeValue = (value: number, type: SwapType) => {
-    if (!rate) return;
-    if (type === SwapType.SELL) {
-      setSellValue(value);
-    } else {
-      setBuyValue(value);
-    }
-  };
+  }, [sellValue, sellAsset, buyAsset]); // will update the rate when the assets change
 
   const onChangeAsset = (asset: CryptoAsset, type: SwapType) => {
     if (type === SwapType.SELL) {
@@ -82,8 +76,8 @@ export const Swap = ({ navigation }: SwapProps) => {
   useEffect(() => {
     if (!rate) return;
 
-    const calculateNewSellValue = (buyValue: number) => buyValue / rate;
-    const calculateNewBuyValue = (sellValue: number) => sellValue * rate;
+    const calculateNewSellValue = (buyValue: number) => buyValue * rate;
+    const calculateNewBuyValue = (sellValue: number) => sellValue / rate;
 
     switch (active) {
       case SwapType.SELL: {
@@ -101,7 +95,7 @@ export const Swap = ({ navigation }: SwapProps) => {
       default:
         break;
     }
-  }, [sellValue, buyValue, rate]);
+  }, [sellValue, rate]);
 
   const handleSwap = () => {
     // swap assets
@@ -148,8 +142,8 @@ export const Swap = ({ navigation }: SwapProps) => {
           balance={balanceStore.get(sellAsset)}
           sellOrBuy={SwapType.SELL}
           value={sellValue}
-          onChangeAsset={onChangeAsset}
-          onChangeValue={onChangeValue}
+          onChangeAsset={(asset) => onChangeAsset(asset, SwapType.SELL)}
+          onChangeValue={(value) => setSellValue(value)}
           isActive={active === SwapType.SELL}
           onPress={() => setActive(SwapType.SELL)}
         />
@@ -163,8 +157,8 @@ export const Swap = ({ navigation }: SwapProps) => {
           balance={balanceStore.get(buyAsset)}
           sellOrBuy={SwapType.BUY}
           value={buyValue}
-          onChangeAsset={onChangeAsset}
-          onChangeValue={onChangeValue}
+          onChangeAsset={(asset) => onChangeAsset(asset, SwapType.BUY)}
+          onChangeValue={(value) => setBuyValue(value)}
           isActive={active === SwapType.BUY}
           onPress={() => setActive(SwapType.BUY)}
         />
@@ -181,7 +175,7 @@ export const Swap = ({ navigation }: SwapProps) => {
           )}
           {!fetchingRate && rate && (
             <Text size="xs" color="$black">
-              1 {sellAsset} ≈ {rate?.toFixed(6)} {buyAsset}
+              1 {buyAsset} ≈ {rate.toFixed(6)} {sellAsset}
             </Text>
           )}
         </Box>
