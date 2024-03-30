@@ -2,6 +2,7 @@ export class CustomError extends Error {
   constructor(message: string, cause?: Error) {
     super(message);
     this.name = this.constructor.name;
+    this.cause = cause;
     this.stack = cause?.stack;
   }
 
@@ -9,6 +10,7 @@ export class CustomError extends Error {
     const ErrorClass = errorClasses[json.name] || CustomError;
     const error = new ErrorClass(json.message);
     error.name = json.name;
+    error.cause = json.cause;
     error.stack = json.stack;
     return error;
   }

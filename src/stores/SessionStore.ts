@@ -131,7 +131,7 @@ export class SessionStore {
       return null;
     }
     if (!session.refreshToken || !session.idToken || !session.tokenExpirationDate) {
-      throw new Error('Invalid session');
+      throw new InvalidSessionError();
     }
 
     this.setSession(session as IAuthSession);
@@ -174,7 +174,10 @@ export class SessionStore {
 
   async refresh() {
     if (!this.session) {
-      throw new InvalidSessionError();
+      await this.load(); // workaround for InvalidSession when refreshing
+      if (!this.session) {
+        throw new InvalidSessionError();
+      }
     }
 
     const newSession = await refreshSession(this.session);
