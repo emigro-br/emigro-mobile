@@ -8,6 +8,8 @@ import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { IVendor } from '@/types/IVendor';
 import { CryptoAsset } from '@/types/assets';
 
+import * as quotesService from '@services/quotes';
+
 import { paymentStore } from '@stores/PaymentStore';
 
 import { ConfirmPayment } from '../ConfirmPayment';
@@ -23,10 +25,6 @@ jest.mock('@stores/BalanceStore', () => ({
   balanceStore: {
     get: jest.fn().mockReturnValue(100),
   },
-}));
-
-jest.mock('@services/emigro', () => ({
-  handleQuote: jest.fn().mockResolvedValue(10),
 }));
 
 describe('ConfirmPayment component', () => {
@@ -53,6 +51,9 @@ describe('ConfirmPayment component', () => {
   });
 
   it('renders the component correctly', async () => {
+    jest
+      .spyOn(quotesService, 'handleQuote')
+      .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const { getByText } = render(<ConfirmPayment {...mockProps} />);
 
     expect(getByText('Review the details of this payment')).toBeOnTheScreen();
@@ -71,6 +72,9 @@ describe('ConfirmPayment component', () => {
   });
 
   it('calls the handlePressPay function when the "Pay" button is pressed', async () => {
+    jest
+      .spyOn(quotesService, 'handleQuote')
+      .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const setTransactionMock = jest.spyOn(paymentStore, 'setTransaction');
     const { getByText, getByTestId } = render(<ConfirmPayment {...mockProps} />);
 
@@ -89,6 +93,9 @@ describe('ConfirmPayment component', () => {
   });
 
   it('calls the handleConfirmPayment function when the PIN is successfully verified', async () => {
+    jest
+      .spyOn(quotesService, 'handleQuote')
+      .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const payMock = jest
       .spyOn(paymentStore, 'pay')
       .mockResolvedValue({ transactionHash: 'mockHash' } as IPaymentResponse);
@@ -116,6 +123,9 @@ describe('ConfirmPayment component', () => {
   });
 
   it('displays an error message when the payment fails', async () => {
+    jest
+      .spyOn(quotesService, 'handleQuote')
+      .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const payMock = jest.spyOn(paymentStore, 'pay').mockRejectedValue(new Error('Payment failed'));
     const { getByText, getByTestId } = render(<ConfirmPayment {...mockProps} />);
 

@@ -17,7 +17,6 @@ import {
 } from '@gluestack-ui/themed';
 import * as Sentry from '@sentry/react-native';
 
-import { IQuoteRequest } from '@/types/IQuoteRequest';
 import { CryptoAsset, cryptoAssets } from '@/types/assets';
 
 import { ErrorModal } from '@components/modals/ErrorModal';
@@ -30,7 +29,7 @@ import { WalletStackParamList } from '@navigation/WalletStack';
 
 import { PinScreen } from '@screens/PinScreen';
 
-import { handleQuote } from '@services/emigro';
+import { IQuoteRequest, handleQuote } from '@services/quotes';
 
 import { balanceStore } from '@stores/BalanceStore';
 import { paymentStore as bloc, paymentStore } from '@stores/PaymentStore';
@@ -67,19 +66,19 @@ export const ConfirmPayment = ({ navigation }: Props) => {
   const fetchQuote = async () => {
     setPaymentQuote(null);
     const data: IQuoteRequest = {
-      // FIXME: use resctrictReceive and then invert these values
-      to: selectedAsset,
-      from: scannedVendor.assetCode,
+      from: selectedAsset,
+      to: scannedVendor.assetCode,
       amount: `${scannedVendor.amount}`,
+      type: 'strict_receive',
     };
     const quote = await handleQuote(data);
 
     // no quotes found
-    if (quote === null || isNaN(quote)) {
+    if (quote === null) {
       return;
     }
 
-    setPaymentQuote(quote);
+    setPaymentQuote(quote.source_amount);
   };
 
   useEffect(() => {

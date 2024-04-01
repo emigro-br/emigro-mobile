@@ -38,12 +38,13 @@ export const Swap = ({ navigation }: SwapProps) => {
       from: sellAsset,
       to: buyAsset,
       amount: `${sourceAmount.toFixed(2)}`,
+      type: 'strict_send',
     };
     const quote = await handleQuote(data);
     if (!quote) {
       return;
     }
-    const destinationAmount = parseFloat(quote.destination_amount);
+    const destinationAmount = quote.destination_amount;
     const rate = sourceAmount / destinationAmount;
     setRate(rate);
     return rate;

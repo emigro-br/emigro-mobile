@@ -34,7 +34,7 @@ describe('Swap component', () => {
   test('Should render Swap component correctly', async () => {
     jest
       .spyOn(quotesService, 'handleQuote')
-      .mockResolvedValueOnce({ destination_amount: '1.0829' } as quotesService.IQuoteResponse);
+      .mockResolvedValueOnce({ destination_amount: 1.0829 } as quotesService.IQuoteResponse);
     const { getByText, getByTestId } = render(<Swap navigation={mockNavigation} />);
 
     // check title
@@ -54,6 +54,7 @@ describe('Swap component', () => {
         from: fromAsset,
         to: toAsset,
         amount: '1.00',
+        type: 'strict_send',
       });
     });
   });
@@ -61,10 +62,10 @@ describe('Swap component', () => {
   test('Should update sellValue and buyValue when onChangeValue is called', async () => {
     jest
       .spyOn(quotesService, 'handleQuote')
-      .mockResolvedValueOnce({ destination_amount: '1.0829' } as quotesService.IQuoteResponse);
+      .mockResolvedValueOnce({ destination_amount: 1.0829 } as quotesService.IQuoteResponse);
     jest
       .spyOn(quotesService, 'handleQuote')
-      .mockResolvedValueOnce({ destination_amount: '10.829' } as quotesService.IQuoteResponse);
+      .mockResolvedValueOnce({ destination_amount: 10.829 } as quotesService.IQuoteResponse);
     const { findAllByPlaceholderText } = render(<Swap navigation={mockNavigation} />);
 
     const [sellInput, buyInput] = await findAllByPlaceholderText('0');
@@ -85,21 +86,23 @@ describe('Swap component', () => {
       from: fromAsset,
       to: toAsset,
       amount: '1.00',
+      type: 'strict_send',
     });
     expect(quotesService.handleQuote).toHaveBeenCalledWith({
       from: fromAsset,
       to: toAsset,
       amount: '10.00',
+      type: 'strict_send',
     });
   });
 
   test('Should update bloc and navigate to DetailsSwap when button is pressed', async () => {
     jest
       .spyOn(quotesService, 'handleQuote')
-      .mockResolvedValueOnce({ destination_amount: '1.0829' } as quotesService.IQuoteResponse);
+      .mockResolvedValueOnce({ destination_amount: 1.0829 } as quotesService.IQuoteResponse);
     jest
       .spyOn(quotesService, 'handleQuote')
-      .mockResolvedValueOnce({ destination_amount: '10.829' } as quotesService.IQuoteResponse);
+      .mockResolvedValueOnce({ destination_amount: 10.829 } as quotesService.IQuoteResponse);
 
     const spy = jest.spyOn(paymentStore, 'setSwap');
     jest.spyOn(balanceStore, 'get').mockReturnValue(100); // enough balance
