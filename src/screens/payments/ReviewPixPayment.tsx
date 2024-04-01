@@ -1,4 +1,4 @@
-import { Box, Button, ButtonText, Heading, Text, VStack } from '@gluestack-ui/themed';
+import { Box, Button, ButtonText, Card, Center, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
 import { PixElementType, hasError, parsePix } from 'pix-utils';
 
 type Props = {
@@ -17,15 +17,12 @@ export const ReviewPixPayment = ({ route }: Props) => {
     return <Text>Error:</Text>;
   }
 
+  // FIXME: load CPF/Institution from API using the pix key
+
   return (
-    <Box flex={1}>
+    <Box flex={1} bg="$white">
       <VStack p="$4" space="lg">
         <Heading>Review your Pix payment</Heading>
-        <Box>
-          <Text>Recipient</Text>
-          <Text />
-        </Box>
-        <PixMandatoryElements pix={pix} />
         {pix.type === PixElementType.STATIC && <StaticPix pix={pix} />}
         <Button>
           <ButtonText>Confirm Payment</ButtonText>
@@ -35,25 +32,53 @@ export const ReviewPixPayment = ({ route }: Props) => {
   );
 };
 
-const PixMandatoryElements = ({ pix }) => (
-  <Box>
-    <Text>Category Code: {pix.merchantCategoryCode}</Text>
-    <Text>Currency: {pix.transactionCurrency}</Text>
-    <Text>Country Code: {pix.countryCode}</Text>
-    <Text>Merchant Name: {pix.merchantName}</Text>
-    <Text>Merchant City: {pix.merchantCity}</Text>
-  </Box>
-);
+// const PixMandatoryElements = ({ pix }) => (
+//   <Box>
+//     <Text bold>Mandatory</Text>
+//     <Text>Category Code: {pix.merchantCategoryCode}</Text>
+//     <Text>Currency: {pix.transactionCurrency}</Text>
+//     <Text>Country Code: {pix.countryCode}</Text>
+//     <Text>Merchant Name: {pix.merchantName}</Text>
+//     <Text>Merchant City: {pix.merchantCity}</Text>
+//   </Box>
+// );
 
 const StaticPix = ({ pix }) => (
-  <Box>
+  <VStack space="3xl">
     <Box>
-      <Text>Value</Text>
-      <Text>{pix.transactionAmount}</Text>
+      <Text size="4xl" bold>
+        R$ {Number(pix.transactionAmount).toFixed(2)}
+      </Text>
+      <Text>
+        for <Text bold>{pix.merchantName}</Text>
+      </Text>
+      <Text>in {pix.merchantCity}</Text>
     </Box>
-    <Text>Pix Key: {pix.pixKey}</Text>
-    <Text>Tax ID: {pix.txid}</Text>
-    <Text>Adicional Info: {pix.infoAdicional}</Text>
-    <Text>FSS: {pix.fss}</Text>
-  </Box>
+    {pix.infoAdicional && (
+      <Center>
+        <Card variant="filled" bg="$backgroundLight100">
+          <Text textAlign="center">{pix.infoAdicional}</Text>
+        </Card>
+      </Center>
+    )}
+    <VStack space="md">
+      <HStack justifyContent="space-between">
+        <Text bold>CPF/CNPJ:</Text>
+        <Text>????</Text>
+      </HStack>
+      <HStack justifyContent="space-between">
+        <Text bold>Institution:</Text>
+        <Text>????</Text>
+      </HStack>
+      <HStack justifyContent="space-between">
+        <Text bold>Pix Key:</Text>
+        <Text>{pix.pixKey}</Text>
+      </HStack>
+      <HStack justifyContent="space-between">
+        <Text bold>Indetifier:</Text>
+        <Text>{pix.txid}</Text>
+      </HStack>
+    </VStack>
+    {/* <Text>FSS: {pix.fss}</Text> */}
+  </VStack>
 );

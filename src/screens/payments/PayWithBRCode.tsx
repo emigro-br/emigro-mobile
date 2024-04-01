@@ -31,7 +31,7 @@ export const PayWithBRCode = ({ navigation }: Props) => {
   //   <InputIcon as={ClipboardDocumentIcon} />
   // </InputSlot>
   return (
-    <Box flex={1}>
+    <Box flex={1} bg="$white">
       <VStack p="$4" space="lg">
         <Heading>Insert your Pix Copia & Cola code</Heading>
         <Textarea>
