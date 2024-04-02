@@ -50,11 +50,14 @@ type Props = {
 };
 
 export const ConfirmPayment = ({ navigation }: Props) => {
-  const scannedVendor = paymentStore.scannedPayment!; //FIXME:
+  const { scannedPayment } = paymentStore;
+  if (!scannedPayment) {
+    throw new Error('No transaction amount found in the scanned vendor');
+  }
   const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
   const [showPinScreen, setShowPinScreen] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(scannedVendor.assetCode);
-  const [paymentQuote, setPaymentQuote] = useState<number | null>(scannedVendor.amount);
+  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(scannedPayment.assetCode);
+  const [paymentQuote, setPaymentQuote] = useState<number | null>(scannedPayment.transactionAmount);
   const [transactionError, setTransactionError] = useState<Error | unknown>(null);
 
   const availableAssets = cryptoAssets();
@@ -67,8 +70,8 @@ export const ConfirmPayment = ({ navigation }: Props) => {
     setPaymentQuote(null);
     const data: IQuoteRequest = {
       from: selectedAsset,
-      to: scannedVendor.assetCode,
-      amount: `${scannedVendor.amount}`,
+      to: scannedPayment.assetCode,
+      amount: `${scannedPayment.transactionAmount}`,
       type: 'strict_receive',
     };
     const quote = await handleQuote(data);
@@ -98,11 +101,11 @@ export const ConfirmPayment = ({ navigation }: Props) => {
         value: paymentQuote,
       },
       to: {
-        wallet: scannedVendor.publicKey,
-        asset: scannedVendor.assetCode,
-        value: scannedVendor.amount,
+        wallet: scannedPayment.pixKey,
+        asset: scannedPayment.assetCode,
+        value: scannedPayment.transactionAmount,
       },
-      rate: paymentQuote / scannedVendor.amount,
+      rate: paymentQuote / scannedPayment.transactionAmount,
       fees: 0,
     };
 
@@ -150,7 +153,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
 
   const balance = balanceStore.get(selectedAsset);
   const hasBalance = paymentQuote ? paymentQuote < balance : true;
-  const vendorCurrency = AssetToCurrency[scannedVendor.assetCode as CryptoAsset];
+  const vendorCurrency = AssetToCurrency[scannedPayment.assetCode as CryptoAsset];
 
   const isProcesing = step === TransactionStep.PROCESSING;
   const isPayDisabled = !paymentQuote || !hasBalance || step !== TransactionStep.NONE; // processing, success, error
@@ -179,7 +182,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
           <Box>
             <Text bold>Requested value</Text>
             <Text size="4xl" color="$textLight800" bold>
-              {scannedVendor.amount} {labelFor(vendorCurrency)}
+              {scannedPayment.transactionAmount} {labelFor(vendorCurrency)}
             </Text>
           </Box>
 
@@ -187,12 +190,12 @@ export const ConfirmPayment = ({ navigation }: Props) => {
             <Text size="lg">
               for{' '}
               <Text bold size="lg">
-                {scannedVendor.name}
+                {scannedPayment.merchantName}
               </Text>
             </Text>
-            {scannedVendor.address && (
+            {scannedPayment.merchantCity && (
               <Text>
-                Location: <Text>{scannedVendor.address}</Text>
+                Location: <Text>{scannedPayment.merchantCity}</Text>
               </Text>
             )}
           </VStack>

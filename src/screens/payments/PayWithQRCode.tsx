@@ -9,8 +9,11 @@ import { Box, Center, Pressable, Text, View } from '@gluestack-ui/themed';
 import { BarCodeScanner, PermissionResponse } from 'expo-barcode-scanner';
 import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
 import { CameraView, PermissionStatus, useCameraPermissions } from 'expo-camera/next';
+import { PixElementType, hasError, parsePix } from 'pix-utils';
 
-import { IVendor } from '@/types/IVendor';
+import { vendorToPayment } from '@/types/IVendor';
+import { Payment, PixPayment } from '@/types/PixPayment';
+import { CryptoAsset } from '@/types/assets';
 
 import { INVALID_QR_CODE } from '@constants/errorMessages';
 
@@ -29,8 +32,13 @@ export const PayWithQRCode = ({ navigation }: ScreenProps) => {
     <QRCodeScanner
       onCancel={() => navigation.goBack()}
       onScanPayment={(payment) => {
-        paymentStore.setScannedPayment(payment);
-        navigation.push('ConfirmPayment');
+        if ('brCode' in payment) {
+          const pixPayment = payment as PixPayment;
+          navigation.push('ReviewPixPayment', { brCode: pixPayment.brCode });
+        } else {
+          paymentStore.setScannedPayment(payment);
+          navigation.push('ConfirmPayment');
+        }
       }}
     />
   );
@@ -38,7 +46,7 @@ export const PayWithQRCode = ({ navigation }: ScreenProps) => {
 
 type Props = {
   onCancel: () => void;
-  onScanPayment: (payment: IVendor) => void;
+  onScanPayment: (payment: Payment) => void;
 };
 
 export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
@@ -60,6 +68,24 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
     }, []),
   );
 
+  const parseQRCode = (scanned: string): Payment => {
+    const pix = parsePix(scanned);
+    if (!hasError(pix) && pix.type === PixElementType.STATIC) {
+      return {
+        ...pix,
+        brCode: scanned, // FIXME: only to pass as paramenter to ReviewPixPayment
+        assetCode: CryptoAsset.BRL,
+      } as PixPayment;
+    }
+
+    const qrObject = JSON.parse(scanned);
+    if (!qrObject.name || !qrObject.amount || !qrObject.assetCode || !qrObject.publicKey) {
+      throw new Error(INVALID_QR_CODE);
+    }
+
+    return vendorToPayment(qrObject);
+  };
+
   const handleBarCodeScanned = (result: BarCodeScanningResult) => {
     // If a QR code has already been scanned, return early
     if (isScanned) {
@@ -68,11 +94,8 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
 
     setIsScanned(true);
     try {
-      const qrObject = JSON.parse(result.data);
-      if (!qrObject.name || !qrObject.amount || !qrObject.assetCode || !qrObject.publicKey) {
-        throw new Error(INVALID_QR_CODE);
-      }
-      onScanPayment(qrObject);
+      const payment = parseQRCode(result.data);
+      onScanPayment(payment);
     } catch (error) {
       console.warn('[handleBarCodeScanned]', error);
       setError(INVALID_QR_CODE);

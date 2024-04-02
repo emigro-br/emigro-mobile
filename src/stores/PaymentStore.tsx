@@ -1,7 +1,7 @@
 import { action, makeAutoObservable, observable } from 'mobx';
 
 import { ITransactionRequest } from '@/types/ITransactionRequest';
-import { IVendor } from '@/types/IVendor';
+import { Payment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
 import { sendTransaction } from '@services/emigro';
@@ -32,7 +32,7 @@ type PayTransaction = {
 
 export class PaymentStore {
   transaction?: PayTransaction;
-  scannedPayment?: IVendor; // FIXME: only to delete VendorContext
+  scannedPayment?: Payment; // FIXME: only to delete VendorContext
 
   constructor() {
     makeAutoObservable(this, {
@@ -48,8 +48,8 @@ export class PaymentStore {
     this.transaction = transaction;
   }
 
-  setScannedPayment(vendor?: IVendor) {
-    this.scannedPayment = vendor;
+  setScannedPayment(payment?: Payment) {
+    this.scannedPayment = payment;
   }
 
   reset() {
