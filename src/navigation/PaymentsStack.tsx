@@ -23,9 +23,6 @@ export type PaymentStackParamList = {
     value: number;
   };
   PastePixCode: undefined;
-  ReviewPixPayment: {
-    brCode: string;
-  };
 };
 
 const Stack = createNativeStackNavigator<PaymentStackParamList>();

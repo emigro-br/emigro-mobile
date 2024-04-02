@@ -32,7 +32,7 @@ type PayTransaction = {
 
 export class PaymentStore {
   transaction?: PayTransaction;
-  scannedPayment?: Payment; // FIXME: only to delete VendorContext
+  scannedPayment?: Payment;
 
   constructor() {
     makeAutoObservable(this, {
