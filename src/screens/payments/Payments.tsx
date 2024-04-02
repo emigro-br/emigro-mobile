@@ -42,7 +42,7 @@ export const Payments: React.FC<Props> = ({ navigation }) => {
             icon={CopyIcon}
             label="Pix Copia & Cola"
             size="lg"
-            onPress={() => navigation.push('PayWithBRCode')}
+            onPress={() => navigation.push('PastePixCode')}
           />
         </ButtonGroup>
       </VStack>

@@ -14,10 +14,10 @@ import { PaymentStackParamList } from '@navigation/PaymentsStack';
 import { paymentStore } from '@stores/PaymentStore';
 
 type Props = {
-  navigation: NativeStackNavigationProp<PaymentStackParamList, 'PayWithBRCode'>;
+  navigation: NativeStackNavigationProp<PaymentStackParamList, 'PastePixCode'>;
 };
 
-export const PayWithBRCode = ({ navigation }: Props) => {
+export const PastePixCode = ({ navigation }: Props) => {
   const [brCode, setBrCode] = useState<string>('');
 
   useEffect(() => {
