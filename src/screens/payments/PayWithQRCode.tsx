@@ -32,13 +32,8 @@ export const PayWithQRCode = ({ navigation }: ScreenProps) => {
     <QRCodeScanner
       onCancel={() => navigation.goBack()}
       onScanPayment={(payment) => {
-        if ('brCode' in payment) {
-          const pixPayment = payment as PixPayment;
-          navigation.push('ReviewPixPayment', { brCode: pixPayment.brCode });
-        } else {
-          paymentStore.setScannedPayment(payment);
-          navigation.push('ConfirmPayment');
-        }
+        paymentStore.setScannedPayment(payment);
+        navigation.push('ConfirmPayment');
       }}
     />
   );
@@ -73,7 +68,7 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
     if (!hasError(pix) && pix.type === PixElementType.STATIC) {
       return {
         ...pix,
-        brCode: scanned, // FIXME: only to pass as paramenter to ReviewPixPayment
+        brCode: scanned, // FIXME: only to check if it's a Pix payment
         assetCode: CryptoAsset.BRL,
       } as PixPayment;
     }

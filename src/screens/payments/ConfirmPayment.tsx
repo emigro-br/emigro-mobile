@@ -9,6 +9,7 @@ import {
   ButtonSpinner,
   ButtonText,
   Card,
+  Center,
   Divider,
   HStack,
   Heading,
@@ -17,6 +18,7 @@ import {
 } from '@gluestack-ui/themed';
 import * as Sentry from '@sentry/react-native';
 
+import { PixPayment } from '@/types/PixPayment';
 import { CryptoAsset, cryptoAssets } from '@/types/assets';
 
 import { ErrorModal } from '@components/modals/ErrorModal';
@@ -35,7 +37,7 @@ import { balanceStore } from '@stores/BalanceStore';
 import { paymentStore as bloc, paymentStore } from '@stores/PaymentStore';
 import { sessionStore } from '@stores/SessionStore';
 
-import { AssetToCurrency, labelFor, symbolFor } from '@utils/assets';
+import { symbolFor } from '@utils/assets';
 
 enum TransactionStep {
   NONE = 'none',
@@ -54,6 +56,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
   if (!scannedPayment) {
     throw new Error('No transaction amount found in the scanned vendor');
   }
+  const isPix = 'brCode' in scannedPayment;
   const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
   const [showPinScreen, setShowPinScreen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(scannedPayment.assetCode);
@@ -114,6 +117,12 @@ export const ConfirmPayment = ({ navigation }: Props) => {
   };
 
   const handleConfirmPayment = async () => {
+    if (isPix) {
+      // fake payment
+      setStep(TransactionStep.SUCCESS);
+      return;
+    }
+
     setStep(TransactionStep.PROCESSING);
     try {
       const result = await bloc.pay();
@@ -153,7 +162,6 @@ export const ConfirmPayment = ({ navigation }: Props) => {
 
   const balance = balanceStore.get(selectedAsset);
   const hasBalance = paymentQuote ? paymentQuote < balance : true;
-  const vendorCurrency = AssetToCurrency[scannedPayment.assetCode as CryptoAsset];
 
   const isProcesing = step === TransactionStep.PROCESSING;
   const isPayDisabled = !paymentQuote || !hasBalance || step !== TransactionStep.NONE; // processing, success, error
@@ -177,27 +185,38 @@ export const ConfirmPayment = ({ navigation }: Props) => {
 
       <Box flex={1} bg="$white">
         <VStack p="$4" space="lg">
-          <Heading size="xl">Review the details of this payment</Heading>
+          <Heading size="xl">Review the payment</Heading>
 
           <Box>
-            <Text bold>Requested value</Text>
             <Text size="4xl" color="$textLight800" bold>
-              {scannedPayment.transactionAmount} {labelFor(vendorCurrency)}
+              {symbolFor(scannedPayment.assetCode, scannedPayment.transactionAmount)}
             </Text>
           </Box>
 
-          <VStack>
-            <Text size="lg">
-              for{' '}
-              <Text bold size="lg">
-                {scannedPayment.merchantName}
+          <VStack space="3xl">
+            <Box>
+              <Text size="lg">
+                for{' '}
+                <Text bold size="lg">
+                  {scannedPayment.merchantName}
+                </Text>
               </Text>
-            </Text>
-            {scannedPayment.merchantCity && (
-              <Text>
-                Location: <Text>{scannedPayment.merchantCity}</Text>
-              </Text>
+              {scannedPayment.merchantCity && (
+                <Text>
+                  in <Text>{scannedPayment.merchantCity}</Text>
+                </Text>
+              )}
+            </Box>
+
+            {scannedPayment.infoAdicional && (
+              <Center>
+                <Card variant="filled" bg="$backgroundLight100">
+                  <Text textAlign="center">{scannedPayment.infoAdicional}</Text>
+                </Card>
+              </Center>
             )}
+
+            {isPix && <StaticPix pix={scannedPayment as PixPayment} />}
           </VStack>
 
           <Divider />
@@ -246,3 +265,29 @@ export const ConfirmPayment = ({ navigation }: Props) => {
     </>
   );
 };
+
+interface StaticPixProps {
+  pix: PixPayment;
+  // pixKey?: PixKey;
+}
+
+const StaticPix = ({ pix }: StaticPixProps) => (
+  <VStack space="md">
+    {/* <HStack justifyContent="space-between">
+      <Text bold>CPF/CNPJ:</Text>
+      <Text>{pixKey?.tax_id}</Text>
+    </HStack>
+    <HStack justifyContent="space-between">
+      <Text bold>Institution:</Text>
+      <Text maxWidth="$2/3">{pixKey?.bank_name}</Text>
+    </HStack> */}
+    <HStack justifyContent="space-between">
+      <Text bold>Pix Key:</Text>
+      <Text>{pix.pixKey}</Text>
+    </HStack>
+    <HStack justifyContent="space-between">
+      <Text bold>Identifier:</Text>
+      <Text>{pix.txid}</Text>
+    </HStack>
+  </VStack>
+);

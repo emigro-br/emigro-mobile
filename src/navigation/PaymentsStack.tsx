@@ -8,7 +8,6 @@ import { PayWithQRCode } from '@screens/payments/PayWithQRCode';
 import { Payments } from '@screens/payments/Payments';
 import { RequestPayment } from '@screens/payments/RequestPayment';
 import { RequestWithQRCode } from '@screens/payments/RequestWithQRCode';
-import { ReviewPixPayment } from '@screens/payments/ReviewPixPayment';
 
 import screenOptions from './screenOptions';
 
@@ -56,7 +55,6 @@ export function PaymentStack() {
         }}
       />
       <Stack.Screen name="PayWithBRCode" component={PayWithBRCode} options={{ title: 'Pay with Pix' }} />
-      <Stack.Screen name="ReviewPixPayment" component={ReviewPixPayment} options={{ title: 'Review Pix Payment' }} />
     </Stack.Navigator>
   );
 }
