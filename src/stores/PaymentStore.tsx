@@ -1,10 +1,11 @@
 import { action, makeAutoObservable, observable } from 'mobx';
 
 import { ITransactionRequest } from '@/types/ITransactionRequest';
-import { Payment } from '@/types/PixPayment';
+import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
 import { sendTransaction } from '@services/emigro';
+import { brcodePayment } from '@services/transaction';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -32,7 +33,7 @@ type PayTransaction = {
 
 export class PaymentStore {
   transaction?: PayTransaction;
-  scannedPayment?: Payment;
+  scannedPayment?: Payment | PixPayment;
 
   constructor() {
     makeAutoObservable(this, {
@@ -93,7 +94,7 @@ export class PaymentStore {
     this.setTransaction(swapTransaction);
   }
 
-  public async pay() {
+  async pay() {
     const { from, to } = this.transaction!;
     const transactionRequest: ITransactionRequest = {
       maxAmountToSend: from.value.toString(), // cry
@@ -104,6 +105,26 @@ export class PaymentStore {
     };
     const res = await sendTransaction(transactionRequest);
     return res;
+  }
+
+  async payPix() {
+    if (!this.scannedPayment) {
+      throw new Error('No payment scanned');
+    }
+
+    if (!this.transaction) {
+      throw new Error('No transaction set');
+    }
+
+    const pixPayment = this.scannedPayment as PixPayment;
+    const paymentRequest = {
+      brcode: pixPayment.brCode,
+      amount: this.transaction.to.value, // BRL value
+      sourceAsset: this.transaction.from.asset, // selected Asset
+      taxId: pixPayment.taxId || '01234567890', // FIXME:
+      description: 'Emigro Payment', // TODO: add description
+    };
+    return brcodePayment(paymentRequest);
   }
 }
 

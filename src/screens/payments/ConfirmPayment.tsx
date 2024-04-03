@@ -18,7 +18,7 @@ import {
 } from '@gluestack-ui/themed';
 import * as Sentry from '@sentry/react-native';
 
-import { PixPayment } from '@/types/PixPayment';
+import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset, cryptoAssets } from '@/types/assets';
 
 import { ErrorModal } from '@components/modals/ErrorModal';
@@ -29,9 +29,11 @@ import { TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
 import { WalletStackParamList } from '@navigation/WalletStack';
 
+import { LoadingScreen } from '@screens/Loading';
 import { PinScreen } from '@screens/PinScreen';
 
 import { IQuoteRequest, handleQuote } from '@services/quotes';
+import { DictKey, dictKey } from '@services/transaction';
 
 import { balanceStore } from '@stores/BalanceStore';
 import { paymentStore as bloc, paymentStore } from '@stores/PaymentStore';
@@ -53,21 +55,36 @@ type Props = {
 
 export const ConfirmPayment = ({ navigation }: Props) => {
   const { scannedPayment } = paymentStore;
-  if (!scannedPayment) {
-    throw new Error('No transaction amount found in the scanned vendor');
-  }
-  const isPix = 'brCode' in scannedPayment;
+
   const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
   const [showPinScreen, setShowPinScreen] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(scannedPayment.assetCode);
-  const [paymentQuote, setPaymentQuote] = useState<number | null>(scannedPayment.transactionAmount);
+  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(scannedPayment?.assetCode ?? CryptoAsset.USDC);
+  const [paymentQuote, setPaymentQuote] = useState<number | null>(scannedPayment?.transactionAmount ?? null);
   const [transactionError, setTransactionError] = useState<Error | unknown>(null);
+  const [pixDictKey, setPixDictKey] = useState<DictKey>();
 
-  const availableAssets = cryptoAssets();
-  const data = availableAssets.map((asset) => ({
-    label: asset,
-    value: asset,
-  }));
+  const isPix = scannedPayment && 'brCode' in scannedPayment;
+
+  useEffect(() => {
+    fetchQuote().catch(console.warn);
+  }, [selectedAsset]);
+
+  useEffect(() => {
+    const fetchPixKeyAsync = async (payment: Payment) => {
+      const result = await dictKey(payment.pixKey);
+      // console.debug('Pix Key:', result);
+      setPixDictKey(result);
+      (bloc.scannedPayment! as PixPayment).taxId = result.taxId;
+    };
+
+    if (isPix)  {
+      // fetchPixKeyAsync(scannedPayment);
+    }
+  }, [scannedPayment]);
+
+  if (!scannedPayment) {
+    return <LoadingScreen />;
+  }
 
   const fetchQuote = async () => {
     setPaymentQuote(null);
@@ -86,10 +103,6 @@ export const ConfirmPayment = ({ navigation }: Props) => {
 
     setPaymentQuote(quote.source_amount);
   };
-
-  useEffect(() => {
-    fetchQuote().catch(console.warn);
-  }, [selectedAsset]);
 
   const handlePressPay = () => {
     if (!paymentQuote) {
@@ -117,15 +130,17 @@ export const ConfirmPayment = ({ navigation }: Props) => {
   };
 
   const handleConfirmPayment = async () => {
-    if (isPix) {
-      // fake payment
-      setStep(TransactionStep.SUCCESS);
-      return;
-    }
-
     setStep(TransactionStep.PROCESSING);
     try {
-      const result = await bloc.pay();
+      let result;
+
+      // TODO: move to paymentStore
+      if (isPix) {
+        result = await bloc.payPix();
+      } else {
+        result = await bloc.pay();
+      }
+
       if (result.transactionHash) {
         setStep(TransactionStep.SUCCESS);
       }
@@ -159,6 +174,12 @@ export const ConfirmPayment = ({ navigation }: Props) => {
       />
     );
   }
+
+  const availableAssets = cryptoAssets();
+  const data = availableAssets.map((asset) => ({
+    label: asset,
+    value: asset,
+  }));
 
   const balance = balanceStore.get(selectedAsset);
   const hasBalance = paymentQuote ? paymentQuote < balance : true;
@@ -216,7 +237,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
               </Center>
             )}
 
-            {isPix && <StaticPix pix={scannedPayment as PixPayment} />}
+            {isPix && <StaticPix pix={scannedPayment as PixPayment} dictKey={pixDictKey} />}
           </VStack>
 
           <Divider />
@@ -268,19 +289,19 @@ export const ConfirmPayment = ({ navigation }: Props) => {
 
 interface StaticPixProps {
   pix: PixPayment;
-  // pixKey?: PixKey;
+  dictKey?: DictKey;
 }
 
-const StaticPix = ({ pix }: StaticPixProps) => (
+const StaticPix = ({ pix, dictKey }: StaticPixProps) => (
   <VStack space="md">
-    {/* <HStack justifyContent="space-between">
+    <HStack justifyContent="space-between">
       <Text bold>CPF/CNPJ:</Text>
-      <Text>{pixKey?.tax_id}</Text>
+      <Text>{dictKey?.taxId}</Text>
     </HStack>
     <HStack justifyContent="space-between">
       <Text bold>Institution:</Text>
-      <Text maxWidth="$2/3">{pixKey?.bank_name}</Text>
-    </HStack> */}
+      <Text maxWidth="$2/3">{dictKey?.bankName}</Text>
+    </HStack>
     <HStack justifyContent="space-between">
       <Text bold>Pix Key:</Text>
       <Text>{pix.pixKey}</Text>

@@ -14,6 +14,6 @@ export interface PixPayment extends Payment {
   bankName?: string;
   pixKey: string;
   txid: string; // transaction id
-  fss?: string;
+  fss?: string; // Facilitadora de Serviço de Saque (FSS)
   brCode: string; // FIXME: only to pass as paramenter to ReviewPixPayment
 }
