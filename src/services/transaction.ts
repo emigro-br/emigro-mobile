@@ -14,8 +14,27 @@ export type DictKey = {
   bankName: string;
 };
 
-export const dictKey = async (key: string): Promise<DictKey> => {
-  const res = await api().get(`/transaction/dict-key/${key}`);
+type PaymentPreview = {
+  type: string;
+  payment: Payment;
+};
+
+type Payment = {
+  amount: number;
+  bankName: string;
+  name: string;
+  taxId: string;
+};
+
+// export const dictKey = async (key: string): Promise<DictKey> => {
+//   const res = await api().get(`/transaction/dict-key/${key}`);
+//   return res.data;
+// };
+
+export const brcodePaymentPreview = async (brcode: string): Promise<PaymentPreview> => {
+  const res = await api().post('/transaction/payment-preview', {
+    brcode,
+  });
   return res.data;
 };
 

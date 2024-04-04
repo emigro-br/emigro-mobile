@@ -10,7 +10,7 @@ export interface Payment {
 }
 
 export interface PixPayment extends Payment {
-  taxId?: string; // CPF/CNPJ
+  taxId: string; // receiver CPF/CNPJ
   bankName?: string;
   pixKey: string;
   txid: string; // transaction id

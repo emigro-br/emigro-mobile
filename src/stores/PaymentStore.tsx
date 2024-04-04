@@ -5,7 +5,7 @@ import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
 import { sendTransaction } from '@services/emigro';
-import { brcodePayment } from '@services/transaction';
+import { brcodePayment, brcodePaymentPreview } from '@services/transaction';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -94,6 +94,15 @@ export class PaymentStore {
     this.setTransaction(swapTransaction);
   }
 
+  async previewPixPayment(payment: PixPayment): Promise<PixPayment> {
+    const res = await brcodePaymentPreview(payment.brCode);
+    return {
+      ...payment,
+      taxId: res.payment.taxId,
+      bankName: res.payment.bankName,
+    };
+  }
+
   async pay() {
     const { from, to } = this.transaction!;
     const transactionRequest: ITransactionRequest = {
@@ -121,8 +130,8 @@ export class PaymentStore {
       brcode: pixPayment.brCode,
       amount: this.transaction.to.value, // BRL value
       sourceAsset: this.transaction.from.asset, // selected Asset
-      taxId: pixPayment.taxId || '01234567890', // FIXME:
-      description: 'Emigro Payment', // TODO: add description
+      taxId: pixPayment.taxId,
+      description: pixPayment.infoAdicional || 'Payment via Emigro Wallet',
     };
     return brcodePayment(paymentRequest);
   }

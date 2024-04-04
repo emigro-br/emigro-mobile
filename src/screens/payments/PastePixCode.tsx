@@ -32,14 +32,16 @@ export const PastePixCode = ({ navigation }: Props) => {
     }
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     const pix = parsePix(brCode);
     if (!hasError(pix) && pix.type === PixElementType.STATIC) {
-      const pixPayment = {
+      let pixPayment = {
         ...pix,
         brCode,
-        assetCode: CryptoAsset.BRL,
+        assetCode: CryptoAsset.XLM,
+        taxId: '', // updated by payment preview
       } as PixPayment;
+      pixPayment = await paymentStore.previewPixPayment(pixPayment);
       paymentStore.setScannedPayment(pixPayment);
       navigation.push('ConfirmPayment');
     }

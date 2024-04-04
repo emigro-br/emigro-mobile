@@ -18,7 +18,7 @@ import {
 } from '@gluestack-ui/themed';
 import * as Sentry from '@sentry/react-native';
 
-import { Payment, PixPayment } from '@/types/PixPayment';
+import { PixPayment } from '@/types/PixPayment';
 import { CryptoAsset, cryptoAssets } from '@/types/assets';
 
 import { ErrorModal } from '@components/modals/ErrorModal';
@@ -33,7 +33,6 @@ import { LoadingScreen } from '@screens/Loading';
 import { PinScreen } from '@screens/PinScreen';
 
 import { IQuoteRequest, handleQuote } from '@services/quotes';
-import { DictKey, dictKey } from '@services/transaction';
 
 import { balanceStore } from '@stores/BalanceStore';
 import { paymentStore as bloc, paymentStore } from '@stores/PaymentStore';
@@ -61,26 +60,12 @@ export const ConfirmPayment = ({ navigation }: Props) => {
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(scannedPayment?.assetCode ?? CryptoAsset.USDC);
   const [paymentQuote, setPaymentQuote] = useState<number | null>(scannedPayment?.transactionAmount ?? null);
   const [transactionError, setTransactionError] = useState<Error | unknown>(null);
-  const [pixDictKey, setPixDictKey] = useState<DictKey>();
 
   const isPix = scannedPayment && 'brCode' in scannedPayment;
 
   useEffect(() => {
     fetchQuote().catch(console.warn);
   }, [selectedAsset]);
-
-  useEffect(() => {
-    const fetchPixKeyAsync = async (payment: Payment) => {
-      const result = await dictKey(payment.pixKey);
-      // console.debug('Pix Key:', result);
-      setPixDictKey(result);
-      (bloc.scannedPayment! as PixPayment).taxId = result.taxId;
-    };
-
-    if (isPix)  {
-      // fetchPixKeyAsync(scannedPayment);
-    }
-  }, [scannedPayment]);
 
   if (!scannedPayment) {
     return <LoadingScreen />;
@@ -237,7 +222,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
               </Center>
             )}
 
-            {isPix && <StaticPix pix={scannedPayment as PixPayment} dictKey={pixDictKey} />}
+            {isPix && <StaticPix pix={scannedPayment as PixPayment} />}
           </VStack>
 
           <Divider />
@@ -289,18 +274,17 @@ export const ConfirmPayment = ({ navigation }: Props) => {
 
 interface StaticPixProps {
   pix: PixPayment;
-  dictKey?: DictKey;
 }
 
-const StaticPix = ({ pix, dictKey }: StaticPixProps) => (
+const StaticPix = ({ pix }: StaticPixProps) => (
   <VStack space="md">
     <HStack justifyContent="space-between">
       <Text bold>CPF/CNPJ:</Text>
-      <Text>{dictKey?.taxId}</Text>
+      <Text>{pix.taxId}</Text>
     </HStack>
     <HStack justifyContent="space-between">
       <Text bold>Institution:</Text>
-      <Text maxWidth="$2/3">{dictKey?.bankName}</Text>
+      <Text maxWidth="$2/3">{pix.bankName}</Text>
     </HStack>
     <HStack justifyContent="space-between">
       <Text bold>Pix Key:</Text>
