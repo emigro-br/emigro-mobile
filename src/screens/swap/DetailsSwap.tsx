@@ -35,7 +35,6 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
         navigation.navigate('Wallet');
       }
     } catch (error) {
-      console.warn('Swap:', error);
       if (error instanceof Error) {
         setErrorMessage(error.message);
       } else {

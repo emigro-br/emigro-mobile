@@ -112,7 +112,7 @@ export class SessionStore {
     await SecureStore.setItemAsync(this.profileKey, JSON.stringify(profile));
   }
 
-  async load(): Promise<IAuthSession | null> {
+  load = async (): Promise<IAuthSession | null> => {
     const session: Partial<IAuthSession> = {};
     await Promise.all(
       this.authKeys.map(async (key) => {
@@ -137,7 +137,7 @@ export class SessionStore {
     this.setSession(session as IAuthSession);
     this.loadProfile(); // load profile in background
     return this.session;
-  }
+  };
 
   async loadProfile(): Promise<IUserProfile | null> {
     const profile = await SecureStore.getItemAsync(this.profileKey);
@@ -158,7 +158,7 @@ export class SessionStore {
     this.setJustLoggedIn(false);
   }
 
-  async signIn(session: IAuthSession) {
+  signIn = async (session: IAuthSession) => {
     this.setSession(session);
     this.save(session);
     this.setJustLoggedIn(true);
@@ -166,13 +166,13 @@ export class SessionStore {
     // Fetch the user data in background
     this.fetchPublicKey();
     this.fetchProfile();
-  }
+  };
 
   async signOut() {
     await this.clear();
   }
 
-  async refresh() {
+  refresh = async () => {
     if (!this.session) {
       await this.load(); // workaround for InvalidSession when refreshing
       if (!this.session) {
@@ -186,7 +186,7 @@ export class SessionStore {
       await this.save(newSession);
       return this.session;
     }
-  }
+  };
 
   async savePin(pin: string) {
     // Hash the PIN before saving it
@@ -202,7 +202,7 @@ export class SessionStore {
     await SecureStore.deleteItemAsync('pin');
   }
 
-  async verifyPin(pin: string): Promise<boolean> {
+  verifyPin = async (pin: string): Promise<boolean> => {
     const hashedPin = await this.loadPin();
     if (!hashedPin) {
       throw new Error('PIN not set');
@@ -211,7 +211,7 @@ export class SessionStore {
     // Hash the input PIN and compare it with the stored hashed PIN
     const inputHashedPin = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, pin);
     return hashedPin === inputHashedPin;
-  }
+  };
 }
 
 export const sessionStore = new SessionStore();
