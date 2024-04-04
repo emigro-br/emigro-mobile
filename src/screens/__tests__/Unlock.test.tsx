@@ -10,13 +10,19 @@ import { UnlockScreen } from '../Unlock';
 
 jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
+jest.mock('@stores/SessionStore', () => ({
+  sessionStore: {
+    verifyPin: jest.fn(),
+  },
+}));
+
 describe('UnlockScreen component', () => {
   const navigation: any = {
     replace: jest.fn(),
   };
 
   it('should navigate to "Root" when unlocked is true', async () => {
-    jest.spyOn(sessionStore, 'verifyPin').mockResolvedValue(true);
+    jest.spyOn(sessionStore, 'verifyPin').mockResolvedValueOnce(true);
 
     render(<UnlockScreen navigation={navigation} />);
     expect(screen.getByText('Enter your PIN')).toBeOnTheScreen();

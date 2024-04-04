@@ -17,6 +17,12 @@ jest.mock('@services/emigro', () => ({
   getUserPublicKey: jest.fn().mockReturnValue('mockedPublicKey'),
 }));
 
+jest.mock('@stores/SessionStore', () => ({
+  sessionStore: {
+    verifyPin: jest.fn(),
+  },
+}));
+
 const Stack = createNativeStackNavigator();
 
 describe('DetailsSwap', () => {
@@ -105,6 +111,7 @@ describe('DetailsSwap', () => {
   });
 
   it('shows error message', async () => {
+    jest.spyOn(sessionStore, 'verifyPin').mockResolvedValueOnce(true);
     jest.spyOn(paymentStore, 'pay').mockRejectedValueOnce(new Error('error message'));
 
     const { getByText, getByTestId } = render(

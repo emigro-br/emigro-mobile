@@ -11,6 +11,12 @@ import { sessionStore } from '@stores/SessionStore';
 
 import { ReviewTransfer } from '../ReviewTransfer';
 
+jest.mock('@stores/SessionStore', () => ({
+  sessionStore: {
+    verifyPin: jest.fn(),
+  },
+}));
+
 jest.mock('@stores/PaymentStore', () => ({
   paymentStore: {
     transaction: {
