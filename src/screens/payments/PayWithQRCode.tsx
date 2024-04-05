@@ -70,6 +70,7 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
         ...pix,
         brCode: scanned, // FIXME: only to check if it's a Pix payment
         assetCode: CryptoAsset.BRL,
+        taxId: '',
       } as PixPayment;
     }
 

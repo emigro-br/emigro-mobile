@@ -70,7 +70,7 @@ describe('SwapBloc', () => {
       merchantCity: 'Merchant City',
     };
 
-    const preview = await swapBloc.previewPixPayment(payment);
+    const preview = await swapBloc.pixPreview(payment);
 
     expect(brcodePaymentPreview).toHaveBeenCalledWith('test-brCode');
 

@@ -94,7 +94,7 @@ export class PaymentStore {
     this.setTransaction(swapTransaction);
   }
 
-  async previewPixPayment(payment: PixPayment): Promise<PixPayment> {
+  async pixPreview(payment: PixPayment): Promise<PixPayment> {
     const res = await brcodePaymentPreview(payment.brCode);
     return {
       ...payment,

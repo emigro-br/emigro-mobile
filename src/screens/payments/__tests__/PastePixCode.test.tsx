@@ -13,7 +13,7 @@ jest.mock('expo-clipboard', () => ({
 
 jest.mock('@stores/PaymentStore', () => ({
   paymentStore: {
-    previewPixPayment: jest.fn(),
+    pixPreview: jest.fn(),
     setScannedPayment: jest.fn(),
   },
 }));
@@ -63,7 +63,7 @@ describe('PastePixCode', () => {
     fireEvent.press(getByText('Continue'));
 
     await waitFor(() => {
-      expect(paymentStore.previewPixPayment).toHaveBeenCalled();
+      expect(paymentStore.pixPreview).toHaveBeenCalled();
       expect(paymentStore.setScannedPayment).toHaveBeenCalled();
       expect(navigationMock.push).toHaveBeenCalledWith('ConfirmPayment');
     });
@@ -78,7 +78,7 @@ describe('PastePixCode', () => {
 
     await waitFor(() => {
       expect(getByText('Invalid Pix code')).toBeOnTheScreen();
-      expect(paymentStore.previewPixPayment).not.toHaveBeenCalled();
+      expect(paymentStore.pixPreview).not.toHaveBeenCalled();
     });
   });
 
@@ -92,7 +92,7 @@ describe('PastePixCode', () => {
 
     await waitFor(() => {
       expect(getByText('Dynamic Pix code is not supported yet')).toBeOnTheScreen();
-      expect(paymentStore.previewPixPayment).not.toHaveBeenCalled();
+      expect(paymentStore.pixPreview).not.toHaveBeenCalled();
     });
   });
 });

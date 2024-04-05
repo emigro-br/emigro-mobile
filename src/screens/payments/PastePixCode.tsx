@@ -61,7 +61,7 @@ export const PastePixCode = ({ navigation }: Props) => {
       } as PixPayment;
 
       try {
-        pixPayment = await paymentStore.previewPixPayment(pixPayment);
+        pixPayment = await paymentStore.pixPreview(pixPayment);
         paymentStore.setScannedPayment(pixPayment);
         navigation.push('ConfirmPayment');
       } catch (error) {
