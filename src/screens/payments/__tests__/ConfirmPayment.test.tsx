@@ -54,6 +54,7 @@ describe('ConfirmPayment component', () => {
     // pix fields
     brCode: 'mocked-brCode',
     txid: 'mocked-identifier',
+    taxId: 'mocked-taxId',
   };
 
   beforeEach(() => {
@@ -79,6 +80,8 @@ describe('ConfirmPayment component', () => {
     expect(getByText('mocked-pixkey')).toBeOnTheScreen();
     expect(getByText('Identifier:')).toBeOnTheScreen();
     expect(getByText('mocked-identifier')).toBeOnTheScreen();
+    expect(getByText('CPF/CNPJ:')).toBeOnTheScreen();
+    expect(getByText('mocked-taxId')).toBeOnTheScreen();
 
     // payment
     expect(getByText('Select the account')).toBeOnTheScreen();
