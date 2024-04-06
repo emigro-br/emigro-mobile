@@ -23,6 +23,8 @@ import AskCamera from '@screens/AskCamera';
 
 import { paymentStore } from '@stores/PaymentStore';
 
+import { brCodeFromMercadoPagoUrl } from '@utils/pix';
+
 type ScreenProps = {
   navigation: NativeStackNavigationProp<PaymentStackParamList, 'PayWithQRCode'>;
 };
@@ -31,8 +33,20 @@ export const PayWithQRCode = ({ navigation }: ScreenProps) => {
   return (
     <QRCodeScanner
       onCancel={() => navigation.goBack()}
-      onScanPayment={(payment) => {
-        paymentStore.setScannedPayment(payment);
+      onScanPayment={async (payment) => {
+        if ('brCode' in payment) {
+          try {
+            const brCode = (payment as PixPayment).brCode;
+            const pixPayment = await paymentStore.pixPreview(brCode);
+            paymentStore.setScannedPayment(pixPayment);
+          } catch (error) {
+            // FIXME: how show this error to the user?
+            console.warn('[onScanPayment]', error);
+            return;
+          }
+        } else {
+          paymentStore.setScannedPayment(payment);
+        }
         navigation.push('ConfirmPayment');
       }}
     />
@@ -63,17 +77,25 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
     }, []),
   );
 
-  const parseQRCode = (scanned: string): Payment => {
+  const parseQRCode = (scanned: string): Payment | PixPayment => {
+    if (scanned.startsWith('https://qr.mercadopago.com')) {
+      // FIXME: hardcoded values
+      const merchantName = 'Mercado Pago';
+      const merchantCity = '';
+      scanned = brCodeFromMercadoPagoUrl(scanned, merchantName, merchantCity);
+    }
+
     const pix = parsePix(scanned);
-    if (!hasError(pix) && pix.type === PixElementType.STATIC) {
+    if (!hasError(pix) && pix.type !== PixElementType.INVALID) {
       return {
         ...pix,
-        brCode: scanned, // FIXME: only to check if it's a Pix payment
+        brCode: scanned,
         assetCode: CryptoAsset.BRL,
         taxId: '',
       } as PixPayment;
     }
 
+    // TODO: stop using deprecated approach, migrate to brcode payment
     const qrObject = JSON.parse(scanned);
     if (!qrObject.name || !qrObject.amount || !qrObject.assetCode || !qrObject.publicKey) {
       throw new Error(INVALID_QR_CODE);
