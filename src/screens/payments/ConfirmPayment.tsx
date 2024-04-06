@@ -63,15 +63,10 @@ export const ConfirmPayment = ({ navigation }: Props) => {
 
   const isPix = scannedPayment && 'brCode' in scannedPayment;
 
-  useEffect(() => {
-    fetchQuote().catch(console.warn);
-  }, [selectedAsset]);
-
-  if (!scannedPayment) {
-    return <LoadingScreen />;
-  }
-
   const fetchQuote = async () => {
+    if (!selectedAsset || !scannedPayment) {
+      return;
+    }
     setPaymentQuote(null);
     const data: IQuoteRequest = {
       from: selectedAsset,
@@ -88,6 +83,14 @@ export const ConfirmPayment = ({ navigation }: Props) => {
 
     setPaymentQuote(quote.source_amount);
   };
+
+  useEffect(() => {
+    fetchQuote().catch(console.warn);
+  }, [selectedAsset]);
+
+  if (!scannedPayment) {
+    return <LoadingScreen />;
+  }
 
   const handlePressPay = () => {
     if (!paymentQuote) {
