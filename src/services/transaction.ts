@@ -14,16 +14,18 @@ export type DictKey = {
   bankName: string;
 };
 
-type PaymentPreview = {
+export type PaymentPreview = {
   type: string;
   payment: Payment;
 };
 
-type Payment = {
+export type Payment = {
+  pixKey: string;
   amount: number;
   bankName: string;
   name: string;
   taxId: string;
+  txId: string;
 };
 
 // export const dictKey = async (key: string): Promise<DictKey> => {

@@ -15,10 +15,7 @@ import {
   VStack,
 } from '@gluestack-ui/themed';
 import * as Clipboard from 'expo-clipboard';
-import { PixElementType, hasError, parsePix } from 'pix-utils';
-
-import { PixPayment } from '@/types/PixPayment';
-import { CryptoAsset } from '@/types/assets';
+import { hasError, parsePix } from 'pix-utils';
 
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
 
@@ -49,27 +46,17 @@ export const PastePixCode = ({ navigation }: Props) => {
 
   const handleContinue = async () => {
     setIsChecking(true);
-    const pix = parsePix(brCode);
-    if (hasError(pix)) {
-      setError('Invalid Pix code');
-    } else if (pix.type === PixElementType.STATIC) {
-      let pixPayment = {
-        ...pix,
-        brCode,
-        assetCode: CryptoAsset.XLM,
-        taxId: '', // updated by payment preview
-      } as PixPayment;
-
-      try {
-        pixPayment = await paymentStore.pixPreview(pixPayment);
-        paymentStore.setScannedPayment(pixPayment);
-        navigation.push('ConfirmPayment');
-      } catch (error) {
+    try {
+      const pixPayment = await paymentStore.pixPreview(brCode);
+      paymentStore.setScannedPayment(pixPayment);
+      navigation.push('ConfirmPayment');
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
         console.warn('Error previewing payment:', error);
-        setError('Could not preview payment. Please try again.');
+        setError('An error occurred while checking the payment');
       }
-    } else {
-      setError('Dynamic Pix code is not supported yet');
     }
     setIsChecking(false);
   };

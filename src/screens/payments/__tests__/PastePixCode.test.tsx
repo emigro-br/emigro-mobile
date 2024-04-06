@@ -19,7 +19,7 @@ jest.mock('@stores/PaymentStore', () => ({
 }));
 
 describe('PastePixCode', () => {
-  const validBrCode =
+  const validStaticBrCode =
     '00020126320014br.gov.bcb.pix0110random-key520400005303986540115802BR5904Test6006Cidade62070503***6304ACF0';
   const navigationMock: any = {
     push: jest.fn(),
@@ -38,11 +38,11 @@ describe('PastePixCode', () => {
   });
 
   it('should only set the brCode state when text is pasted is valid', async () => {
-    (Clipboard.getStringAsync as jest.Mock).mockResolvedValueOnce(validBrCode);
+    (Clipboard.getStringAsync as jest.Mock).mockResolvedValueOnce(validStaticBrCode);
     const { getByTestId } = render(<PastePixCode navigation={navigationMock} />);
 
     await waitFor(() => {
-      expect(getByTestId('text-area').props.value).toBe(validBrCode);
+      expect(getByTestId('text-area').props.value).toBe(validStaticBrCode);
     });
   });
 
@@ -56,10 +56,25 @@ describe('PastePixCode', () => {
     });
   });
 
-  it('should set call preview payment for valid brCode', async () => {
+  it('should set call preview payment for valid static brCode', async () => {
     const { getByTestId, getByText } = render(<PastePixCode navigation={navigationMock} />);
 
-    fireEvent(getByTestId('text-area'), 'onChangeText', validBrCode);
+    fireEvent(getByTestId('text-area'), 'onChangeText', validStaticBrCode);
+    fireEvent.press(getByText('Continue'));
+
+    await waitFor(() => {
+      expect(paymentStore.pixPreview).toHaveBeenCalled();
+      expect(paymentStore.setScannedPayment).toHaveBeenCalled();
+      expect(navigationMock.push).toHaveBeenCalledWith('ConfirmPayment');
+    });
+  });
+
+  it('should set call preview payment for valid dynamic brCode', async () => {
+    const dynamicBrCode =
+      '00020126390014br.gov.bcb.pix2517https://fake.test5204000053039865802BR5903PIX6006Cidade62070503***63043BC8';
+    const { getByTestId, getByText } = render(<PastePixCode navigation={navigationMock} />);
+
+    fireEvent(getByTestId('text-area'), 'onChangeText', dynamicBrCode);
     fireEvent.press(getByText('Continue'));
 
     await waitFor(() => {
@@ -72,27 +87,13 @@ describe('PastePixCode', () => {
   it('should display an error message for invalid Pix code', async () => {
     const invalidBrCode = 'invalidPixCode';
     const { getByTestId, getByText } = render(<PastePixCode navigation={navigationMock} />);
+    jest.spyOn(paymentStore, 'pixPreview').mockRejectedValueOnce(new Error('Invalid Pix code'));
 
     fireEvent(getByTestId('text-area'), 'onChangeText', invalidBrCode);
     fireEvent.press(getByText('Continue'));
 
     await waitFor(() => {
       expect(getByText('Invalid Pix code')).toBeOnTheScreen();
-      expect(paymentStore.pixPreview).not.toHaveBeenCalled();
-    });
-  });
-
-  it('should display an error message for dynamic Pix code', async () => {
-    const dynamicBrCode =
-      '00020126390014br.gov.bcb.pix2517https://fake.test5204000053039865802BR5903PIX6006Cidade62070503***63043BC8';
-    const { getByTestId, getByText } = render(<PastePixCode navigation={navigationMock} />);
-
-    fireEvent(getByTestId('text-area'), 'onChangeText', dynamicBrCode);
-    fireEvent.press(getByText('Continue'));
-
-    await waitFor(() => {
-      expect(getByText('Dynamic Pix code is not supported yet')).toBeOnTheScreen();
-      expect(paymentStore.pixPreview).not.toHaveBeenCalled();
     });
   });
 });

@@ -1,4 +1,5 @@
 import { action, makeAutoObservable, observable } from 'mobx';
+import { PixElementType, hasError, parsePix } from 'pix-utils';
 
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { Payment, PixPayment } from '@/types/PixPayment';
@@ -94,13 +95,26 @@ export class PaymentStore {
     this.setTransaction(swapTransaction);
   }
 
-  async pixPreview(payment: PixPayment): Promise<PixPayment> {
-    const res = await brcodePaymentPreview(payment.brCode);
-    return {
-      ...payment,
+  async pixPreview(brCode: string): Promise<PixPayment> {
+    const pix = parsePix(brCode);
+    if (hasError(pix) || pix.type === PixElementType.INVALID) {
+      throw new Error('Invalid Pix code');
+    }
+
+    const res = await brcodePaymentPreview(brCode);
+
+    const pixPayment: PixPayment = {
+      brCode,
+      merchantName: res.payment.name,
+      merchantCity: pix.merchantCity,
+      transactionAmount: res.payment.amount,
+      pixKey: res.payment.pixKey,
+      assetCode: CryptoAsset.XLM,
       taxId: res.payment.taxId,
       bankName: res.payment.bankName,
+      txid: res.payment.txId,
     };
+    return pixPayment;
   }
 
   async pay() {
@@ -133,7 +147,12 @@ export class PaymentStore {
       taxId: pixPayment.taxId,
       description: pixPayment.infoAdicional || 'Payment via Emigro Wallet',
     };
-    return brcodePayment(paymentRequest);
+    const result = await brcodePayment(paymentRequest);
+    if (result.status === 'failed') {
+      throw new Error('Pix Payment failed');
+    }
+    // TODO: deal with status 'pending'
+    return result;
   }
 }
 

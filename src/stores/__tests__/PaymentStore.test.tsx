@@ -15,7 +15,7 @@ jest.mock('@services/emigro', () => ({
   sendTransaction: jest.fn().mockResolvedValue({ transactionHash: 'hash' }),
 }));
 
-describe('SwapBloc', () => {
+describe('PaymentStore', () => {
   let swapBloc: PaymentStore;
 
   beforeEach(() => {
@@ -52,33 +52,42 @@ describe('SwapBloc', () => {
     const brcodePaymentPreview = jest.spyOn(transactionApi, 'brcodePaymentPreview').mockResolvedValueOnce({
       type: 'test-type',
       payment: {
+        pixKey: 'test-pixKey',
         amount: 100,
         name: 'test-name',
-        taxId: 'test-taxId',
         bankName: 'test-bankName',
+        taxId: 'test-taxId',
+        txId: 'test-txid',
       },
     });
 
-    const payment: PixPayment = {
-      brCode: 'test-brCode',
-      assetCode: CryptoAsset.BRL,
+    const merchantName = 'Test';
+    const merchantCity = 'Cidade';
+    //TODO: we can also use pix-utils to generate a valid brCode
+    const validBrCode = `00020126320014br.gov.bcb.pix0110random-key520400005303986540115802BR5904${merchantName}6006${merchantCity}62070503***6304ACF0`;
+
+    const preview = await swapBloc.pixPreview(validBrCode);
+
+    expect(brcodePaymentPreview).toHaveBeenCalledWith(validBrCode);
+
+    const expectedPixPayment: PixPayment = {
+      brCode: validBrCode,
+      assetCode: CryptoAsset.XLM,
       transactionAmount: 100,
-      taxId: '',
+      taxId: 'test-taxId',
       pixKey: 'test-pixKey',
-      txid: 'txid',
-      merchantName: 'Merchant Name',
-      merchantCity: 'Merchant City',
+      txid: 'test-txid',
+      merchantName: 'test-name',
+      merchantCity,
+      bankName: 'test-bankName',
     };
 
-    const preview = await swapBloc.pixPreview(payment);
+    expect(preview).toEqual(expectedPixPayment);
+  });
 
-    expect(brcodePaymentPreview).toHaveBeenCalledWith('test-brCode');
-
-    expect(preview).toEqual({
-      ...payment,
-      taxId: 'test-taxId',
-      bankName: 'test-bankName',
-    });
+  it('should throw error when preview with invalid brcode', async () => {
+    const invalidBrCode = 'invalid-brcode';
+    await expect(swapBloc.pixPreview(invalidBrCode)).rejects.toThrow('Invalid Pix code');
   });
 
   it('should call pay with pix payment correctly', async () => {

@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
 import { api } from '../api';
-import { brcodePayment, brcodePaymentPreview } from '../transaction';
+import { PaymentPreview, brcodePayment, brcodePaymentPreview } from '../transaction';
 
 jest.mock('../api', () => ({
   api: jest.fn(),
@@ -22,13 +22,15 @@ describe('transaction service', () => {
   describe('brcodePaymentPreview', () => {
     it('should make a POST request to /transaction/payment-preview with the provided brcode', async () => {
       const mockAxiosPost = jest.spyOn(instance, 'post');
-      const mockApiResponse = {
-        type: 'paymentPreview',
+      const mockApiResponse: PaymentPreview = {
+        type: 'brcode-payment',
         payment: {
+          pixKey: 'testPixKey',
           amount: 100,
           bankName: 'Test Bank',
           name: 'Test Name',
           taxId: '123456789',
+          txId: 'testTxId',
         },
       };
 
