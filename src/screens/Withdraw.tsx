@@ -7,7 +7,7 @@ import { observer } from 'mobx-react-lite';
 import { IAnchorParams } from '@/types/IAnchorParams';
 import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { TransactionStatus } from '@/types/TransactionStatus';
-import { CryptoAsset } from '@/types/assets';
+import { CryptoAsset, stableCoins } from '@/types/assets';
 
 import { AssetList } from '@components/AssetList';
 import { ConfirmationModal } from '@components/modals/ConfirmationModal';
@@ -56,7 +56,7 @@ const Withdraw: React.FC = observer(() => {
   // TODO: replace by useRef: https://react.dev/reference/react/useRef
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>(); // see: https://code.pieces.app/blog/resolving-react-setinterval-conflicts
 
-  const availableAssets = [CryptoAsset.USDC, CryptoAsset.EURC, CryptoAsset.BRL, CryptoAsset.ARS];
+  const availableAssets = stableCoins();
 
   useEffect(() => {
     return cleanUp;

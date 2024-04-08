@@ -1,24 +1,29 @@
 export enum CryptoAsset {
-  XLM = 'XLM',
-  USDC = 'USDC',
-  EURC = 'EURC',
-  BRL = 'BRL',
+  // keep alphametical order
   ARS = 'ARS',
+  BRL = 'BRL',
+  EURC = 'EURC',
+  USDC = 'USDC',
+  XLM = 'XLM',
 }
 
 export enum FiatCurrency {
-  USD = 'USD', // United States Dollar
-  EUR = 'EUR', // Euro
-  BRL = 'BRL', // Brazilian Real
   ARS = 'ARS', // Argentine Peso
+  BRL = 'BRL', // Brazilian Real
+  EUR = 'EUR', // Euro
+  USD = 'USD', // United States Dollar
 }
 
 export type CryptoOrFiat = CryptoAsset | FiatCurrency;
 
-export function cryptoAssets() {
+export const cryptoAssets = () => {
   const allAssets = Object.values(CryptoAsset);
   if (__DEV__) {
     return allAssets;
   }
   return allAssets.filter((asset) => asset !== CryptoAsset.XLM);
-}
+};
+
+export const stableCoins = () => {
+  return Object.values(CryptoAsset).filter((asset) => asset !== CryptoAsset.XLM);
+};

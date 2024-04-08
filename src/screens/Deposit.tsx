@@ -7,7 +7,7 @@ import { Box, Card, FormControlErrorText, Heading, Text, VStack } from '@gluesta
 import { observer } from 'mobx-react-lite';
 
 import { IAnchorParams } from '@/types/IAnchorParams';
-import { CryptoAsset } from '@/types/assets';
+import { CryptoAsset, stableCoins } from '@/types/assets';
 
 import { AssetList } from '@components/AssetList';
 import { LoadingModal } from '@components/modals/LoadingModal';
@@ -32,7 +32,7 @@ const Deposit = observer(({ navigation }: Props) => {
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const availableAssets = [CryptoAsset.USDC, CryptoAsset.EURC, CryptoAsset.BRL, CryptoAsset.ARS];
+  const availableAssets = stableCoins();
 
   useEffect(() => {
     return cleanUp;
