@@ -8,11 +8,12 @@ type Props = {
   icon: any;
   bg?: any;
   size?: 'sm' | 'md' | 'lg';
+  textSize?: 'sm' | 'md' | 'lg';
   w?: DimensionValue;
   onPress: () => void;
 };
 
-export const CircularButton = ({ label, icon, onPress, bg = '$primary500', size = 'md', w }: Props) => {
+export const CircularButton = ({ label, icon, onPress, bg = '$primary500', size = 'md', textSize, w }: Props) => {
   let radius: any = '$10';
   if (size === 'sm') {
     radius = '$8';
@@ -36,7 +37,7 @@ export const CircularButton = ({ label, icon, onPress, bg = '$primary500', size 
         <ButtonIcon as={icon} size="xl" color={iconColor} />
       </Button>
       {label && (
-        <Text color={bg} size={size}>
+        <Text color={bg} size={textSize ?? size}>
           {label}
         </Text>
       )}

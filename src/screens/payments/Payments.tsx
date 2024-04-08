@@ -10,6 +10,8 @@ import { cryptoAssets } from '@/types/assets';
 import { AssetListActionSheet } from '@components/AssetListActionSheet';
 import { CircularButton } from '@components/CircularButton';
 
+import { useFeatureFlag } from '@hooks/feature-flags';
+
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
 
 type Props = {
@@ -17,33 +19,47 @@ type Props = {
 };
 
 export const Payments: React.FC<Props> = ({ navigation }) => {
+  const enablePixCopiaECola = useFeatureFlag('pix-copia-e-cola');
   const [assetListOpen, setAssetListOpen] = useState(false);
 
   const availableAssets = cryptoAssets();
 
+  const w = 120;
   return (
     <Box flex={1} bg="$white">
       <VStack p="$4" space="lg">
         <Heading>Pick Your Payment Method</Heading>
-        <ButtonGroup space="lg" mt="$8" justifyContent="space-around" flexWrap="wrap">
+        <ButtonGroup space="4xl" mt="$8">
           <CircularButton
             icon={QrCodeIcon}
             label="Scan to Pay"
             size="lg"
+            textSize="md"
+            w={w}
             onPress={() => navigation.push('PayWithQRCode')}
           />
           <CircularButton
             icon={HandCoinsIcon}
             label="Request Payment"
             size="lg"
+            textSize="md"
+            w={w}
             onPress={() => setAssetListOpen(true)}
           />
-          <CircularButton
-            icon={CopyIcon}
-            label="Pix Copia & Cola"
-            size="lg"
-            onPress={() => navigation.push('PastePixCode')}
-          />
+        </ButtonGroup>
+        <ButtonGroup space="4xl" mt="$8">
+          {enablePixCopiaECola ? (
+            <CircularButton
+              icon={CopyIcon}
+              label="Pix Copia & Cola"
+              size="lg"
+              textSize="md"
+              w={w}
+              onPress={() => navigation.push('PastePixCode')}
+            />
+          ) : (
+            <></>
+          )}
         </ButtonGroup>
       </VStack>
 
