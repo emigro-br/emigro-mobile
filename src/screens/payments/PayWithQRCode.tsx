@@ -9,8 +9,11 @@ import { Box, Center, Pressable, Text, View } from '@gluestack-ui/themed';
 import { BarCodeScanner, PermissionResponse } from 'expo-barcode-scanner';
 import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
 import { CameraView, PermissionStatus, useCameraPermissions } from 'expo-camera/next';
+import { PixElementType, hasError, parsePix } from 'pix-utils';
 
-import { IVendor } from '@/types/IVendor';
+import { vendorToPayment } from '@/types/IVendor';
+import { Payment, PixPayment } from '@/types/PixPayment';
+import { CryptoAsset } from '@/types/assets';
 
 import { INVALID_QR_CODE } from '@constants/errorMessages';
 
@@ -20,6 +23,8 @@ import AskCamera from '@screens/AskCamera';
 
 import { paymentStore } from '@stores/PaymentStore';
 
+import { brCodeFromMercadoPagoUrl } from '@utils/pix';
+
 type ScreenProps = {
   navigation: NativeStackNavigationProp<PaymentStackParamList, 'PayWithQRCode'>;
 };
@@ -28,8 +33,20 @@ export const PayWithQRCode = ({ navigation }: ScreenProps) => {
   return (
     <QRCodeScanner
       onCancel={() => navigation.goBack()}
-      onScanPayment={(payment) => {
-        paymentStore.setScannedPayment(payment);
+      onScanPayment={async (payment) => {
+        if ('brCode' in payment) {
+          try {
+            const brCode = (payment as PixPayment).brCode;
+            const pixPayment = await paymentStore.pixPreview(brCode);
+            paymentStore.setScannedPayment(pixPayment);
+          } catch (error) {
+            // FIXME: how show this error to the user?
+            console.warn('[onScanPayment]', error);
+            return;
+          }
+        } else {
+          paymentStore.setScannedPayment(payment);
+        }
         navigation.push('ConfirmPayment');
       }}
     />
@@ -38,7 +55,7 @@ export const PayWithQRCode = ({ navigation }: ScreenProps) => {
 
 type Props = {
   onCancel: () => void;
-  onScanPayment: (payment: IVendor) => void;
+  onScanPayment: (payment: Payment) => void;
 };
 
 export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
@@ -60,6 +77,33 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
     }, []),
   );
 
+  const parseQRCode = (scanned: string): Payment | PixPayment => {
+    if (scanned.startsWith('https://qr.mercadopago.com')) {
+      // FIXME: hardcoded values
+      const merchantName = 'Mercado Pago';
+      const merchantCity = '';
+      scanned = brCodeFromMercadoPagoUrl(scanned, merchantName, merchantCity);
+    }
+
+    const pix = parsePix(scanned);
+    if (!hasError(pix) && pix.type !== PixElementType.INVALID) {
+      return {
+        ...pix,
+        brCode: scanned,
+        assetCode: CryptoAsset.BRL,
+        taxId: '',
+      } as PixPayment;
+    }
+
+    // TODO: stop using deprecated approach, migrate to brcode payment
+    const qrObject = JSON.parse(scanned);
+    if (!qrObject.name || !qrObject.amount || !qrObject.assetCode || !qrObject.publicKey) {
+      throw new Error(INVALID_QR_CODE);
+    }
+
+    return vendorToPayment(qrObject);
+  };
+
   const handleBarCodeScanned = (result: BarCodeScanningResult) => {
     // If a QR code has already been scanned, return early
     if (isScanned) {
@@ -68,11 +112,8 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
 
     setIsScanned(true);
     try {
-      const qrObject = JSON.parse(result.data);
-      if (!qrObject.name || !qrObject.amount || !qrObject.assetCode || !qrObject.publicKey) {
-        throw new Error(INVALID_QR_CODE);
-      }
-      onScanPayment(qrObject);
+      const payment = parseQRCode(result.data);
+      onScanPayment(payment);
     } catch (error) {
       console.warn('[handleBarCodeScanned]', error);
       setError(INVALID_QR_CODE);

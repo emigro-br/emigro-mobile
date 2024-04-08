@@ -9,6 +9,7 @@ import {
   ButtonSpinner,
   ButtonText,
   Card,
+  Center,
   Divider,
   HStack,
   Heading,
@@ -17,6 +18,7 @@ import {
 } from '@gluestack-ui/themed';
 import * as Sentry from '@sentry/react-native';
 
+import { PixPayment } from '@/types/PixPayment';
 import { CryptoAsset, cryptoAssets } from '@/types/assets';
 
 import { ErrorModal } from '@components/modals/ErrorModal';
@@ -27,6 +29,7 @@ import { TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
 import { WalletStackParamList } from '@navigation/WalletStack';
 
+import { LoadingScreen } from '@screens/Loading';
 import { PinScreen } from '@screens/PinScreen';
 
 import { IQuoteRequest, handleQuote } from '@services/quotes';
@@ -35,7 +38,7 @@ import { balanceStore } from '@stores/BalanceStore';
 import { paymentStore as bloc, paymentStore } from '@stores/PaymentStore';
 import { sessionStore } from '@stores/SessionStore';
 
-import { AssetToCurrency, labelFor, symbolFor } from '@utils/assets';
+import { symbolFor } from '@utils/assets';
 
 enum TransactionStep {
   NONE = 'none',
@@ -50,25 +53,25 @@ type Props = {
 };
 
 export const ConfirmPayment = ({ navigation }: Props) => {
-  const scannedVendor = paymentStore.scannedPayment!; //FIXME:
+  const { scannedPayment } = paymentStore;
+
   const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
   const [showPinScreen, setShowPinScreen] = useState(false);
-  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(scannedVendor.assetCode);
-  const [paymentQuote, setPaymentQuote] = useState<number | null>(scannedVendor.amount);
+  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(scannedPayment?.assetCode ?? CryptoAsset.USDC);
+  const [paymentQuote, setPaymentQuote] = useState<number | null>(scannedPayment?.transactionAmount ?? null);
   const [transactionError, setTransactionError] = useState<Error | unknown>(null);
 
-  const availableAssets = cryptoAssets();
-  const data = availableAssets.map((asset) => ({
-    label: asset,
-    value: asset,
-  }));
+  const isPix = scannedPayment && 'brCode' in scannedPayment;
 
   const fetchQuote = async () => {
+    if (!selectedAsset || !scannedPayment) {
+      return;
+    }
     setPaymentQuote(null);
     const data: IQuoteRequest = {
       from: selectedAsset,
-      to: scannedVendor.assetCode,
-      amount: `${scannedVendor.amount}`,
+      to: scannedPayment.assetCode,
+      amount: `${scannedPayment.transactionAmount}`,
       type: 'strict_receive',
     };
     const quote = await handleQuote(data);
@@ -85,6 +88,10 @@ export const ConfirmPayment = ({ navigation }: Props) => {
     fetchQuote().catch(console.warn);
   }, [selectedAsset]);
 
+  if (!scannedPayment) {
+    return <LoadingScreen />;
+  }
+
   const handlePressPay = () => {
     if (!paymentQuote) {
       console.warn('Payment amount is not set');
@@ -98,11 +105,11 @@ export const ConfirmPayment = ({ navigation }: Props) => {
         value: paymentQuote,
       },
       to: {
-        wallet: scannedVendor.publicKey,
-        asset: scannedVendor.assetCode,
-        value: scannedVendor.amount,
+        wallet: scannedPayment.pixKey,
+        asset: scannedPayment.assetCode,
+        value: scannedPayment.transactionAmount,
       },
-      rate: paymentQuote / scannedVendor.amount,
+      rate: paymentQuote / scannedPayment.transactionAmount,
       fees: 0,
     };
 
@@ -113,7 +120,15 @@ export const ConfirmPayment = ({ navigation }: Props) => {
   const handleConfirmPayment = async () => {
     setStep(TransactionStep.PROCESSING);
     try {
-      const result = await bloc.pay();
+      let result;
+
+      // TODO: move to paymentStore
+      if (isPix) {
+        result = await bloc.payPix();
+      } else {
+        result = await bloc.pay();
+      }
+
       if (result.transactionHash) {
         setStep(TransactionStep.SUCCESS);
       }
@@ -148,9 +163,14 @@ export const ConfirmPayment = ({ navigation }: Props) => {
     );
   }
 
+  const availableAssets = cryptoAssets();
+  const data = availableAssets.map((asset) => ({
+    label: asset,
+    value: asset,
+  }));
+
   const balance = balanceStore.get(selectedAsset);
   const hasBalance = paymentQuote ? paymentQuote < balance : true;
-  const vendorCurrency = AssetToCurrency[scannedVendor.assetCode as CryptoAsset];
 
   const isProcesing = step === TransactionStep.PROCESSING;
   const isPayDisabled = !paymentQuote || !hasBalance || step !== TransactionStep.NONE; // processing, success, error
@@ -174,27 +194,38 @@ export const ConfirmPayment = ({ navigation }: Props) => {
 
       <Box flex={1} bg="$white">
         <VStack p="$4" space="lg">
-          <Heading size="xl">Review the details of this payment</Heading>
+          <Heading size="xl">Review the payment</Heading>
 
           <Box>
-            <Text bold>Requested value</Text>
             <Text size="4xl" color="$textLight800" bold>
-              {scannedVendor.amount} {labelFor(vendorCurrency)}
+              {symbolFor(scannedPayment.assetCode, scannedPayment.transactionAmount)}
             </Text>
           </Box>
 
-          <VStack>
-            <Text size="lg">
-              for{' '}
-              <Text bold size="lg">
-                {scannedVendor.name}
+          <VStack space="3xl">
+            <Box>
+              <Text size="lg">
+                for{' '}
+                <Text bold size="lg">
+                  {scannedPayment.merchantName}
+                </Text>
               </Text>
-            </Text>
-            {scannedVendor.address && (
-              <Text>
-                Location: <Text>{scannedVendor.address}</Text>
-              </Text>
+              {scannedPayment.merchantCity && (
+                <Text>
+                  in <Text>{scannedPayment.merchantCity}</Text>
+                </Text>
+              )}
+            </Box>
+
+            {scannedPayment.infoAdicional && (
+              <Center>
+                <Card variant="filled" bg="$backgroundLight100">
+                  <Text textAlign="center">{scannedPayment.infoAdicional}</Text>
+                </Card>
+              </Center>
             )}
+
+            {isPix && <StaticPix pix={scannedPayment as PixPayment} />}
           </VStack>
 
           <Divider />
@@ -243,3 +274,28 @@ export const ConfirmPayment = ({ navigation }: Props) => {
     </>
   );
 };
+
+interface StaticPixProps {
+  pix: PixPayment;
+}
+
+const StaticPix = ({ pix }: StaticPixProps) => (
+  <VStack space="md">
+    <HStack justifyContent="space-between">
+      <Text bold>CPF/CNPJ:</Text>
+      <Text>{pix.taxId}</Text>
+    </HStack>
+    <HStack justifyContent="space-between">
+      <Text bold>Institution:</Text>
+      <Text maxWidth="$2/3">{pix.bankName}</Text>
+    </HStack>
+    <HStack justifyContent="space-between">
+      <Text bold>Pix Key:</Text>
+      <Text>{pix.pixKey}</Text>
+    </HStack>
+    <HStack justifyContent="space-between">
+      <Text bold>Identifier:</Text>
+      <Text>{pix.txid}</Text>
+    </HStack>
+  </VStack>
+);

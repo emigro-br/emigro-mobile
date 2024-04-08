@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Header from '@components/Header';
 
 import { ConfirmPayment } from '@screens/payments/ConfirmPayment';
+import { PastePixCode } from '@screens/payments/PastePixCode';
 import { PayWithQRCode } from '@screens/payments/PayWithQRCode';
 import { Payments } from '@screens/payments/Payments';
 import { RequestPayment } from '@screens/payments/RequestPayment';
@@ -21,6 +22,7 @@ export type PaymentStackParamList = {
     asset: string;
     value: number;
   };
+  PastePixCode: undefined;
 };
 
 const Stack = createNativeStackNavigator<PaymentStackParamList>();
@@ -49,6 +51,7 @@ export function PaymentStack() {
           gestureEnabled: false, // disable swap back gesture
         }}
       />
+      <Stack.Screen name="PastePixCode" component={PastePixCode} options={{ title: 'Pay with Pix' }} />
     </Stack.Navigator>
   );
 }

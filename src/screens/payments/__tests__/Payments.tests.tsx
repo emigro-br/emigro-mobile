@@ -50,4 +50,10 @@ describe('Payments component', () => {
     fireEvent.press(assetItem);
     expect(navigation.push).toHaveBeenCalledWith('RequestPayment', { asset: CryptoAsset.BRL });
   });
+
+  it('Should open the Pix Copia & Cola screen when Pix Copia & Cola button is pressed', () => {
+    const pixButton = screen.getByText('Pix Copia & Cola');
+    fireEvent.press(pixButton);
+    expect(navigation.push).toHaveBeenCalledWith('PastePixCode');
+  });
 });

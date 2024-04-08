@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { Box, ButtonGroup, Heading, VStack } from '@gluestack-ui/themed';
+import { Box, ButtonGroup, CopyIcon, Heading, VStack } from '@gluestack-ui/themed';
 import { HandCoinsIcon, QrCodeIcon } from 'lucide-react-native';
 
 import { cryptoAssets } from '@/types/assets';
@@ -25,7 +25,7 @@ export const Payments: React.FC<Props> = ({ navigation }) => {
     <Box flex={1} bg="$white">
       <VStack p="$4" space="lg">
         <Heading>Pick Your Payment Method</Heading>
-        <ButtonGroup space="md" mt="$8" justifyContent="space-around">
+        <ButtonGroup space="lg" mt="$8" justifyContent="space-around" flexWrap="wrap">
           <CircularButton
             icon={QrCodeIcon}
             label="Scan to Pay"
@@ -37,6 +37,12 @@ export const Payments: React.FC<Props> = ({ navigation }) => {
             label="Request Payment"
             size="lg"
             onPress={() => setAssetListOpen(true)}
+          />
+          <CircularButton
+            icon={CopyIcon}
+            label="Pix Copia & Cola"
+            size="lg"
+            onPress={() => navigation.push('PastePixCode')}
           />
         </ButtonGroup>
       </VStack>

@@ -5,7 +5,7 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 import { inputPIN, render } from 'test-utils';
 
 import { IPaymentResponse } from '@/types/IPaymentResponse';
-import { IVendor } from '@/types/IVendor';
+import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
 import * as quotesService from '@services/quotes';
@@ -37,30 +37,53 @@ describe('ConfirmPayment component', () => {
     navigation: mockNavigation,
   };
 
-  const mockScannedVendor: IVendor = {
+  const mockScannedPayment: Payment = {
     assetCode: CryptoAsset.USDC,
-    amount: 10,
-    name: 'John Doe',
-    address: '123 Main St',
-    publicKey: 'mokced-publicKey',
+    transactionAmount: 10,
+    merchantName: 'John Doe',
+    merchantCity: '123 Main St',
+    pixKey: 'mocked-pixkey',
+  };
+
+  const mockPixPayment: PixPayment = {
+    assetCode: CryptoAsset.USDC,
+    transactionAmount: 10,
+    merchantName: 'John Doe',
+    merchantCity: '123 Main St',
+    pixKey: 'mocked-pixkey',
+    // pix fields
+    brCode: 'mocked-brCode',
+    txid: 'mocked-identifier',
+    taxId: 'mocked-taxId',
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
-    paymentStore.setScannedPayment(mockScannedVendor);
+    paymentStore.setScannedPayment(mockScannedPayment);
   });
 
   it('renders the component correctly', async () => {
+    paymentStore.setScannedPayment(mockPixPayment); // for full test coverage
     jest
       .spyOn(quotesService, 'handleQuote')
       .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const { getByText } = render(<ConfirmPayment {...mockProps} />);
 
-    expect(getByText('Review the details of this payment')).toBeOnTheScreen();
-    expect(getByText('Requested value')).toBeOnTheScreen();
-    expect(getByText('10 US Dollar')).toBeOnTheScreen();
+    // receiver info
+    expect(getByText('Review the payment')).toBeOnTheScreen();
+    expect(getByText('$ 10.00')).toBeOnTheScreen();
     expect(getByText('for John Doe')).toBeOnTheScreen();
-    expect(getByText('Location: 123 Main St')).toBeOnTheScreen();
+    expect(getByText('in 123 Main St')).toBeOnTheScreen();
+
+    // pix info
+    expect(getByText('Pix Key:')).toBeOnTheScreen();
+    expect(getByText('mocked-pixkey')).toBeOnTheScreen();
+    expect(getByText('Identifier:')).toBeOnTheScreen();
+    expect(getByText('mocked-identifier')).toBeOnTheScreen();
+    expect(getByText('CPF/CNPJ:')).toBeOnTheScreen();
+    expect(getByText('mocked-taxId')).toBeOnTheScreen();
+
+    // payment
     expect(getByText('Select the account')).toBeOnTheScreen();
     expect(getByText('Balance: $ 100.00')).toBeOnTheScreen();
     expect(getByText('Pay')).toBeOnTheScreen();

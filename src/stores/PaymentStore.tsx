@@ -1,10 +1,12 @@
 import { action, makeAutoObservable, observable } from 'mobx';
+import { PixElementType, hasError, parsePix } from 'pix-utils';
 
 import { ITransactionRequest } from '@/types/ITransactionRequest';
-import { IVendor } from '@/types/IVendor';
+import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
 import { sendTransaction } from '@services/emigro';
+import { brcodePayment, brcodePaymentPreview } from '@services/transaction';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -32,7 +34,7 @@ type PayTransaction = {
 
 export class PaymentStore {
   transaction?: PayTransaction;
-  scannedPayment?: IVendor; // FIXME: only to delete VendorContext
+  scannedPayment?: Payment | PixPayment;
 
   constructor() {
     makeAutoObservable(this, {
@@ -48,8 +50,8 @@ export class PaymentStore {
     this.transaction = transaction;
   }
 
-  setScannedPayment(vendor?: IVendor) {
-    this.scannedPayment = vendor;
+  setScannedPayment(payment?: Payment) {
+    this.scannedPayment = payment;
   }
 
   reset() {
@@ -93,7 +95,29 @@ export class PaymentStore {
     this.setTransaction(swapTransaction);
   }
 
-  public async pay() {
+  async pixPreview(brCode: string): Promise<PixPayment> {
+    const pix = parsePix(brCode);
+    if (hasError(pix) || pix.type === PixElementType.INVALID) {
+      throw new Error('Invalid Pix code');
+    }
+
+    const res = await brcodePaymentPreview(brCode);
+
+    const pixPayment: PixPayment = {
+      brCode,
+      merchantName: res.payment.name,
+      merchantCity: pix.merchantCity,
+      transactionAmount: res.payment.amount,
+      pixKey: res.payment.pixKey,
+      assetCode: CryptoAsset.XLM,
+      taxId: res.payment.taxId,
+      bankName: res.payment.bankName,
+      txid: res.payment.txId,
+    };
+    return pixPayment;
+  }
+
+  async pay() {
     const { from, to } = this.transaction!;
     const transactionRequest: ITransactionRequest = {
       maxAmountToSend: from.value.toString(), // cry
@@ -104,6 +128,31 @@ export class PaymentStore {
     };
     const res = await sendTransaction(transactionRequest);
     return res;
+  }
+
+  async payPix() {
+    if (!this.scannedPayment) {
+      throw new Error('No payment scanned');
+    }
+
+    if (!this.transaction) {
+      throw new Error('No transaction set');
+    }
+
+    const pixPayment = this.scannedPayment as PixPayment;
+    const paymentRequest = {
+      brcode: pixPayment.brCode,
+      amount: this.transaction.to.value, // BRL value
+      sourceAsset: this.transaction.from.asset, // selected Asset
+      taxId: pixPayment.taxId,
+      description: pixPayment.infoAdicional || 'Payment via Emigro Wallet',
+    };
+    const result = await brcodePayment(paymentRequest);
+    if (result.status === 'failed') {
+      throw new Error('Pix Payment failed');
+    }
+    // TODO: deal with status 'pending'
+    return result;
   }
 }
 
