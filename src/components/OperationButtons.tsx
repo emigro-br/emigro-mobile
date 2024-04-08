@@ -13,12 +13,25 @@ type Props = {
 };
 
 const OperationButtons = ({ navigation }: Props) => {
+  const w = 80; // set with to keep the buttons spaced equally
   return (
     <ButtonGroup justifyContent="space-around" py="$2">
-      <CircularButton label="Deposit" bg="$white" icon={AddIcon} onPress={() => navigation.push('Deposit')} />
-      <CircularButton label="Withdraw" bg="$white" icon={ArrowUpIcon} onPress={() => navigation.push('Withdraw')} />
-      <CircularButton label="Send" bg="$white" icon={ArrowRightIcon} onPress={() => navigation.push('TransfersRoot')} />
-      <CircularButton label="Swap" bg="$white" icon={RepeatIcon} onPress={() => navigation.push('SwapRoot')} />
+      <CircularButton label="Deposit" bg="$white" w={w} icon={AddIcon} onPress={() => navigation.push('Deposit')} />
+      <CircularButton
+        label="Withdraw"
+        bg="$white"
+        w={w}
+        icon={ArrowUpIcon}
+        onPress={() => navigation.push('Withdraw')}
+      />
+      <CircularButton
+        label="Send"
+        bg="$white"
+        w={w}
+        icon={ArrowRightIcon}
+        onPress={() => navigation.push('TransfersRoot')}
+      />
+      <CircularButton label="Swap" bg="$white" w={w} icon={RepeatIcon} onPress={() => navigation.push('SwapRoot')} />
     </ButtonGroup>
   );
 };

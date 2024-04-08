@@ -1,4 +1,5 @@
 import React from 'react';
+import { DimensionValue } from 'react-native';
 
 import { Button, ButtonIcon, Text, VStack } from '@gluestack-ui/themed';
 
@@ -7,10 +8,11 @@ type Props = {
   icon: any;
   bg?: any;
   size?: 'sm' | 'md' | 'lg';
+  w?: DimensionValue;
   onPress: () => void;
 };
 
-export const CircularButton = ({ label, icon, onPress, bg = '$primary500', size = 'md' }: Props) => {
+export const CircularButton = ({ label, icon, onPress, bg = '$primary500', size = 'md', w }: Props) => {
   let radius: any = '$10';
   if (size === 'sm') {
     radius = '$8';
@@ -21,7 +23,7 @@ export const CircularButton = ({ label, icon, onPress, bg = '$primary500', size 
   const iconColor = bg === '$white' ? '$primary500' : '$white';
 
   return (
-    <VStack alignItems="center">
+    <VStack alignItems="center" w={w}>
       <Button
         bg={bg}
         borderRadius="$full"
