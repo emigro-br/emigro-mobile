@@ -103,7 +103,7 @@ describe('ConfirmPayment component', () => {
     jest
       .spyOn(quotesService, 'handleQuote')
       .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
-    const { getByText } = render(<ConfirmPayment {...mockProps} />);
+    const { getByText, queryByText } = render(<ConfirmPayment {...mockProps} />);
 
     // receiver info
     expect(getByText('Review the payment')).toBeOnTheScreen();
@@ -120,6 +120,9 @@ describe('ConfirmPayment component', () => {
     expect(getByText('mocked-taxId')).toBeOnTheScreen();
     expect(getByText('Institution:')).toBeOnTheScreen();
     expect(getByText('Mock Bank')).toBeOnTheScreen();
+
+    // not stellar
+    expect(queryByText('Wallet Key:')).toBeNull();
 
     // payment
     expect(getByText('Select the account')).toBeOnTheScreen();
