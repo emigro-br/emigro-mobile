@@ -10,6 +10,8 @@ import { brcodePayment, brcodePaymentPreview } from '@services/transaction';
 
 import { sessionStore } from '@stores/SessionStore';
 
+import { isoToCrypto } from '@utils/assets';
+
 export type SwapTransaction = {
   from: CryptoAsset;
   fromValue: number;
@@ -95,10 +97,23 @@ export class PaymentStore {
     this.setTransaction(swapTransaction);
   }
 
-  async pixPreview(brCode: string): Promise<PixPayment> {
+  async preview(brCode: string): Promise<Payment | PixPayment> {
     const pix = parsePix(brCode);
     if (hasError(pix) || pix.type === PixElementType.INVALID) {
       throw new Error('Invalid Pix code');
+    }
+
+    if (pix.merchantCategoryCode === '9999' && pix.type === PixElementType.STATIC) {
+      // It's Emigro a Payment
+      const { merchantName, merchantCity, transactionAmount, infoAdicional } = pix;
+      return {
+        merchantName,
+        merchantCity,
+        transactionAmount,
+        infoAdicional,
+        walletKey: pix.pixKey,
+        assetCode: isoToCrypto[pix.transactionCurrency as keyof typeof isoToCrypto],
+      } as Payment;
     }
 
     const res = await brcodePaymentPreview(brCode);
@@ -109,7 +124,7 @@ export class PaymentStore {
       merchantCity: pix.merchantCity,
       transactionAmount: res.payment.amount,
       pixKey: res.payment.pixKey,
-      assetCode: CryptoAsset.XLM,
+      assetCode: CryptoAsset.BRL, // Pix is aways in BRL
       taxId: res.payment.taxId,
       bankName: res.payment.bankName,
       txid: res.payment.txId,

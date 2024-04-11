@@ -18,7 +18,7 @@ import {
 } from '@gluestack-ui/themed';
 import * as Sentry from '@sentry/react-native';
 
-import { PixPayment } from '@/types/PixPayment';
+import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset, cryptoAssets } from '@/types/assets';
 
 import { ErrorModal } from '@components/modals/ErrorModal';
@@ -39,6 +39,7 @@ import { paymentStore as bloc, paymentStore } from '@stores/PaymentStore';
 import { sessionStore } from '@stores/SessionStore';
 
 import { symbolFor } from '@utils/assets';
+import { maskWallet } from '@utils/masks';
 
 enum TransactionStep {
   NONE = 'none',
@@ -61,7 +62,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
   const [paymentQuote, setPaymentQuote] = useState<number | null>(scannedPayment?.transactionAmount ?? null);
   const [transactionError, setTransactionError] = useState<Error | unknown>(null);
 
-  const isPix = scannedPayment && 'brCode' in scannedPayment;
+  const isPix = scannedPayment && 'pixKey' in scannedPayment;
 
   const fetchQuote = async () => {
     if (!selectedAsset || !scannedPayment) {
@@ -105,7 +106,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
         value: paymentQuote,
       },
       to: {
-        wallet: scannedPayment.pixKey,
+        wallet: scannedPayment.walletKey, // TODO: for pix is the Emigro wallet in the server side
         asset: scannedPayment.assetCode,
         value: scannedPayment.transactionAmount,
       },
@@ -226,6 +227,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
             )}
 
             {isPix && <StaticPix pix={scannedPayment as PixPayment} />}
+            {!isPix && <StellarPay pay={scannedPayment} />}
           </VStack>
 
           <Divider />
@@ -281,21 +283,52 @@ interface StaticPixProps {
 
 const StaticPix = ({ pix }: StaticPixProps) => (
   <VStack space="md">
-    <HStack justifyContent="space-between">
-      <Text bold>CPF/CNPJ:</Text>
-      <Text>{pix.taxId}</Text>
-    </HStack>
+    {pix.taxId && (
+      <HStack justifyContent="space-between">
+        <Text bold>CPF/CNPJ:</Text>
+        <Text>{pix.taxId}</Text>
+      </HStack>
+    )}
     <HStack justifyContent="space-between">
       <Text bold>Institution:</Text>
       <Text maxWidth="$2/3">{pix.bankName}</Text>
     </HStack>
-    <HStack justifyContent="space-between">
-      <Text bold>Pix Key:</Text>
-      <Text>{pix.pixKey}</Text>
-    </HStack>
+    {pix.pixKey && (
+      <HStack justifyContent="space-between">
+        <Text bold>Pix Key:</Text>
+        <Text>{pix.pixKey}</Text>
+      </HStack>
+    )}
+    {pix.walletKey && (
+      <HStack justifyContent="space-between">
+        <Text bold>Wallet Key:</Text>
+        <Text>{maskWallet(pix.walletKey)}</Text>
+      </HStack>
+    )}
     <HStack justifyContent="space-between">
       <Text bold>Identifier:</Text>
       <Text>{pix.txid}</Text>
     </HStack>
+  </VStack>
+);
+
+interface StellarPayProps {
+  pay: Payment;
+}
+
+const StellarPay = ({ pay }: StellarPayProps) => (
+  <VStack space="md">
+    <HStack justifyContent="space-between">
+      <Text bold>Institution:</Text>
+      <Text maxWidth="$2/3">Stellar Network</Text>
+    </HStack>
+    <HStack justifyContent="space-between">
+      <Text bold>Wallet Key:</Text>
+      <Text>{maskWallet(pay.walletKey!)}</Text>
+    </HStack>
+    {/* <HStack justifyContent="space-between">
+      <Text bold>Identifier:</Text>
+      <Text>{pix.txid}</Text>
+    </HStack> */}
   </VStack>
 );

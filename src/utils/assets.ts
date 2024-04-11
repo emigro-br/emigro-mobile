@@ -9,7 +9,7 @@ import usdIcon from '@assets/images/icons/usa-flag-round-circle-icon.png';
 
 // convert asset code to currency code
 export const AssetToCurrency = {
-  [CryptoAsset.XLM]: CryptoAsset.XLM,
+  [CryptoAsset.XLM]: null,
   [CryptoAsset.USDC]: FiatCurrency.USD,
   [CryptoAsset.EURC]: FiatCurrency.EUR,
   [CryptoAsset.BRL]: FiatCurrency.BRL,
@@ -70,4 +70,21 @@ const AssetToIcon: Record<CryptoOrFiat, any> = {
 
 export const iconFor = (asset: CryptoOrFiat) => {
   return AssetToIcon[asset];
+};
+
+// https://en.wikipedia.org/wiki/ISO_4217
+export const fiatToIso = {
+  XLM: '000',
+  [FiatCurrency.EUR]: '978',
+  [FiatCurrency.USD]: '840',
+  [FiatCurrency.BRL]: '986',
+  [FiatCurrency.ARS]: '032',
+};
+
+export const isoToCrypto = {
+  '000': CryptoAsset.XLM,
+  '978': CryptoAsset.EURC,
+  '840': CryptoAsset.USDC,
+  '986': CryptoAsset.BRL,
+  '032': CryptoAsset.ARS,
 };
