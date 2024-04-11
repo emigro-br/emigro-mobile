@@ -13,6 +13,7 @@ import {
   Divider,
   HStack,
   Heading,
+  Pressable,
   Text,
   VStack,
 } from '@gluestack-ui/themed';
@@ -211,9 +212,11 @@ export const ConfirmPayment = ({ navigation }: Props) => {
           <Heading size="xl">Review the payment</Heading>
 
           <HStack alignItems="center">
-            <Text size="4xl" color="$textLight800" bold>
-              {symbolFor(scannedPayment.assetCode, requestedAmount)}
-            </Text>
+            <Pressable onPress={() => isAmountEditable && setShowEditAmount(true)}>
+              <Text size="4xl" color="$textLight800" bold>
+                {symbolFor(scannedPayment.assetCode, requestedAmount)}
+              </Text>
+            </Pressable>
             {isAmountEditable && (
               <Button variant="link" ml="$2" onPress={() => setShowEditAmount(true)}>
                 <ButtonText>Edit</ButtonText>
