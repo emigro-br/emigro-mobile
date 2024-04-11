@@ -68,7 +68,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
   const isPix = scannedPayment && 'pixKey' in scannedPayment;
 
   const fetchQuote = async () => {
-    if (!selectedAsset || !scannedPayment) {
+    if (!selectedAsset || !scannedPayment || !requestedAmount) {
       return;
     }
     setPaymentQuote(null);
@@ -90,7 +90,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
 
   useEffect(() => {
     fetchQuote().catch(console.warn);
-  }, [selectedAsset]);
+  }, [selectedAsset, requestedAmount]);
 
   if (!scannedPayment) {
     return <LoadingScreen />;
