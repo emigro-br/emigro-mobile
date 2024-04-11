@@ -13,6 +13,7 @@ import {
   Divider,
   HStack,
   Heading,
+  Pressable,
   Text,
   VStack,
 } from '@gluestack-ui/themed';
@@ -21,6 +22,7 @@ import * as Sentry from '@sentry/react-native';
 import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset, cryptoAssets } from '@/types/assets';
 
+import { InputAmountActionSheet } from '@components/InputAmountActionSheet';
 import { ErrorModal } from '@components/modals/ErrorModal';
 import { SuccessModal } from '@components/modals/SuccessModal';
 
@@ -38,7 +40,7 @@ import { balanceStore } from '@stores/BalanceStore';
 import { paymentStore as bloc, paymentStore } from '@stores/PaymentStore';
 import { sessionStore } from '@stores/SessionStore';
 
-import { symbolFor } from '@utils/assets';
+import { AssetToCurrency, symbolFor } from '@utils/assets';
 import { maskWallet } from '@utils/masks';
 
 enum TransactionStep {
@@ -58,6 +60,8 @@ export const ConfirmPayment = ({ navigation }: Props) => {
 
   const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
   const [showPinScreen, setShowPinScreen] = useState(false);
+  const [showEditAmount, setShowEditAmount] = useState(false);
+  const [requestedAmount, setRequestedAmount] = useState<number>(scannedPayment?.transactionAmount ?? 0);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(scannedPayment?.assetCode ?? CryptoAsset.USDC);
   const [paymentQuote, setPaymentQuote] = useState<number | null>(scannedPayment?.transactionAmount ?? null);
   const [transactionError, setTransactionError] = useState<Error | unknown>(null);
@@ -65,14 +69,14 @@ export const ConfirmPayment = ({ navigation }: Props) => {
   const isPix = scannedPayment && 'pixKey' in scannedPayment;
 
   const fetchQuote = async () => {
-    if (!selectedAsset || !scannedPayment) {
+    if (!selectedAsset || !scannedPayment || !requestedAmount) {
       return;
     }
     setPaymentQuote(null);
     const data: IQuoteRequest = {
       from: selectedAsset,
       to: scannedPayment.assetCode,
-      amount: `${scannedPayment.transactionAmount}`,
+      amount: `${requestedAmount}`,
       type: 'strict_receive',
     };
     const quote = await handleQuote(data);
@@ -87,7 +91,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
 
   useEffect(() => {
     fetchQuote().catch(console.warn);
-  }, [selectedAsset]);
+  }, [selectedAsset, requestedAmount]);
 
   if (!scannedPayment) {
     return <LoadingScreen />;
@@ -108,9 +112,9 @@ export const ConfirmPayment = ({ navigation }: Props) => {
       to: {
         wallet: scannedPayment.walletKey, // TODO: for pix is the Emigro wallet in the server side
         asset: scannedPayment.assetCode,
-        value: scannedPayment.transactionAmount,
+        value: requestedAmount,
       },
-      rate: paymentQuote / scannedPayment.transactionAmount,
+      rate: paymentQuote / requestedAmount,
       fees: 0,
     };
 
@@ -175,6 +179,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
 
   const isProcesing = step === TransactionStep.PROCESSING;
   const isPayDisabled = !paymentQuote || !hasBalance || step !== TransactionStep.NONE; // processing, success, error
+  const isAmountEditable = scannedPayment.transactionAmount === 0;
 
   return (
     <>
@@ -193,15 +198,31 @@ export const ConfirmPayment = ({ navigation }: Props) => {
         onClose={() => setStep(TransactionStep.NONE)}
       />
 
+      <InputAmountActionSheet
+        isOpen={showEditAmount}
+        onClose={() => setShowEditAmount(false)}
+        tagline="Enter the amount you want to pay"
+        initialAmount={requestedAmount}
+        asset={AssetToCurrency[scannedPayment.assetCode]} //TODO: improve this
+        onSave={(amount) => setRequestedAmount(amount)}
+      />
+
       <Box flex={1} bg="$white">
         <VStack p="$4" space="lg">
           <Heading size="xl">Review the payment</Heading>
 
-          <Box>
-            <Text size="4xl" color="$textLight800" bold>
-              {symbolFor(scannedPayment.assetCode, scannedPayment.transactionAmount)}
-            </Text>
-          </Box>
+          <HStack alignItems="center">
+            <Pressable onPress={() => isAmountEditable && setShowEditAmount(true)}>
+              <Text size="4xl" color="$textLight800" bold>
+                {symbolFor(scannedPayment.assetCode, requestedAmount)}
+              </Text>
+            </Pressable>
+            {isAmountEditable && (
+              <Button variant="link" ml="$2" onPress={() => setShowEditAmount(true)}>
+                <ButtonText>Edit</ButtonText>
+              </Button>
+            )}
+          </HStack>
 
           <VStack space="3xl">
             <Box>

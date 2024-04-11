@@ -135,6 +135,24 @@ describe('ConfirmPayment component', () => {
     });
   });
 
+  it('should open the edit amount when the "edit" is pressed', async () => {
+    jest
+      .spyOn(quotesService, 'handleQuote')
+      .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
+    const mockPixZeroAmount = { ...mockPixPayment, transactionAmount: 0 };
+    paymentStore.setScannedPayment(mockPixZeroAmount); // for full test coverage
+    const { getByText, getByTestId } = render(<ConfirmPayment {...mockProps} />);
+    expect(getByText('$ 0.00')).toBeOnTheScreen();
+    const edit = getByText('Edit');
+    expect(edit).toBeOnTheScreen();
+
+    fireEvent.press(edit);
+
+    await waitFor(() => {
+      expect(getByTestId('input-amount-action-sheet')).toBeOnTheScreen();
+    });
+  });
+
   it('calls the handlePressPay function when the "Pay" button is pressed', async () => {
     jest
       .spyOn(quotesService, 'handleQuote')

@@ -23,6 +23,9 @@ describe('RequestPayment component', () => {
     const assetInput = screen.getByTestId('asset-input');
     expect(assetInput).toBeOnTheScreen();
 
+    const requestOpenAmountButton = screen.getByText('Request open amount');
+    expect(requestOpenAmountButton).toBeOnTheScreen();
+
     const generateQRCodeButton = screen.getByTestId('generate-qr-code-button');
     expect(generateQRCodeButton).toBeOnTheScreen();
     expect(generateQRCodeButton).toHaveTextContent('Generate QR Code');
@@ -43,6 +46,17 @@ describe('RequestPayment component', () => {
     expect(navigation.push).toHaveBeenCalledWith('RequestWithQRCode', {
       asset: 'BRL',
       value: 1,
+    });
+  });
+
+  it('Should navigate to RequestWithQRCode screen when "Request open amount" is pressed', () => {
+    const requestOpenAmountButton = screen.getByText('Request open amount');
+
+    fireEvent.press(requestOpenAmountButton);
+
+    expect(navigation.push).toHaveBeenCalledWith('RequestWithQRCode', {
+      asset: 'BRL',
+      value: 0,
     });
   });
 });
