@@ -107,6 +107,7 @@ export class PaymentStore {
       // It's Emigro a Payment
       const { merchantName, merchantCity, transactionAmount, infoAdicional } = pix;
       return {
+        brCode,
         merchantName,
         merchantCity,
         transactionAmount,

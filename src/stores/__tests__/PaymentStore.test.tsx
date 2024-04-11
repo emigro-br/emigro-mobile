@@ -1,4 +1,4 @@
-import { PixPayment } from '@/types/PixPayment';
+import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
 import * as transactionApi from '@services/transaction';
@@ -48,7 +48,7 @@ describe('PaymentStore', () => {
     });
   });
 
-  it('should call preview payment correctly', async () => {
+  it('should call preview pix payment correctly', async () => {
     const brcodePaymentPreview = jest.spyOn(transactionApi, 'brcodePaymentPreview').mockResolvedValueOnce({
       type: 'test-type',
       payment: {
@@ -66,13 +66,13 @@ describe('PaymentStore', () => {
     //TODO: we can also use pix-utils to generate a valid brCode
     const validBrCode = `00020126320014br.gov.bcb.pix0110random-key520400005303986540115802BR5904${merchantName}6006${merchantCity}62070503***6304ACF0`;
 
-    const preview = await swapBloc.pixPreview(validBrCode);
+    const preview = await swapBloc.preview(validBrCode);
 
     expect(brcodePaymentPreview).toHaveBeenCalledWith(validBrCode);
 
     const expectedPixPayment: PixPayment = {
       brCode: validBrCode,
-      assetCode: CryptoAsset.XLM,
+      assetCode: CryptoAsset.BRL,
       transactionAmount: 100,
       taxId: 'test-taxId',
       pixKey: 'test-pixKey',
@@ -85,9 +85,30 @@ describe('PaymentStore', () => {
     expect(preview).toEqual(expectedPixPayment);
   });
 
+  it('should call preview Emigro payment correctly', async () => {
+    const merchantName = 'MERDA M';
+    const merchantCity = 'SAO PAULO';
+    const emigroBrCode =
+      '00020126780014br.gov.bcb.pix0156GDIYUSNDY67L7U4IRT2KDT2POUOYBTKKSOUQNFYNDZNKH62AKK74ZPYS52049999530303254040.125802BR5907MERDA M6009SAO PAULO62070503***63040701';
+
+    const preview = await swapBloc.preview(emigroBrCode);
+
+    const expectedPixPayment: Payment = {
+      brCode: emigroBrCode,
+      infoAdicional: undefined,
+      assetCode: CryptoAsset.ARS,
+      transactionAmount: 0.12,
+      merchantName,
+      merchantCity,
+      walletKey: 'GDIYUSNDY67L7U4IRT2KDT2POUOYBTKKSOUQNFYNDZNKH62AKK74ZPYS',
+    };
+
+    expect(preview).toEqual(expectedPixPayment);
+  });
+
   it('should throw error when preview with invalid brcode', async () => {
     const invalidBrCode = 'invalid-brcode';
-    await expect(swapBloc.pixPreview(invalidBrCode)).rejects.toThrow('Invalid Pix code');
+    await expect(swapBloc.preview(invalidBrCode)).rejects.toThrow('Invalid Pix code');
   });
 
   it('should call pay with pix payment correctly', async () => {

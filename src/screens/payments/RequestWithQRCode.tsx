@@ -76,7 +76,6 @@ const encodeQRCode = (profile: IUserProfile, asset: CryptoAsset, amount: number)
   }
 
   const brcode = pix.toBRCode();
-  console.debug('QR code:', brcode);
   return brcode;
 };
 

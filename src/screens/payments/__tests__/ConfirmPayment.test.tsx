@@ -38,11 +38,12 @@ describe('ConfirmPayment component', () => {
   };
 
   const mockScannedPayment: Payment = {
+    brCode: 'mocked-brCode',
     assetCode: CryptoAsset.USDC,
     transactionAmount: 10,
     merchantName: 'John Doe',
     merchantCity: '123 Main St',
-    pixKey: 'mocked-pixkey',
+    walletKey: 'mocked-walletkey',
   };
 
   const mockPixPayment: PixPayment = {

@@ -34,7 +34,7 @@ describe('RequestWithQRCode component', () => {
 
   const mockRoute: any = {
     params: {
-      asset: 'BTC',
+      asset: 'USDC',
       value: 10,
     },
   };
@@ -46,7 +46,7 @@ describe('RequestWithQRCode component', () => {
     expect(getByText('Show this QR code or copy and share with who will make this payment')).toBeOnTheScreen();
     expect(getByTestId('qr-code')).toBeTruthy();
     expect(getByText('Requested value')).toBeOnTheScreen();
-    expect(getByText('10 BTC')).toBeOnTheScreen();
+    expect(getByText('$ 10.00')).toBeOnTheScreen();
     expect(getByText('For John Doe')).toBeOnTheScreen();
     // expect(getByText('Copy the code')).toBeOnTheScreen();
   });

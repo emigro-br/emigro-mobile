@@ -35,9 +35,9 @@ export const PastePixCode = ({ navigation }: Props) => {
   }, []);
 
   const handlePaste = async () => {
-    const text = (await Clipboard.getStringAsync()).trim();
+    const text = await Clipboard.getStringAsync();
     if (text) {
-      const pix = parsePix(text);
+      const pix = parsePix(text.trim());
       if (!hasError(pix)) {
         setBrCode(text);
       }
