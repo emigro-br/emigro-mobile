@@ -283,28 +283,18 @@ interface StaticPixProps {
 
 const StaticPix = ({ pix }: StaticPixProps) => (
   <VStack space="md">
-    {pix.taxId && (
-      <HStack justifyContent="space-between">
-        <Text bold>CPF/CNPJ:</Text>
-        <Text>{pix.taxId}</Text>
-      </HStack>
-    )}
+    <HStack justifyContent="space-between">
+      <Text bold>CPF/CNPJ:</Text>
+      <Text>{pix.taxId}</Text>
+    </HStack>
     <HStack justifyContent="space-between">
       <Text bold>Institution:</Text>
       <Text maxWidth="$2/3">{pix.bankName}</Text>
     </HStack>
-    {pix.pixKey && (
-      <HStack justifyContent="space-between">
-        <Text bold>Pix Key:</Text>
-        <Text>{pix.pixKey}</Text>
-      </HStack>
-    )}
-    {pix.walletKey && (
-      <HStack justifyContent="space-between">
-        <Text bold>Wallet Key:</Text>
-        <Text>{maskWallet(pix.walletKey)}</Text>
-      </HStack>
-    )}
+    <HStack justifyContent="space-between">
+      <Text bold>Pix Key:</Text>
+      <Text>{pix.pixKey}</Text>
+    </HStack>
     <HStack justifyContent="space-between">
       <Text bold>Identifier:</Text>
       <Text>{pix.txid}</Text>

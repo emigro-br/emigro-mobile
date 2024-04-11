@@ -2,7 +2,7 @@ import { action, makeAutoObservable, observable } from 'mobx';
 import { PixElementType, hasError, parsePix } from 'pix-utils';
 
 import { ITransactionRequest } from '@/types/ITransactionRequest';
-import { Payment, PixPayment } from '@/types/PixPayment';
+import { Payment, PixPayment, emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
 import { sendTransaction } from '@services/emigro';
@@ -103,7 +103,7 @@ export class PaymentStore {
       throw new Error('Invalid Pix code');
     }
 
-    if (pix.merchantCategoryCode === '9999' && pix.type === PixElementType.STATIC) {
+    if (pix.merchantCategoryCode === emigroCategoryCode && pix.type === PixElementType.STATIC) {
       // It's Emigro a Payment
       const { merchantName, merchantCity, transactionAmount, infoAdicional } = pix;
       return {

@@ -1,5 +1,7 @@
 import { CryptoAsset } from './assets';
 
+export const emigroCategoryCode = '9999';
+
 export type Payment = {
   brCode: string;
   merchantName: string;

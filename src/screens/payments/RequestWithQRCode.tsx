@@ -25,6 +25,7 @@ import { createStaticPix, hasError } from 'pix-utils';
 import { CreateStaticPixParams } from 'pix-utils/dist/main/types/pixCreate';
 
 import { IUserProfile } from '@/types/IUserProfile';
+import { emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
@@ -59,7 +60,6 @@ const encodeQRCode = (profile: IUserProfile, asset: CryptoAsset, amount: number)
 
   const walletKey = sessionStore.publicKey!;
 
-  const emigroCategoryCode = '9999';
   const request: PaymentRequest = {
     merchantName: buildMerchantName(profile),
     merchantCity: profile.address ?? 'São Paulo',

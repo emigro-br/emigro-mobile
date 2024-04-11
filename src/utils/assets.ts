@@ -74,7 +74,7 @@ export const iconFor = (asset: CryptoOrFiat) => {
 
 // https://en.wikipedia.org/wiki/ISO_4217
 export const fiatToIso = {
-  XLM: '000',
+  XLM: '000', // non oficial
   [FiatCurrency.EUR]: '978',
   [FiatCurrency.USD]: '840',
   [FiatCurrency.BRL]: '986',

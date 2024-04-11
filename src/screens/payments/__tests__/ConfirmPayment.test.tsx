@@ -56,6 +56,7 @@ describe('ConfirmPayment component', () => {
     brCode: 'mocked-brCode',
     txid: 'mocked-identifier',
     taxId: 'mocked-taxId',
+    bankName: 'Mock Bank',
   };
 
   beforeEach(() => {
@@ -63,7 +64,41 @@ describe('ConfirmPayment component', () => {
     paymentStore.setScannedPayment(mockScannedPayment);
   });
 
-  it('renders the component correctly', async () => {
+  it('renders correctly for stellar payment', async () => {
+    paymentStore.setScannedPayment(mockScannedPayment); // for full test coverage
+    jest
+      .spyOn(quotesService, 'handleQuote')
+      .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
+    const { getByText, queryByText } = render(<ConfirmPayment {...mockProps} />);
+
+    // receiver info
+    expect(getByText('Review the payment')).toBeOnTheScreen();
+    expect(getByText('$ 10.00')).toBeOnTheScreen();
+    expect(getByText('for John Doe')).toBeOnTheScreen();
+    expect(getByText('in 123 Main St')).toBeOnTheScreen();
+
+    // stellar info
+    expect(getByText('Institution:')).toBeOnTheScreen();
+    expect(getByText('Stellar Network')).toBeOnTheScreen();
+    expect(getByText('Wallet Key:')).toBeOnTheScreen();
+    expect(getByText('mocke...etkey')).toBeOnTheScreen(); // masked
+    // expect(getByText('Identifier:')).toBeOnTheScreen();
+
+    // not pix info
+    expect(queryByText('CPF/CNPJ:')).toBeNull();
+
+    // payment
+    expect(getByText('Select the account')).toBeOnTheScreen();
+    expect(getByText('Balance: $ 100.00')).toBeOnTheScreen();
+    expect(getByText('Pay')).toBeOnTheScreen();
+
+    await waitFor(() => {
+      // the quote is fetched and displayed
+      expect(getByText('$ 10.00')).toBeOnTheScreen();
+    });
+  });
+
+  it('renders correctly for pix payment', async () => {
     paymentStore.setScannedPayment(mockPixPayment); // for full test coverage
     jest
       .spyOn(quotesService, 'handleQuote')
@@ -83,6 +118,8 @@ describe('ConfirmPayment component', () => {
     expect(getByText('mocked-identifier')).toBeOnTheScreen();
     expect(getByText('CPF/CNPJ:')).toBeOnTheScreen();
     expect(getByText('mocked-taxId')).toBeOnTheScreen();
+    expect(getByText('Institution:')).toBeOnTheScreen();
+    expect(getByText('Mock Bank')).toBeOnTheScreen();
 
     // payment
     expect(getByText('Select the account')).toBeOnTheScreen();
