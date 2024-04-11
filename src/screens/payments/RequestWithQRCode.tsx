@@ -21,10 +21,18 @@ import {
   useToast,
 } from '@gluestack-ui/themed';
 import * as Clipboard from 'expo-clipboard';
+import { createStaticPix, hasError } from 'pix-utils';
+import { CreateStaticPixParams } from 'pix-utils/dist/main/types/pixCreate';
+
+import { IUserProfile } from '@/types/IUserProfile';
+import { emigroCategoryCode } from '@/types/PixPayment';
+import { CryptoAsset } from '@/types/assets';
 
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
 
 import { sessionStore } from '@stores/SessionStore';
+
+import { AssetToCurrency, fiatToIso, symbolFor } from '@utils/assets';
 
 const enum QRCodeSize {
   SMALL = 200,
@@ -32,16 +40,43 @@ const enum QRCodeSize {
   LARGE = 300,
 }
 
-type QRCodeRequest = {
-  name: string;
-  address?: string;
-  publicKey: string;
-  amount: number;
-  assetCode: string;
+type PaymentRequest = CreateStaticPixParams & {
+  merchantName: string;
+  merchantCity?: string;
+  pixKey: string;
+  transactionAmount: number;
+  transactionCurrency: string;
+  merchantCategoryCode: string;
+  // countryCode: 'BR',
 };
 
-const encodeQRCode = (request: QRCodeRequest): string => {
-  return JSON.stringify(request);
+const buildMerchantName = (profile: IUserProfile): string => {
+  return `${profile.given_name || ''} ${profile.family_name || ''}`.trim() || 'Unknown';
+};
+
+const encodeQRCode = (profile: IUserProfile, asset: CryptoAsset, amount: number): string => {
+  const fiat = asset === 'XLM' ? 'XLM' : AssetToCurrency[asset];
+  // EmvMaiSchema.BC_GUI = 'br.gov.bcb.pix'; // FIXME: we have to fork pix-utils to change this
+
+  const walletKey = sessionStore.publicKey!;
+
+  const request: PaymentRequest = {
+    merchantName: buildMerchantName(profile),
+    merchantCity: profile.address ?? 'São Paulo',
+    // infoAdicional: profile.sub, // FIXME: parsing error when add both large infoAdicional and pixKey
+    pixKey: walletKey,
+    transactionAmount: amount,
+    transactionCurrency: fiatToIso[fiat],
+    merchantCategoryCode: emigroCategoryCode,
+  };
+
+  const pix = createStaticPix(request);
+  if (hasError(pix)) {
+    throw new Error('Error creating QR code');
+  }
+
+  const brcode = pix.toBRCode();
+  return brcode;
 };
 
 type Props = NativeStackScreenProps<PaymentStackParamList, 'RequestWithQRCode'>;
@@ -57,17 +92,8 @@ export const RequestWithQRCode = ({ navigation, route }: Props) => {
     return () => backHandler.remove();
   }, []);
 
-  const profile = sessionStore.profile;
-  const fullname = `${profile?.given_name || ''} ${profile?.family_name || ''}`.trim();
-  const request: QRCodeRequest = {
-    name: fullname || 'Unknown',
-    address: profile?.address,
-    publicKey: sessionStore.publicKey!,
-    amount: value,
-    assetCode: asset,
-  };
-
-  const encodedCode = encodeQRCode(request);
+  const profile = sessionStore.profile!;
+  const encodedCode = encodeQRCode(profile, asset as CryptoAsset, value);
 
   const copyToClipboard = async () => {
     await Clipboard.setStringAsync(encodedCode);
@@ -102,9 +128,9 @@ export const RequestWithQRCode = ({ navigation, route }: Props) => {
           <Box>
             <Text bold>Requested value</Text>
             <Text size="4xl" color="$textLight800" bold>
-              {request.amount} {request.assetCode}
+              {symbolFor(asset as CryptoAsset, value)}
             </Text>
-            <Text>For {request.name}</Text>
+            <Text>For {buildMerchantName(profile)}</Text>
           </Box>
           {enableCopy && (
             <ButtonGroup flexDirection="column">

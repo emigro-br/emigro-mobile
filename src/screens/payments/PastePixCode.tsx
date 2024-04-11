@@ -37,7 +37,7 @@ export const PastePixCode = ({ navigation }: Props) => {
   const handlePaste = async () => {
     const text = await Clipboard.getStringAsync();
     if (text) {
-      const pix = parsePix(text);
+      const pix = parsePix(text.trim());
       if (!hasError(pix)) {
         setBrCode(text);
       }
@@ -47,8 +47,8 @@ export const PastePixCode = ({ navigation }: Props) => {
   const handleContinue = async () => {
     setIsChecking(true);
     try {
-      const pixPayment = await paymentStore.pixPreview(brCode);
-      paymentStore.setScannedPayment(pixPayment);
+      const payment = await paymentStore.preview(brCode);
+      paymentStore.setScannedPayment(payment);
       navigation.push('ConfirmPayment');
     } catch (error) {
       if (error instanceof Error) {

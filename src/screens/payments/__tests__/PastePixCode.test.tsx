@@ -13,7 +13,7 @@ jest.mock('expo-clipboard', () => ({
 
 jest.mock('@stores/PaymentStore', () => ({
   paymentStore: {
-    pixPreview: jest.fn(),
+    preview: jest.fn(),
     setScannedPayment: jest.fn(),
   },
 }));
@@ -63,7 +63,7 @@ describe('PastePixCode', () => {
     fireEvent.press(getByText('Continue'));
 
     await waitFor(() => {
-      expect(paymentStore.pixPreview).toHaveBeenCalled();
+      expect(paymentStore.preview).toHaveBeenCalled();
       expect(paymentStore.setScannedPayment).toHaveBeenCalled();
       expect(navigationMock.push).toHaveBeenCalledWith('ConfirmPayment');
     });
@@ -78,7 +78,7 @@ describe('PastePixCode', () => {
     fireEvent.press(getByText('Continue'));
 
     await waitFor(() => {
-      expect(paymentStore.pixPreview).toHaveBeenCalled();
+      expect(paymentStore.preview).toHaveBeenCalled();
       expect(paymentStore.setScannedPayment).toHaveBeenCalled();
       expect(navigationMock.push).toHaveBeenCalledWith('ConfirmPayment');
     });
@@ -87,7 +87,7 @@ describe('PastePixCode', () => {
   it('should display an error message for invalid Pix code', async () => {
     const invalidBrCode = 'invalidPixCode';
     const { getByTestId, getByText } = render(<PastePixCode navigation={navigationMock} />);
-    jest.spyOn(paymentStore, 'pixPreview').mockRejectedValueOnce(new Error('Invalid Pix code'));
+    jest.spyOn(paymentStore, 'preview').mockRejectedValueOnce(new Error('Invalid Pix code'));
 
     fireEvent(getByTestId('text-area'), 'onChangeText', invalidBrCode);
     fireEvent.press(getByText('Continue'));

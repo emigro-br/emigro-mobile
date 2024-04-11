@@ -20,7 +20,7 @@ const Balance: React.FC<Props> = ({ userBalance }) => {
           {userBalance?.map(({ balance, assetCode, assetType }, index) => {
             const asset: CryptoAsset =
               assetType === 'native' ? CryptoAsset.XLM : CryptoAsset[assetCode as keyof typeof CryptoAsset];
-            const currency = AssetToCurrency[asset];
+            const currency = asset === CryptoAsset.XLM ? CryptoAsset.XLM : AssetToCurrency[asset];
             return (
               <HStack key={index} justifyContent="space-between" alignItems="center">
                 <AssetListTile asset={currency} dense />

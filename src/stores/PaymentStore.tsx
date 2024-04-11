@@ -2,13 +2,15 @@ import { action, makeAutoObservable, observable } from 'mobx';
 import { PixElementType, hasError, parsePix } from 'pix-utils';
 
 import { ITransactionRequest } from '@/types/ITransactionRequest';
-import { Payment, PixPayment } from '@/types/PixPayment';
+import { Payment, PixPayment, emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
 import { sendTransaction } from '@services/emigro';
 import { brcodePayment, brcodePaymentPreview } from '@services/transaction';
 
 import { sessionStore } from '@stores/SessionStore';
+
+import { isoToCrypto } from '@utils/assets';
 
 export type SwapTransaction = {
   from: CryptoAsset;
@@ -95,10 +97,24 @@ export class PaymentStore {
     this.setTransaction(swapTransaction);
   }
 
-  async pixPreview(brCode: string): Promise<PixPayment> {
+  async preview(brCode: string): Promise<Payment | PixPayment> {
     const pix = parsePix(brCode);
     if (hasError(pix) || pix.type === PixElementType.INVALID) {
       throw new Error('Invalid Pix code');
+    }
+
+    if (pix.merchantCategoryCode === emigroCategoryCode && pix.type === PixElementType.STATIC) {
+      // It's Emigro a Payment
+      const { merchantName, merchantCity, transactionAmount, infoAdicional } = pix;
+      return {
+        brCode,
+        merchantName,
+        merchantCity,
+        transactionAmount,
+        infoAdicional,
+        walletKey: pix.pixKey,
+        assetCode: isoToCrypto[pix.transactionCurrency as keyof typeof isoToCrypto],
+      } as Payment;
     }
 
     const res = await brcodePaymentPreview(brCode);
@@ -109,7 +125,7 @@ export class PaymentStore {
       merchantCity: pix.merchantCity,
       transactionAmount: res.payment.amount,
       pixKey: res.payment.pixKey,
-      assetCode: CryptoAsset.XLM,
+      assetCode: CryptoAsset.BRL, // Pix is aways in BRL
       taxId: res.payment.taxId,
       bankName: res.payment.bankName,
       txid: res.payment.txId,
