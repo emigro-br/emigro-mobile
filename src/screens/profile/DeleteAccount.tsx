@@ -41,8 +41,8 @@ const DeleteAccount = ({ navigation }: Props) => {
   };
 
   return (
-    <ScrollView>
-      <Box flex={1} bg="$white">
+    <ScrollView bg="$white">
+      <Box flex={1}>
         <VStack p="$4" space="lg">
           <Heading size="xl">Delete Account</Heading>
           <VStack space="lg">

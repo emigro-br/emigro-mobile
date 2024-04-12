@@ -13,6 +13,7 @@ import {
   CopyIcon,
   Divider,
   Heading,
+  SafeAreaView,
   Spinner,
   Text,
   Toast,
@@ -68,82 +69,84 @@ const Profile = observer(({ navigation }: Props) => {
   const fullName = `${profileInfo.given_name} ${profileInfo.family_name}`;
 
   return (
-    <Box flex={1} bg="$white" justifyContent="space-between">
-      <VStack p="$4" space="lg">
-        <Center>
-          <Avatar bgColor="$primary300" size="xl" borderRadius="$full">
-            <AvatarFallbackText>{fullName}</AvatarFallbackText>
-          </Avatar>
-          <Heading py="$2">{fullName}</Heading>
-          {publicKey && (
-            <Button size="md" variant="link" action="primary" onPress={copyToClipboard}>
-              <ButtonText>{maskWallet(publicKey)}</ButtonText>
-              <ButtonIcon as={CopyIcon} ml="$2" />
+    <SafeAreaView flex={1} bg="$white">
+      <Box flex={1} justifyContent="space-between">
+        <VStack p="$4" space="lg">
+          <Center>
+            <Avatar bgColor="$primary300" size="xl" borderRadius="$full">
+              <AvatarFallbackText>{fullName}</AvatarFallbackText>
+            </Avatar>
+            <Heading py="$2">{fullName}</Heading>
+            {publicKey && (
+              <Button size="md" variant="link" action="primary" onPress={copyToClipboard}>
+                <ButtonText>{maskWallet(publicKey)}</ButtonText>
+                <ButtonIcon as={CopyIcon} ml="$2" />
+              </Button>
+            )}
+          </Center>
+
+          <VStack space="xl">
+            <View>
+              <Text size="sm" color="$textLight500">
+                Full Name
+              </Text>
+              <Text>{fullName}</Text>
+            </View>
+
+            <Divider />
+
+            <View>
+              <Text size="sm" color="$textLight500">
+                Email address
+              </Text>
+              <Text>{profileInfo.email}</Text>
+            </View>
+
+            <Divider />
+
+            {profileInfo.address && (
+              <>
+                <View>
+                  <Text size="sm" color="$textLight500">
+                    Address
+                  </Text>
+                  <Text>{profileInfo.address}</Text>
+                </View>
+
+                <Divider />
+              </>
+            )}
+
+            <Button
+              onPress={() => navigation.push('ConfigurePIN')}
+              variant="link"
+              action="secondary"
+              alignSelf="flex-start"
+            >
+              <ButtonText>Configure your PIN</ButtonText>
             </Button>
-          )}
-        </Center>
 
-        <VStack space="xl">
-          <View>
-            <Text size="sm" color="$textLight500">
-              Full Name
-            </Text>
-            <Text>{fullName}</Text>
-          </View>
-
-          <Divider />
-
-          <View>
-            <Text size="sm" color="$textLight500">
-              Email address
-            </Text>
-            <Text>{profileInfo.email}</Text>
-          </View>
-
-          <Divider />
-
-          {profileInfo.address && (
-            <>
-              <View>
-                <Text size="sm" color="$textLight500">
-                  Address
-                </Text>
-                <Text>{profileInfo.address}</Text>
-              </View>
-
-              <Divider />
-            </>
-          )}
-
-          <Button
-            onPress={() => navigation.push('ConfigurePIN')}
-            variant="link"
-            action="secondary"
-            alignSelf="flex-start"
-          >
-            <ButtonText>Configure your PIN</ButtonText>
-          </Button>
-
-          <Button
-            onPress={() => navigation.push('DeleteAccount')}
-            variant="link"
-            action="negative"
-            size="sm"
-            alignSelf="flex-start"
-          >
-            <ButtonText>Delete account</ButtonText>
-          </Button>
+            <Button
+              onPress={() => navigation.push('DeleteAccount')}
+              variant="link"
+              action="negative"
+              size="sm"
+              alignSelf="flex-start"
+            >
+              <ButtonText>Delete account</ButtonText>
+            </Button>
+          </VStack>
         </VStack>
-      </VStack>
-      <Box alignItems="center" py="$4">
-        <Button onPress={handleLogout} variant="link" action="negative">
-          <ButtonText>Logout</ButtonText>
-        </Button>
-        <Text size="sm">
-          version {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})
-        </Text>
+        <Box alignItems="center" py="$4">
+          <Button onPress={handleLogout} variant="link" action="negative">
+            <ButtonText>Logout</ButtonText>
+          </Button>
+          <Text size="sm">
+            version {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})
+          </Text>
+        </Box>
       </Box>
-    </Box>
+    </SafeAreaView>
   );
 });
 
