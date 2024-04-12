@@ -63,6 +63,7 @@ export const ReviewTransfer = ({ navigation }: Props) => {
       <PinScreen
         tagline="Enter your PIN code"
         btnLabel="Confirm"
+        autoSubmit
         verifyPin={async (pin) => await sessionStore.verifyPin(pin)}
         onPinSuccess={() => {
           setShowPinScreen(false);

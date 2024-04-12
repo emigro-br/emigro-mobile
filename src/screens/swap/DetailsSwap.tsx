@@ -50,6 +50,7 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
       <PinScreen
         tagline="Enter your PIN code"
         btnLabel="Confirm"
+        autoSubmit
         verifyPin={async (pin) => await sessionStore.verifyPin(pin)}
         onPinSuccess={() => {
           setShowPinScreen(false);

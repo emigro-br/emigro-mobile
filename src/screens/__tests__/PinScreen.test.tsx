@@ -70,6 +70,17 @@ describe('PinScreen', () => {
     expect(screen.getByTestId('submit-button')).toHaveAccessibilityState({ disabled: false });
   });
 
+  it('Should call onPinSuccess with auto submit', async () => {
+    verifyPin.mockResolvedValue(true);
+    render(<PinScreen verifyPin={verifyPin} onPinSuccess={onPinSuccess} onPinFail={onPinFail} autoSubmit />);
+    fillWithPIN(screen, '1234');
+
+    await waitFor(() => {
+      expect(verifyPin).toHaveBeenCalledWith('1234');
+      expect(onPinSuccess).toHaveBeenCalled();
+    });
+  });
+
   it('Should call onPinSuccess when the submit button is pressed with a valid PIN', async () => {
     verifyPin.mockResolvedValue(true);
     fillWithPIN(screen, '1234');

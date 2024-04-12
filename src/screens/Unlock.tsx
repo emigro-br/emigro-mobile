@@ -38,6 +38,7 @@ export const UnlockScreen = ({ navigation }: Props) => {
         verifyPin={(pin) => sessionStore.verifyPin(pin)}
         onPinSuccess={() => setUnlocked(true)}
         onPinFail={handlePinFail}
+        autoSubmit
       />
     </Box>
   );

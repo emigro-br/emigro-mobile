@@ -22,6 +22,7 @@ type Props = {
   onPinFail: (error: Error) => void;
   maxAttempts?: number;
   pinSize?: number;
+  autoSubmit?: boolean;
   secureTextEntry?: boolean;
 };
 
@@ -34,6 +35,7 @@ export const PinScreen = forwardRef(
       maxAttempts = defaultMaxAttempts,
       pinSize = defaultPinSize,
       secureTextEntry = true,
+      autoSubmit = false,
       verifyPin,
       onPinSuccess,
       onPinFail,
@@ -43,7 +45,7 @@ export const PinScreen = forwardRef(
     const [pin, setPin] = useState('');
     const [attempts, setAttempts] = useState(0);
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [isSending, setIsSending] = useState(false);
     const inputRefs = useRef<TextInput[]>([]);
 
     useEffect(() => {
@@ -59,12 +61,12 @@ export const PinScreen = forwardRef(
       inputRefs.current[0].focus();
     };
 
-    const handleSubmitPin = async () => {
+    const handleSubmitPin = async (pin: string) => {
       if (pin.length !== pinSize) {
         setError(`PIN must be ${pinSize} digits`);
         return;
       }
-      setLoading(true);
+      setIsSending(true);
       try {
         // Make API call to verify PIN
         const isPinCorrect = await verifyPin?.(pin);
@@ -93,7 +95,7 @@ export const PinScreen = forwardRef(
           onPinFail(new Error('An error occurred'));
         }
       } finally {
-        setLoading(false);
+        setIsSending(false);
       }
     };
 
@@ -121,12 +123,17 @@ export const PinScreen = forwardRef(
                     }
                   }}
                   onChangeText={(value) => {
-                    const newPin = pin.split('');
-                    newPin[i] = value;
-                    setPin(newPin.join(''));
+                    const pins = pin.split('');
+                    pins[i] = value;
+                    const newPin = pins.join('');
+                    setPin(newPin);
                     setError('');
                     if (value !== '' && inputRefs.current[i + 1]) {
                       inputRefs.current[i + 1].focus();
+                    }
+                    // auto submit pin when all inputs are filled
+                    if (autoSubmit && newPin.length === pinSize) {
+                      handleSubmitPin(newPin);
                     }
                   }}
                   fontSize="$4xl"
@@ -142,8 +149,8 @@ export const PinScreen = forwardRef(
           {error && <Text color="$error500">{error}</Text>}
           <Button
             size="xl"
-            onPress={handleSubmitPin}
-            isDisabled={pin.length < pinSize || loading}
+            onPress={() => handleSubmitPin(pin)}
+            isDisabled={pin.length < pinSize || isSending}
             testID="submit-button"
           >
             <ButtonText>{btnLabel ?? 'Submit'}</ButtonText>
