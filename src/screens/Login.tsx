@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -67,6 +67,7 @@ type Props = {
 };
 
 const Login = ({ navigation }: Props) => {
+  const refs = useRef<HTMLInputElement[]>([]);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -133,8 +134,8 @@ const Login = ({ navigation }: Props) => {
               </FormControlLabel>
               <Input size="xl">
                 <InputField
-                  ref={(input) => {
-                    this[field.name] = input;
+                  ref={(input: any) => {
+                    refs.current[index] = input;
                   }}
                   placeholder={field.placeholder}
                   value={formValue[field.name]}
@@ -146,7 +147,7 @@ const Login = ({ navigation }: Props) => {
                   onSubmitEditing={() => {
                     if (index < formFields.length - 1) {
                       // If this is not the last field, move the focus to the next field
-                      this[formFields[index + 1].name].focus();
+                      refs.current[index + 1].focus();
                     } else {
                       // If this is the last field, submit the form
                       handleSignIn();
