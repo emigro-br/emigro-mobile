@@ -2,8 +2,13 @@ import React from 'react';
 
 import { fireEvent } from '@testing-library/react-native';
 import * as Clipboard from 'expo-clipboard';
+import * as pixUtils from 'pix-utils';
 
 import { render } from 'test-utils';
+
+import { IUserProfile } from '@/types/IUserProfile';
+
+import { sessionStore } from '@stores/SessionStore';
 
 import { RequestWithQRCode } from '../RequestWithQRCode';
 
@@ -30,6 +35,7 @@ jest.mock('@stores/SessionStore', () => ({
 describe('RequestWithQRCode component', () => {
   const mockNavigation: any = {
     popToTop: jest.fn(),
+    goBack: jest.fn(),
   };
 
   const mockRoute: any = {
@@ -44,11 +50,38 @@ describe('RequestWithQRCode component', () => {
 
     expect(getByText('Request with QR Code')).toBeOnTheScreen();
     expect(getByText('Show this QR code or copy and share with who will make this payment')).toBeOnTheScreen();
-    expect(getByTestId('qr-code')).toBeTruthy();
+    expect(getByTestId('qr-code')).toBeOnTheScreen();
     expect(getByText('Requested value')).toBeOnTheScreen();
     expect(getByText('$ 10.00')).toBeOnTheScreen();
     expect(getByText('For John Doe')).toBeOnTheScreen();
     // expect(getByText('Copy the code')).toBeOnTheScreen();
+  });
+
+  it('should not fail when the merchant name is large', () => {
+    sessionStore.profile = {
+      given_name: 'John',
+      family_name: 'Doe'.repeat(100),
+      address: '123 Main St',
+    } as IUserProfile;
+
+    const { getByText, getByTestId } = render(<RequestWithQRCode navigation={mockNavigation} route={mockRoute} />);
+
+    expect(getByText('Request with QR Code')).toBeOnTheScreen();
+    expect(getByText('Show this QR code or copy and share with who will make this payment')).toBeOnTheScreen();
+    expect(getByTestId('qr-code')).toBeOnTheScreen();
+    expect(getByText('Requested value')).toBeOnTheScreen();
+    expect(getByText('$ 10.00')).toBeOnTheScreen();
+    expect(getByText(`For John ${'Doe'.repeat(100)}`)).toBeOnTheScreen();
+  });
+
+  it('shoud go back when encoding the QR code fails', () => {
+    jest.spyOn(pixUtils, 'createStaticPix').mockImplementationOnce(() => {
+      throw new Error('Failed to generate QR code');
+    });
+
+    render(<RequestWithQRCode navigation={mockNavigation} route={mockRoute} />);
+
+    expect(mockNavigation.goBack).toHaveBeenCalled();
   });
 
   it.skip('calls the copyToClipboard function when the "Copy the code" button is pressed', () => {

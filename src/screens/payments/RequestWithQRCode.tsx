@@ -20,8 +20,9 @@ import {
   VStack,
   useToast,
 } from '@gluestack-ui/themed';
+import * as Sentry from '@sentry/react-native';
 import * as Clipboard from 'expo-clipboard';
-import { createStaticPix, hasError } from 'pix-utils';
+import { createStaticPix } from 'pix-utils';
 import { CreateStaticPixParams } from 'pix-utils/dist/main/types/pixCreate';
 
 import { IUserProfile } from '@/types/IUserProfile';
@@ -61,8 +62,8 @@ const encodeQRCode = (profile: IUserProfile, asset: CryptoAsset, amount: number)
   const walletKey = sessionStore.publicKey!;
 
   const request: PaymentRequest = {
-    merchantName: buildMerchantName(profile),
-    merchantCity: profile.address ?? 'São Paulo',
+    merchantName: buildMerchantName(profile).substring(0, 25),
+    merchantCity: profile.address?.substring(0, 15) ?? 'São Paulo',
     // infoAdicional: profile.sub, // FIXME: parsing error when add both large infoAdicional and pixKey
     pixKey: walletKey,
     transactionAmount: amount,
@@ -70,10 +71,7 @@ const encodeQRCode = (profile: IUserProfile, asset: CryptoAsset, amount: number)
     merchantCategoryCode: emigroCategoryCode,
   };
 
-  const pix = createStaticPix(request);
-  if (hasError(pix)) {
-    throw new Error('Error creating QR code');
-  }
+  const pix = createStaticPix(request).throwIfError();
 
   const brcode = pix.toBRCode();
   return brcode;
@@ -93,7 +91,30 @@ export const RequestWithQRCode = ({ navigation, route }: Props) => {
   }, []);
 
   const profile = sessionStore.profile!;
-  const encodedCode = encodeQRCode(profile, asset as CryptoAsset, value);
+  let encodedCode = '';
+  try {
+    encodedCode = encodeQRCode(profile, asset as CryptoAsset, value);
+  } catch (error) {
+    Sentry.withScope(function (scope) {
+      scope.setLevel('warning');
+      scope.setExtras({
+        profile,
+        asset,
+        value,
+      });
+      Sentry.captureException(error);
+    });
+
+    toast.show({
+      render: ({ id }) => (
+        <Toast nativeID={`toast-${id}`} action="error" variant="solid">
+          <ToastDescription>Failed to generate QR code</ToastDescription>
+        </Toast>
+      ),
+    });
+    navigation.goBack();
+    return null;
+  }
 
   const copyToClipboard = async () => {
     await Clipboard.setStringAsync(encodedCode);
