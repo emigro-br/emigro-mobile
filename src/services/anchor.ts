@@ -24,7 +24,8 @@ const getInteractiveUrl = async (
   callback: CallbackType,
 ): Promise<IAnchorResponse> => {
   const endpoint = operation === OperationType.WITHDRAW ? 'withdraw' : 'deposit';
-  const res = await api().post(`/anchor/${endpoint}`, anchorParams);
+  const timeout = 15 * 1000;
+  const res = await api({ timeout }).post(`/anchor/${endpoint}`, anchorParams);
 
   const json = res.data;
   if (callback === CallbackType.CALLBACK_URL) {
@@ -46,7 +47,8 @@ export const getInteractiveWithdrawUrl = async (anchorParams: IAnchorParams, cal
 };
 
 export const getTransaction = async (id: string, assetCode: CryptoAsset): Promise<Sep24Transaction> => {
-  const res = await api().get('/anchor/transaction', {
+  const timeout = 20 * 1000;
+  const res = await api({ timeout }).get('/anchor/transaction', {
     params: {
       id,
       assetCode,
@@ -56,6 +58,7 @@ export const getTransaction = async (id: string, assetCode: CryptoAsset): Promis
 };
 
 export const confirmWithdraw = async (data: ConfirmWithdrawDto) => {
-  const res = await api().post('/anchor/withdraw-confirm', data);
+  const timeout = 30 * 1000;
+  const res = await api({ timeout }).post('/anchor/withdraw-confirm', data);
   return res.data;
 };
