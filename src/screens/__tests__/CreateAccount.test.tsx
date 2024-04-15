@@ -4,7 +4,7 @@ import { render } from 'test-utils';
 
 import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 
-import CreateAccount from '@screens/signup/CreateAccount';
+import { CreateAccount } from '@screens/signup/CreateAccount';
 
 import * as auth from '@services/auth';
 
@@ -46,10 +46,12 @@ describe('CreateAccount component', () => {
   });
 
   test('Should call signUp with correct information', async () => {
+    const email = 'test@example.com';
+    const username = 'example_username';
     const signUpMock = jest.spyOn(auth, 'signUp');
     const mockResponse = {
       id: 1,
-      username: 'example_username',
+      username,
       publicKey: 'public_key_value',
       secretKey: 'secret_key_value',
       role: 'CUSTOMER',
@@ -67,7 +69,7 @@ describe('CreateAccount component', () => {
     const firstNameInput = getByTestId('firstName');
     const lastNameInput = getByTestId('lastName');
 
-    fireEvent.changeText(emailInput, 'test@example.com');
+    fireEvent.changeText(emailInput, email);
     fireEvent.changeText(passwordInput, 'password123');
     fireEvent.changeText(firstNameInput, 'John');
     fireEvent.changeText(lastNameInput, 'Doe');
@@ -78,7 +80,7 @@ describe('CreateAccount component', () => {
     fireEvent.press(createButton);
 
     const expectedCall = {
-      email: 'test@example.com',
+      email,
       password: 'password123',
       firstName: 'John',
       lastName: 'Doe',
@@ -87,6 +89,10 @@ describe('CreateAccount component', () => {
 
     await waitFor(() => {
       expect(signUpMock).toHaveBeenCalledWith(expectedCall);
+      expect(mockNavigattion.push).toHaveBeenCalledWith('ConfirmAccount', {
+        email,
+        username,
+      });
     });
   });
 

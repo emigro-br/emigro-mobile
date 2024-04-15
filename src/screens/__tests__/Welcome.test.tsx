@@ -9,7 +9,7 @@ import { render } from 'test-utils';
 
 import Login from '@screens/Login';
 import { Welcome } from '@screens/Welcome';
-import CreateAccount from '@screens/signup/CreateAccount';
+import { CreateAccount } from '@screens/signup/CreateAccount';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 

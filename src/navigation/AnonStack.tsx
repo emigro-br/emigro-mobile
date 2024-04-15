@@ -5,7 +5,7 @@ import Login from '@screens/Login';
 import { PasswordRecovery } from '@screens/PasswordRecovery';
 import { Welcome } from '@screens/Welcome';
 import ConfirmAccount from '@screens/signup/ConfirmAccount';
-import CreateAccount from '@screens/signup/CreateAccount';
+import { CreateAccount } from '@screens/signup/CreateAccount';
 
 import screenOptions from './screenOptions';
 

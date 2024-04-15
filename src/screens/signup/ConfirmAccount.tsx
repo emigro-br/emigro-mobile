@@ -35,11 +35,10 @@ import { confirmAccount } from '@services/auth';
 type Props = NativeStackScreenProps<AnonStackParamList, 'ConfirmAccount'>;
 
 const ConfirmAccount = ({ route, navigation }: Props) => {
-  const [confirmationCode, setConfirmationCode] = useState<string>('');
+  const [code, setCode] = useState<string>('');
   const [error, setError] = useState<string>('');
-  const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState<boolean>(false);
-  const [isConfirmationSuccessful, setIsConfirmationSuccessful] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccessModalVisible, setIsSuccessModalVisible] = useState<boolean>(false);
+  const [isConfirming, setIsConfirming] = useState(false);
 
   const { email, username } = route.params;
 
@@ -54,50 +53,43 @@ const ConfirmAccount = ({ route, navigation }: Props) => {
   }
 
   const handleConfirmation = async () => {
-    // FIXME: is not even checking if the confirmationCode is empty
     try {
-      setIsLoading(true);
+      setIsConfirming(true);
       setError('');
-      const response = await confirmAccount({ email, username, code: confirmationCode });
+      const response = await confirmAccount({ email, username, code });
       if (response?.status) {
-        setIsConfirmationSuccessful(true);
-        setIsConfirmationModalVisible(true);
+        setIsSuccessModalVisible(true);
       } else {
         setError(WRONG_CODE_ERROR);
       }
     } catch (error) {
       Sentry.captureException(error);
-      // FIXME: Whe user alread confirmed: ConfirmUserError: ConfirmUserWithCognitoError: Invalid code provided, please request a code again.
       setError(CONFIRM_ACCOUNT_ERROR);
     } finally {
-      setIsLoading(false);
+      setIsConfirming(false);
     }
   };
 
   const handleCloseConfirmationModal = () => {
-    setIsConfirmationModalVisible(false);
-    if (isConfirmationSuccessful) {
-      navigation.navigate('Login');
-    }
+    setIsSuccessModalVisible(false);
+    navigation.navigate('Login');
   };
 
   return (
     <Box flex={1}>
       <VStack p="$4" space="lg">
-        <Heading>Confirm your Account</Heading>
+        <Heading>Enter Confirmation Code</Heading>
 
         <Card>
           <VStack space="lg">
-            <Text size="lg">Enter the confirmation code sent to your email:</Text>
-            <Input size="xl">
-              <InputField
-                placeholder="Confirmation code"
-                value={confirmationCode}
-                onChangeText={(text) => setConfirmationCode(text)}
-              />
+            <Text size="lg">
+              Enter the confirmation code we sent to <Text bold>{email}</Text>:
+            </Text>
+            <Input size="xl" isDisabled={isConfirming}>
+              <InputField placeholder="Confirmation code" value={code} onChangeText={(text) => setCode(text)} />
             </Input>
-            <Button onPress={handleConfirmation} isDisabled={isLoading}>
-              <ButtonText>Confirm Account</ButtonText>
+            <Button onPress={handleConfirmation} isDisabled={!code || isConfirming} testID="confirm-button">
+              <ButtonText>Verify</ButtonText>
             </Button>
           </VStack>
         </Card>
@@ -111,7 +103,7 @@ const ConfirmAccount = ({ route, navigation }: Props) => {
         <FormControlErrorText testID="confirm-account-error">{error}</FormControlErrorText>
       </VStack>
 
-      <ConfirmModal isOpen={isConfirmationModalVisible} onConfirm={handleCloseConfirmationModal} />
+      <ConfirmModal isOpen={isSuccessModalVisible} onConfirm={handleCloseConfirmationModal} />
     </Box>
   );
 };

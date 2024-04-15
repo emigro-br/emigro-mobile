@@ -35,7 +35,8 @@ export const signUp = async (registerUser: IRegisterUser): Promise<IRegisterResp
 };
 
 export const confirmAccount = async (confirmUser: IConfirmUser): Promise<IRegisterResponse | undefined> => {
-  const res = await api().post('/auth/confirm', confirmUser);
+  const timeout = 30 * 1000; // it is also creating wallets on stellar network
+  const res = await api({ timeout }).post('/auth/confirm', confirmUser);
   return res.data;
 };
 

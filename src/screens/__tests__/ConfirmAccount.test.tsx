@@ -30,6 +30,24 @@ describe('ConfirmAccount component', () => {
     jest.useFakeTimers();
   });
 
+  it('Should render correctly', async () => {
+    const { getByPlaceholderText, getByText } = render(
+      <ConfirmAccount navigation={mockNavigation} route={mockRoute} />,
+    );
+    const { email } = mockRoute.params;
+    expect(getByText('Enter Confirmation Code')).toBeOnTheScreen();
+    expect(getByText(`Enter the confirmation code we sent to ${email}:`)).toBeOnTheScreen();
+
+    const confirmationCodeInput = getByPlaceholderText('Confirmation code');
+    expect(confirmationCodeInput).toBeOnTheScreen();
+
+    const confirmButton = getByText('Verify');
+    expect(confirmButton).toBeOnTheScreen();
+    await waitFor(() => {
+      expect(confirmButton).not.toHaveAccessibilityState({ disabled: true });
+    });
+  });
+
   it('Should handle confirmation with success', async () => {
     const mockResponse = {
       id: 1,
@@ -44,35 +62,40 @@ describe('ConfirmAccount component', () => {
     const confirmAccount = jest.spyOn(auth, 'confirmAccount');
     confirmAccount.mockResolvedValue(mockResponse);
 
-    const { getByPlaceholderText, getByText, getByTestId } = render(
+    const { getByPlaceholderText, getByTestId } = render(
       <ConfirmAccount navigation={mockNavigation} route={mockRoute} />,
     );
 
+    const code = '123456';
     const confirmationCodeInput = getByPlaceholderText('Confirmation code');
-    fireEvent.changeText(confirmationCodeInput, '123456');
+    fireEvent.changeText(confirmationCodeInput, code);
 
-    const confirmButton = getByText('Confirm Account');
+    const confirmButton = getByTestId('confirm-button');
     fireEvent.press(confirmButton);
 
+    const { email, username } = mockRoute.params;
     await waitFor(() => {
+      expect(confirmAccount).toHaveBeenCalledWith({
+        email,
+        username,
+        code,
+      });
       const { children } = getByTestId('confirm-account-error');
       expect(children[0]).toBeUndefined();
-      expect(confirmAccount).toHaveBeenCalled();
     });
   });
 
   it('Should handle error from confirmAccount', async () => {
     jest.spyOn(auth, 'confirmAccount').mockRejectedValue(CONFIRM_ACCOUNT_ERROR);
 
-    const { getByPlaceholderText, getByText, getByTestId } = render(
+    const { getByPlaceholderText, getByTestId } = render(
       <ConfirmAccount navigation={mockNavigation} route={mockRoute} />,
     );
 
     const confirmationCodeInput = getByPlaceholderText('Confirmation code');
     fireEvent.changeText(confirmationCodeInput, '654321');
 
-    const confirmButton = getByText('Confirm Account');
-
+    const confirmButton = getByTestId('confirm-button');
     fireEvent.press(confirmButton);
 
     await waitFor(() => {

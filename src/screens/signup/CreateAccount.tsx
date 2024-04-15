@@ -18,12 +18,6 @@ import {
   Input,
   InputField,
   Link,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
   ScrollView,
   Text,
   VStack,
@@ -42,11 +36,6 @@ import { signUp } from '@services/auth';
 
 type Props = {
   navigation: NativeStackNavigationProp<AnonStackParamList, 'SignUp'>;
-};
-
-type ConfirmationParams = {
-  email: string;
-  username: string;
 };
 
 const formFields: FormField[] = [
@@ -69,7 +58,7 @@ const formFields: FormField[] = [
   },
 ];
 
-const CreateAccount = ({ navigation }: Props) => {
+export const CreateAccount = ({ navigation }: Props) => {
   const [formData, setFormData] = useState<IRegisterUser>({
     email: '',
     password: '',
@@ -78,7 +67,6 @@ const CreateAccount = ({ navigation }: Props) => {
     role: Role.CUSTOMER,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [confirmationParams, setConfirmationParams] = useState<ConfirmationParams | null>(null);
 
   const [error, setError] = useState('');
 
@@ -111,7 +99,7 @@ const CreateAccount = ({ navigation }: Props) => {
       if (!username) {
         throw new Error(SIGNUP_ERROR_MESSAGE);
       }
-      setConfirmationParams({ email: formData.email, username });
+      navigation.push('ConfirmAccount', { email: formData.email, username });
       clearForm();
     } catch (error) {
       if (error instanceof BadRequestException) {
@@ -127,17 +115,9 @@ const CreateAccount = ({ navigation }: Props) => {
     }
   };
 
-  const handleCloseModal = () => {
-    if (confirmationParams) {
-      navigation.push('ConfirmAccount', confirmationParams);
-    }
-    setConfirmationParams(null);
-  };
-
   return (
     <ScrollView bg="$white">
       <Box flex={1} bg="$white">
-        <ConfirmationModal isOpen={!!confirmationParams} onConfirm={handleCloseModal} />
         <VStack p="$4" space="lg">
           <Heading size="xl">Sign up to Emigro</Heading>
           <VStack space="2xl">
@@ -187,31 +167,3 @@ const CreateAccount = ({ navigation }: Props) => {
     </ScrollView>
   );
 };
-
-type ConfirmationProps = {
-  isOpen: boolean;
-  onConfirm: () => void;
-};
-
-const ConfirmationModal = ({ isOpen, onConfirm }: ConfirmationProps) => {
-  return (
-    <Modal isOpen={isOpen}>
-      <ModalBackdrop />
-      <ModalContent>
-        <ModalHeader>
-          <Heading size="lg">Complete registration</Heading>
-        </ModalHeader>
-        <ModalBody>
-          <Text>We have sent you a confirmation code to your email address.</Text>
-        </ModalBody>
-        <ModalFooter justifyContent="center">
-          <Button onPress={onConfirm} action="primary">
-            <ButtonText>Continue</ButtonText>
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  );
-};
-
-export default CreateAccount;
