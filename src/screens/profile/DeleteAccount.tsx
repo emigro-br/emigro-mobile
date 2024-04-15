@@ -19,12 +19,13 @@ import {
   useToast,
 } from '@gluestack-ui/themed';
 
+import { Toast } from '@components/Toast';
+
 import { ProfileStackParamList } from '@navigation/ProfileStack';
 
 import { deleteAccount } from '@services/auth';
 
 import { sessionStore } from '@stores/SessionStore';
-import { Toast } from '@components/Toast';
 
 type Props = {
   navigation: NativeStackNavigationProp<ProfileStackParamList, 'Profile'>;
@@ -33,7 +34,10 @@ type Props = {
 const DeleteAccount = ({ navigation }: Props) => {
   const toast = useToast();
   const [isChecked, setIsChecked] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
   const handleDeleteAccount = async () => {
+    setIsDeleting(true);
     try {
       await deleteAccount();
       await sessionStore.clear();
@@ -48,6 +52,8 @@ const DeleteAccount = ({ navigation }: Props) => {
           <Toast id={id} title="Failed to delete your account" description={message} action="error" />
         ),
       });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -94,10 +100,10 @@ const DeleteAccount = ({ navigation }: Props) => {
             </Checkbox>
           </VStack>
           <ButtonGroup flexDirection="column">
-            <Button variant="solid" onPress={handleDeleteAccount} isDisabled={!isChecked}>
+            <Button variant="solid" onPress={() => handleDeleteAccount()} isDisabled={!isChecked || isDeleting}>
               <ButtonText>Yes, delete my account permanently</ButtonText>
             </Button>
-            <Button variant="link" onPress={() => navigation.popToTop()}>
+            <Button variant="link" onPress={() => navigation.popToTop()} isDisabled={isDeleting}>
               <ButtonText>No, keep my account</ButtonText>
             </Button>
           </ButtonGroup>

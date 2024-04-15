@@ -1,3 +1,4 @@
+import { useToast } from '@gluestack-ui/themed';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { IAuthSession } from '@/types/IAuthSession';
@@ -7,7 +8,6 @@ import { deleteAccount } from '@services/auth';
 import { sessionStore } from '@stores/SessionStore';
 
 import DeleteAccount from '../DeleteAccount';
-import { useToast } from '@gluestack-ui/themed';
 
 jest.mock('@gluestack-ui/themed', () => ({
   ...jest.requireActual('@gluestack-ui/themed'),
@@ -65,7 +65,6 @@ describe('DeleteAccount component', () => {
   });
 
   it('Should handle error when deleting account fail', async () => {
-
     const mockToastShow = useToast().show;
     sessionStore.session = {
       accessToken: 'accessToken',
