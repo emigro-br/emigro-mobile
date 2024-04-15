@@ -16,6 +16,7 @@ import {
   ScrollView,
   Text,
   VStack,
+  useToast,
 } from '@gluestack-ui/themed';
 
 import { ProfileStackParamList } from '@navigation/ProfileStack';
@@ -23,20 +24,30 @@ import { ProfileStackParamList } from '@navigation/ProfileStack';
 import { deleteAccount } from '@services/auth';
 
 import { sessionStore } from '@stores/SessionStore';
+import { Toast } from '@components/Toast';
 
 type Props = {
   navigation: NativeStackNavigationProp<ProfileStackParamList, 'Profile'>;
 };
 
 const DeleteAccount = ({ navigation }: Props) => {
+  const toast = useToast();
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const handleDeleteAccount = async () => {
     try {
       await deleteAccount();
       await sessionStore.clear();
     } catch (error) {
-      console.error(error);
-      //TODO: missing feedback to the user
+      let message = 'Could not delete your account, please try again later.';
+      if (error instanceof Error) {
+        message = error.message;
+      }
+      toast.show({
+        duration: 10000,
+        render: ({ id }) => (
+          <Toast id={id} title="Failed to delete your account" description={message} action="error" />
+        ),
+      });
     }
   };
 
