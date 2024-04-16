@@ -19,7 +19,7 @@ type Props = {
 };
 
 export const Payments: React.FC<Props> = ({ navigation }) => {
-  const enablePixCopiaECola = useFeatureFlag('pix-copia-e-cola');
+  const enablePix = useFeatureFlag('pix-payment');
   const [assetListOpen, setAssetListOpen] = useState(false);
 
   const availableAssets = cryptoAssets();
@@ -48,7 +48,7 @@ export const Payments: React.FC<Props> = ({ navigation }) => {
           />
         </ButtonGroup>
         <ButtonGroup space="4xl" mt="$8">
-          {enablePixCopiaECola ? (
+          {enablePix ? (
             <CircularButton
               icon={CopyIcon}
               label="Pix Copia & Cola"

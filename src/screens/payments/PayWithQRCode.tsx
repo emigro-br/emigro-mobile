@@ -11,7 +11,7 @@ import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
 import { CameraView, PermissionStatus, useCameraPermissions } from 'expo-camera/next';
 import { PixElementType, hasError, parsePix } from 'pix-utils';
 
-import { Payment } from '@/types/PixPayment';
+import { Payment, emigroCategoryCode } from '@/types/PixPayment';
 
 import { INVALID_QR_CODE } from '@constants/errorMessages';
 
@@ -23,6 +23,7 @@ import { paymentStore } from '@stores/PaymentStore';
 
 import { isoToCrypto } from '@utils/assets';
 import { brCodeFromMercadoPagoUrl } from '@utils/pix';
+import { useFeatureFlag } from '@hooks/feature-flags';
 
 type ScreenProps = {
   navigation: NativeStackNavigationProp<PaymentStackParamList, 'PayWithQRCode'>;
@@ -83,11 +84,15 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
       throw new Error(INVALID_QR_CODE);
     }
 
-    return {
-      ...pix,
-      brCode: scanned,
-      assetCode: isoToCrypto[pix.transactionCurrency as keyof typeof isoToCrypto],
-    } as Payment;
+    const enablePix = useFeatureFlag('pix-payment');
+    if (pix.merchantCategoryCode === emigroCategoryCode || enablePix) {
+      return {
+        ...pix,
+        brCode: scanned,
+        assetCode: isoToCrypto[pix.transactionCurrency as keyof typeof isoToCrypto],
+      } as Payment;
+    }
+    throw new Error(INVALID_QR_CODE);
   };
 
   const handleBarCodeScanned = (result: BarCodeScanningResult) => {
@@ -126,7 +131,7 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
 
   const QRRectangule = () => <View style={styles.rectangle} />;
   const CloseButton = () => (
-    <Pressable right={0} top={0} mt="$8" mr="$8" position="absolute" onPress={onCancel} p="$1">
+    <Pressable right={0} top={0} mt="$8" mr="$4" position="absolute" onPress={onCancel} p="$1">
       <Ionicons name="close" size={36} color="white" />
     </Pressable>
   );
