@@ -7,11 +7,12 @@ type Props = {
   subtitle?: string;
   leading?: React.ReactNode;
   trailing?: React.ReactNode;
+  testID?: string;
 };
 
-export const ListTile = ({ title, subtitle, leading, trailing }: Props) => {
+export const ListTile = ({ title, subtitle, leading, trailing, testID }: Props) => {
   return (
-    <HStack space="md" alignItems="center">
+    <HStack space="md" alignItems="center" testID={testID}>
       {leading}
       <VStack>
         <Text color="$coolGray800" fontWeight="500" $dark-color="$warmGray100">

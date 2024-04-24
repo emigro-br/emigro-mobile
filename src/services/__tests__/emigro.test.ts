@@ -3,10 +3,18 @@ import MockAdapter from 'axios-mock-adapter';
 
 import { IAuthSession } from '@/types/IAuthSession';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
+import { CryptoAsset } from '@/types/assets';
 
 import { api } from '@services/api';
 
-import { getTransactions, getUserBalance, getUserProfile, getUserPublicKey, sendTransaction } from '../emigro';
+import {
+  addAssetToWallet,
+  getTransactions,
+  getUserBalance,
+  getUserProfile,
+  getUserPublicKey,
+  sendTransaction,
+} from '../emigro';
 
 jest.mock('../api', () => ({
   api: jest.fn(),
@@ -108,6 +116,25 @@ describe('emigro service', () => {
 
       expect(mockAxiosPost).toHaveBeenCalledWith('/user/profile', mockSession);
       expect(result).toEqual(mockResponse);
+    });
+  });
+
+  describe('addAssetToWallet', () => {
+    const mockAssetCode: CryptoAsset = CryptoAsset.BRL;
+    const mockResponse = {
+      balances: [
+        { assetCode: 'USD', balance: 100 },
+        { assetCode: 'BRL', balance: 200 },
+      ],
+    };
+
+    it('should make a POST request to add asset to wallet and return the updated user profile', async () => {
+      const mockAxiosPost = jest.spyOn(instance, 'post');
+      mock.onPost('/user/wallet/assets').reply(200, mockResponse);
+      const result = await addAssetToWallet(mockAssetCode);
+
+      expect(mockAxiosPost).toHaveBeenCalledWith('/user/wallet/assets', { assetCode: mockAssetCode });
+      expect(result).toEqual(mockResponse.balances);
     });
   });
 });

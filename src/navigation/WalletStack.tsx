@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Header from '@components/Header';
 
 import Deposit from '@screens/Deposit';
+import { ManageAccountsScreen } from '@screens/ManageAccounts';
 import Wallet from '@screens/Wallet';
 import Withdraw from '@screens/Withdraw';
 
@@ -17,6 +18,7 @@ export type WalletStackParamList = {
   Withdraw: undefined;
   TransfersRoot: NavigatorScreenParams<TransferStackParamList> | undefined;
   SwapRoot: NavigatorScreenParams<SwapStackParamList> | undefined;
+  ManageAccounts: undefined;
 };
 
 const Stack = createNativeStackNavigator<WalletStackParamList>();
@@ -29,6 +31,7 @@ export function WalletStack() {
       <Stack.Screen name="Withdraw" component={Withdraw} options={{ title: 'Withdraw' }} />
       <Stack.Screen name="TransfersRoot" component={TransferStack} options={{ title: 'Transfers' }} />
       <Stack.Screen name="SwapRoot" component={SwapStack} options={{ title: 'Swap' }} />
+      <Stack.Screen name="ManageAccounts" component={ManageAccountsScreen} options={{ title: 'Accounts' }} />
     </Stack.Navigator>
   );
 }

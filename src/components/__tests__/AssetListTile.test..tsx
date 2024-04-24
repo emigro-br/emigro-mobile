@@ -6,16 +6,19 @@ import { AssetListTile } from '../AssetListTile';
 
 describe('AssetListTile', () => {
   test('renders correctly for crypto', () => {
+    const testID = 'asset-list-tile';
     const item = CryptoAsset.USDC;
-    const { getByText, queryByText, getByTestId } = render(<AssetListTile asset={item} />);
+    const { getByText, queryByText, getByTestId } = render(<AssetListTile asset={item} testID={testID} />);
 
     const assetName = getByText('USD Coin');
     const assetAvatar = getByTestId('asset-avatar');
     const assetCode = queryByText('USDC');
+    const assetTile = getByTestId(testID);
 
     expect(assetCode).toBeNull();
     expect(assetName).toBeOnTheScreen();
     expect(assetAvatar).toBeOnTheScreen();
+    expect(assetTile).toBeOnTheScreen();
   });
 
   test('renders correctly for currency', () => {
