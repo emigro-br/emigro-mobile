@@ -15,6 +15,8 @@ import { Payment, emigroCategoryCode } from '@/types/PixPayment';
 
 import { INVALID_QR_CODE } from '@constants/errorMessages';
 
+import { useFeatureFlag } from '@hooks/feature-flags';
+
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
 
 import AskCamera from '@screens/AskCamera';
@@ -23,7 +25,6 @@ import { paymentStore } from '@stores/PaymentStore';
 
 import { isoToCrypto } from '@utils/assets';
 import { brCodeFromMercadoPagoUrl } from '@utils/pix';
-import { useFeatureFlag } from '@hooks/feature-flags';
 
 type ScreenProps = {
   navigation: NativeStackNavigationProp<PaymentStackParamList, 'PayWithQRCode'>;
@@ -53,6 +54,7 @@ type Props = {
 };
 
 export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
+  const enablePix = useFeatureFlag('pix-payment');
   const [cameraPermission, setCameraPermission] = useState<PermissionResponse | null>(null);
   const [isScanned, setIsScanned] = useState(false);
   const [error, setError] = useState('');
@@ -84,7 +86,6 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
       throw new Error(INVALID_QR_CODE);
     }
 
-    const enablePix = useFeatureFlag('pix-payment');
     if (pix.merchantCategoryCode === emigroCategoryCode || enablePix) {
       return {
         ...pix,
