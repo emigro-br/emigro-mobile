@@ -6,24 +6,28 @@ import { AssetListTile } from '../AssetListTile';
 
 describe('AssetListTile', () => {
   test('renders correctly for crypto', () => {
+    const testID = 'asset-list-tile';
     const item = CryptoAsset.USDC;
-    const { getByText, getByTestId } = render(<AssetListTile asset={item} />);
+    const { getByText, queryByText, getByTestId } = render(<AssetListTile asset={item} testID={testID} />);
 
-    const assetCode = getByText('USDC');
     const assetName = getByText('USD Coin');
     const assetAvatar = getByTestId('asset-avatar');
+    const assetCode = queryByText('USDC');
+    const assetTile = getByTestId(testID);
 
-    expect(assetCode).toBeOnTheScreen();
+    expect(assetCode).toBeNull();
     expect(assetName).toBeOnTheScreen();
     expect(assetAvatar).toBeOnTheScreen();
+    expect(assetTile).toBeOnTheScreen();
   });
 
   test('renders correctly for currency', () => {
-    const item = FiatCurrency.EUR;
-    const { getByText, getByTestId } = render(<AssetListTile asset={item} />);
+    const asset = FiatCurrency.EUR;
+    const subasset = CryptoAsset.EURC;
+    const { getByText, getByTestId } = render(<AssetListTile asset={asset} subasset={subasset} />);
 
-    const assetCode = getByText('EUR');
     const assetName = getByText('Euro');
+    const assetCode = getByText('Euro Coin');
     const assetAvatar = getByTestId('asset-avatar');
 
     expect(assetCode).toBeOnTheScreen();

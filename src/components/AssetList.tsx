@@ -17,7 +17,7 @@ export const AssetList = ({ data, onPress }: Props) => {
       data={data}
       renderItem={({ item }: { item: CryptoOrFiat }) => (
         <Pressable onPress={() => onPress(item)}>
-          <AssetListTile asset={item} />
+          <AssetListTile asset={item} subasset={item} />
         </Pressable>
       )}
       keyExtractor={(item: CryptoOrFiat) => item}

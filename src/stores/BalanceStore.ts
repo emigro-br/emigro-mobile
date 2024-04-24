@@ -20,8 +20,12 @@ export class BalanceStore {
     this.lastUpdate = Date.now();
   }
 
+  find(assetCode: string): IBalance | undefined {
+    return this.userBalance.find((balance) => balance.assetCode === assetCode);
+  }
+
   get(assetCode: string): number {
-    const found = this.userBalance.find((balance) => balance.assetCode === assetCode);
+    const found = this.find(assetCode);
     if (found) return Number(found.balance); //TODO: change the balance to number
     return 0;
   }

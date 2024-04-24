@@ -71,4 +71,40 @@ describe('BalanceStore', () => {
     balanceStore.setUserBalance(mockBalances);
     expect(balanceStore.get('someAssetCode')).toBe(100);
   });
+
+  it('should find the balance by asset code', () => {
+    const balanceStore = new BalanceStore();
+    const mockBalances: IBalance[] = [
+      {
+        assetType: 'someAssetType',
+        assetCode: 'someAssetCode',
+        label: 'someLabel',
+        value: 'someValue',
+        balance: '100',
+      },
+    ];
+    balanceStore.setUserBalance(mockBalances);
+
+    const foundBalance = balanceStore.find('someAssetCode');
+
+    expect(foundBalance).toEqual(mockBalances[0]);
+  });
+
+  it('should return undefined when balance is not found', () => {
+    const balanceStore = new BalanceStore();
+    const mockBalances: IBalance[] = [
+      {
+        assetType: 'someAssetType',
+        assetCode: 'someAssetCode',
+        label: 'someLabel',
+        value: 'someValue',
+        balance: '100',
+      },
+    ];
+    balanceStore.setUserBalance(mockBalances);
+
+    const foundBalance = balanceStore.find('nonExistingAssetCode');
+
+    expect(foundBalance).toBeUndefined();
+  });
 });

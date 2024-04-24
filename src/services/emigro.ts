@@ -4,6 +4,7 @@ import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { ITransaction } from '@/types/ITransaction';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IUserProfile } from '@/types/IUserProfile';
+import { CryptoAsset } from '@/types/assets';
 
 import { api } from './api';
 
@@ -42,4 +43,9 @@ export const getUserPublicKey = async (): Promise<string> => {
 export const getUserProfile = async (session: IAuthSession): Promise<IUserProfile> => {
   const res = await api().post('/user/profile', session);
   return res.data;
+};
+
+export const addAssetToWallet = async (assetCode: CryptoAsset): Promise<IBalance[]> => {
+  const res = await api().post('/user/wallet/assets', { assetCode });
+  return res.data.balances;
 };
