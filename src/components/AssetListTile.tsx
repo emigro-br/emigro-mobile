@@ -1,30 +1,24 @@
-import { HStack, Text, VStack } from '@gluestack-ui/themed';
-
 import { CryptoOrFiat } from '@/types/assets';
 
 import { labelFor } from '@utils/assets';
 
 import { AssetAvatar } from './AssetAvatar';
+import { ListTile } from './ListTile';
 
 type Props = {
   asset: CryptoOrFiat;
+  subasset?: CryptoOrFiat;
+  trailing?: React.ReactNode;
   dense?: boolean;
 };
 
-export const AssetListTile = ({ asset, dense }: Props) => {
+export const AssetListTile = ({ asset, subasset, trailing, dense }: Props) => {
   return (
-    <HStack space="md" alignItems="center">
-      <AssetAvatar asset={asset} size={dense ? 'sm' : 'md'} />
-      <VStack>
-        <Text color="$coolGray800" fontWeight="500" $dark-color="$warmGray100">
-          {dense ? labelFor(asset) : asset}
-        </Text>
-        {!dense && (
-          <Text size="sm" color="$coolGray500" $dark-color="$warmGray200">
-            {labelFor(asset)}
-          </Text>
-        )}
-      </VStack>
-    </HStack>
+    <ListTile
+      leading={<AssetAvatar asset={asset} size={dense ? 'sm' : 'md'} />}
+      title={labelFor(asset) || `${asset}`}
+      subtitle={subasset && (asset === subasset ? `${subasset}` : labelFor(subasset))}
+      trailing={trailing}
+    />
   );
 };

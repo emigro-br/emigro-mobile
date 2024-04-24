@@ -22,12 +22,16 @@ const Balance: React.FC<Props> = ({ userBalance }) => {
               assetType === 'native' ? CryptoAsset.XLM : CryptoAsset[assetCode as keyof typeof CryptoAsset];
             const currency = asset === CryptoAsset.XLM ? CryptoAsset.XLM : AssetToCurrency[asset];
             return (
-              <HStack key={index} justifyContent="space-between" alignItems="center">
-                <AssetListTile asset={currency} dense />
-                <Text>
-                  {AssetToSymbol[asset]} {Number(balance).toFixed(2)}
-                </Text>
-              </HStack>
+              <AssetListTile
+                key={index}
+                asset={currency}
+                trailing={
+                  <Text>
+                    {AssetToSymbol[asset]} {Number(balance).toFixed(2)}
+                  </Text>
+                }
+                dense
+              />
             );
           })}
         </VStack>

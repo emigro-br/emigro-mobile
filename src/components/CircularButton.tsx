@@ -4,7 +4,7 @@ import { DimensionValue } from 'react-native';
 import { Button, ButtonIcon, Text, VStack } from '@gluestack-ui/themed';
 
 type Props = {
-  label: string;
+  label?: string;
   icon: any;
   bg?: any;
   size?: 'sm' | 'md' | 'lg';
