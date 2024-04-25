@@ -1,7 +1,8 @@
+import * as Crypto from 'expo-crypto';
 import { action, makeAutoObservable, observable } from 'mobx';
 import { PixElementType, hasError, parsePix } from 'pix-utils';
 
-import { ITransactionRequest } from '@/types/ITransactionRequest';
+import { ITransactionRequest, TransactionType } from '@/types/ITransactionRequest';
 import { Payment, PixPayment, emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
@@ -28,10 +29,12 @@ type TransactionParty = {
 };
 
 type PayTransaction = {
+  type: TransactionType;
   from: TransactionParty;
   to: TransactionParty;
   rate: number;
   fees: number;
+  idempotencyKey?: string;
 };
 
 export class PaymentStore {
@@ -49,6 +52,9 @@ export class PaymentStore {
   }
 
   setTransaction(transaction?: PayTransaction) {
+    if (transaction) {
+      transaction.idempotencyKey = Crypto.randomUUID();
+    }
     this.transaction = transaction;
   }
 
@@ -63,6 +69,7 @@ export class PaymentStore {
 
   setTransfer(amount: number, asset: CryptoAsset, destinationWallet: string) {
     const transfer: PayTransaction = {
+      type: 'transfer',
       from: {
         wallet: sessionStore.publicKey!,
         asset,
@@ -81,6 +88,7 @@ export class PaymentStore {
 
   setSwap(swap: SwapTransaction) {
     const swapTransaction: PayTransaction = {
+      type: 'swap',
       from: {
         wallet: sessionStore.publicKey!,
         asset: swap.from,
@@ -134,13 +142,15 @@ export class PaymentStore {
   }
 
   async pay() {
-    const { from, to } = this.transaction!;
+    const { type, from, to, idempotencyKey } = this.transaction!;
     const transactionRequest: ITransactionRequest = {
+      type,
       maxAmountToSend: from.value.toString(), // cry
       sourceAssetCode: from.asset,
       destination: to.wallet,
       destinationAmount: to.value.toString(),
       destinationAssetCode: to.asset,
+      idempotencyKey,
     };
     const res = await sendTransaction(transactionRequest);
     return res;

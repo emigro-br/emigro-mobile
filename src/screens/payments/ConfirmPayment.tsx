@@ -104,6 +104,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
     }
 
     const transaction = {
+      type: 'payment',
       from: {
         wallet: sessionStore.publicKey!,
         asset: selectedAsset,

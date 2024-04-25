@@ -5,6 +5,10 @@ import * as transactionApi from '@services/transaction';
 
 import { PaymentStore, SwapTransaction } from '../PaymentStore';
 
+jest.mock('expo-crypto', () => ({
+  randomUUID: jest.fn().mockReturnValue('mocked-uuid'),
+}));
+
 jest.mock('@stores/SessionStore', () => ({
   sessionStore: {
     publicKey: 'mockedPublicKey',
@@ -20,6 +24,59 @@ describe('PaymentStore', () => {
 
   beforeEach(() => {
     swapBloc = new PaymentStore();
+  });
+
+  it('should pay with correct parameters', async () => {
+    const emigro = jest.requireMock('@services/emigro');
+
+    const sourceAsset = CryptoAsset.XLM;
+    const destAsset = CryptoAsset.USDC;
+    swapBloc.setTransaction({
+      type: 'payment',
+      from: {
+        wallet: 'user-public',
+        asset: sourceAsset,
+        value: 100,
+      },
+      to: {
+        wallet: 'merchant-public',
+        asset: destAsset,
+        value: 10,
+      },
+      rate: 1,
+      fees: 0,
+    });
+
+    await swapBloc.pay();
+
+    expect(emigro.sendTransaction).toHaveBeenCalledWith({
+      type: 'payment',
+      maxAmountToSend: '100',
+      destinationAmount: '10',
+      destination: 'merchant-public',
+      sourceAssetCode: sourceAsset,
+      destinationAssetCode: destAsset,
+      idempotencyKey: expect.any(String),
+    });
+  });
+
+  it('should call transfer with correct parameters', async () => {
+    const emigro = jest.requireMock('@services/emigro');
+
+    const asset = CryptoAsset.BRL;
+    swapBloc.setTransfer(100, asset, 'mockedPublicKey');
+
+    await swapBloc.pay();
+
+    expect(emigro.sendTransaction).toHaveBeenCalledWith({
+      type: 'transfer',
+      maxAmountToSend: '100',
+      destinationAmount: '100',
+      destination: 'mockedPublicKey',
+      sourceAssetCode: asset,
+      destinationAssetCode: asset,
+      idempotencyKey: expect.any(String),
+    });
   });
 
   it('should call swap with correct parameters', async () => {
@@ -40,11 +97,13 @@ describe('PaymentStore', () => {
 
     // check sendTransaction is called with correct parameters
     expect(emigro.sendTransaction).toHaveBeenCalledWith({
+      type: 'swap',
       maxAmountToSend: '100', // cry
       destinationAmount: '120',
       destination: 'mockedPublicKey',
       sourceAssetCode: CryptoAsset.EURC,
       destinationAssetCode: CryptoAsset.BRL,
+      idempotencyKey: expect.any(String),
     });
   });
 
@@ -129,6 +188,7 @@ describe('PaymentStore', () => {
     };
 
     const transaction = {
+      type: 'payment' as any, // FIXME: remove any
       from: {
         wallet: 'user-public-key',
         asset: CryptoAsset.BRL,
