@@ -1,9 +1,7 @@
-import { IAuthSession } from '@/types/IAuthSession';
-import { IBalance } from '@/types/IBalance';
-import { IUserProfile } from '@/types/IUserProfile';
 import { CryptoAsset } from '@/types/assets';
 
 import { api } from './api';
+import { IAuthSession, IBalance, IUserProfile } from './types';
 
 export const getUserBalance = async (): Promise<IBalance[]> => {
   const res = await api().get('/user');

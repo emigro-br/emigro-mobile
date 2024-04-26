@@ -4,7 +4,6 @@ import { Linking } from 'react-native';
 import { Box, Button, ButtonText, Card, FormControlErrorText, Heading, Text, VStack } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 
-import { IAnchorParams } from '@/types/IAnchorParams';
 import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { TransactionStatus } from '@/types/TransactionStatus';
 import { CryptoAsset, stableCoins } from '@/types/assets';
@@ -82,7 +81,7 @@ const Withdraw: React.FC = observer(() => {
     setStep(TransactionStep.STARTED);
 
     try {
-      const anchorParams: IAnchorParams = {
+      const anchorParams = {
         asset_code: asset,
       };
       //TODO: webview change navigation thwors error for CallbackType.CALLBACK_URL

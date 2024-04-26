@@ -1,8 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import { IAnchorParams } from '@/types/IAnchorParams';
-import { IAnchorResponse } from '@/types/IAnchorResponse';
 import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { TransactionStatus } from '@/types/TransactionStatus';
 import { CryptoAsset } from '@/types/assets';
@@ -16,6 +14,7 @@ import {
   getInteractiveWithdrawUrl,
   getTransaction,
 } from '../anchors';
+import { IAnchorParams, IAnchorResponse } from '../types';
 
 jest.mock('../api', () => ({
   api: jest.fn(),

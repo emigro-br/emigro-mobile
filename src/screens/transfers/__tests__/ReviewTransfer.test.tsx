@@ -4,7 +4,7 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { inputPIN, render } from 'test-utils';
 
-import { IPaymentResponse } from '@/types/IPaymentResponse';
+import { IPaymentResponse } from '@services/emigro/types';
 
 import { paymentStore } from '@stores/PaymentStore';
 import { sessionStore } from '@stores/SessionStore';

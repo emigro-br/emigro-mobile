@@ -2,11 +2,10 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
-import { IAuthSession } from '@/types/IAuthSession';
-
 import Login from '@screens/Login';
 
 import * as auth from '@services/emigro/auth';
+import { IAuthSession } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
 

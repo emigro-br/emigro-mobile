@@ -1,15 +1,10 @@
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import { IAuthSession } from '@/types/IAuthSession';
-import { IConfirmUser } from '@/types/IConfirmUser';
-import { IRegisterUser } from '@/types/IRegisterUser';
-
-import { Role } from '@constants/constants';
-
 import { api } from '@services/emigro/api';
 
 import { confirmAccount, confirmResetPassword, deleteAccount, refresh, resetPassword, signIn, signUp } from '../auth';
+import { IAuthSession, IConfirmUser, IRegisterUser, Role } from '../types';
 
 jest.mock('../api', () => ({
   api: jest.fn(),

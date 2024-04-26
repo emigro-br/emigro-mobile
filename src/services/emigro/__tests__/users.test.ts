@@ -1,11 +1,11 @@
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import { IAuthSession } from '@/types/IAuthSession';
 import { CryptoAsset } from '@/types/assets';
 
 import { api } from '@services/emigro/api';
 
+import { IAuthSession } from '../types';
 import { addAssetToWallet, getUserBalance, getUserProfile, getUserPublicKey } from '../users';
 
 jest.mock('../api', () => ({

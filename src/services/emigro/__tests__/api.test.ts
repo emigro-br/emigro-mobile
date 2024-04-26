@@ -1,11 +1,10 @@
 import axios, { AxiosInstance, CreateAxiosDefaults } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import { IAuthSession } from '@/types/IAuthSession';
-
 import { sessionStore } from '@stores/SessionStore';
 
 import { api, withRefreshTokenInterceptor } from '../api';
+import { IAuthSession } from '../types';
 
 jest.mock('@stores/SessionStore', () => ({
   sessionStore: {

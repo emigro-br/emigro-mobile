@@ -1,5 +1,4 @@
-import { IBalance } from '@/types/IBalance';
-
+import { IBalance } from '@services/emigro/types';
 import * as usersApi from '@services/emigro/users';
 
 import { BalanceStore } from '../BalanceStore';

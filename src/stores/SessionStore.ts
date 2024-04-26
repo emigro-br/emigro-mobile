@@ -2,13 +2,11 @@ import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 import { action, flow, makeAutoObservable, observable } from 'mobx';
 
-import { IUserProfile } from '@/types/IUserProfile';
 import { InvalidSessionError } from '@/types/errors';
 
 import { refresh as refreshSession } from '@services/emigro/auth';
+import { IAuthSession, IUserProfile } from '@services/emigro/types';
 import { getUserProfile, getUserPublicKey } from '@services/emigro/users';
-
-import { IAuthSession } from '../types/IAuthSession';
 
 export class SessionStore {
   // Observable states

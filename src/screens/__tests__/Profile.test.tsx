@@ -6,9 +6,9 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
-import { IUserProfile } from '@/types/IUserProfile';
-
 import Profile from '@screens/profile/Profile';
+
+import { IUserProfile } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
 

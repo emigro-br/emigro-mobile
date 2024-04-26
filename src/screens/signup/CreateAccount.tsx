@@ -24,15 +24,14 @@ import {
 } from '@gluestack-ui/themed';
 
 import { FormField } from '@/types/FormField';
-import { IRegisterUser } from '@/types/IRegisterUser';
 import { BadRequestException } from '@/types/errors';
 
-import { Role } from '@constants/constants';
 import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 
 import { AnonStackParamList } from '@navigation/AnonStack';
 
 import { signUp } from '@services/emigro/auth';
+import { IRegisterUser, Role } from '@services/emigro/types';
 
 type Props = {
   navigation: NativeStackNavigationProp<AnonStackParamList, 'SignUp'>;

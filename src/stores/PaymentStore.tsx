@@ -2,11 +2,11 @@ import * as Crypto from 'expo-crypto';
 import { action, makeAutoObservable, observable } from 'mobx';
 import { PixElementType, hasError, parsePix } from 'pix-utils';
 
-import { ITransactionRequest, TransactionType } from '@/types/ITransactionRequest';
 import { Payment, PixPayment, emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
 import { brcodePayment, brcodePaymentPreview, sendTransaction } from '@services/emigro/transactions';
+import { ITransactionRequest, TransactionType } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
 

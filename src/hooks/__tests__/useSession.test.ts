@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
 import mockConsole from 'jest-mock-console';
 
-import { IAuthSession } from '@/types/IAuthSession';
+import { IAuthSession } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
 

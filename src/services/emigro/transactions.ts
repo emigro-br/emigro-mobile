@@ -1,8 +1,5 @@
-import { IPaymentResponse } from '@/types/IPaymentResponse';
-import { ITransaction } from '@/types/ITransaction';
-import { ITransactionRequest } from '@/types/ITransactionRequest';
-
 import { api } from './api';
+import { IPaymentResponse, ITransaction, ITransactionRequest } from './types';
 
 type BrcodePaymentRequest = {
   brcode: string;

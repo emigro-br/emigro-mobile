@@ -25,11 +25,12 @@ import * as Clipboard from 'expo-clipboard';
 import { createStaticPix } from 'pix-utils';
 import { CreateStaticPixParams } from 'pix-utils/dist/main/types/pixCreate';
 
-import { IUserProfile } from '@/types/IUserProfile';
 import { emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
+
+import { IUserProfile } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
 

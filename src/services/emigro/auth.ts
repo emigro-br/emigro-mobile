@@ -1,11 +1,5 @@
-import { IAuthSession } from '@/types/IAuthSession';
-import { IConfirmUser } from '@/types/IConfirmUser';
-import { IRegisterResponse } from '@/types/IRegisterResponse';
-import { IRegisterUser } from '@/types/IRegisterUser';
-
-import { Role } from '@constants/constants';
-
 import { api } from './api';
+import { IAuthSession, IConfirmUser, IRegisterResponse, IRegisterUser, Role } from './types';
 
 type SuccessResponse = {
   success: boolean;

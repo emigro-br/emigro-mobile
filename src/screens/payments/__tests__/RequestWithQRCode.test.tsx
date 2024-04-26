@@ -6,7 +6,7 @@ import * as pixUtils from 'pix-utils';
 
 import { render } from 'test-utils';
 
-import { IUserProfile } from '@/types/IUserProfile';
+import { IUserProfile } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
 

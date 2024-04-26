@@ -1,8 +1,8 @@
-import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
 import * as transactionApi from '@services/emigro/transactions';
+import { IPaymentResponse } from '@services/emigro/types';
 
 import { PaymentStore, SwapTransaction } from '../PaymentStore';
 

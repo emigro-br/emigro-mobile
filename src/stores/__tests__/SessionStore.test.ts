@@ -1,10 +1,8 @@
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 
-import { IAuthSession } from '@/types/IAuthSession';
-import { IUserProfile } from '@/types/IUserProfile';
-
 import { refresh as refreshSession } from '@services/emigro/auth';
+import { IAuthSession, IUserProfile } from '@services/emigro/types';
 import { getUserPublicKey } from '@services/emigro/users';
 
 import { SessionStore } from '../SessionStore';

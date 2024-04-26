@@ -6,7 +6,6 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Box, Card, FormControlErrorText, Heading, Text, VStack } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 
-import { IAnchorParams } from '@/types/IAnchorParams';
 import { CryptoAsset, stableCoins } from '@/types/assets';
 
 import { AssetList } from '@components/AssetList';
@@ -52,7 +51,7 @@ const Deposit = observer(({ navigation }: Props) => {
 
     setIsLoading(true);
 
-    const anchorParams: IAnchorParams = {
+    const anchorParams = {
       asset_code: asset,
     };
 

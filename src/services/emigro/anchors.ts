@@ -1,17 +1,19 @@
-import { IAnchorParams } from '@/types/IAnchorParams';
-import { IAnchorResponse } from '@/types/IAnchorResponse';
 import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { CryptoAsset } from '@/types/assets';
 
-import { OperationType } from '@constants/constants';
-
 import { api, backendUrl } from './api';
+import { IAnchorParams, IAnchorResponse } from './types';
 
 export type ConfirmWithdrawDto = {
   transactionId: string;
   assetCode: string;
   from: string;
 };
+
+const enum OperationType {
+  DEPOSIT = 'DEPOSIT',
+  WITHDRAW = 'WITHDRAW',
+}
 
 export enum CallbackType {
   CALLBACK_URL,

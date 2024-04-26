@@ -1,9 +1,8 @@
 import { useToast } from '@gluestack-ui/themed';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { IAuthSession } from '@/types/IAuthSession';
-
 import { deleteAccount } from '@services/emigro/auth';
+import { IAuthSession } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
 
