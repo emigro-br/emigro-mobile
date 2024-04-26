@@ -6,8 +6,7 @@ import { ITransactionRequest, TransactionType } from '@/types/ITransactionReques
 import { Payment, PixPayment, emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
-import { sendTransaction } from '@services/emigro';
-import { brcodePayment, brcodePaymentPreview } from '@services/transaction';
+import { brcodePayment, brcodePaymentPreview, sendTransaction } from '@services/transaction';
 
 import { sessionStore } from '@stores/SessionStore';
 

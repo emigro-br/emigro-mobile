@@ -1,18 +1,9 @@
 import { IAuthSession } from '@/types/IAuthSession';
 import { IBalance } from '@/types/IBalance';
-import { IPaymentResponse } from '@/types/IPaymentResponse';
-import { ITransaction } from '@/types/ITransaction';
-import { ITransactionRequest } from '@/types/ITransactionRequest';
 import { IUserProfile } from '@/types/IUserProfile';
 import { CryptoAsset } from '@/types/assets';
 
 import { api } from './api';
-
-export const getTransactions = async (): Promise<ITransaction[]> => {
-  const res = await api().get('/transaction/all');
-  const { transactions } = res.data;
-  return transactions;
-};
 
 export const getUserBalance = async (): Promise<IBalance[]> => {
   const res = await api().get('/user');
@@ -27,12 +18,6 @@ export const getUserBalance = async (): Promise<IBalance[]> => {
     }
   }
   return balances;
-};
-
-export const sendTransaction = async (data: ITransactionRequest): Promise<IPaymentResponse> => {
-  const timeout = 30000; // some transactions may take longer
-  const res = await api({ timeout }).post('/transaction', data);
-  return res.data;
 };
 
 export const getUserPublicKey = async (): Promise<string> => {

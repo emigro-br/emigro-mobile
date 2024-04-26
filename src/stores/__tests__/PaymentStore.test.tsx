@@ -1,3 +1,4 @@
+import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
@@ -15,9 +16,9 @@ jest.mock('@stores/SessionStore', () => ({
   },
 }));
 
-jest.mock('@services/emigro', () => ({
-  sendTransaction: jest.fn().mockResolvedValue({ transactionHash: 'hash' }),
-}));
+const mockedResponse = {
+  transactionHash: 'mocked-hash',
+} as IPaymentResponse;
 
 describe('PaymentStore', () => {
   let swapBloc: PaymentStore;
@@ -27,7 +28,7 @@ describe('PaymentStore', () => {
   });
 
   it('should pay with correct parameters', async () => {
-    const emigro = jest.requireMock('@services/emigro');
+    const sendTransactionMock = jest.spyOn(transactionApi, 'sendTransaction').mockResolvedValueOnce(mockedResponse);
 
     const sourceAsset = CryptoAsset.XLM;
     const destAsset = CryptoAsset.USDC;
@@ -49,7 +50,7 @@ describe('PaymentStore', () => {
 
     await swapBloc.pay();
 
-    expect(emigro.sendTransaction).toHaveBeenCalledWith({
+    expect(sendTransactionMock).toHaveBeenCalledWith({
       type: 'payment',
       maxAmountToSend: '100',
       destinationAmount: '10',
@@ -61,14 +62,14 @@ describe('PaymentStore', () => {
   });
 
   it('should call transfer with correct parameters', async () => {
-    const emigro = jest.requireMock('@services/emigro');
+    const sendTransactionMock = jest.spyOn(transactionApi, 'sendTransaction').mockResolvedValueOnce(mockedResponse);
 
     const asset = CryptoAsset.BRL;
     swapBloc.setTransfer(100, asset, 'mockedPublicKey');
 
     await swapBloc.pay();
 
-    expect(emigro.sendTransaction).toHaveBeenCalledWith({
+    expect(sendTransactionMock).toHaveBeenCalledWith({
       type: 'transfer',
       maxAmountToSend: '100',
       destinationAmount: '100',
@@ -80,7 +81,7 @@ describe('PaymentStore', () => {
   });
 
   it('should call swap with correct parameters', async () => {
-    const emigro = jest.requireMock('@services/emigro');
+    const sendTransactionMock = jest.spyOn(transactionApi, 'sendTransaction').mockResolvedValueOnce(mockedResponse);
 
     const transaction: SwapTransaction = {
       from: CryptoAsset.EURC,
@@ -96,7 +97,7 @@ describe('PaymentStore', () => {
     await swapBloc.pay();
 
     // check sendTransaction is called with correct parameters
-    expect(emigro.sendTransaction).toHaveBeenCalledWith({
+    expect(sendTransactionMock).toHaveBeenCalledWith({
       type: 'swap',
       maxAmountToSend: '100', // cry
       destinationAmount: '120',
