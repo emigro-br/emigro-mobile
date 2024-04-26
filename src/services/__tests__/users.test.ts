@@ -6,7 +6,7 @@ import { CryptoAsset } from '@/types/assets';
 
 import { api } from '@services/api';
 
-import { addAssetToWallet, getUserBalance, getUserProfile, getUserPublicKey } from '../emigro';
+import { addAssetToWallet, getUserBalance, getUserProfile, getUserPublicKey } from '../users';
 
 jest.mock('../api', () => ({
   api: jest.fn(),

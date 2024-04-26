@@ -5,7 +5,7 @@ import { IAuthSession } from '@/types/IAuthSession';
 import { IUserProfile } from '@/types/IUserProfile';
 
 import { refresh as refreshSession } from '@services/auth';
-import { getUserPublicKey } from '@services/emigro';
+import { getUserPublicKey } from '@services/users';
 
 import { SessionStore } from '../SessionStore';
 
@@ -15,7 +15,7 @@ jest.mock('@services/auth', () => ({
   refresh: jest.fn(),
 }));
 
-jest.mock('@services/emigro', () => ({
+jest.mock('@services/users', () => ({
   getUserPublicKey: jest.fn(),
   getUserProfile: jest.fn(),
 }));

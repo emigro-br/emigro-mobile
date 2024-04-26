@@ -21,7 +21,7 @@ jest.mock('@stores/SessionStore', () => ({
   },
 }));
 
-jest.mock('@services/emigro', () => ({
+jest.mock('@services/users', () => ({
   getUserPublicKey: jest.fn(),
 }));
 

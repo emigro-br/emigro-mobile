@@ -23,7 +23,7 @@ jest.mock('@services/anchor', () => ({
   },
 }));
 
-jest.mock('@services/emigro', () => ({
+jest.mock('@services/users', () => ({
   getUserPublicKey: jest.fn().mockResolvedValue('somePublicKey'),
 }));
 

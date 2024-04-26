@@ -2,11 +2,12 @@ import { useState } from 'react';
 
 import { Box, Button, ButtonSpinner, ButtonText, Card, Heading, VStack, useToast } from '@gluestack-ui/themed';
 
-import { addAssetToWallet } from '@/services/emigro';
 import { CryptoAsset, cryptoAssets } from '@/types/assets';
 
 import { AssetListTile } from '@components/AssetListTile';
 import { Toast } from '@components/Toast';
+
+import { addAssetToWallet } from '@services/users';
 
 import { balanceStore } from '@stores/BalanceStore';
 

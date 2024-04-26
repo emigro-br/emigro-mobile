@@ -6,7 +6,7 @@ import { IUserProfile } from '@/types/IUserProfile';
 import { InvalidSessionError } from '@/types/errors';
 
 import { refresh as refreshSession } from '@services/auth';
-import { getUserProfile, getUserPublicKey } from '@services/emigro';
+import { getUserProfile, getUserPublicKey } from '@services/users';
 
 import { IAuthSession } from '../types/IAuthSession';
 

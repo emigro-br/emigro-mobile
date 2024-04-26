@@ -13,7 +13,7 @@ import { sessionStore } from '@stores/SessionStore';
 
 import { DetailsSwap } from '../DetailsSwap';
 
-jest.mock('@services/emigro', () => ({
+jest.mock('@services/users', () => ({
   getUserPublicKey: jest.fn().mockReturnValue('mockedPublicKey'),
 }));
 
