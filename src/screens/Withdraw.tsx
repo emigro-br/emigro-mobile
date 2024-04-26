@@ -22,7 +22,7 @@ import {
   confirmWithdraw,
   getInteractiveWithdrawUrl,
   getTransaction,
-} from '@services/anchor';
+} from '@services/emigro/anchors';
 
 import { sessionStore } from '@stores/SessionStore';
 

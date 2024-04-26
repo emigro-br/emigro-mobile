@@ -7,7 +7,7 @@ import { IRegisterUser } from '@/types/IRegisterUser';
 
 import { Role } from '@constants/constants';
 
-import { api } from '@services/api';
+import { api } from '@services/emigro/api';
 
 import { confirmAccount, confirmResetPassword, deleteAccount, refresh, resetPassword, signIn, signUp } from '../auth';
 

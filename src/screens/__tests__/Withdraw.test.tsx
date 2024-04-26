@@ -5,7 +5,7 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
-import * as anchor from '@services/anchor';
+import * as anchor from '@services/emigro/anchors';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -13,7 +13,7 @@ import Withdraw from '../Withdraw';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
-jest.mock('@services/anchor', () => ({
+jest.mock('@services/emigro/anchors', () => ({
   getInteractiveWithdrawUrl: jest.fn(),
   getTransaction: jest.fn().mockResolvedValue({
     status: 'completed',
@@ -23,7 +23,7 @@ jest.mock('@services/anchor', () => ({
   },
 }));
 
-jest.mock('@services/users', () => ({
+jest.mock('@services/emigro/users', () => ({
   getUserPublicKey: jest.fn().mockResolvedValue('somePublicKey'),
 }));
 

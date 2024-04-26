@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { CONFIRM_ACCOUNT_ERROR } from '@constants/errorMessages';
 
-import * as auth from '@services/auth';
+import * as auth from '@services/emigro/auth';
 
 import ConfirmAccount from '../signup/ConfirmAccount';
 

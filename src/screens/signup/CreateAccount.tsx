@@ -32,7 +32,7 @@ import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 
 import { AnonStackParamList } from '@navigation/AnonStack';
 
-import { signUp } from '@services/auth';
+import { signUp } from '@services/emigro/auth';
 
 type Props = {
   navigation: NativeStackNavigationProp<AnonStackParamList, 'SignUp'>;

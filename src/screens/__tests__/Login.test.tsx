@@ -6,7 +6,7 @@ import { IAuthSession } from '@/types/IAuthSession';
 
 import Login from '@screens/Login';
 
-import * as auth from '@services/auth';
+import * as auth from '@services/emigro/auth';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -21,7 +21,7 @@ jest.mock('@stores/SessionStore', () => ({
   },
 }));
 
-jest.mock('@services/users', () => ({
+jest.mock('@services/emigro/users', () => ({
   getUserPublicKey: jest.fn(),
 }));
 

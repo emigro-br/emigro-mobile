@@ -15,7 +15,7 @@ import { OpenURLModal } from '@components/modals/OpenURLModal';
 
 import { WalletStackParamList } from '@navigation/WalletStack';
 
-import { CallbackType, getInteractiveDepositUrl } from '@services/anchor';
+import { CallbackType, getInteractiveDepositUrl } from '@services/emigro/anchors';
 
 import { sessionStore } from '@stores/SessionStore';
 

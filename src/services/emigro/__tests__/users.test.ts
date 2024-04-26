@@ -4,7 +4,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { IAuthSession } from '@/types/IAuthSession';
 import { CryptoAsset } from '@/types/assets';
 
-import { api } from '@services/api';
+import { api } from '@services/emigro/api';
 
 import { addAssetToWallet, getUserBalance, getUserProfile, getUserPublicKey } from '../users';
 

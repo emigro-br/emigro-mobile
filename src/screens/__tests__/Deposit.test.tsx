@@ -6,7 +6,7 @@ import mockConsole from 'jest-mock-console';
 
 import { render } from 'test-utils';
 
-import { getInteractiveDepositUrl } from '@services/anchor';
+import { getInteractiveDepositUrl } from '@services/emigro/anchors';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -30,7 +30,7 @@ jest.mock('@stores/SessionStore', () => ({
   },
 }));
 
-jest.mock('@services/anchor', () => ({
+jest.mock('@services/emigro/anchors', () => ({
   getInteractiveDepositUrl: jest.fn(() => ({
     url: 'https://anchor.url',
     id: 'transaction-id',

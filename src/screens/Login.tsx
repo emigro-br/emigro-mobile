@@ -34,7 +34,7 @@ import { SIGNIN_ERROR_MESSAGE, SIGN_IN_FIELDS_ERROR } from '@constants/errorMess
 
 import { AnonStackParamList } from '@navigation/AnonStack';
 
-import { signIn } from '@services/auth';
+import { signIn } from '@services/emigro/auth';
 
 import { sessionStore } from '@stores/SessionStore';
 

@@ -7,7 +7,7 @@ import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { TransactionStatus } from '@/types/TransactionStatus';
 import { CryptoAsset } from '@/types/assets';
 
-import { api } from '@services/api';
+import { api } from '@services/emigro/api';
 
 import {
   CallbackType,
@@ -15,7 +15,7 @@ import {
   getInteractiveDepositUrl,
   getInteractiveWithdrawUrl,
   getTransaction,
-} from '../anchor';
+} from '../anchors';
 
 jest.mock('../api', () => ({
   api: jest.fn(),

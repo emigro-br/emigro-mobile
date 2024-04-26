@@ -34,7 +34,7 @@ import { WalletStackParamList } from '@navigation/WalletStack';
 import { LoadingScreen } from '@screens/Loading';
 import { PinScreen } from '@screens/PinScreen';
 
-import { IQuoteRequest, handleQuote } from '@services/quotes';
+import { IQuoteRequest, handleQuote } from '@services/emigro/quotes';
 
 import { balanceStore } from '@stores/BalanceStore';
 import { paymentStore as bloc, paymentStore } from '@stores/PaymentStore';

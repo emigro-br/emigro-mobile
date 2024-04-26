@@ -4,18 +4,18 @@ import * as SecureStore from 'expo-secure-store';
 import { IAuthSession } from '@/types/IAuthSession';
 import { IUserProfile } from '@/types/IUserProfile';
 
-import { refresh as refreshSession } from '@services/auth';
-import { getUserPublicKey } from '@services/users';
+import { refresh as refreshSession } from '@services/emigro/auth';
+import { getUserPublicKey } from '@services/emigro/users';
 
 import { SessionStore } from '../SessionStore';
 
 jest.mock('expo-secure-store');
 
-jest.mock('@services/auth', () => ({
+jest.mock('@services/emigro/auth', () => ({
   refresh: jest.fn(),
 }));
 
-jest.mock('@services/users', () => ({
+jest.mock('@services/emigro/users', () => ({
   getUserPublicKey: jest.fn(),
   getUserProfile: jest.fn(),
 }));

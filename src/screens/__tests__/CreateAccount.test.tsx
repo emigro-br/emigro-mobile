@@ -6,7 +6,7 @@ import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 
 import { CreateAccount } from '@screens/signup/CreateAccount';
 
-import * as auth from '@services/auth';
+import * as auth from '@services/emigro/auth';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
@@ -15,7 +15,7 @@ const mockNavigattion: any = {
   push: jest.fn(),
 };
 
-jest.mock('@services/auth', () => ({
+jest.mock('@services/emigro/auth', () => ({
   signUp: jest.fn(),
 }));
 

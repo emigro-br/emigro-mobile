@@ -5,8 +5,8 @@ import { action, flow, makeAutoObservable, observable } from 'mobx';
 import { IUserProfile } from '@/types/IUserProfile';
 import { InvalidSessionError } from '@/types/errors';
 
-import { refresh as refreshSession } from '@services/auth';
-import { getUserProfile, getUserPublicKey } from '@services/users';
+import { refresh as refreshSession } from '@services/emigro/auth';
+import { getUserProfile, getUserPublicKey } from '@services/emigro/users';
 
 import { IAuthSession } from '../types/IAuthSession';
 

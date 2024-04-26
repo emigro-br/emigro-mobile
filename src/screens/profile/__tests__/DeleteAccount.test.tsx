@@ -3,7 +3,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import { IAuthSession } from '@/types/IAuthSession';
 
-import { deleteAccount } from '@services/auth';
+import { deleteAccount } from '@services/emigro/auth';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -21,7 +21,7 @@ jest.mock('@stores/SessionStore', () => ({
   },
 }));
 
-jest.mock('@services/auth', () => ({
+jest.mock('@services/emigro/auth', () => ({
   getSession: jest.fn(),
   deleteAccount: jest.fn(),
   clearSession: jest.fn(),

@@ -4,7 +4,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { ITransactionRequest } from '@/types/ITransactionRequest';
 
 import { api } from '../api';
-import { PaymentPreview, brcodePayment, brcodePaymentPreview, getTransactions, sendTransaction } from '../transaction';
+import { PaymentPreview, brcodePayment, brcodePaymentPreview, getTransactions, sendTransaction } from '../transactions';
 
 jest.mock('../api', () => ({
   api: jest.fn(),

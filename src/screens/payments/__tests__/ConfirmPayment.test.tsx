@@ -8,7 +8,7 @@ import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
-import * as quotesService from '@services/quotes';
+import * as quotesService from '@services/emigro/quotes';
 
 import { paymentStore } from '@stores/PaymentStore';
 

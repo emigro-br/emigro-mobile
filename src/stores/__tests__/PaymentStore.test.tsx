@@ -2,7 +2,7 @@ import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
-import * as transactionApi from '@services/transaction';
+import * as transactionApi from '@services/emigro/transactions';
 
 import { PaymentStore, SwapTransaction } from '../PaymentStore';
 

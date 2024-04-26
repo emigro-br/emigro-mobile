@@ -7,7 +7,7 @@ import { CryptoAsset, cryptoAssets } from '@/types/assets';
 import { AssetListTile } from '@components/AssetListTile';
 import { Toast } from '@components/Toast';
 
-import { addAssetToWallet } from '@services/users';
+import { addAssetToWallet } from '@services/emigro/users';
 
 import { balanceStore } from '@stores/BalanceStore';
 
