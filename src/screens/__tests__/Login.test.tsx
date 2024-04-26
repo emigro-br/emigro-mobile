@@ -5,7 +5,7 @@ import { render } from 'test-utils';
 import Login from '@screens/Login';
 
 import * as auth from '@services/emigro/auth';
-import { IAuthSession } from '@services/emigro/types';
+import { AuthSession } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -51,7 +51,7 @@ describe('Login screen', () => {
 
   test('Should call signIn with correct credentials', async () => {
     const signInMock = jest.spyOn(auth, 'signIn');
-    const authSession: IAuthSession = {
+    const authSession: AuthSession = {
       accessToken: 'accessToken',
       refreshToken: 'refreshToken',
       idToken: 'idToken',

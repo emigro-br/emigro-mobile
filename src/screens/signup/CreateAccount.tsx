@@ -31,7 +31,7 @@ import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 import { AnonStackParamList } from '@navigation/AnonStack';
 
 import { signUp } from '@services/emigro/auth';
-import { IRegisterUser, Role } from '@services/emigro/types';
+import { RegisterUserRequest, Role } from '@services/emigro/types';
 
 type Props = {
   navigation: NativeStackNavigationProp<AnonStackParamList, 'SignUp'>;
@@ -58,7 +58,7 @@ const formFields: FormField[] = [
 ];
 
 export const CreateAccount = ({ navigation }: Props) => {
-  const [formData, setFormData] = useState<IRegisterUser>({
+  const [formData, setFormData] = useState<RegisterUserRequest>({
     email: '',
     password: '',
     firstName: '',

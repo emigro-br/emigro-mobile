@@ -8,7 +8,7 @@ import { render } from 'test-utils';
 
 import Profile from '@screens/profile/Profile';
 
-import { IUserProfile } from '@services/emigro/types';
+import { UserProfile } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -63,7 +63,7 @@ describe('Profile screen', () => {
       family_name: 'Test Last Name',
       email: 'test@email.com',
       address: 'Test Address',
-    } as IUserProfile);
+    } as UserProfile);
     const { getByText, queryAllByText } = renderWithProviders(<Profile navigation={mockNavigattion} />);
 
     await waitFor(() => {

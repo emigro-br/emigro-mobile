@@ -1,9 +1,9 @@
 import { CryptoAsset } from '@/types/assets';
 
 import { api } from './api';
-import { IAuthSession, IBalance, IUserProfile } from './types';
+import { AuthSession, Balance, UserProfile } from './types';
 
-export const getUserBalance = async (): Promise<IBalance[]> => {
+export const getUserBalance = async (): Promise<Balance[]> => {
   const res = await api().get('/user');
   const { balances } = res.data;
   if (!balances) {
@@ -23,12 +23,12 @@ export const getUserPublicKey = async (): Promise<string> => {
   return res.data.publicKey;
 };
 
-export const getUserProfile = async (session: IAuthSession): Promise<IUserProfile> => {
+export const getUserProfile = async (session: AuthSession): Promise<UserProfile> => {
   const res = await api().post('/user/profile', session);
   return res.data;
 };
 
-export const addAssetToWallet = async (assetCode: CryptoAsset): Promise<IBalance[]> => {
+export const addAssetToWallet = async (assetCode: CryptoAsset): Promise<Balance[]> => {
   const res = await api().post('/user/wallet/assets', { assetCode });
   return res.data.balances;
 };

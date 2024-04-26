@@ -3,7 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 
 import { api } from '../api';
 import { PaymentPreview, brcodePayment, brcodePaymentPreview, getTransactions, sendTransaction } from '../transactions';
-import { ITransactionRequest } from '../types';
+import { TransactionRequest } from '../types';
 
 jest.mock('../api', () => ({
   api: jest.fn(),
@@ -39,7 +39,7 @@ describe('transaction service', () => {
   });
 
   describe('sendTransaction', () => {
-    const mockRequest: ITransactionRequest = {
+    const mockRequest: TransactionRequest = {
       type: 'payment',
       maxAmountToSend: '100',
       destinationAmount: '50',

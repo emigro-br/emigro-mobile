@@ -2,7 +2,7 @@ import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 
 import { refresh as refreshSession } from '@services/emigro/auth';
-import { IAuthSession, IUserProfile } from '@services/emigro/types';
+import { AuthSession, UserProfile } from '@services/emigro/types';
 import { getUserPublicKey } from '@services/emigro/users';
 
 import { SessionStore } from '../SessionStore';
@@ -43,7 +43,7 @@ describe('SessionStore', () => {
   });
 
   it('should save and load session', async () => {
-    const session: IAuthSession = {
+    const session: AuthSession = {
       accessToken: 'access_token',
       refreshToken: 'refresh_token',
       idToken: 'id_token',
@@ -63,7 +63,7 @@ describe('SessionStore', () => {
     const profile = {
       given_name: 'test',
       email: 'email@examle.com',
-    } as IUserProfile;
+    } as UserProfile;
 
     sessionStore.saveProfile(profile);
     const loadedProfile = await sessionStore.loadProfile();
@@ -84,7 +84,7 @@ describe('SessionStore', () => {
     const profile = {
       given_name: 'test',
       email: 'teste@example.com',
-    } as IUserProfile;
+    } as UserProfile;
 
     await sessionStore.save(session);
     await sessionStore.saveProfile(profile);
@@ -130,7 +130,7 @@ describe('SessionStore', () => {
 
   it('should refresh session', async () => {
     // set a previous session
-    const mockSession: IAuthSession = {
+    const mockSession: AuthSession = {
       accessToken: 'access_token',
       refreshToken: 'refresh_token',
       idToken: 'id_token',
@@ -140,7 +140,7 @@ describe('SessionStore', () => {
     sessionStore.save(mockSession);
 
     // mock refresh session
-    const mockNewSession: IAuthSession = {
+    const mockNewSession: AuthSession = {
       accessToken: 'new_access_token',
       refreshToken: 'new_refresh_token',
       idToken: 'new_id_token',
@@ -157,7 +157,7 @@ describe('SessionStore', () => {
   });
 
   it('should return true if token is expired', async () => {
-    const expiredSession: IAuthSession = {
+    const expiredSession: AuthSession = {
       accessToken: 'access_token',
       refreshToken: 'refresh_token',
       idToken: 'id_token',
@@ -171,7 +171,7 @@ describe('SessionStore', () => {
   });
 
   it('should return false if token is not expired', async () => {
-    const validSession: IAuthSession = {
+    const validSession: AuthSession = {
       accessToken: 'access_token',
       refreshToken: 'refresh_token',
       idToken: 'id_token',
@@ -186,7 +186,7 @@ describe('SessionStore', () => {
 
   it('should fetch user public key and update session', async () => {
     const mockPublicKey = 'mock_public_key';
-    const mockSession: IAuthSession = {
+    const mockSession: AuthSession = {
       accessToken: 'access_token',
       refreshToken: 'refresh_token',
       idToken: 'id_token',
@@ -209,7 +209,7 @@ describe('SessionStore', () => {
     jest.spyOn(sessionStore, 'fetchPublicKey').mockResolvedValueOnce('public_key' as never);
     jest.spyOn(sessionStore, 'fetchProfile').mockResolvedValueOnce({} as never);
 
-    const session: IAuthSession = {
+    const session: AuthSession = {
       accessToken: 'access_token',
       refreshToken: 'refresh_token',
       idToken: 'id_token',

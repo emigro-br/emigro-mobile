@@ -30,7 +30,7 @@ import { CryptoAsset } from '@/types/assets';
 
 import { PaymentStackParamList } from '@navigation/PaymentsStack';
 
-import { IUserProfile } from '@services/emigro/types';
+import { UserProfile } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -52,11 +52,11 @@ type PaymentRequest = CreateStaticPixParams & {
   // countryCode: 'BR',
 };
 
-const buildMerchantName = (profile: IUserProfile): string => {
+const buildMerchantName = (profile: UserProfile): string => {
   return `${profile.given_name || ''} ${profile.family_name || ''}`.trim() || 'Unknown';
 };
 
-const encodeQRCode = (profile: IUserProfile, asset: CryptoAsset, amount: number): string => {
+const encodeQRCode = (profile: UserProfile, asset: CryptoAsset, amount: number): string => {
   const fiat = asset === 'XLM' ? 'XLM' : AssetToCurrency[asset];
   // EmvMaiSchema.BC_GUI = 'br.gov.bcb.pix'; // FIXME: we have to fork pix-utils to change this
 

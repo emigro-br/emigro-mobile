@@ -4,7 +4,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { api } from '@services/emigro/api';
 
 import { confirmAccount, confirmResetPassword, deleteAccount, refresh, resetPassword, signIn, signUp } from '../auth';
-import { IAuthSession, IConfirmUser, IRegisterUser, Role } from '../types';
+import { AuthSession, ConfirmUserRequest, RegisterUserRequest, Role } from '../types';
 
 jest.mock('../api', () => ({
   api: jest.fn(),
@@ -53,7 +53,7 @@ describe('auth service', () => {
   });
 
   describe('signUp', () => {
-    const mockRegisterUser: IRegisterUser = {
+    const mockRegisterUser: RegisterUserRequest = {
       email: 'test@example.com',
       password: 'password',
       firstName: 'John',
@@ -74,7 +74,7 @@ describe('auth service', () => {
   });
 
   describe('confirmAccount', () => {
-    const mockConfirmUser: IConfirmUser = {
+    const mockConfirmUser: ConfirmUserRequest = {
       email: 'test@example.com',
       username: 'test',
       code: '123456',
@@ -93,7 +93,7 @@ describe('auth service', () => {
   });
 
   describe('refresh', () => {
-    const mockAuthSession: IAuthSession = {
+    const mockAuthSession: AuthSession = {
       accessToken: 'access_token',
       refreshToken: 'refresh_token',
       idToken: 'id_token',

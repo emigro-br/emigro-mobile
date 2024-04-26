@@ -8,7 +8,7 @@ import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
 import * as quotesService from '@services/emigro/quotes';
-import { IPaymentResponse } from '@services/emigro/types';
+import { PaymentResponse } from '@services/emigro/types';
 
 import { paymentStore } from '@stores/PaymentStore';
 
@@ -180,7 +180,7 @@ describe('ConfirmPayment component', () => {
       .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const payMock = jest
       .spyOn(paymentStore, 'pay')
-      .mockResolvedValue({ transactionHash: 'mockHash' } as IPaymentResponse);
+      .mockResolvedValue({ transactionHash: 'mockHash' } as PaymentResponse);
     const { getByText, getByTestId } = render(<ConfirmPayment {...mockProps} />);
 
     // wait the quote is fetched and displayed

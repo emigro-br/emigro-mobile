@@ -19,8 +19,8 @@ import {
   CallbackType,
   ConfirmWithdrawDto,
   confirmWithdraw,
-  getInteractiveWithdrawUrl,
   getTransaction,
+  withdrawUrl,
 } from '@services/emigro/anchors';
 
 import { sessionStore } from '@stores/SessionStore';
@@ -85,7 +85,7 @@ const Withdraw: React.FC = observer(() => {
         asset_code: asset,
       };
       //TODO: webview change navigation thwors error for CallbackType.CALLBACK_URL
-      const { url, id } = await getInteractiveWithdrawUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
+      const { url, id } = await withdrawUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
 
       if (id && url) {
         // setTransactionId(id);

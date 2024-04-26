@@ -1,5 +1,5 @@
 import { api } from './api';
-import { IPaymentResponse, ITransaction, ITransactionRequest } from './types';
+import { Transaction, PaymentResponse, TransactionRequest } from './types';
 
 type BrcodePaymentRequest = {
   brcode: string;
@@ -29,13 +29,13 @@ export type Payment = {
   txId: string;
 };
 
-export const getTransactions = async (): Promise<ITransaction[]> => {
+export const getTransactions = async (): Promise<Transaction[]> => {
   const res = await api().get('/transaction/all');
   const { transactions } = res.data;
   return transactions;
 };
 
-export const sendTransaction = async (data: ITransactionRequest): Promise<IPaymentResponse> => {
+export const sendTransaction = async (data: TransactionRequest): Promise<PaymentResponse> => {
   const timeout = 30000; // some transactions may take longer
   const res = await api({ timeout }).post('/transaction', data);
   return res.data;

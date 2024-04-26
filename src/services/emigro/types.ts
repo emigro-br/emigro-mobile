@@ -4,7 +4,7 @@ export const enum Role {
   CUSTOMER = 'CUSTOMER',
 }
 
-export type IAuthSession = {
+export type AuthSession = {
   accessToken: string;
   refreshToken: string;
   idToken: string;
@@ -13,22 +13,23 @@ export type IAuthSession = {
   publicKey?: string | null;
 };
 
-export interface IConfirmUser {
+export type ConfirmUserRequest = {
   email: string;
   username: string;
   code: string;
-}
+};
 
-export interface IRegisterUser {
+export type RegisterUserRequest = {
   email: string;
   password: string;
   firstName: string;
   lastName: string;
   role: Role;
   [key: string]: string;
-}
+};
 
-export interface IRegisterResponse {
+// TODO: maybe this is the User
+export type RegisterUserResponse = {
   id: number;
   username: string;
   publicKey: string;
@@ -37,20 +38,20 @@ export interface IRegisterResponse {
   status: string;
   createdAt: string;
   updatedAt: string;
-}
+};
 
 //-- Anchors
 
-export interface IAnchorParams {
+export type InteractiveUrlRequest = {
   asset_code: string;
   // keep this type, we can add more fields in the future
-}
+};
 
-export interface IAnchorResponse {
-  url: string;
+export type InteractiveUrlResponse = {
+  id: string; // anchor transactionId
   type: string;
-  id: string;
-}
+  url: string;
+};
 
 //-- Transactions
 
@@ -65,7 +66,7 @@ export type TransactionType =
   | 'refund'
   | 'other';
 
-export interface ITransactionRequest {
+export type TransactionRequest = {
   type: TransactionType;
   maxAmountToSend: string | undefined;
   destinationAmount: string;
@@ -73,9 +74,9 @@ export interface ITransactionRequest {
   sourceAssetCode: string;
   destinationAssetCode: string;
   idempotencyKey?: string;
-}
+};
 
-export interface ITransaction {
+export type Transaction = {
   createdAt: Date;
   amount: string;
   assetCode: string;
@@ -83,9 +84,9 @@ export interface ITransaction {
   sourceAssetCode: string;
   sourceAmount: string;
   type: string;
-}
+};
 
-export interface IPaymentResponse {
+export type PaymentResponse = {
   transactionHash: string;
   sourceAccount: string;
   type: string;
@@ -100,11 +101,11 @@ export interface IPaymentResponse {
   sourceAssetType: string;
   sourceAssetCode: string;
   sourceAssetIssuer: string;
-}
+};
 
 //-- Users
 
-export interface IUserProfile {
+export type UserProfile = {
   sub: string;
   address: string;
   email_verified: string;
@@ -112,15 +113,10 @@ export interface IUserProfile {
   family_name: string;
   custom_role: string;
   email: string;
-}
+};
 
-export interface IFilteredBalance {
-  label: string;
-  value: string;
-  balance: string;
-}
-
-export interface IBalance extends IFilteredBalance {
+export type Balance = {
+  balance: string; // TODO: convert to number
   assetType: string;
   assetCode: string;
-}
+};

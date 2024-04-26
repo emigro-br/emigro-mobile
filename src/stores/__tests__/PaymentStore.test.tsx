@@ -2,7 +2,7 @@ import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
 import * as transactionApi from '@services/emigro/transactions';
-import { IPaymentResponse } from '@services/emigro/types';
+import { PaymentResponse } from '@services/emigro/types';
 
 import { PaymentStore, SwapTransaction } from '../PaymentStore';
 
@@ -18,7 +18,7 @@ jest.mock('@stores/SessionStore', () => ({
 
 const mockedResponse = {
   transactionHash: 'mocked-hash',
-} as IPaymentResponse;
+} as PaymentResponse;
 
 describe('PaymentStore', () => {
   let swapBloc: PaymentStore;

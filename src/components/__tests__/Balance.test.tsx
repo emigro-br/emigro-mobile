@@ -3,9 +3,9 @@ import { fireEvent, screen } from '@testing-library/react-native';
 import { render } from 'test-utils';
 
 import { userBalance } from '../../__mocks__/mock-balance';
-import Balance from '../Balance';
+import { WalletBalances } from '../WalletBalances';
 
-describe('Balance component', () => {
+describe('WalletBalances component', () => {
   const mockNavigation: any = {
     push: jest.fn(),
   };
@@ -15,7 +15,7 @@ describe('Balance component', () => {
   });
 
   it('Should render the balance component correctly', () => {
-    render(<Balance userBalance={userBalance} navigation={mockNavigation} />);
+    render(<WalletBalances userBalance={userBalance} navigation={mockNavigation} />);
     const balanceElement = screen.getByText('Accounts');
     expect(balanceElement).toBeOnTheScreen();
 
@@ -26,7 +26,7 @@ describe('Balance component', () => {
   });
 
   it('Should display the correct asset codes and balances', () => {
-    render(<Balance userBalance={userBalance} navigation={mockNavigation} />);
+    render(<WalletBalances userBalance={userBalance} navigation={mockNavigation} />);
     const brlAsset = screen.getByText('Brazilian Real');
     const usdcAsset = screen.getByText('US Dollar');
     const eurocAsset = screen.getByText('Euro');
@@ -43,7 +43,7 @@ describe('Balance component', () => {
   });
 
   it('Should go to manage accounts when press add button', () => {
-    render(<Balance userBalance={userBalance} navigation={mockNavigation} />);
+    render(<WalletBalances userBalance={userBalance} navigation={mockNavigation} />);
     const addButton = screen.getByTestId('add-button');
 
     fireEvent.press(addButton);

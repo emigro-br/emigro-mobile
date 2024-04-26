@@ -1,4 +1,4 @@
-import { IBalance } from '@services/emigro/types';
+import { Balance } from '@services/emigro/types';
 import * as usersApi from '@services/emigro/users';
 
 import { BalanceStore } from '../BalanceStore';
@@ -9,12 +9,10 @@ jest.mock('@services/emigro/users', () => ({
 
 describe('BalanceStore', () => {
   let balanceStore: BalanceStore;
-  const mockBalances: IBalance[] = [
+  const mockBalances: Balance[] = [
     {
       assetType: 'someAssetType',
       assetCode: 'someAssetCode',
-      label: 'someLabel',
-      value: 'someValue',
       balance: '100',
     },
   ];
@@ -73,12 +71,10 @@ describe('BalanceStore', () => {
 
   it('should find the balance by asset code', () => {
     const balanceStore = new BalanceStore();
-    const mockBalances: IBalance[] = [
+    const mockBalances: Balance[] = [
       {
         assetType: 'someAssetType',
         assetCode: 'someAssetCode',
-        label: 'someLabel',
-        value: 'someValue',
         balance: '100',
       },
     ];
@@ -91,12 +87,10 @@ describe('BalanceStore', () => {
 
   it('should return undefined when balance is not found', () => {
     const balanceStore = new BalanceStore();
-    const mockBalances: IBalance[] = [
+    const mockBalances: Balance[] = [
       {
         assetType: 'someAssetType',
         assetCode: 'someAssetCode',
-        label: 'someLabel',
-        value: 'someValue',
         balance: '100',
       },
     ];

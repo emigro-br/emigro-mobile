@@ -6,7 +6,7 @@ import { Payment, PixPayment, emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
 import { brcodePayment, brcodePaymentPreview, sendTransaction } from '@services/emigro/transactions';
-import { ITransactionRequest, TransactionType } from '@services/emigro/types';
+import { TransactionRequest, TransactionType } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -142,7 +142,7 @@ export class PaymentStore {
 
   async pay() {
     const { type, from, to, idempotencyKey } = this.transaction!;
-    const transactionRequest: ITransactionRequest = {
+    const transactionRequest: TransactionRequest = {
       type,
       maxAmountToSend: from.value.toString(), // cry
       sourceAssetCode: from.asset,

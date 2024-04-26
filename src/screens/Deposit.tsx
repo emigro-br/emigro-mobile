@@ -14,7 +14,7 @@ import { OpenURLModal } from '@components/modals/OpenURLModal';
 
 import { WalletStackParamList } from '@navigation/WalletStack';
 
-import { CallbackType, getInteractiveDepositUrl } from '@services/emigro/anchors';
+import { CallbackType, depositUrl } from '@services/emigro/anchors';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -57,7 +57,7 @@ const Deposit = observer(({ navigation }: Props) => {
 
     try {
       //TODO: webview change navigation thwors error for CallbackType.CALLBACK_URL
-      const { url, id } = await getInteractiveDepositUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
+      const { url, id } = await depositUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
 
       if (id) {
         console.debug('Transaction id:', id);

@@ -1,11 +1,11 @@
 import { api } from './api';
-import { IAuthSession, IConfirmUser, IRegisterResponse, IRegisterUser, Role } from './types';
+import { AuthSession, ConfirmUserRequest, RegisterUserRequest, RegisterUserResponse, Role } from './types';
 
 type SuccessResponse = {
   success: boolean;
 };
 
-export const signIn = async (email: string, password: string): Promise<IAuthSession> => {
+export const signIn = async (email: string, password: string): Promise<AuthSession> => {
   const res = await api().post('/auth/login', {
     email,
     password,
@@ -13,7 +13,7 @@ export const signIn = async (email: string, password: string): Promise<IAuthSess
   });
 
   const { accessToken, refreshToken, idToken, tokenExpirationDate } = res.data;
-  const session: IAuthSession = {
+  const session: AuthSession = {
     accessToken,
     refreshToken,
     idToken,
@@ -23,22 +23,22 @@ export const signIn = async (email: string, password: string): Promise<IAuthSess
   return session;
 };
 
-export const signUp = async (registerUser: IRegisterUser): Promise<IRegisterResponse> => {
+export const signUp = async (registerUser: RegisterUserRequest): Promise<RegisterUserResponse> => {
   const res = await api().post('/auth/register', registerUser);
   return res.data;
 };
 
-export const confirmAccount = async (confirmUser: IConfirmUser): Promise<IRegisterResponse | undefined> => {
+export const confirmAccount = async (confirmUser: ConfirmUserRequest): Promise<RegisterUserResponse | undefined> => {
   const timeout = 30 * 1000; // it is also creating wallets on stellar network
   const res = await api({ timeout }).post('/auth/confirm', confirmUser);
   return res.data;
 };
 
-export const refresh = async (authSession: IAuthSession): Promise<IAuthSession> => {
+export const refresh = async (authSession: AuthSession): Promise<AuthSession> => {
   const res = await api().post('/auth/refresh', authSession);
 
   const { accessToken, refreshToken, idToken, tokenExpirationDate } = res.data;
-  const session: IAuthSession = {
+  const session: AuthSession = {
     accessToken,
     refreshToken,
     idToken,

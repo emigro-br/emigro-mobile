@@ -5,7 +5,7 @@ import { CryptoAsset } from '@/types/assets';
 
 import { api } from '@services/emigro/api';
 
-import { IAuthSession } from '../types';
+import { AuthSession } from '../types';
 import { addAssetToWallet, getUserBalance, getUserProfile, getUserPublicKey } from '../users';
 
 jest.mock('../api', () => ({
@@ -60,7 +60,7 @@ describe('emigro service', () => {
   });
 
   describe('getUserProfile', () => {
-    const mockSession: IAuthSession = { accessToken: 'abc123' } as IAuthSession;
+    const mockSession: AuthSession = { accessToken: 'abc123' } as AuthSession;
     const mockResponse = { name: 'John Doe', email: 'john@example.com' };
 
     it('should make a POST request to fetch user profile and return the profile data', async () => {
