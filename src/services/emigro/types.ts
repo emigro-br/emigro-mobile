@@ -120,3 +120,43 @@ export type Balance = {
   assetType: string;
   assetCode: string;
 };
+
+//-- Stellar Network
+export enum Sep24TransactionStatus {
+  COMPLETED = 'completed',
+  ERROR = 'error',
+  INCOMPLETE = 'incomplete',
+  NON_INTERACTIVE_CUSTOMER_INFO_NEEDED = 'non_interactive_customer_info_needed',
+  PENDING_ANCHOR = 'pending_anchor',
+  PENDING_CUSTOMER_INFO_UPDATE = 'pending_customer_info_update',
+  PENDING_EXTERNAL = 'pending_external',
+  PENDING_RECEIVER = 'pending_receiver',
+  PENDING_SENDER = 'pending_sender',
+  PENDING_STELLAR = 'pending_stellar',
+  PENDING_TRANSACTION_INFO_UPDATE = 'pending_transaction_info_update',
+  PENDING_TRUST = 'pending_trust',
+  PENDING_USER = 'pending_user',
+  PENDING_USER_TRANSFER_START = 'pending_user_transfer_start',
+}
+
+export type Sep24Transaction = {
+  amount_fee: string;
+  amount_in: string;
+  amount_out: string;
+  completed_at: string | null;
+  external_transaction_id: string;
+  from: string;
+  id: string;
+  kind: string;
+  message: string;
+  more_info_url: string;
+  refunded: boolean;
+  started_at: string;
+  status: Sep24TransactionStatus;
+  status_eta: string | null;
+  stellar_transaction_id: string | null;
+  to: string | null;
+  withdraw_anchor_account: string;
+  withdraw_memo: string;
+  withdraw_memo_type: string;
+};

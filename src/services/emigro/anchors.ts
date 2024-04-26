@@ -1,8 +1,7 @@
-import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { CryptoAsset } from '@/types/assets';
 
 import { api, backendUrl } from './api';
-import { InteractiveUrlRequest, InteractiveUrlResponse } from './types';
+import { InteractiveUrlRequest, InteractiveUrlResponse, Sep24Transaction } from './types';
 
 const enum OperationType {
   DEPOSIT = 'DEPOSIT',

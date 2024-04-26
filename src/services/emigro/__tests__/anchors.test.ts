@@ -1,14 +1,12 @@
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import { Sep24Transaction } from '@/types/Sep24Transaction';
-import { TransactionStatus } from '@/types/TransactionStatus';
 import { CryptoAsset } from '@/types/assets';
 
 import { api } from '@services/emigro/api';
 
 import { CallbackType, confirmWithdraw, depositUrl, getTransaction, withdrawUrl } from '../anchors';
-import { InteractiveUrlRequest, InteractiveUrlResponse } from '../types';
+import { InteractiveUrlRequest, InteractiveUrlResponse, Sep24Transaction, Sep24TransactionStatus } from '../types';
 
 jest.mock('../api', () => ({
   api: jest.fn(),
@@ -81,7 +79,7 @@ describe('anchor service', () => {
       const mockResponse: Sep24Transaction = {
         id: '123456789',
         amount_in: '100',
-        status: TransactionStatus.COMPLETED,
+        status: Sep24TransactionStatus.COMPLETED,
       } as Sep24Transaction;
 
       mock.onGet('/anchor/transaction', { params: { id, assetCode } }).reply(200, mockResponse);

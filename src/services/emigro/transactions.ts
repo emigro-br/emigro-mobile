@@ -1,5 +1,5 @@
 import { api } from './api';
-import { Transaction, PaymentResponse, TransactionRequest } from './types';
+import { PaymentResponse, Transaction, TransactionRequest } from './types';
 
 type BrcodePaymentRequest = {
   brcode: string;
