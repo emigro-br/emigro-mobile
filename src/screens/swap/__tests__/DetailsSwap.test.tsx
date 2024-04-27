@@ -5,15 +5,16 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { inputPIN, render } from 'test-utils';
 
-import { IPaymentResponse } from '@/types/IPaymentResponse';
 import { CryptoAsset } from '@/types/assets';
+
+import { PaymentResponse } from '@services/emigro/types';
 
 import { paymentStore } from '@stores/PaymentStore';
 import { sessionStore } from '@stores/SessionStore';
 
 import { DetailsSwap } from '../DetailsSwap';
 
-jest.mock('@services/emigro', () => ({
+jest.mock('@services/emigro/users', () => ({
   getUserPublicKey: jest.fn().mockReturnValue('mockedPublicKey'),
 }));
 
@@ -45,7 +46,7 @@ describe('DetailsSwap', () => {
   beforeAll(() => {
     jest.useFakeTimers();
     paymentStore.setSwap(transaction);
-    jest.spyOn(paymentStore, 'pay').mockResolvedValue({ transactionHash: 'hash' } as IPaymentResponse);
+    jest.spyOn(paymentStore, 'pay').mockResolvedValue({ transactionHash: 'hash' } as PaymentResponse);
   });
 
   afterAll(() => {

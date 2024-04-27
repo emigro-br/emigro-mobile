@@ -6,7 +6,6 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Box, Card, FormControlErrorText, Heading, Text, VStack } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 
-import { IAnchorParams } from '@/types/IAnchorParams';
 import { CryptoAsset, stableCoins } from '@/types/assets';
 
 import { AssetList } from '@components/AssetList';
@@ -15,7 +14,7 @@ import { OpenURLModal } from '@components/modals/OpenURLModal';
 
 import { WalletStackParamList } from '@navigation/WalletStack';
 
-import { CallbackType, getInteractiveDepositUrl } from '@services/anchor';
+import { CallbackType, depositUrl } from '@services/emigro/anchors';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -52,13 +51,13 @@ const Deposit = observer(({ navigation }: Props) => {
 
     setIsLoading(true);
 
-    const anchorParams: IAnchorParams = {
+    const anchorParams = {
       asset_code: asset,
     };
 
     try {
       //TODO: webview change navigation thwors error for CallbackType.CALLBACK_URL
-      const { url, id } = await getInteractiveDepositUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
+      const { url, id } = await depositUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
 
       if (id) {
         console.debug('Transaction id:', id);

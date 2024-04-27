@@ -11,10 +11,11 @@ export interface IVendor {
 
 export const vendorToPayment = (vendor: IVendor): Payment => {
   return {
+    brCode: '',
     merchantName: vendor.name,
     merchantCity: vendor.address,
     transactionAmount: vendor.amount,
-    pixKey: vendor.publicKey,
+    walletKey: vendor.publicKey,
     assetCode: vendor.assetCode,
   };
 };

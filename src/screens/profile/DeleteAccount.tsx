@@ -23,7 +23,7 @@ import { Toast } from '@components/Toast';
 
 import { ProfileStackParamList } from '@navigation/ProfileStack';
 
-import { deleteAccount } from '@services/auth';
+import { deleteAccount } from '@services/emigro/auth';
 
 import { sessionStore } from '@stores/SessionStore';
 

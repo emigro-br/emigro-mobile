@@ -2,7 +2,8 @@ import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
 import { api } from '../api';
-import { PaymentPreview, brcodePayment, brcodePaymentPreview } from '../transaction';
+import { PaymentPreview, brcodePayment, brcodePaymentPreview, getTransactions, sendTransaction } from '../transactions';
+import { TransactionRequest } from '../types';
 
 jest.mock('../api', () => ({
   api: jest.fn(),
@@ -17,6 +18,45 @@ describe('transaction service', () => {
     instance = axios.create();
     mock = new MockAdapter(instance, { onNoMatch: 'throwException' });
     (api as jest.Mock).mockReturnValue(instance);
+  });
+
+  describe('getTransactions', () => {
+    const mockResponse = {
+      transactions: [
+        { id: 1, amount: 10 },
+        { id: 2, amount: 20 },
+      ],
+    };
+
+    it('should make a GET request to fetch transactions and return the transaction data', async () => {
+      // const mockAxiosGet = jest.spyOn(instance, 'get');
+      mock.onGet('/transaction/all').reply(200, mockResponse);
+      const result = await getTransactions();
+
+      // expect(mockAxiosGet).toHaveBeenCalledWith('/transaction/all');
+      expect(result).toEqual(mockResponse.transactions);
+    });
+  });
+
+  describe('sendTransaction', () => {
+    const mockRequest: TransactionRequest = {
+      type: 'payment',
+      maxAmountToSend: '100',
+      destinationAmount: '50',
+      destination: 'you',
+      sourceAssetCode: 'XLM',
+      destinationAssetCode: 'XLM',
+    };
+    const mockResponse = { success: true };
+
+    it('should make a POST request to send transaction and return the payment response', async () => {
+      const mockAxiosPost = jest.spyOn(instance, 'post');
+      mock.onPost('/transaction').reply(200, mockResponse);
+      const result = await sendTransaction(mockRequest);
+
+      expect(mockAxiosPost).toHaveBeenCalledWith('/transaction', mockRequest);
+      expect(result).toEqual(mockResponse);
+    });
   });
 
   describe('brcodePaymentPreview', () => {

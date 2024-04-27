@@ -1,9 +1,8 @@
 import { useToast } from '@gluestack-ui/themed';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { IAuthSession } from '@/types/IAuthSession';
-
-import { deleteAccount } from '@services/auth';
+import { deleteAccount } from '@services/emigro/auth';
+import { AuthSession } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -21,7 +20,7 @@ jest.mock('@stores/SessionStore', () => ({
   },
 }));
 
-jest.mock('@services/auth', () => ({
+jest.mock('@services/emigro/auth', () => ({
   getSession: jest.fn(),
   deleteAccount: jest.fn(),
   clearSession: jest.fn(),
@@ -40,7 +39,7 @@ describe('DeleteAccount component', () => {
   it('Should delete account and clear the session', async () => {
     sessionStore.session = {
       accessToken: 'accessToken',
-    } as IAuthSession;
+    } as AuthSession;
     const { getByText, getByTestId } = render(<DeleteAccount navigation={mockNavigattion} />);
 
     const checkbox = getByTestId('checkbox');
@@ -68,7 +67,7 @@ describe('DeleteAccount component', () => {
     const mockToastShow = useToast().show;
     sessionStore.session = {
       accessToken: 'accessToken',
-    } as IAuthSession;
+    } as AuthSession;
 
     const error = new Error('Delete account error');
     (deleteAccount as jest.Mock).mockRejectedValue(error);

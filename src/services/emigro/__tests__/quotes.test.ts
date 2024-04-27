@@ -1,8 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import { api } from '@services/api';
-import { IQuoteRequest, IQuoteResponse, handleQuote } from '@services/quotes';
+import { api } from '@services/emigro/api';
+import { IQuoteRequest, IQuoteResponse, handleQuote } from '@services/emigro/quotes';
 
 jest.mock('../api', () => ({
   api: jest.fn(),

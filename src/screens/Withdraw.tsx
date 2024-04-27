@@ -4,9 +4,6 @@ import { Linking } from 'react-native';
 import { Box, Button, ButtonText, Card, FormControlErrorText, Heading, Text, VStack } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 
-import { IAnchorParams } from '@/types/IAnchorParams';
-import { Sep24Transaction } from '@/types/Sep24Transaction';
-import { TransactionStatus } from '@/types/TransactionStatus';
 import { CryptoAsset, stableCoins } from '@/types/assets';
 
 import { AssetList } from '@components/AssetList';
@@ -20,9 +17,10 @@ import {
   CallbackType,
   ConfirmWithdrawDto,
   confirmWithdraw,
-  getInteractiveWithdrawUrl,
   getTransaction,
-} from '@services/anchor';
+  withdrawUrl,
+} from '@services/emigro/anchors';
+import { Sep24Transaction, Sep24TransactionStatus } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -82,11 +80,11 @@ const Withdraw: React.FC = observer(() => {
     setStep(TransactionStep.STARTED);
 
     try {
-      const anchorParams: IAnchorParams = {
+      const anchorParams = {
         asset_code: asset,
       };
       //TODO: webview change navigation thwors error for CallbackType.CALLBACK_URL
-      const { url, id } = await getInteractiveWithdrawUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
+      const { url, id } = await withdrawUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
 
       if (id && url) {
         // setTransactionId(id);
@@ -133,7 +131,7 @@ const Withdraw: React.FC = observer(() => {
   };
 
   // Stopping the interval
-  const stopFetchingTransaction = (status?: TransactionStatus) => {
+  const stopFetchingTransaction = (status?: Sep24TransactionStatus) => {
     console.debug('Stopping the fetch transaction. Status: ', status);
     clearTimeout(timeoutId);
   };
@@ -148,7 +146,7 @@ const Withdraw: React.FC = observer(() => {
       setCurrentAction(action);
     }
 
-    const endStatuses = [TransactionStatus.COMPLETED, TransactionStatus.ERROR];
+    const endStatuses = [Sep24TransactionStatus.COMPLETED, Sep24TransactionStatus.ERROR];
     const { transactionId, assetCode } = action;
 
     try {
@@ -161,7 +159,7 @@ const Withdraw: React.FC = observer(() => {
         return;
       }
 
-      if (currentStatus === TransactionStatus.PENDING_USER_TRANSFER_START) {
+      if (currentStatus === Sep24TransactionStatus.PENDING_USER_TRANSFER_START) {
         stopFetchingTransaction(currentStatus); // stop immediatelly to avoid multiple calls
         setTransaction(transaction);
         setStep(TransactionStep.CONFIRM_TRANSFER);
@@ -175,7 +173,7 @@ const Withdraw: React.FC = observer(() => {
         setTimeoutId(timeoutId);
       }
     } catch (error) {
-      stopFetchingTransaction(TransactionStatus.ERROR); // clean up
+      stopFetchingTransaction(Sep24TransactionStatus.ERROR); // clean up
       console.error('Error getting transaction', error);
       if (error instanceof Error) {
         setErrorMessage(error.message);

@@ -2,11 +2,10 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
-import { IAuthSession } from '@/types/IAuthSession';
-
 import Login from '@screens/Login';
 
-import * as auth from '@services/auth';
+import * as auth from '@services/emigro/auth';
+import { AuthSession } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -21,7 +20,7 @@ jest.mock('@stores/SessionStore', () => ({
   },
 }));
 
-jest.mock('@services/emigro', () => ({
+jest.mock('@services/emigro/users', () => ({
   getUserPublicKey: jest.fn(),
 }));
 
@@ -52,7 +51,7 @@ describe('Login screen', () => {
 
   test('Should call signIn with correct credentials', async () => {
     const signInMock = jest.spyOn(auth, 'signIn');
-    const authSession: IAuthSession = {
+    const authSession: AuthSession = {
       accessToken: 'accessToken',
       refreshToken: 'refreshToken',
       idToken: 'idToken',

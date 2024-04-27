@@ -6,14 +6,14 @@ import { render } from 'test-utils';
 
 import { CryptoAsset } from '@/types/assets';
 
-import * as quotesService from '@services/quotes';
+import * as quotesService from '@services/emigro/quotes';
 
 import { balanceStore } from '@stores/BalanceStore';
 import { paymentStore } from '@stores/PaymentStore';
 
 import { Swap } from '../Swap';
 
-jest.mock('@services/quotes', () => ({
+jest.mock('@services/emigro/quotes', () => ({
   handleQuote: jest.fn(),
 }));
 

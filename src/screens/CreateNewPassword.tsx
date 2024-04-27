@@ -26,7 +26,7 @@ import { Toast } from '@components/Toast';
 
 import { AnonStackParamList } from '@navigation/AnonStack';
 
-import { confirmResetPassword } from '@services/auth';
+import { confirmResetPassword } from '@services/emigro/auth';
 
 import { PinScreen } from './PinScreen';
 

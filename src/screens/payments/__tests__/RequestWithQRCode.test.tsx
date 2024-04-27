@@ -6,7 +6,7 @@ import * as pixUtils from 'pix-utils';
 
 import { render } from 'test-utils';
 
-import { IUserProfile } from '@/types/IUserProfile';
+import { UserProfile } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -62,7 +62,7 @@ describe('RequestWithQRCode component', () => {
       given_name: 'John',
       family_name: 'Doe'.repeat(100),
       address: '123 Main St',
-    } as IUserProfile;
+    } as UserProfile;
 
     const { getByText, getByTestId } = render(<RequestWithQRCode navigation={mockNavigation} route={mockRoute} />);
 

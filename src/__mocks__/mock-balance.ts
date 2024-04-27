@@ -1,7 +1,7 @@
-import { IBalance } from '@/types/IBalance';
+import { Balance } from '@services/emigro/types';
 
-export const userBalance: IBalance[] = [
-  { label: 'BRL', value: 'BRL', balance: '10', assetType: 'Asset Type 1', assetCode: 'BRL' },
-  { label: 'USD', value: 'USD', balance: '30', assetType: 'Asset Type 2', assetCode: 'USDC' },
-  { label: 'EUR', value: 'EUR', balance: '0', assetType: 'Asset Type 3', assetCode: 'EURC' },
+export const userBalance: Balance[] = [
+  { balance: '10', assetType: 'Asset Type 1', assetCode: 'BRL' },
+  { balance: '30', assetType: 'Asset Type 2', assetCode: 'USDC' },
+  { balance: '0', assetType: 'Asset Type 3', assetCode: 'EURC' },
 ];

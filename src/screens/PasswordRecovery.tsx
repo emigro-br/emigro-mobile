@@ -21,7 +21,7 @@ import { Toast } from '@components/Toast';
 
 import { AnonStackParamList } from '@navigation/AnonStack';
 
-import { resetPassword } from '@services/auth';
+import { resetPassword } from '@services/emigro/auth';
 
 type Props = {
   navigation: NativeStackNavigationProp<AnonStackParamList, 'PasswordRecovery'>;

@@ -4,7 +4,7 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { inputPIN, render } from 'test-utils';
 
-import { IPaymentResponse } from '@/types/IPaymentResponse';
+import { PaymentResponse } from '@services/emigro/types';
 
 import { paymentStore } from '@stores/PaymentStore';
 import { sessionStore } from '@stores/SessionStore';
@@ -54,7 +54,7 @@ describe('ReviewTransfer', () => {
   test('Should call handlePress when Send button is pressed', async () => {
     const verifyPinSpy = jest.spyOn(sessionStore, 'verifyPin').mockResolvedValueOnce(true);
     // mock pay function
-    jest.spyOn(paymentStore, 'pay').mockResolvedValue({ transactionHash: 'hash' } as IPaymentResponse);
+    jest.spyOn(paymentStore, 'pay').mockResolvedValue({ transactionHash: 'hash' } as PaymentResponse);
 
     const { getByText } = render(<ReviewTransfer navigation={navigationMock} route={routeMock} />);
     const sendButton = getByText('Send');

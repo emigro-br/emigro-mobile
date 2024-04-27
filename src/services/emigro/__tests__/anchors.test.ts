@@ -1,21 +1,12 @@
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import { IAnchorParams } from '@/types/IAnchorParams';
-import { IAnchorResponse } from '@/types/IAnchorResponse';
-import { Sep24Transaction } from '@/types/Sep24Transaction';
-import { TransactionStatus } from '@/types/TransactionStatus';
 import { CryptoAsset } from '@/types/assets';
 
-import { api } from '@services/api';
+import { api } from '@services/emigro/api';
 
-import {
-  CallbackType,
-  confirmWithdraw,
-  getInteractiveDepositUrl,
-  getInteractiveWithdrawUrl,
-  getTransaction,
-} from '../anchor';
+import { CallbackType, confirmWithdraw, depositUrl, getTransaction, withdrawUrl } from '../anchors';
+import { InteractiveUrlRequest, InteractiveUrlResponse, Sep24Transaction, Sep24TransactionStatus } from '../types';
 
 jest.mock('../api', () => ({
   api: jest.fn(),
@@ -33,13 +24,13 @@ describe('anchor service', () => {
   });
 
   describe('getInteractiveDepositUrl', () => {
-    const anchorParams: IAnchorParams = {
+    const anchorParams: InteractiveUrlRequest = {
       asset_code: 'USD',
     };
 
     it('should make a POST request to get the interactive deposit URL', async () => {
       const mockAxiosPost = jest.spyOn(instance, 'post');
-      const mockResponse: IAnchorResponse = {
+      const mockResponse: InteractiveUrlResponse = {
         url: 'https://example.com/deposit',
         id: '123456789',
         type: 'deposit',
@@ -47,7 +38,7 @@ describe('anchor service', () => {
 
       mock.onPost('/anchor/deposit', anchorParams).reply(200, mockResponse);
 
-      const result = await getInteractiveDepositUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
+      const result = await depositUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
 
       const expectedResult = { ...mockResponse, url: `${mockResponse.url}&callback=postMessage` };
       expect(result).toEqual(expectedResult);
@@ -56,13 +47,13 @@ describe('anchor service', () => {
   });
 
   describe('getInteractiveWithdrawUrl', () => {
-    const anchorParams: IAnchorParams = {
+    const anchorParams: InteractiveUrlRequest = {
       asset_code: 'USD',
     };
 
     it('should make a POST request to get the interactive withdraw URL', async () => {
       const mockAxiosPost = jest.spyOn(instance, 'post');
-      const mockResponse: IAnchorResponse = {
+      const mockResponse: InteractiveUrlResponse = {
         url: 'https://example.com/withdraw',
         type: 'withdraw',
         id: '123456789',
@@ -70,7 +61,7 @@ describe('anchor service', () => {
 
       mock.onPost('/anchor/withdraw', anchorParams).reply(200, mockResponse);
 
-      const result = await getInteractiveWithdrawUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
+      const result = await withdrawUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
 
       const expectedResult = { ...mockResponse, url: `${mockResponse.url}&callback=postMessage` };
       expect(result).toEqual(expectedResult);
@@ -88,7 +79,7 @@ describe('anchor service', () => {
       const mockResponse: Sep24Transaction = {
         id: '123456789',
         amount_in: '100',
-        status: TransactionStatus.COMPLETED,
+        status: Sep24TransactionStatus.COMPLETED,
       } as Sep24Transaction;
 
       mock.onGet('/anchor/transaction', { params: { id, assetCode } }).reply(200, mockResponse);

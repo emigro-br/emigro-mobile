@@ -30,7 +30,7 @@ import { CONFIRM_ACCOUNT_ERROR, WRONG_CODE_ERROR } from '@constants/errorMessage
 
 import { AnonStackParamList } from '@navigation/AnonStack';
 
-import { confirmAccount } from '@services/auth';
+import { confirmAccount } from '@services/emigro/auth';
 
 type Props = NativeStackScreenProps<AnonStackParamList, 'ConfirmAccount'>;
 

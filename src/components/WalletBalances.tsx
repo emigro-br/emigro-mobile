@@ -2,10 +2,11 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { AddIcon, Button, ButtonIcon, Card, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
 
-import { IBalance } from '@/types/IBalance';
 import { CryptoAsset } from '@/types/assets';
 
 import { WalletStackParamList } from '@navigation/WalletStack';
+
+import { Balance } from '@services/emigro/types';
 
 import { AssetToCurrency, AssetToSymbol } from '@utils/assets';
 
@@ -13,10 +14,10 @@ import { AssetListTile } from './AssetListTile';
 
 interface Props {
   navigation: NativeStackNavigationProp<WalletStackParamList>;
-  userBalance: IBalance[];
+  userBalance: Balance[];
 }
 
-const Balance: React.FC<Props> = ({ userBalance, navigation }) => {
+export const WalletBalances: React.FC<Props> = ({ userBalance, navigation }) => {
   return (
     <VStack space="sm">
       <HStack justifyContent="space-between">
@@ -52,5 +53,3 @@ const Balance: React.FC<Props> = ({ userBalance, navigation }) => {
     </VStack>
   );
 };
-
-export default Balance;

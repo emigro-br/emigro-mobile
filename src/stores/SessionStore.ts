@@ -2,19 +2,17 @@ import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 import { action, flow, makeAutoObservable, observable } from 'mobx';
 
-import { IUserProfile } from '@/types/IUserProfile';
 import { InvalidSessionError } from '@/types/errors';
 
-import { refresh as refreshSession } from '@services/auth';
-import { getUserProfile, getUserPublicKey } from '@services/emigro';
-
-import { IAuthSession } from '../types/IAuthSession';
+import { refresh as refreshSession } from '@services/emigro/auth';
+import { AuthSession, UserProfile } from '@services/emigro/types';
+import { getUserProfile, getUserPublicKey } from '@services/emigro/users';
 
 export class SessionStore {
   // Observable states
   justLoggedIn = false;
-  session: IAuthSession | null = null;
-  profile: IUserProfile | null = null;
+  session: AuthSession | null = null;
+  profile: UserProfile | null = null;
 
   private authKeys: string[] = [
     'auth.accessToken',
@@ -54,7 +52,7 @@ export class SessionStore {
     return this.session?.publicKey;
   }
 
-  setSession(session: IAuthSession | null) {
+  setSession(session: AuthSession | null) {
     this.session = session;
   }
 
@@ -64,7 +62,7 @@ export class SessionStore {
     }
   }
 
-  setProfile(profile: IUserProfile | null) {
+  setProfile(profile: UserProfile | null) {
     this.profile = profile;
   }
 
@@ -98,7 +96,7 @@ export class SessionStore {
     return !this.session ? true : this.session?.tokenExpirationDate < new Date();
   }
 
-  async save(session: IAuthSession) {
+  async save(session: AuthSession) {
     this.setSession(session); // FIXME: we can not replace when is only a partial update
     await Promise.all(
       Object.entries(session)
@@ -107,19 +105,19 @@ export class SessionStore {
     );
   }
 
-  async saveProfile(profile: IUserProfile) {
+  async saveProfile(profile: UserProfile) {
     // this.setProfile(profile);
     await SecureStore.setItemAsync(this.profileKey, JSON.stringify(profile));
   }
 
-  load = async (): Promise<IAuthSession | null> => {
-    const session: Partial<IAuthSession> = {};
+  load = async (): Promise<AuthSession | null> => {
+    const session: Partial<AuthSession> = {};
     await Promise.all(
       this.authKeys.map(async (key) => {
         const value = await SecureStore.getItemAsync(key);
         if (value) {
           const [, attr] = key.split('.');
-          session[attr as keyof IAuthSession] = JSON.parse(value);
+          session[attr as keyof AuthSession] = JSON.parse(value);
           if (attr === 'tokenExpirationDate') {
             session.tokenExpirationDate = new Date(session.tokenExpirationDate!);
           }
@@ -134,12 +132,12 @@ export class SessionStore {
       throw new InvalidSessionError();
     }
 
-    this.setSession(session as IAuthSession);
+    this.setSession(session as AuthSession);
     this.loadProfile(); // load profile in background
     return this.session;
   };
 
-  async loadProfile(): Promise<IUserProfile | null> {
+  async loadProfile(): Promise<UserProfile | null> {
     const profile = await SecureStore.getItemAsync(this.profileKey);
     if (profile) {
       this.setProfile(JSON.parse(profile));
@@ -158,7 +156,7 @@ export class SessionStore {
     this.setJustLoggedIn(false);
   }
 
-  signIn = async (session: IAuthSession) => {
+  signIn = async (session: AuthSession) => {
     this.setSession(session);
     this.save(session);
     this.setJustLoggedIn(true);

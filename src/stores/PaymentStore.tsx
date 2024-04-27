@@ -2,12 +2,11 @@ import * as Crypto from 'expo-crypto';
 import { action, makeAutoObservable, observable } from 'mobx';
 import { PixElementType, hasError, parsePix } from 'pix-utils';
 
-import { ITransactionRequest, TransactionType } from '@/types/ITransactionRequest';
 import { Payment, PixPayment, emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
-import { sendTransaction } from '@services/emigro';
-import { brcodePayment, brcodePaymentPreview } from '@services/transaction';
+import { brcodePayment, brcodePaymentPreview, sendTransaction } from '@services/emigro/transactions';
+import { TransactionRequest, TransactionType } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -143,7 +142,7 @@ export class PaymentStore {
 
   async pay() {
     const { type, from, to, idempotencyKey } = this.transaction!;
-    const transactionRequest: ITransactionRequest = {
+    const transactionRequest: TransactionRequest = {
       type,
       maxAmountToSend: from.value.toString(), // cry
       sourceAssetCode: from.asset,

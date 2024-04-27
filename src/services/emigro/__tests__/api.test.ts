@@ -1,11 +1,10 @@
 import axios, { AxiosInstance, CreateAxiosDefaults } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import { IAuthSession } from '@/types/IAuthSession';
-
 import { sessionStore } from '@stores/SessionStore';
 
 import { api, withRefreshTokenInterceptor } from '../api';
+import { AuthSession } from '../types';
 
 jest.mock('@stores/SessionStore', () => ({
   sessionStore: {
@@ -40,7 +39,7 @@ describe('api', () => {
   });
 
   it('should set the Authorization header if session exists', () => {
-    sessionStore.session = { accessToken: 'testAccessToken' } as IAuthSession;
+    sessionStore.session = { accessToken: 'testAccessToken' } as AuthSession;
     const result = api();
 
     expect(result.defaults.headers.common['Authorization']).toBe('Bearer testAccessToken');

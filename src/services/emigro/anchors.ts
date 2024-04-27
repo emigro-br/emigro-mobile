@@ -1,11 +1,17 @@
-import { IAnchorParams } from '@/types/IAnchorParams';
-import { IAnchorResponse } from '@/types/IAnchorResponse';
-import { Sep24Transaction } from '@/types/Sep24Transaction';
 import { CryptoAsset } from '@/types/assets';
 
-import { OperationType } from '@constants/constants';
-
 import { api, backendUrl } from './api';
+import { InteractiveUrlRequest, InteractiveUrlResponse, Sep24Transaction } from './types';
+
+const enum OperationType {
+  DEPOSIT = 'DEPOSIT',
+  WITHDRAW = 'WITHDRAW',
+}
+
+export enum CallbackType {
+  CALLBACK_URL,
+  EVENT_POST_MESSAGE,
+}
 
 export type ConfirmWithdrawDto = {
   transactionId: string;
@@ -13,23 +19,18 @@ export type ConfirmWithdrawDto = {
   from: string;
 };
 
-export enum CallbackType {
-  CALLBACK_URL,
-  EVENT_POST_MESSAGE,
-}
-
 const getInteractiveUrl = async (
   operation: OperationType,
-  anchorParams: IAnchorParams,
+  params: InteractiveUrlRequest,
   callback: CallbackType,
-): Promise<IAnchorResponse> => {
+): Promise<InteractiveUrlResponse> => {
   const endpoint = operation === OperationType.WITHDRAW ? 'withdraw' : 'deposit';
   const timeout = 15 * 1000;
-  const res = await api({ timeout }).post(`/anchor/${endpoint}`, anchorParams);
+  const res = await api({ timeout }).post(`/anchor/${endpoint}`, params);
 
   const json = res.data;
   if (callback === CallbackType.CALLBACK_URL) {
-    const assetCode = anchorParams.asset_code; // FIXME: I think this is not necessary
+    const assetCode = params.asset_code; // FIXME: I think this is not necessary
     json.url = `${json.url}&callback=${encodeURIComponent(`${backendUrl}/anchor/withdraw-callback?assetCode=${assetCode}`)}`;
   } else if (callback === CallbackType.EVENT_POST_MESSAGE) {
     json.url = `${json.url}&callback=postMessage`;
@@ -38,12 +39,12 @@ const getInteractiveUrl = async (
   return json;
 };
 
-export const getInteractiveDepositUrl = async (anchorParams: IAnchorParams, callback: CallbackType) => {
-  return getInteractiveUrl(OperationType.DEPOSIT, anchorParams, callback);
+export const depositUrl = async (params: InteractiveUrlRequest, callback: CallbackType) => {
+  return getInteractiveUrl(OperationType.DEPOSIT, params, callback);
 };
 
-export const getInteractiveWithdrawUrl = async (anchorParams: IAnchorParams, callback: CallbackType) => {
-  return getInteractiveUrl(OperationType.WITHDRAW, anchorParams, callback);
+export const withdrawUrl = async (params: InteractiveUrlRequest, callback: CallbackType) => {
+  return getInteractiveUrl(OperationType.WITHDRAW, params, callback);
 };
 
 export const getTransaction = async (id: string, assetCode: CryptoAsset): Promise<Sep24Transaction> => {

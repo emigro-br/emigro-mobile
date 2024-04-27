@@ -5,7 +5,7 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
-import * as anchor from '@services/anchor';
+import * as anchor from '@services/emigro/anchors';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -13,8 +13,8 @@ import Withdraw from '../Withdraw';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
-jest.mock('@services/anchor', () => ({
-  getInteractiveWithdrawUrl: jest.fn(),
+jest.mock('@services/emigro/anchors', () => ({
+  withdrawUrl: jest.fn(),
   getTransaction: jest.fn().mockResolvedValue({
     status: 'completed',
   }),
@@ -23,7 +23,7 @@ jest.mock('@services/anchor', () => ({
   },
 }));
 
-jest.mock('@services/emigro', () => ({
+jest.mock('@services/emigro/users', () => ({
   getUserPublicKey: jest.fn().mockResolvedValue('somePublicKey'),
 }));
 
@@ -73,7 +73,7 @@ describe('Withdraw', () => {
   });
 
   it('Should call handleOnPress when ARS button is pressed', async () => {
-    (anchor.getInteractiveWithdrawUrl as jest.Mock).mockResolvedValue({
+    (anchor.withdrawUrl as jest.Mock).mockResolvedValue({
       url: 'http://anchor.ars',
       type: 'withdraw',
       id: 'someId',
@@ -96,7 +96,7 @@ describe('Withdraw', () => {
   });
 
   it('Should call handleOnPress when BRL button is pressed', async () => {
-    (anchor.getInteractiveWithdrawUrl as jest.Mock).mockResolvedValue({
+    (anchor.withdrawUrl as jest.Mock).mockResolvedValue({
       url: 'http://anchor.brl',
       type: 'withdraw',
       id: 'someId',
@@ -119,7 +119,7 @@ describe('Withdraw', () => {
   });
 
   it('Should call handleOnPress when EURC button is pressed', async () => {
-    (anchor.getInteractiveWithdrawUrl as jest.Mock).mockResolvedValue({
+    (anchor.withdrawUrl as jest.Mock).mockResolvedValue({
       url: 'http://anchor.eurc',
       type: 'withdraw',
       id: 'someId',

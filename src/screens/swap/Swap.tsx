@@ -8,7 +8,7 @@ import { CryptoAsset } from '@/types/assets';
 
 import { WalletStackParamList } from '@navigation/WalletStack';
 
-import { IQuoteRequest, handleQuote } from '@services/quotes';
+import { IQuoteRequest, handleQuote } from '@services/emigro/quotes';
 
 import { balanceStore } from '@stores/BalanceStore';
 import { SwapTransaction, paymentStore as bloc } from '@stores/PaymentStore';

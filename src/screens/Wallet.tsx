@@ -7,8 +7,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Box, ScrollView, VStack } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 
-import Balance from '@components/Balance';
 import OperationButtons from '@components/OperationButtons';
+import { WalletBalances } from '@components/WalletBalances';
 
 import { WalletStackParamList } from '@navigation/WalletStack';
 
@@ -43,7 +43,7 @@ const Wallet = observer(({ navigation }: Props) => {
       </Box>
       <VStack space="lg" p="$4">
         {balanceStore.userBalance.length > 0 && (
-          <Balance userBalance={balanceStore.userBalance} navigation={navigation} />
+          <WalletBalances userBalance={balanceStore.userBalance} navigation={navigation} />
         )}
       </VStack>
     </ScrollView>

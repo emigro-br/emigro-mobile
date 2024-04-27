@@ -6,9 +6,9 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
-import { IUserProfile } from '@/types/IUserProfile';
-
 import Profile from '@screens/profile/Profile';
+
+import { UserProfile } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -63,7 +63,7 @@ describe('Profile screen', () => {
       family_name: 'Test Last Name',
       email: 'test@email.com',
       address: 'Test Address',
-    } as IUserProfile);
+    } as UserProfile);
     const { getByText, queryAllByText } = renderWithProviders(<Profile navigation={mockNavigattion} />);
 
     await waitFor(() => {

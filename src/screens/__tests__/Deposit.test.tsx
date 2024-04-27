@@ -6,7 +6,7 @@ import mockConsole from 'jest-mock-console';
 
 import { render } from 'test-utils';
 
-import { getInteractiveDepositUrl } from '@services/anchor';
+import { depositUrl } from '@services/emigro/anchors';
 
 import { sessionStore } from '@stores/SessionStore';
 
@@ -30,8 +30,8 @@ jest.mock('@stores/SessionStore', () => ({
   },
 }));
 
-jest.mock('@services/anchor', () => ({
-  getInteractiveDepositUrl: jest.fn(() => ({
+jest.mock('@services/emigro/anchors', () => ({
+  depositUrl: jest.fn(() => ({
     url: 'https://anchor.url',
     id: 'transaction-id',
   })),
@@ -114,7 +114,7 @@ describe('Deposit screen', () => {
     const restoreConsole = mockConsole();
     // // mock getInteractiveUrl to throw an error
     const error = new Error('An error occurred');
-    (getInteractiveDepositUrl as jest.Mock).mockRejectedValueOnce(error);
+    (depositUrl as jest.Mock).mockRejectedValueOnce(error);
 
     const { getByText, getByTestId } = render(<Deposit navigation={mockNavigattion} />);
     const asset = getByText('ARS');
