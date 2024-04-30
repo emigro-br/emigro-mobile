@@ -1,11 +1,10 @@
 import { action, makeAutoObservable, observable } from 'mobx';
 
-import { IBalance } from '@/types/IBalance';
-
+import { Balance } from '@services/emigro/types';
 import { getUserBalance } from '@services/emigro/users';
 
 export class BalanceStore {
-  userBalance: IBalance[] = [];
+  userBalance: Balance[] = [];
   lastUpdate: number | null = null;
 
   constructor() {
@@ -15,12 +14,12 @@ export class BalanceStore {
     });
   }
 
-  setUserBalance(balance: IBalance[]): void {
+  setUserBalance(balance: Balance[]): void {
     this.userBalance = balance;
     this.lastUpdate = Date.now();
   }
 
-  find(assetCode: string): IBalance | undefined {
+  find(assetCode: string): Balance | undefined {
     return this.userBalance.find((balance) => balance.assetCode === assetCode);
   }
 
@@ -30,7 +29,7 @@ export class BalanceStore {
     return 0;
   }
 
-  async fetchUserBalance(): Promise<IBalance[]> {
+  async fetchUserBalance(): Promise<Balance[]> {
     const interval = 10 * 1000;
     const now = Date.now();
     if (this.lastUpdate === null || now - this.lastUpdate >= interval) {
