@@ -6,7 +6,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Box, Card, FormControlErrorText, Heading, Text, VStack } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 
-import { CryptoAsset, stableCoins } from '@/types/assets';
+import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
 
 import { AssetList } from '@components/AssetList';
 import { LoadingModal } from '@components/modals/LoadingModal';
@@ -18,6 +18,8 @@ import { CallbackType, depositUrl } from '@services/emigro/anchors';
 
 import { sessionStore } from '@stores/SessionStore';
 
+import { CurrencyToAsset } from '@utils/assets';
+
 import { LoadingScreen } from './Loading';
 
 const defaultErrorMessage = 'Something went wrong. Please try again';
@@ -28,10 +30,10 @@ type Props = {
 
 const Deposit = observer(({ navigation }: Props) => {
   // const [transactionId, setTransactionId] = useState<string | null>(null);
-  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset | null>(null);
+  const [selectedAsset, setSelectedAsset] = useState<CryptoOrFiat | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const availableAssets = stableCoins();
+  const fiatsWithBank = sessionStore.preferences?.fiatsWithBank ?? [];
 
   useEffect(() => {
     return cleanUp;
@@ -43,7 +45,7 @@ const Deposit = observer(({ navigation }: Props) => {
     setErrorMessage(null);
   };
 
-  const handleOpenConfimed = async (asset: CryptoAsset) => {
+  const handleOpenConfimed = async (asset: CryptoOrFiat) => {
     if (!sessionStore.accessToken || !sessionStore.publicKey) {
       setErrorMessage('Invalid session');
       return;
@@ -51,8 +53,11 @@ const Deposit = observer(({ navigation }: Props) => {
 
     setIsLoading(true);
 
+    // this will works for both fiat and crypto assets in the list
+    const assetCode = CurrencyToAsset[asset as FiatCurrency] ?? (asset as CryptoAsset);
+
     const anchorParams = {
-      asset_code: asset,
+      asset_code: assetCode,
     };
 
     try {
@@ -96,10 +101,15 @@ const Deposit = observer(({ navigation }: Props) => {
       <Box flex={1}>
         <VStack p="$4" space="md">
           <Heading size="xl">Add money</Heading>
-          <Text>Choose the currency you want to deposit</Text>
-          <Card variant="flat">
-            <AssetList data={availableAssets} onPress={(item) => setSelectedAsset(item as CryptoAsset)} />
-          </Card>
+          {fiatsWithBank.length === 0 && <Text>Please navigate to your Profile and select your bank's currency.</Text>}
+          {fiatsWithBank.length > 0 && (
+            <>
+              <Text>Choose the currency you want to deposit</Text>
+              <Card variant="flat">
+                <AssetList data={fiatsWithBank} onPress={(item) => setSelectedAsset(item)} />
+              </Card>
+            </>
+          )}
           {errorMessage && <FormControlErrorText>{errorMessage}</FormControlErrorText>}
         </VStack>
       </Box>

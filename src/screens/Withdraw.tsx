@@ -4,7 +4,7 @@ import { Linking } from 'react-native';
 import { Box, Button, ButtonText, Card, FormControlErrorText, Heading, Text, VStack } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 
-import { CryptoAsset, stableCoins } from '@/types/assets';
+import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
 
 import { AssetList } from '@components/AssetList';
 import { ConfirmationModal } from '@components/modals/ConfirmationModal';
@@ -23,6 +23,8 @@ import {
 import { Sep24Transaction, Sep24TransactionStatus } from '@services/emigro/types';
 
 import { sessionStore } from '@stores/SessionStore';
+
+import { CurrencyToAsset } from '@utils/assets';
 
 import { LoadingScreen } from './Loading';
 
@@ -50,11 +52,12 @@ const Withdraw: React.FC = observer(() => {
   const [pendingAction, setPendingAction] = useState<WithdrawAction | null>(null);
   const [transaction, setTransaction] = useState<Sep24Transaction | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset | null>(null);
+  const [selectedAsset, setSelectedAsset] = useState<CryptoOrFiat | null>(null);
   // TODO: replace by useRef: https://react.dev/reference/react/useRef
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>(); // see: https://code.pieces.app/blog/resolving-react-setinterval-conflicts
 
-  const availableAssets = stableCoins();
+  const fiatsWithBank = sessionStore.preferences?.fiatsWithBank ?? [];
+  // const availableAssets = [];
 
   useEffect(() => {
     return cleanUp;
@@ -69,26 +72,26 @@ const Withdraw: React.FC = observer(() => {
     setStep(TransactionStep.NONE);
   };
 
-  const handleOpenUrlPressed = async (asset: CryptoAsset) => {
+  const handleOpenUrlPressed = async (asset: CryptoOrFiat) => {
     if (!sessionStore.accessToken || !sessionStore.publicKey) {
       setErrorMessage('Invalid session');
       return;
     }
 
     // setTransactionId(null);
-
     setStep(TransactionStep.STARTED);
-
     try {
+      // this will works for both fiat and crypto assets in the list
+      const assetCode = CurrencyToAsset[asset as FiatCurrency] ?? (asset as CryptoAsset);
       const anchorParams = {
-        asset_code: asset,
+        asset_code: assetCode,
       };
       //TODO: webview change navigation thwors error for CallbackType.CALLBACK_URL
       const { url, id } = await withdrawUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
 
       if (id && url) {
         // setTransactionId(id);
-        const action: WithdrawAction = { transactionId: id, assetCode: asset, anchorUrl: url };
+        const action: WithdrawAction = { transactionId: id, assetCode, anchorUrl: url };
         setCurrentAction(action);
         waitWithdrawOnAnchorComplete(action);
         setStep(TransactionStep.WAITING);
@@ -252,10 +255,15 @@ const Withdraw: React.FC = observer(() => {
       <Box flex={1}>
         <VStack p="$4" space="md">
           <Heading size="xl">Withdraw money</Heading>
-          <Text>Choose the currency you want to withdraw</Text>
-          <Card variant="flat">
-            <AssetList data={availableAssets} onPress={(item) => setSelectedAsset(item as CryptoAsset)} />
-          </Card>
+          {fiatsWithBank.length === 0 && <Text>Please navigate to your Profile and select your bank's currency.</Text>}
+          {fiatsWithBank.length > 0 && (
+            <>
+              <Text>Choose the currency you want to withdraw</Text>
+              <Card variant="flat">
+                <AssetList data={fiatsWithBank} onPress={(item) => setSelectedAsset(item)} />
+              </Card>
+            </>
+          )}
 
           {pendingAction && step === TransactionStep.NONE && (
             <Button variant="link" onPress={() => waitWithdrawOnAnchorComplete(pendingAction)} alignSelf="flex-start">

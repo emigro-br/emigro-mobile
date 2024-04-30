@@ -1,9 +1,10 @@
 import React from 'react';
 
-// import { Linking } from 'react-native';
 import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
+
+import { FiatCurrency } from '@/types/assets';
 
 import * as anchor from '@services/emigro/anchors';
 
@@ -60,19 +61,23 @@ describe('Withdraw', () => {
   });
 
   it('Should render correctly', async () => {
+    sessionStore.preferences = {
+      fiatsWithBank: [FiatCurrency.BRL, FiatCurrency.USD],
+    };
     const { getByText, queryByText } = render(<Withdraw />);
 
     expect(getByText('Withdraw money')).toBeOnTheScreen();
     expect(getByText('Choose the currency you want to withdraw')).toBeOnTheScreen();
 
-    expect(getByText('ARS')).toBeOnTheScreen();
     expect(getByText('BRL')).toBeOnTheScreen();
-    expect(getByText('EURC')).toBeOnTheScreen();
-    expect(getByText('USDC')).toBeOnTheScreen();
+    expect(getByText('USD')).toBeOnTheScreen();
     expect(queryByText('XML')).not.toBeOnTheScreen();
   });
 
-  it('Should call handleOnPress when ARS button is pressed', async () => {
+  it('Should open the modal when asset is pressed', async () => {
+    sessionStore.preferences = {
+      fiatsWithBank: [FiatCurrency.ARS],
+    };
     (anchor.withdrawUrl as jest.Mock).mockResolvedValue({
       url: 'http://anchor.ars',
       type: 'withdraw',
@@ -92,52 +97,6 @@ describe('Withdraw', () => {
       const openUrlModal = getByTestId('open-url-modal');
       expect(openUrlModal).toBeOnTheScreen();
       // expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.ars');
-    });
-  });
-
-  it('Should call handleOnPress when BRL button is pressed', async () => {
-    (anchor.withdrawUrl as jest.Mock).mockResolvedValue({
-      url: 'http://anchor.brl',
-      type: 'withdraw',
-      id: 'someId',
-    });
-    const { getByText, getByTestId } = render(<Withdraw />);
-    const button = getByText('BRL');
-
-    fireEvent.press(button);
-
-    await waitFor(() => {
-      const loadingModal = getByTestId('loading-url-modal');
-      expect(loadingModal).toBeOnTheScreen();
-    });
-
-    await waitFor(() => {
-      const openUrlModal = getByTestId('open-url-modal');
-      expect(openUrlModal).toBeOnTheScreen();
-      // expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.brl');
-    });
-  });
-
-  it('Should call handleOnPress when EURC button is pressed', async () => {
-    (anchor.withdrawUrl as jest.Mock).mockResolvedValue({
-      url: 'http://anchor.eurc',
-      type: 'withdraw',
-      id: 'someId',
-    });
-    const { getByText, getByTestId } = render(<Withdraw />);
-    const button = getByText('EURC');
-
-    fireEvent.press(button);
-
-    await waitFor(() => {
-      const loadingModal = getByTestId('loading-url-modal');
-      expect(loadingModal).toBeOnTheScreen();
-    });
-
-    await waitFor(() => {
-      const openUrlModal = getByTestId('open-url-modal');
-      expect(openUrlModal).toBeOnTheScreen();
-      // expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.eurc');
     });
   });
 });

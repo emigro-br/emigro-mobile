@@ -33,7 +33,7 @@ export const AssetListActionSheet = ({ assets, isOpen, onClose, onItemPress }: P
           </ActionsheetDragIndicatorWrapper>
           {assets.map((asset) => (
             <ActionsheetItem key={asset} onPress={() => onItemPress(asset)}>
-              <AssetAvatar asset={asset} size="xs" />
+              <AssetAvatar asset={asset} size="sm" />
               <ActionsheetItemText>{labelFor(asset)}</ActionsheetItemText>
             </ActionsheetItem>
           ))}

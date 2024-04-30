@@ -1,6 +1,9 @@
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 
+import { UserPreferences } from '@/types/UserPreferences';
+import { FiatCurrency } from '@/types/assets';
+
 import { refresh as refreshSession } from '@services/emigro/auth';
 import { AuthSession, UserProfile } from '@services/emigro/types';
 import { getUserPublicKey } from '@services/emigro/users';
@@ -71,6 +74,17 @@ describe('SessionStore', () => {
     expect(sessionStore.profile).toEqual(profile);
   });
 
+  it('should save and load preferences', async () => {
+    const preferences: UserPreferences = {
+      fiatsWithBank: [FiatCurrency.USD],
+    };
+
+    sessionStore.savePreferences(preferences);
+    const loadedPreferences = await sessionStore.loadPreferences();
+    expect(loadedPreferences).toEqual(preferences);
+    expect(sessionStore.preferences).toEqual(preferences);
+  });
+
   it('should clear session and profile', async () => {
     const session = {
       accessToken: 'access_token',
@@ -86,14 +100,22 @@ describe('SessionStore', () => {
       email: 'teste@example.com',
     } as UserProfile;
 
+    const preferences: UserPreferences = {
+      fiatsWithBank: [FiatCurrency.USD],
+    };
+
     await sessionStore.save(session);
     await sessionStore.saveProfile(profile);
+    await sessionStore.savePreferences(preferences);
+
+    // clear everything
     await sessionStore.clear();
     const loadedSession = await sessionStore.load();
 
     expect(loadedSession).toBeNull();
     expect(sessionStore.session).toBeNull();
     expect(sessionStore.profile).toBeNull();
+    expect(sessionStore.preferences).toBeNull();
     expect(sessionStore.justLoggedIn).toBe(false);
     expect(sessionStore.publicKey).toBeUndefined();
     expect(sessionStore.accessToken).toBeUndefined();

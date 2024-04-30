@@ -6,6 +6,8 @@ import mockConsole from 'jest-mock-console';
 
 import { render } from 'test-utils';
 
+import { FiatCurrency } from '@/types/assets';
+
 import { depositUrl } from '@services/emigro/anchors';
 
 import { sessionStore } from '@stores/SessionStore';
@@ -48,6 +50,9 @@ const mockNavigattion: any = {
 describe('Deposit screen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    sessionStore.preferences = {
+      fiatsWithBank: [FiatCurrency.ARS],
+    };
   });
 
   afterAll(() => {
@@ -65,12 +70,14 @@ describe('Deposit screen', () => {
   });
 
   test('Should display available assets', () => {
+    sessionStore.preferences = {
+      fiatsWithBank: [FiatCurrency.BRL, FiatCurrency.USD],
+    };
+
     const { getByText, queryByText } = render(<Deposit navigation={mockNavigattion} />);
 
-    expect(getByText('ARS')).toBeOnTheScreen();
     expect(getByText('BRL')).toBeOnTheScreen();
-    expect(getByText('EURC')).toBeOnTheScreen();
-    expect(getByText('USDC')).toBeOnTheScreen();
+    expect(getByText('USD')).toBeOnTheScreen();
     expect(queryByText('XML')).not.toBeOnTheScreen();
   });
 

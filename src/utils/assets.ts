@@ -24,6 +24,13 @@ const AssetToName = {
   [CryptoAsset.ARS]: 'Argentine Peso Coin',
 };
 
+export const CurrencyToAsset = {
+  [FiatCurrency.EUR]: CryptoAsset.EURC,
+  [FiatCurrency.USD]: CryptoAsset.USDC,
+  [FiatCurrency.BRL]: CryptoAsset.BRL,
+  [FiatCurrency.ARS]: CryptoAsset.ARS,
+};
+
 const FiatToName = {
   [FiatCurrency.EUR]: 'Euro',
   [FiatCurrency.USD]: 'US Dollar',

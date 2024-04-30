@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { View } from 'react-native';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -25,10 +26,16 @@ import * as Application from 'expo-application';
 import * as Clipboard from 'expo-clipboard';
 import { observer } from 'mobx-react-lite';
 
+import { FiatCurrency } from '@/types/assets';
+
+import { AssetListActionSheet } from '@components/AssetListActionSheet';
+
 import { ProfileStackParamList } from '@navigation/ProfileStack';
 
+import { balanceStore } from '@stores/BalanceStore';
 import { sessionStore } from '@stores/SessionStore';
 
+import { AssetToCurrency } from '@utils/assets';
 import { maskWallet } from '@utils/masks';
 
 type Props = {
@@ -37,12 +44,13 @@ type Props = {
 
 const Profile = observer(({ navigation }: Props) => {
   const toast = useToast();
+  const [assetListOpen, setAssetListOpen] = useState(false);
+  const publicKey = sessionStore.publicKey;
+  const myCurrencies = balanceStore.currentAssets().map((asset) => AssetToCurrency[asset]);
 
   const handleLogout = async () => {
     await sessionStore.clear();
   };
-
-  const publicKey = sessionStore.publicKey;
 
   const copyToClipboard = async () => {
     if (publicKey) {
@@ -67,6 +75,7 @@ const Profile = observer(({ navigation }: Props) => {
   }
 
   const fullName = `${profileInfo.given_name} ${profileInfo.family_name}`;
+  const bankCurrency = sessionStore.preferences?.fiatsWithBank ?? [];
 
   return (
     <SafeAreaView flex={1} bg="$white">
@@ -117,6 +126,15 @@ const Profile = observer(({ navigation }: Props) => {
               </>
             )}
 
+            <Box>
+              <Button onPress={() => setAssetListOpen(true)} variant="link" action="secondary" alignSelf="flex-start">
+                <ButtonText>Bank account currency: {bankCurrency.length > 0 ? bankCurrency[0] : 'not set'} </ButtonText>
+              </Button>
+              <Text size="sm" color="$textLight500">
+                Used for deposit and withdraw
+              </Text>
+            </Box>
+
             <Button
               onPress={() => navigation.push('ConfigurePIN')}
               variant="link"
@@ -146,6 +164,17 @@ const Profile = observer(({ navigation }: Props) => {
           </Text>
         </Box>
       </Box>
+
+      {/* Modals and sheets  */}
+      <AssetListActionSheet
+        assets={myCurrencies}
+        isOpen={assetListOpen}
+        onClose={() => setAssetListOpen(false)}
+        onItemPress={(currency) => {
+          sessionStore.savePreferences({ fiatsWithBank: [currency as FiatCurrency] });
+          setAssetListOpen(false);
+        }}
+      />
     </SafeAreaView>
   );
 });
