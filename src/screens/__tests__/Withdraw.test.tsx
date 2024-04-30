@@ -40,6 +40,10 @@ jest.mock('@stores/SessionStore', () => ({
   },
 }));
 
+const mockNavigation: any = {
+  replace: jest.fn(),
+};
+
 describe('Withdraw', () => {
   beforeEach(() => {
     jest.useFakeTimers(); // Please, keep this to avoid act() warning
@@ -54,17 +58,33 @@ describe('Withdraw', () => {
     // session not ready
     jest.spyOn(sessionStore, 'accessToken', 'get').mockReturnValueOnce(undefined);
 
-    const { getByTestId } = render(<Withdraw />);
+    const { getByTestId } = render(<Withdraw navigation={mockNavigation} />);
     const loadingSpinner = getByTestId('loading-spinner');
 
     expect(loadingSpinner).toBeOnTheScreen();
+  });
+
+  test('Should show profile message when fiats are not avaiable', () => {
+    sessionStore.preferences = {
+      fiatsWithBank: [],
+    };
+
+    const { getByText, getByTestId } = render(<Withdraw navigation={mockNavigation} />);
+    const message = getByTestId('no-currencies-msg');
+    const button = getByText('Go to Profile');
+    expect(message).toBeOnTheScreen();
+    expect(button).toBeOnTheScreen();
+
+    fireEvent.press(button);
+
+    expect(mockNavigation.replace).toHaveBeenCalledWith('Root', { screen: 'ProfileTab' });
   });
 
   it('Should render correctly', async () => {
     sessionStore.preferences = {
       fiatsWithBank: [FiatCurrency.BRL, FiatCurrency.USD],
     };
-    const { getByText, queryByText } = render(<Withdraw />);
+    const { getByText, queryByText } = render(<Withdraw navigation={mockNavigation} />);
 
     expect(getByText('Withdraw money')).toBeOnTheScreen();
     expect(getByText('Choose the currency you want to withdraw')).toBeOnTheScreen();
@@ -83,7 +103,7 @@ describe('Withdraw', () => {
       type: 'withdraw',
       id: 'someId',
     });
-    const { getByText, getByTestId } = render(<Withdraw />);
+    const { getByText, getByTestId } = render(<Withdraw navigation={mockNavigation} />);
     const button = getByText('ARS');
 
     fireEvent.press(button);

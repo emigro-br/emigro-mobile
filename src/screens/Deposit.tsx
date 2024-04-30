@@ -3,7 +3,19 @@ import { Linking } from 'react-native';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { Box, Card, FormControlErrorText, Heading, Text, VStack } from '@gluestack-ui/themed';
+import {
+  Box,
+  Button,
+  ButtonIcon,
+  ButtonText,
+  Card,
+  ChevronRightIcon,
+  FormControlErrorText,
+  HStack,
+  Heading,
+  Text,
+  VStack,
+} from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 
 import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
@@ -12,6 +24,7 @@ import { AssetList } from '@components/AssetList';
 import { LoadingModal } from '@components/modals/LoadingModal';
 import { OpenURLModal } from '@components/modals/OpenURLModal';
 
+import { RootStackParamList } from '@navigation/RootStack';
 import { WalletStackParamList } from '@navigation/WalletStack';
 
 import { CallbackType, depositUrl } from '@services/emigro/anchors';
@@ -25,7 +38,7 @@ import { LoadingScreen } from './Loading';
 const defaultErrorMessage = 'Something went wrong. Please try again';
 
 type Props = {
-  navigation: NativeStackNavigationProp<WalletStackParamList, 'Deposit'>;
+  navigation: NativeStackNavigationProp<RootStackParamList & WalletStackParamList, 'Deposit'>;
 };
 
 const Deposit = observer(({ navigation }: Props) => {
@@ -101,7 +114,17 @@ const Deposit = observer(({ navigation }: Props) => {
       <Box flex={1}>
         <VStack p="$4" space="md">
           <Heading size="xl">Add money</Heading>
-          {fiatsWithBank.length === 0 && <Text>Please navigate to your Profile and select your bank's currency.</Text>}
+          {fiatsWithBank.length === 0 && (
+            <>
+              <Text testID="no-currencies-msg">Please navigate to your profile and select your bank's currency.</Text>
+              <HStack>
+                <Button variant="link" onPress={() => navigation.replace('Root', { screen: 'ProfileTab' })}>
+                  <ButtonText>Go to Profile</ButtonText>
+                  <ButtonIcon as={ChevronRightIcon} />
+                </Button>
+              </HStack>
+            </>
+          )}
           {fiatsWithBank.length > 0 && (
             <>
               <Text>Choose the currency you want to deposit</Text>

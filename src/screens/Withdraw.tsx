@@ -1,7 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 
-import { Box, Button, ButtonText, Card, FormControlErrorText, Heading, Text, VStack } from '@gluestack-ui/themed';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+import {
+  Box,
+  Button,
+  ButtonIcon,
+  ButtonText,
+  Card,
+  ChevronRightIcon,
+  FormControlErrorText,
+  HStack,
+  Heading,
+  Text,
+  VStack,
+} from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 
 import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
@@ -12,6 +26,9 @@ import { ErrorModal } from '@components/modals/ErrorModal';
 import { LoadingModal } from '@components/modals/LoadingModal';
 import { OpenURLModal } from '@components/modals/OpenURLModal';
 import { SuccessModal } from '@components/modals/SuccessModal';
+
+import { RootStackParamList } from '@navigation/RootStack';
+import { WalletStackParamList } from '@navigation/WalletStack';
 
 import {
   CallbackType,
@@ -46,7 +63,11 @@ type WithdrawAction = {
   anchorUrl: string;
 };
 
-const Withdraw: React.FC = observer(() => {
+type Props = {
+  navigation: NativeStackNavigationProp<RootStackParamList & WalletStackParamList, 'Withdraw'>;
+};
+
+const Withdraw = observer(({ navigation }: Props) => {
   const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
   const [currentAction, setCurrentAction] = useState<WithdrawAction | null>(null);
   const [pendingAction, setPendingAction] = useState<WithdrawAction | null>(null);
@@ -57,7 +78,6 @@ const Withdraw: React.FC = observer(() => {
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout>(); // see: https://code.pieces.app/blog/resolving-react-setinterval-conflicts
 
   const fiatsWithBank = sessionStore.preferences?.fiatsWithBank ?? [];
-  // const availableAssets = [];
 
   useEffect(() => {
     return cleanUp;
@@ -255,7 +275,17 @@ const Withdraw: React.FC = observer(() => {
       <Box flex={1}>
         <VStack p="$4" space="md">
           <Heading size="xl">Withdraw money</Heading>
-          {fiatsWithBank.length === 0 && <Text>Please navigate to your Profile and select your bank's currency.</Text>}
+          {fiatsWithBank.length === 0 && (
+            <>
+              <Text testID="no-currencies-msg">Please navigate to your profile and select your bank's currency.</Text>
+              <HStack>
+                <Button variant="link" onPress={() => navigation.replace('Root', { screen: 'ProfileTab' })}>
+                  <ButtonText>Go to Profile</ButtonText>
+                  <ButtonIcon as={ChevronRightIcon} />
+                </Button>
+              </HStack>
+            </>
+          )}
           {fiatsWithBank.length > 0 && (
             <>
               <Text>Choose the currency you want to withdraw</Text>
