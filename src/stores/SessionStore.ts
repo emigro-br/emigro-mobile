@@ -2,6 +2,7 @@ import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 import { action, flow, makeAutoObservable, observable } from 'mobx';
 
+import { UserPreferences } from '@/types/UserPreferences';
 import { InvalidSessionError } from '@/types/errors';
 
 import { refresh as refreshSession } from '@services/emigro/auth';
@@ -13,6 +14,7 @@ export class SessionStore {
   justLoggedIn = false;
   session: AuthSession | null = null;
   profile: UserProfile | null = null;
+  preferences: UserPreferences | null = null;
 
   private authKeys: string[] = [
     'auth.accessToken',
@@ -23,6 +25,7 @@ export class SessionStore {
     'auth.publicKey',
   ];
   private profileKey = 'user.profile';
+  private preferencesKey = 'user.preferences';
 
   constructor() {
     makeAutoObservable(this, {
@@ -35,6 +38,10 @@ export class SessionStore {
       profile: observable,
       setProfile: action,
       fetchProfile: flow,
+      // preferences
+      preferences: observable,
+      setPreferences: action,
+
       // loggedIn
       justLoggedIn: observable,
       setJustLoggedIn: action,
@@ -64,6 +71,10 @@ export class SessionStore {
 
   setProfile(profile: UserProfile | null) {
     this.profile = profile;
+  }
+
+  setPreferences(preferences: UserPreferences | null) {
+    this.preferences = preferences;
   }
 
   setJustLoggedIn(justLoggedIn: boolean) {
@@ -110,6 +121,12 @@ export class SessionStore {
     await SecureStore.setItemAsync(this.profileKey, JSON.stringify(profile));
   }
 
+  async savePreferences(preferences: UserPreferences) {
+    // TODO: merge prefences??
+    await SecureStore.setItemAsync(this.preferencesKey, JSON.stringify(preferences));
+    this.setPreferences(preferences);
+  }
+
   load = async (): Promise<AuthSession | null> => {
     const session: Partial<AuthSession> = {};
     await Promise.all(
@@ -134,6 +151,7 @@ export class SessionStore {
 
     this.setSession(session as AuthSession);
     this.loadProfile(); // load profile in background
+    this.loadPreferences(); // load preferences in background
     return this.session;
   };
 
@@ -145,12 +163,23 @@ export class SessionStore {
     return this.profile;
   }
 
+  async loadPreferences(): Promise<UserPreferences | null> {
+    const preferences = await SecureStore.getItemAsync(this.preferencesKey);
+    if (preferences) {
+      this.setPreferences(JSON.parse(preferences));
+    }
+    return this.preferences;
+  }
+
   async clear() {
     await Promise.all(this.authKeys.map((key) => SecureStore.deleteItemAsync(key)));
     this.setSession(null);
 
     await SecureStore.deleteItemAsync(this.profileKey);
     this.setProfile(null);
+
+    await SecureStore.deleteItemAsync(this.preferencesKey);
+    this.setPreferences(null);
 
     await this.clearPin();
     this.setJustLoggedIn(false);

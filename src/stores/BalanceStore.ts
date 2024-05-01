@@ -1,5 +1,7 @@
 import { action, makeAutoObservable, observable } from 'mobx';
 
+import { CryptoAsset } from '@/types/assets';
+
 import { Balance } from '@services/emigro/types';
 import { getUserBalance } from '@services/emigro/users';
 
@@ -27,6 +29,12 @@ export class BalanceStore {
     const found = this.find(assetCode);
     if (found) return Number(found.balance); //TODO: change the balance to number
     return 0;
+  }
+
+  currentAssets(): CryptoAsset[] {
+    return this.userBalance.map((balance) => {
+      return CryptoAsset[balance.assetCode as keyof typeof CryptoAsset];
+    });
   }
 
   async fetchUserBalance(): Promise<Balance[]> {

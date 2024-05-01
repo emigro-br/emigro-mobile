@@ -29,8 +29,8 @@ describe('RootStack', () => {
     });
   });
 
-  it('should render PinOnboardin when signed and has no pin', async () => {
-    jest.spyOn(sessionStore, 'loadPin').mockResolvedValue(null);
+  it('should goes Onboarding when it is not finished yet', async () => {
+    sessionStore.preferences = { fiatsWithBank: [] };
 
     const { getByText } = render(
       <NavigationContainer>
@@ -39,7 +39,7 @@ describe('RootStack', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Set up your mobile PIN')).toBeOnTheScreen();
+      expect(getByText('Choose your main currency')).toBeOnTheScreen();
     });
   });
 

@@ -4,17 +4,17 @@ import { CommonActions, NavigatorScreenParams, useNavigation } from '@react-navi
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { UnlockScreen } from '@screens/Unlock';
-import { PinOnboarding } from '@screens/onboarding/PinOnboarding';
 
 import { sessionStore } from '@stores/SessionStore';
 
 import { AnonStack } from './AnonStack';
 import { MainApp, TabNavParamList } from './MainApp';
+import { OnboardingStack } from './OnboardingStack';
 
 export type RootStackParamList = {
   Root: NavigatorScreenParams<TabNavParamList> | undefined;
   AnonRoot: undefined;
-  PinOnboarding: undefined;
+  Onboarding: undefined;
   Unlock: undefined;
 };
 
@@ -27,23 +27,33 @@ type Props = {
 function RootStack({ isSignedIn }: Props) {
   const navigation = useNavigation();
 
+  const navReplace = (name: string, params?: any) => {
+    // same as navigation.replace(), to prevent back button
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name, params }],
+      }),
+    );
+  };
+
   useEffect(() => {
     const checkUnlockAsync = async () => {
+      // TODO: load the PIN in the store to prevent check async
       const pin = await sessionStore.loadPin();
-      // got to unlock screen if user has a pin, else go to pin onboarding
-      const nextScreen = pin ? 'Unlock' : 'PinOnboarding';
-
-      // same as navigation.replace(), to prevent back button
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{ name: nextScreen }],
-        }),
-      );
+      if (pin) {
+        navReplace('Unlock');
+      }
     };
 
     if (isSignedIn) {
       checkUnlockAsync();
+
+      // TODO: also check the PIN
+      const onboardingComplete = (sessionStore.preferences?.fiatsWithBank || []).length > 0;
+      if (!onboardingComplete) {
+        navReplace('Onboarding');
+      }
     }
   }, [isSignedIn]);
 
@@ -52,7 +62,7 @@ function RootStack({ isSignedIn }: Props) {
       {isSignedIn ? (
         <>
           <Stack.Screen name="Root" component={MainApp} />
-          <Stack.Screen name="PinOnboarding" component={PinOnboarding} />
+          <Stack.Screen name="Onboarding" component={OnboardingStack} />
           <Stack.Screen name="Unlock" component={UnlockScreen} />
         </>
       ) : (

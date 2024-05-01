@@ -6,6 +6,8 @@ import mockConsole from 'jest-mock-console';
 
 import { render } from 'test-utils';
 
+import { FiatCurrency } from '@/types/assets';
+
 import { depositUrl } from '@services/emigro/anchors';
 
 import { sessionStore } from '@stores/SessionStore';
@@ -38,9 +40,10 @@ jest.mock('@services/emigro/anchors', () => ({
   CallbackType: {},
 }));
 
-const mockNavigattion: any = {
+const mockNavigation: any = {
   navigate: jest.fn(),
   push: jest.fn(),
+  replace: jest.fn(),
   goBack: jest.fn(),
   popToTop: jest.fn(),
 };
@@ -48,6 +51,9 @@ const mockNavigattion: any = {
 describe('Deposit screen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    sessionStore.preferences = {
+      fiatsWithBank: [FiatCurrency.ARS],
+    };
   });
 
   afterAll(() => {
@@ -58,24 +64,42 @@ describe('Deposit screen', () => {
     // session not ready
     jest.spyOn(sessionStore, 'accessToken', 'get').mockReturnValueOnce(undefined);
 
-    const { getByTestId } = render(<Deposit navigation={mockNavigattion} />);
+    const { getByTestId } = render(<Deposit navigation={mockNavigation} />);
     const loadingSpinner = getByTestId('loading-spinner');
 
     expect(loadingSpinner).toBeOnTheScreen();
   });
 
-  test('Should display available assets', () => {
-    const { getByText, queryByText } = render(<Deposit navigation={mockNavigattion} />);
+  test('Should show profile message when fiats are not avaiable', () => {
+    sessionStore.preferences = {
+      fiatsWithBank: [],
+    };
 
-    expect(getByText('ARS')).toBeOnTheScreen();
+    const { getByText, getByTestId } = render(<Deposit navigation={mockNavigation} />);
+    const message = getByTestId('no-currencies-msg');
+    const button = getByText('Go to Profile');
+    expect(message).toBeOnTheScreen();
+    expect(button).toBeOnTheScreen();
+
+    fireEvent.press(button);
+
+    expect(mockNavigation.replace).toHaveBeenCalledWith('Root', { screen: 'ProfileTab' });
+  });
+
+  test('Should display available assets', () => {
+    sessionStore.preferences = {
+      fiatsWithBank: [FiatCurrency.BRL, FiatCurrency.USD],
+    };
+
+    const { getByText, queryByText } = render(<Deposit navigation={mockNavigation} />);
+
     expect(getByText('BRL')).toBeOnTheScreen();
-    expect(getByText('EURC')).toBeOnTheScreen();
-    expect(getByText('USDC')).toBeOnTheScreen();
+    expect(getByText('USD')).toBeOnTheScreen();
     expect(queryByText('XML')).not.toBeOnTheScreen();
   });
 
   test('Should show loading modal when asset is chosen', async () => {
-    const { getByText, getByTestId } = render(<Deposit navigation={mockNavigattion} />);
+    const { getByText, getByTestId } = render(<Deposit navigation={mockNavigation} />);
     const asset = getByText('ARS');
     fireEvent.press(asset);
 
@@ -86,7 +110,7 @@ describe('Deposit screen', () => {
   });
 
   test.skip('Should open URL and navigate back when modal is pressed', async () => {
-    const { getByText, getByTestId } = render(<Deposit navigation={mockNavigattion} />);
+    const { getByText, getByTestId } = render(<Deposit navigation={mockNavigation} />);
     const asset = getByText('ARS');
     fireEvent.press(asset);
 
@@ -107,7 +131,7 @@ describe('Deposit screen', () => {
     expect(Linking.openURL).toHaveBeenCalledWith('https://anchor.url');
 
     // Assert that navigation.goBack is called
-    expect(mockNavigattion.popToTop).toHaveBeenCalled();
+    expect(mockNavigation.popToTop).toHaveBeenCalled();
   });
 
   test.skip('Should display default error message when an error occurs', async () => {
@@ -116,7 +140,7 @@ describe('Deposit screen', () => {
     const error = new Error('An error occurred');
     (depositUrl as jest.Mock).mockRejectedValueOnce(error);
 
-    const { getByText, getByTestId } = render(<Deposit navigation={mockNavigattion} />);
+    const { getByText, getByTestId } = render(<Deposit navigation={mockNavigation} />);
     const asset = getByText('ARS');
     fireEvent.press(asset);
 

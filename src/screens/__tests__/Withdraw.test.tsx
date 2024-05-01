@@ -1,9 +1,10 @@
 import React from 'react';
 
-// import { Linking } from 'react-native';
 import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
+
+import { FiatCurrency } from '@/types/assets';
 
 import * as anchor from '@services/emigro/anchors';
 
@@ -39,6 +40,10 @@ jest.mock('@stores/SessionStore', () => ({
   },
 }));
 
+const mockNavigation: any = {
+  replace: jest.fn(),
+};
+
 describe('Withdraw', () => {
   beforeEach(() => {
     jest.useFakeTimers(); // Please, keep this to avoid act() warning
@@ -53,32 +58,52 @@ describe('Withdraw', () => {
     // session not ready
     jest.spyOn(sessionStore, 'accessToken', 'get').mockReturnValueOnce(undefined);
 
-    const { getByTestId } = render(<Withdraw />);
+    const { getByTestId } = render(<Withdraw navigation={mockNavigation} />);
     const loadingSpinner = getByTestId('loading-spinner');
 
     expect(loadingSpinner).toBeOnTheScreen();
   });
 
+  test('Should show profile message when fiats are not avaiable', () => {
+    sessionStore.preferences = {
+      fiatsWithBank: [],
+    };
+
+    const { getByText, getByTestId } = render(<Withdraw navigation={mockNavigation} />);
+    const message = getByTestId('no-currencies-msg');
+    const button = getByText('Go to Profile');
+    expect(message).toBeOnTheScreen();
+    expect(button).toBeOnTheScreen();
+
+    fireEvent.press(button);
+
+    expect(mockNavigation.replace).toHaveBeenCalledWith('Root', { screen: 'ProfileTab' });
+  });
+
   it('Should render correctly', async () => {
-    const { getByText, queryByText } = render(<Withdraw />);
+    sessionStore.preferences = {
+      fiatsWithBank: [FiatCurrency.BRL, FiatCurrency.USD],
+    };
+    const { getByText, queryByText } = render(<Withdraw navigation={mockNavigation} />);
 
     expect(getByText('Withdraw money')).toBeOnTheScreen();
     expect(getByText('Choose the currency you want to withdraw')).toBeOnTheScreen();
 
-    expect(getByText('ARS')).toBeOnTheScreen();
     expect(getByText('BRL')).toBeOnTheScreen();
-    expect(getByText('EURC')).toBeOnTheScreen();
-    expect(getByText('USDC')).toBeOnTheScreen();
+    expect(getByText('USD')).toBeOnTheScreen();
     expect(queryByText('XML')).not.toBeOnTheScreen();
   });
 
-  it('Should call handleOnPress when ARS button is pressed', async () => {
+  it('Should open the modal when asset is pressed', async () => {
+    sessionStore.preferences = {
+      fiatsWithBank: [FiatCurrency.ARS],
+    };
     (anchor.withdrawUrl as jest.Mock).mockResolvedValue({
       url: 'http://anchor.ars',
       type: 'withdraw',
       id: 'someId',
     });
-    const { getByText, getByTestId } = render(<Withdraw />);
+    const { getByText, getByTestId } = render(<Withdraw navigation={mockNavigation} />);
     const button = getByText('ARS');
 
     fireEvent.press(button);
@@ -92,52 +117,6 @@ describe('Withdraw', () => {
       const openUrlModal = getByTestId('open-url-modal');
       expect(openUrlModal).toBeOnTheScreen();
       // expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.ars');
-    });
-  });
-
-  it('Should call handleOnPress when BRL button is pressed', async () => {
-    (anchor.withdrawUrl as jest.Mock).mockResolvedValue({
-      url: 'http://anchor.brl',
-      type: 'withdraw',
-      id: 'someId',
-    });
-    const { getByText, getByTestId } = render(<Withdraw />);
-    const button = getByText('BRL');
-
-    fireEvent.press(button);
-
-    await waitFor(() => {
-      const loadingModal = getByTestId('loading-url-modal');
-      expect(loadingModal).toBeOnTheScreen();
-    });
-
-    await waitFor(() => {
-      const openUrlModal = getByTestId('open-url-modal');
-      expect(openUrlModal).toBeOnTheScreen();
-      // expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.brl');
-    });
-  });
-
-  it('Should call handleOnPress when EURC button is pressed', async () => {
-    (anchor.withdrawUrl as jest.Mock).mockResolvedValue({
-      url: 'http://anchor.eurc',
-      type: 'withdraw',
-      id: 'someId',
-    });
-    const { getByText, getByTestId } = render(<Withdraw />);
-    const button = getByText('EURC');
-
-    fireEvent.press(button);
-
-    await waitFor(() => {
-      const loadingModal = getByTestId('loading-url-modal');
-      expect(loadingModal).toBeOnTheScreen();
-    });
-
-    await waitFor(() => {
-      const openUrlModal = getByTestId('open-url-modal');
-      expect(openUrlModal).toBeOnTheScreen();
-      // expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.eurc');
     });
   });
 });

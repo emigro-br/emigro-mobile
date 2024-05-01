@@ -26,6 +26,7 @@ export const PinOnboarding = ({ navigation }: Props) => {
         <Button
           size="lg"
           onPress={() =>
+            // FIXME: the navbar is shown when navigating to the root
             navigation.navigate('Root', {
               screen: 'ProfileTab',
               params: {
