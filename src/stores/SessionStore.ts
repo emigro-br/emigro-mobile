@@ -122,6 +122,7 @@ export class SessionStore {
   }
 
   async savePreferences(preferences: UserPreferences) {
+    // TODO: merge prefences??
     await SecureStore.setItemAsync(this.preferencesKey, JSON.stringify(preferences));
     this.setPreferences(preferences);
   }
