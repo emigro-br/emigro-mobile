@@ -4,25 +4,38 @@ import * as SecureStore from 'expo-secure-store';
 import { UserPreferences } from '@/types/UserPreferences';
 import { FiatCurrency } from '@/types/assets';
 
-import { refresh as refreshSession } from '@services/emigro/auth';
-import { AuthSession, UserProfile } from '@services/emigro/types';
-import { getUserPublicKey } from '@services/emigro/users';
+import * as authService from '@services/emigro/auth';
+import { AuthSession, Role, User, UserCredential, UserProfile } from '@services/emigro/types';
+import * as usersService from '@services/emigro/users';
 
 import { SessionStore } from '../SessionStore';
 
 jest.mock('expo-secure-store');
 
 jest.mock('@services/emigro/auth', () => ({
+  signIn: jest.fn(),
   refresh: jest.fn(),
 }));
 
 jest.mock('@services/emigro/users', () => ({
-  getUserPublicKey: jest.fn(),
+  getUser: jest.fn(),
   getUserProfile: jest.fn(),
+  saveUserPreferences: jest.fn(),
 }));
 
 describe('SessionStore', () => {
   let sessionStore: SessionStore;
+  const userMock: User = {
+    id: 1,
+    username: 'test-username',
+    publicKey: 'test-public_key',
+    secretKey: 'test-secret_key',
+    role: Role.CUSTOMER,
+    status: 'active',
+    createdAt: '2021-01-01',
+    updatedAt: '2021-01-01',
+    preferences: {},
+  };
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -51,8 +64,6 @@ describe('SessionStore', () => {
       refreshToken: 'refresh_token',
       idToken: 'id_token',
       tokenExpirationDate: new Date(),
-      email: 'test@example.com',
-      publicKey: 'public_key',
     };
 
     sessionStore.save(session);
@@ -60,6 +71,13 @@ describe('SessionStore', () => {
 
     expect(loadedSession).toEqual(session);
     expect(sessionStore.session).toEqual(session);
+  });
+
+  it('should save and load user', async () => {
+    sessionStore.saveUser(userMock);
+    const loadedUser = await sessionStore.loadUser();
+    expect(loadedUser).toEqual(userMock);
+    expect(sessionStore.user).toEqual(userMock);
   });
 
   it('should save and load profile', async () => {
@@ -86,13 +104,11 @@ describe('SessionStore', () => {
   });
 
   it('should clear session and profile', async () => {
-    const session = {
+    const session: AuthSession = {
       accessToken: 'access_token',
       refreshToken: 'refresh_token',
       idToken: 'id_token',
       tokenExpirationDate: new Date(),
-      email: 'test@example.com',
-      publicKey: 'public_key',
     };
 
     const profile = {
@@ -128,8 +144,6 @@ describe('SessionStore', () => {
       refreshToken: 'refresh_token',
       idToken: 'id_token',
       tokenExpirationDate: new Date(),
-      email: 'test@example.com',
-      publicKey: 'public_key',
     };
 
     sessionStore.save(session);
@@ -137,17 +151,24 @@ describe('SessionStore', () => {
   });
 
   it('should get public key', () => {
-    const session = {
+    sessionStore.setUser(userMock);
+    expect(sessionStore.publicKey).toBe(userMock.publicKey);
+  });
+
+  it('should fetch user when try to get public key', () => {
+    const fetchUserSpy = jest.spyOn(sessionStore, 'fetchUser');
+    const mockSession: AuthSession = {
       accessToken: 'access_token',
       refreshToken: 'refresh_token',
       idToken: 'id_token',
       tokenExpirationDate: new Date(),
-      email: 'test@example.com',
-      publicKey: 'public_key',
     };
+    // set session without user
+    sessionStore.setSession(mockSession);
+    sessionStore.setUser(null);
 
-    sessionStore.save(session);
-    expect(sessionStore.publicKey).toBe(session.publicKey);
+    expect(sessionStore.publicKey).toBeUndefined();
+    expect(fetchUserSpy).toHaveBeenCalled();
   });
 
   it('should refresh session', async () => {
@@ -156,7 +177,6 @@ describe('SessionStore', () => {
       accessToken: 'access_token',
       refreshToken: 'refresh_token',
       idToken: 'id_token',
-      email: 'email',
       tokenExpirationDate: new Date(),
     };
     sessionStore.save(mockSession);
@@ -166,10 +186,9 @@ describe('SessionStore', () => {
       accessToken: 'new_access_token',
       refreshToken: 'new_refresh_token',
       idToken: 'new_id_token',
-      email: 'new_email',
       tokenExpirationDate: new Date(),
     };
-    (refreshSession as jest.Mock).mockResolvedValue(mockNewSession);
+    jest.spyOn(authService, 'refresh').mockResolvedValueOnce(mockNewSession);
 
     // refresh session
     await sessionStore.refresh();
@@ -184,8 +203,6 @@ describe('SessionStore', () => {
       refreshToken: 'refresh_token',
       idToken: 'id_token',
       tokenExpirationDate: new Date('2021-01-01'), // Expired date in the past
-      email: 'test@example.com',
-      publicKey: 'public_key',
     };
 
     await sessionStore.save(expiredSession);
@@ -198,61 +215,56 @@ describe('SessionStore', () => {
       refreshToken: 'refresh_token',
       idToken: 'id_token',
       tokenExpirationDate: new Date('2050-01-01'), // Valid date in the future
-      email: 'test@example.com',
-      publicKey: 'public_key',
     };
 
     await sessionStore.save(validSession);
     expect(sessionStore.isTokenExpired).toBe(false);
   });
 
-  it('should fetch user public key and update session', async () => {
-    const mockPublicKey = 'mock_public_key';
-    const mockSession: AuthSession = {
-      accessToken: 'access_token',
-      refreshToken: 'refresh_token',
-      idToken: 'id_token',
-      tokenExpirationDate: new Date(),
-      email: 'test@example.com',
-      publicKey: null,
-    };
+  it('should fetch user and update ', async () => {
+    const getUserSpy = jest.spyOn(usersService, 'getUser').mockResolvedValueOnce(userMock);
+    const saveUserSpy = jest.spyOn(sessionStore, 'saveUser');
 
-    (getUserPublicKey as jest.Mock).mockResolvedValue(mockPublicKey);
-
-    await sessionStore.save(mockSession);
-    await sessionStore.fetchPublicKey();
-
-    const updatedSession = await sessionStore.load();
-
-    expect(updatedSession?.publicKey).toBe(mockPublicKey);
+    await sessionStore.fetchUser();
+    expect(sessionStore.user).toEqual(userMock);
+    expect(sessionStore.preferences).toEqual(userMock.preferences);
+    expect(getUserSpy).toHaveBeenCalled();
+    expect(saveUserSpy).toHaveBeenCalledWith(userMock);
   });
 
   it('should sign in correctly', async () => {
-    jest.spyOn(sessionStore, 'fetchPublicKey').mockResolvedValueOnce('public_key' as never);
-    jest.spyOn(sessionStore, 'fetchProfile').mockResolvedValueOnce({} as never);
+    const fetchProfileSpy = jest.spyOn(sessionStore, 'fetchProfile');
+    const saveSpy = jest.spyOn(sessionStore, 'save');
 
     const session: AuthSession = {
       accessToken: 'access_token',
       refreshToken: 'refresh_token',
       idToken: 'id_token',
       tokenExpirationDate: new Date(),
-      email: 'test@example.com',
-      publicKey: 'public_key',
     };
 
-    await sessionStore.signIn(session);
-    const loadedSession = await sessionStore.load();
+    const mockUserCredential: UserCredential = {
+      session,
+      user: userMock,
+    };
+    jest.spyOn(authService, 'signIn').mockResolvedValueOnce(mockUserCredential);
 
-    expect(loadedSession).toEqual(session);
+    const email = 'test@example.com';
+    const password = 'password';
+    await sessionStore.signIn(email, password);
+
     expect(sessionStore.session).toEqual(session);
+    expect(sessionStore.user).toEqual(userMock);
+    expect(sessionStore.preferences).toEqual(userMock.preferences);
 
     // should set just logged in flag to true
     const justLoggedIn = sessionStore.justLoggedIn;
     expect(justLoggedIn).toBe(true);
 
-    // should fetch public key and profile
-    expect(sessionStore.fetchPublicKey).toHaveBeenCalledTimes(1);
-    expect(sessionStore.fetchProfile).toHaveBeenCalledTimes(1);
+    // should fetch public  and profile
+    expect(authService.signIn).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalledWith(session);
+    expect(fetchProfileSpy).toHaveBeenCalled();
   });
 
   it('should sign out correctly', async () => {

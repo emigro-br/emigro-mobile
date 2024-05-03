@@ -1,10 +1,10 @@
 import { CryptoAsset } from '@/types/assets';
 
 import { api } from './api';
-import { AuthSession, Balance, UserProfile } from './types';
+import { AuthSession, Balance, User, UserProfile } from './types';
 
 export const getUserBalance = async (): Promise<Balance[]> => {
-  const res = await api().get('/user');
+  const res = await api().get('/user/wallet');
   const { balances } = res.data;
   if (!balances) {
     throw new Error('No balances found');
@@ -18,9 +18,9 @@ export const getUserBalance = async (): Promise<Balance[]> => {
   return balances;
 };
 
-export const getUserPublicKey = async (): Promise<string> => {
+export const getUser = async (): Promise<User> => {
   const res = await api().get('/user');
-  return res.data.publicKey;
+  return res.data;
 };
 
 export const getUserProfile = async (session: AuthSession): Promise<UserProfile> => {

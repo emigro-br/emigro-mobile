@@ -25,10 +25,15 @@ describe('auth service', () => {
     const mockEmail = 'test@example.com';
     const mockPassword = 'password';
     const mockResponse = {
-      accessToken: 'access_token',
-      refreshToken: 'refresh_token',
-      idToken: 'id_token',
-      tokenExpirationDate: 'expiration_date',
+      session: {
+        accessToken: 'access_token',
+        refreshToken: 'refresh_token',
+        idToken: 'id_token',
+        tokenExpirationDate: 'expiration_date',
+      },
+      user: {
+        publicKey: 'public_key',
+      },
     };
 
     it('should make a POST request to sign in and return the session data if successful', async () => {
@@ -42,13 +47,7 @@ describe('auth service', () => {
         role: Role.CUSTOMER,
       });
 
-      expect(result).toEqual({
-        accessToken: mockResponse.accessToken,
-        refreshToken: mockResponse.refreshToken,
-        idToken: mockResponse.idToken,
-        tokenExpirationDate: mockResponse.tokenExpirationDate,
-        email: mockEmail,
-      });
+      expect(result).toEqual(mockResponse);
     });
   });
 
@@ -93,12 +92,11 @@ describe('auth service', () => {
   });
 
   describe('refresh', () => {
-    const mockAuthSession: AuthSession = {
+    const mockRequest: AuthSession = {
       accessToken: 'access_token',
       refreshToken: 'refresh_token',
       idToken: 'id_token',
       tokenExpirationDate: new Date(),
-      email: 'test@example.com',
     };
     const mockResponse = {
       accessToken: 'new_access_token',
@@ -110,17 +108,11 @@ describe('auth service', () => {
     it('should make a POST request to refresh the session and return the updated session data if successful', async () => {
       const mockAxiosPost = jest.spyOn(instance, 'post');
       mock.onPost('/auth/refresh').reply(200, mockResponse);
-      const result = await refresh(mockAuthSession);
+      const result = await refresh(mockRequest);
 
-      expect(mockAxiosPost).toHaveBeenCalledWith('/auth/refresh', mockAuthSession);
+      expect(mockAxiosPost).toHaveBeenCalledWith('/auth/refresh', mockRequest);
 
-      expect(result).toEqual({
-        accessToken: mockResponse.accessToken,
-        refreshToken: mockResponse.refreshToken,
-        idToken: mockResponse.idToken,
-        tokenExpirationDate: mockResponse.tokenExpirationDate,
-        email: mockAuthSession.email,
-      });
+      expect(result).toEqual(mockResponse);
     });
   });
 

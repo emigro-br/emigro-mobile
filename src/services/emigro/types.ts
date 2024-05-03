@@ -4,13 +4,16 @@ export const enum Role {
   CUSTOMER = 'CUSTOMER',
 }
 
+export type UserCredential = {
+  session: AuthSession;
+  user: User;
+};
+
 export type AuthSession = {
   accessToken: string;
   refreshToken: string;
   idToken: string;
   tokenExpirationDate: Date;
-  email: string; // required by Cognito signin/refresh
-  publicKey?: string | null;
 };
 
 export type ConfirmUserRequest = {
@@ -28,8 +31,9 @@ export type RegisterUserRequest = {
   [key: string]: string;
 };
 
-// TODO: maybe this is the User
-export type RegisterUserResponse = {
+//-- Users
+
+export type User = {
   id: number;
   username: string;
   publicKey: string;
@@ -38,6 +42,23 @@ export type RegisterUserResponse = {
   status: string;
   createdAt: string;
   updatedAt: string;
+  preferences: Record<string, any>;
+};
+
+export type UserProfile = {
+  sub: string;
+  address: string;
+  email_verified: string;
+  given_name: string;
+  family_name: string;
+  custom_role: string;
+  email: string;
+};
+
+export type Balance = {
+  balance: string; // TODO: convert to number
+  assetType: string;
+  assetCode: string;
 };
 
 //-- Anchors
@@ -101,24 +122,6 @@ export type PaymentResponse = {
   sourceAssetType: string;
   sourceAssetCode: string;
   sourceAssetIssuer: string;
-};
-
-//-- Users
-
-export type UserProfile = {
-  sub: string;
-  address: string;
-  email_verified: string;
-  given_name: string;
-  family_name: string;
-  custom_role: string;
-  email: string;
-};
-
-export type Balance = {
-  balance: string; // TODO: convert to number
-  assetType: string;
-  assetCode: string;
 };
 
 //-- Stellar Network

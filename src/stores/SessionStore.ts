@@ -5,14 +5,15 @@ import { action, flow, makeAutoObservable, observable } from 'mobx';
 import { UserPreferences } from '@/types/UserPreferences';
 import { InvalidSessionError } from '@/types/errors';
 
-import { refresh as refreshSession } from '@services/emigro/auth';
-import { AuthSession, UserProfile } from '@services/emigro/types';
-import { getUserProfile, getUserPublicKey } from '@services/emigro/users';
+import { refresh as refreshSession, signIn } from '@services/emigro/auth';
+import { AuthSession, User, UserProfile } from '@services/emigro/types';
+import { getUser, getUserProfile } from '@services/emigro/users';
 
 export class SessionStore {
   // Observable states
   justLoggedIn = false;
   session: AuthSession | null = null;
+  user: User | null = null;
   profile: UserProfile | null = null;
   preferences: UserPreferences | null = null;
 
@@ -24,6 +25,8 @@ export class SessionStore {
     'auth.email',
     'auth.publicKey',
   ];
+
+  private userKey = 'user.account';
   private profileKey = 'user.profile';
   private preferencesKey = 'user.preferences';
 
@@ -32,12 +35,17 @@ export class SessionStore {
       // session
       session: observable,
       setSession: action,
-      setPublicKey: action,
-      fetchPublicKey: flow,
+
+      // user
+      user: observable,
+      setUser: action,
+      // fetchUser: flow,
+
       // profile
       profile: observable,
       setProfile: action,
       fetchProfile: flow,
+
       // preferences
       preferences: observable,
       setPreferences: action,
@@ -53,20 +61,18 @@ export class SessionStore {
   }
 
   get publicKey() {
-    if (this.session && !this.session.publicKey) {
-      this.fetchPublicKey();
+    if (this.session && !this.user) {
+      this.fetchUser();
     }
-    return this.session?.publicKey;
+    return this.user?.publicKey;
   }
 
   setSession(session: AuthSession | null) {
     this.session = session;
   }
 
-  setPublicKey(publicKey: string) {
-    if (this.session) {
-      this.session.publicKey = publicKey;
-    }
+  setUser(user: User | null) {
+    this.user = user;
   }
 
   setProfile(profile: UserProfile | null) {
@@ -81,19 +87,21 @@ export class SessionStore {
     this.justLoggedIn = justLoggedIn;
   }
 
-  async *fetchPublicKey() {
-    console.debug('Fetching user public key...');
-    const publicKey = await getUserPublicKey();
-    if (this.session && publicKey) {
-      this.setPublicKey(publicKey); // action will be called
-      await this.save(this.session);
+  async fetchUser() {
+    console.debug('Fetching user...');
+    const user = await getUser();
+    if (user) {
+      // update user and preferences in memory to keep the app in sync
+      this.setUser(user);
+      this.setPreferences(user.preferences);
+      await this.saveUser(user);
     }
-    return publicKey;
+    return user;
   }
 
   async *fetchProfile() {
     if (this.session) {
-      console.debug('Fetching user profile...');
+      console.debug('Fetching profile...');
       const profile = await getUserProfile(this.session);
       if (profile) {
         this.setProfile(profile); // action will be called
@@ -116,6 +124,14 @@ export class SessionStore {
     );
   }
 
+  async saveUser(user: User) {
+    await Promise.all([
+      SecureStore.setItemAsync(this.userKey, JSON.stringify(user)),
+      // SecureStore has value limit, so we prefer to save preferences separately
+      SecureStore.setItemAsync(this.preferencesKey, JSON.stringify(user.preferences ?? {})),
+    ]);
+  }
+
   async saveProfile(profile: UserProfile) {
     // this.setProfile(profile);
     await SecureStore.setItemAsync(this.profileKey, JSON.stringify(profile));
@@ -128,6 +144,17 @@ export class SessionStore {
   }
 
   load = async (): Promise<AuthSession | null> => {
+    const session = await this.loadSession();
+    this.setSession(session as AuthSession);
+    if (session) {
+      this.loadUser(); // load user in background
+      this.loadProfile(); // load profile in background
+      this.loadPreferences(); // load preferences in background
+    }
+    return session;
+  };
+
+  async loadSession(): Promise<AuthSession | null> {
     const session: Partial<AuthSession> = {};
     await Promise.all(
       this.authKeys.map(async (key) => {
@@ -148,12 +175,16 @@ export class SessionStore {
     if (!session.refreshToken || !session.idToken || !session.tokenExpirationDate) {
       throw new InvalidSessionError();
     }
+    return session as AuthSession;
+  }
 
-    this.setSession(session as AuthSession);
-    this.loadProfile(); // load profile in background
-    this.loadPreferences(); // load preferences in background
-    return this.session;
-  };
+  async loadUser(): Promise<User | null> {
+    const user = await SecureStore.getItemAsync(this.userKey);
+    if (user) {
+      this.setUser(JSON.parse(user));
+    }
+    return this.user;
+  }
 
   async loadProfile(): Promise<UserProfile | null> {
     const profile = await SecureStore.getItemAsync(this.profileKey);
@@ -175,6 +206,9 @@ export class SessionStore {
     await Promise.all(this.authKeys.map((key) => SecureStore.deleteItemAsync(key)));
     this.setSession(null);
 
+    await SecureStore.deleteItemAsync(this.userKey);
+    this.setUser(null);
+
     await SecureStore.deleteItemAsync(this.profileKey);
     this.setProfile(null);
 
@@ -185,13 +219,17 @@ export class SessionStore {
     this.setJustLoggedIn(false);
   }
 
-  signIn = async (session: AuthSession) => {
+  signIn = async (email: string, password: string) => {
+    const { session, user } = await signIn(email, password);
+    this.setUser(user);
+    this.setPreferences(user.preferences);
+    this.saveUser(user);
+
     this.setSession(session);
     this.save(session);
     this.setJustLoggedIn(true);
 
     // Fetch the user data in background
-    this.fetchPublicKey();
     this.fetchProfile();
   };
 
@@ -209,7 +247,6 @@ export class SessionStore {
 
     const newSession = await refreshSession(this.session);
     if (newSession) {
-      newSession.publicKey = this.session.publicKey; // FIXME: workaround to avoid losing the public key on save
       await this.save(newSession);
       return this.session;
     }
