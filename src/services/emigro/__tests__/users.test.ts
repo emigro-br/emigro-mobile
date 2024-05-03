@@ -94,13 +94,15 @@ describe('emigro service', () => {
 
   describe('saveUserPreferences', () => {
     const mockPreferences = { theme: 'dark', language: 'en' };
+    const mockResponse = mockPreferences;
 
     it('should make a POST request to save user preferences', async () => {
       const mockAxiosPost = jest.spyOn(instance, 'post');
-      mock.onPost('/user/preferences').reply(200);
-      await saveUserPreferences(mockPreferences);
+      mock.onPost('/user/preferences').reply(200, mockResponse);
+      const result = await saveUserPreferences(mockPreferences);
 
       expect(mockAxiosPost).toHaveBeenCalledWith('/user/preferences', mockPreferences);
+      expect(result).toEqual(mockResponse);
     });
   });
 });
