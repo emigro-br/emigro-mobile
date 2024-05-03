@@ -67,7 +67,7 @@ describe('SessionStore', () => {
     };
 
     sessionStore.save(session);
-    const loadedSession = await sessionStore.load();
+    const loadedSession = await sessionStore.loadSession();
 
     expect(loadedSession).toEqual(session);
     expect(sessionStore.session).toEqual(session);

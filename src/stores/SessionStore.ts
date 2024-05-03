@@ -39,7 +39,6 @@ export class SessionStore {
       // user
       user: observable,
       setUser: action,
-      // fetchUser: flow,
 
       // profile
       profile: observable,
