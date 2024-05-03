@@ -92,15 +92,26 @@ describe('SessionStore', () => {
     expect(sessionStore.profile).toEqual(profile);
   });
 
-  it('should save and load preferences', async () => {
-    const preferences: UserPreferences = {
+  it('should merge and load preferences', async () => {
+    const savePrefeerencesSpy = jest.spyOn(usersService, 'saveUserPreferences');
+
+    sessionStore.setPreferences({
+      theme: 'light',
+    });
+    const newPreferences: UserPreferences = {
       fiatsWithBank: [FiatCurrency.USD],
     };
 
-    sessionStore.updatePreferences(preferences);
+    sessionStore.updatePreferences(newPreferences);
     const loadedPreferences = await sessionStore.loadPreferences();
-    expect(loadedPreferences).toEqual(preferences);
-    expect(sessionStore.preferences).toEqual(preferences);
+
+    const expectedPreferences = {
+      theme: 'light',
+      fiatsWithBank: [FiatCurrency.USD],
+    };
+    expect(loadedPreferences).toEqual(expectedPreferences);
+    expect(sessionStore.preferences).toEqual(expectedPreferences);
+    expect(savePrefeerencesSpy).toHaveBeenCalledWith(expectedPreferences);
   });
 
   it('should clear session and profile', async () => {
@@ -111,18 +122,21 @@ describe('SessionStore', () => {
       tokenExpirationDate: new Date(),
     };
 
+    const user = {
+      id: 1,
+      username: 'test-username',
+      publicKey: 'test-public_key',
+      preferences: {},
+    } as User;
+
     const profile = {
       given_name: 'test',
       email: 'teste@example.com',
     } as UserProfile;
 
-    const preferences: UserPreferences = {
-      fiatsWithBank: [FiatCurrency.USD],
-    };
-
     await sessionStore.save(session);
     await sessionStore.saveProfile(profile);
-    await sessionStore.updatePreferences(preferences);
+    await sessionStore.saveUser(user);
 
     // clear everything
     await sessionStore.clear();
