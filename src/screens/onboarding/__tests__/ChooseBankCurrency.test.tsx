@@ -6,10 +6,13 @@ import { render } from 'test-utils';
 
 import { FiatCurrency } from '@/types/assets';
 
+import { sessionStore } from '@stores/SessionStore';
+
 import { ChooseBankCurrency, ChooseBankCurrencyScreen } from '../ChooseBankCurrency';
 
 describe('ChooseBankCurrencyScreen component', () => {
   test('Should navigate to PinOnboarding screen when Continue button is pressed', () => {
+    const updatePreferencesMock = jest.spyOn(sessionStore, 'updatePreferences').mockImplementation(jest.fn());
     const mockNavigation: any = { navigate: jest.fn() };
     const { getByTestId, getByLabelText } = render(<ChooseBankCurrencyScreen navigation={mockNavigation} />);
 
@@ -20,6 +23,7 @@ describe('ChooseBankCurrencyScreen component', () => {
     const continueButton = getByTestId('continue-button');
     fireEvent.press(continueButton);
 
+    expect(updatePreferencesMock).toHaveBeenCalledWith({ fiatsWithBank: [selectedCurrency] });
     expect(mockNavigation.navigate).toHaveBeenCalledWith('PinOnboarding');
   });
 });

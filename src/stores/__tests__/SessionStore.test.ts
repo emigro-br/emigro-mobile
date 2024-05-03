@@ -97,7 +97,7 @@ describe('SessionStore', () => {
       fiatsWithBank: [FiatCurrency.USD],
     };
 
-    sessionStore.savePreferences(preferences);
+    sessionStore.updatePreferences(preferences);
     const loadedPreferences = await sessionStore.loadPreferences();
     expect(loadedPreferences).toEqual(preferences);
     expect(sessionStore.preferences).toEqual(preferences);
@@ -122,7 +122,7 @@ describe('SessionStore', () => {
 
     await sessionStore.save(session);
     await sessionStore.saveProfile(profile);
-    await sessionStore.savePreferences(preferences);
+    await sessionStore.updatePreferences(preferences);
 
     // clear everything
     await sessionStore.clear();

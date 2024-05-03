@@ -7,7 +7,7 @@ import { InvalidSessionError } from '@/types/errors';
 
 import { refresh as refreshSession, signIn } from '@services/emigro/auth';
 import { AuthSession, User, UserProfile } from '@services/emigro/types';
-import { getUser, getUserProfile } from '@services/emigro/users';
+import { getUser, getUserProfile, saveUserPreferences } from '@services/emigro/users';
 
 export class SessionStore {
   // Observable states
@@ -136,10 +136,13 @@ export class SessionStore {
     await SecureStore.setItemAsync(this.profileKey, JSON.stringify(profile));
   }
 
-  async savePreferences(preferences: UserPreferences) {
-    // TODO: merge prefences??
-    await SecureStore.setItemAsync(this.preferencesKey, JSON.stringify(preferences));
-    this.setPreferences(preferences);
+  async updatePreferences(preferences: UserPreferences) {
+    // merge prefences
+    const merged = { ...this.preferences, ...preferences };
+    saveUserPreferences(merged); // save remotely in background (no need to wait for it)
+
+    await SecureStore.setItemAsync(this.preferencesKey, JSON.stringify(merged));
+    this.setPreferences(merged);
   }
 
   load = async (): Promise<AuthSession | null> => {
