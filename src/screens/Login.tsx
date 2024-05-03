@@ -34,8 +34,6 @@ import { SIGNIN_ERROR_MESSAGE, SIGN_IN_FIELDS_ERROR } from '@constants/errorMess
 
 import { AnonStackParamList } from '@navigation/AnonStack';
 
-import { signIn } from '@services/emigro/auth';
-
 import { sessionStore } from '@stores/SessionStore';
 
 const formFields: FormField[] = [
@@ -94,8 +92,7 @@ const Login = ({ navigation }: Props) => {
         setIsLoggingIn(false);
         return;
       }
-      const authSession = await signIn(email, password);
-      await sessionStore.signIn(authSession);
+      await sessionStore.signIn(email, password);
       setError('');
     } catch (error) {
       if (error instanceof BadRequestException) {

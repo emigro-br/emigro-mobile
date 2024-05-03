@@ -1,34 +1,26 @@
 import { api } from './api';
-import { AuthSession, ConfirmUserRequest, RegisterUserRequest, RegisterUserResponse, Role } from './types';
+import { AuthSession, ConfirmUserRequest, RegisterUserRequest, Role, User, UserCredential } from './types';
 
 type SuccessResponse = {
   success: boolean;
 };
 
-export const signIn = async (email: string, password: string): Promise<AuthSession> => {
+export const signIn = async (email: string, password: string): Promise<UserCredential> => {
   const res = await api().post('/auth/login', {
     email,
     password,
-    role: Role.CUSTOMER,
+    role: Role.CUSTOMER, // FIXME: hardcoded role
   });
 
-  const { accessToken, refreshToken, idToken, tokenExpirationDate } = res.data;
-  const session: AuthSession = {
-    accessToken,
-    refreshToken,
-    idToken,
-    tokenExpirationDate,
-    email,
-  };
-  return session;
+  return res.data;
 };
 
-export const signUp = async (registerUser: RegisterUserRequest): Promise<RegisterUserResponse> => {
+export const signUp = async (registerUser: RegisterUserRequest): Promise<User> => {
   const res = await api().post('/auth/register', registerUser);
   return res.data;
 };
 
-export const confirmAccount = async (confirmUser: ConfirmUserRequest): Promise<RegisterUserResponse | undefined> => {
+export const confirmAccount = async (confirmUser: ConfirmUserRequest): Promise<User | undefined> => {
   const timeout = 30 * 1000; // it is also creating wallets on stellar network
   const res = await api({ timeout }).post('/auth/confirm', confirmUser);
   return res.data;
@@ -36,17 +28,7 @@ export const confirmAccount = async (confirmUser: ConfirmUserRequest): Promise<R
 
 export const refresh = async (authSession: AuthSession): Promise<AuthSession> => {
   const res = await api().post('/auth/refresh', authSession);
-
-  const { accessToken, refreshToken, idToken, tokenExpirationDate } = res.data;
-  const session: AuthSession = {
-    accessToken,
-    refreshToken,
-    idToken,
-    tokenExpirationDate,
-    email: authSession.email,
-  };
-
-  return session;
+  return res.data;
 };
 
 export const deleteAccount = async (): Promise<void> => {

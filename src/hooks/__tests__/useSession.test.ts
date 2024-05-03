@@ -13,6 +13,7 @@ jest.mock('@stores/SessionStore', () => ({
   sessionStore: {
     load: jest.fn(),
     refresh: jest.fn(),
+    fetchUser: jest.fn(),
     fetchProfile: jest.fn(),
     clear: jest.fn(),
     get session() {
@@ -59,12 +60,13 @@ describe('useSession', () => {
       });
     });
 
-    it('should call sessionStore.refresh and sessionStore.fetchProfile', async () => {
+    it('should call refresh, fetchUser and fetchProfile on bootstrapAsync', async () => {
       (sessionStore.refresh as jest.Mock).mockResolvedValueOnce(mockSession);
       const { result } = renderHook(() => useSession());
 
       await waitFor(() => result.current.isLoading === false);
       expect(sessionStore.refresh).toHaveBeenCalledTimes(1);
+      expect(sessionStore.fetchUser).toHaveBeenCalledTimes(1);
       expect(sessionStore.fetchProfile).toHaveBeenCalledTimes(1);
     });
   });

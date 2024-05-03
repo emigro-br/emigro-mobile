@@ -6,7 +6,7 @@ import { CryptoAsset } from '@/types/assets';
 import { api } from '@services/emigro/api';
 
 import { AuthSession } from '../types';
-import { addAssetToWallet, getUserBalance, getUserProfile, getUserPublicKey } from '../users';
+import { addAssetToWallet, getUser, getUserBalance, getUserProfile } from '../users';
 
 jest.mock('../api', () => ({
   api: jest.fn(),
@@ -33,29 +33,29 @@ describe('emigro service', () => {
 
     it('should make a GET request to fetch user balance and return the balance data', async () => {
       const mockAxiosGet = jest.spyOn(instance, 'get');
-      mock.onGet('/user').reply(200, mockResponse);
+      mock.onGet('/user/wallet').reply(200, mockResponse);
       const result = await getUserBalance();
 
-      expect(mockAxiosGet).toHaveBeenCalledWith('/user');
+      expect(mockAxiosGet).toHaveBeenCalledWith('/user/wallet');
       expect(result).toEqual(mockResponse.balances);
     });
 
     it('should throw an error if no balances are found', async () => {
-      mock.onGet('/user').reply(200, {});
+      mock.onGet('/user/wallet').reply(200, {});
       await expect(getUserBalance()).rejects.toThrow('No balances found');
     });
   });
 
-  describe('getUserPublicKey', () => {
+  describe('getUser', () => {
     const mockResponse = { publicKey: 'abc123' };
 
-    it('should make a GET request to fetch user public key and return the public key', async () => {
+    it('should make a GET request to fetch user', async () => {
       const mockAxiosGet = jest.spyOn(instance, 'get');
       mock.onGet('/user').reply(200, mockResponse);
-      const result = await getUserPublicKey();
+      const result = await getUser();
 
       expect(mockAxiosGet).toHaveBeenCalledWith('/user');
-      expect(result).toEqual(mockResponse.publicKey);
+      expect(result).toEqual(mockResponse);
     });
   });
 
