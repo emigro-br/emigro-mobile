@@ -32,3 +32,8 @@ export const addAssetToWallet = async (assetCode: CryptoAsset): Promise<Balance[
   const res = await api().post('/user/wallet/assets', { assetCode });
   return res.data.balances;
 };
+
+export const saveUserPreferences = async (preferences: Record<string, any>): Promise<Record<string, any>> => {
+  const res = await api().post('/user/preferences', preferences);
+  return res.data;
+};

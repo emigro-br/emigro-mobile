@@ -6,7 +6,7 @@ import { CryptoAsset } from '@/types/assets';
 import { api } from '@services/emigro/api';
 
 import { AuthSession } from '../types';
-import { addAssetToWallet, getUser, getUserBalance, getUserProfile } from '../users';
+import { addAssetToWallet, getUser, getUserBalance, getUserProfile, saveUserPreferences } from '../users';
 
 jest.mock('../api', () => ({
   api: jest.fn(),
@@ -89,6 +89,20 @@ describe('emigro service', () => {
 
       expect(mockAxiosPost).toHaveBeenCalledWith('/user/wallet/assets', { assetCode: mockAssetCode });
       expect(result).toEqual(mockResponse.balances);
+    });
+  });
+
+  describe('saveUserPreferences', () => {
+    const mockPreferences = { theme: 'dark', language: 'en' };
+    const mockResponse = mockPreferences;
+
+    it('should make a POST request to save user preferences', async () => {
+      const mockAxiosPost = jest.spyOn(instance, 'post');
+      mock.onPost('/user/preferences').reply(200, mockResponse);
+      const result = await saveUserPreferences(mockPreferences);
+
+      expect(mockAxiosPost).toHaveBeenCalledWith('/user/preferences', mockPreferences);
+      expect(result).toEqual(mockResponse);
     });
   });
 });

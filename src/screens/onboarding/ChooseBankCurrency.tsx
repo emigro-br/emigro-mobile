@@ -32,7 +32,7 @@ type Props = {
 export const ChooseBankCurrencyScreen = ({ navigation }: Props) => {
   const currencies = Object.values(FiatCurrency);
   const handleContinue = (currency: FiatCurrency) => {
-    sessionStore.savePreferences({
+    sessionStore.updatePreferences({
       fiatsWithBank: [currency],
     });
     navigation.navigate('PinOnboarding');

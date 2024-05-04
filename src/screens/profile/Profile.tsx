@@ -171,7 +171,7 @@ const Profile = observer(({ navigation }: Props) => {
         isOpen={assetListOpen}
         onClose={() => setAssetListOpen(false)}
         onItemPress={(currency) => {
-          sessionStore.savePreferences({ fiatsWithBank: [currency as FiatCurrency] });
+          sessionStore.updatePreferences({ fiatsWithBank: [currency as FiatCurrency] });
           setAssetListOpen(false);
         }}
       />
