@@ -1,4 +1,5 @@
 import React from 'react';
+import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 
 import { NavigationContext } from '@react-navigation/native';
 
@@ -18,6 +19,8 @@ jest.mock('@gluestack-ui/themed', () => ({
   ...jest.requireActual('@gluestack-ui/themed'),
   useToast: jest.fn(),
 }));
+
+jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
 jest.mock('@stores/SessionStore', () => ({
   sessionStore: {

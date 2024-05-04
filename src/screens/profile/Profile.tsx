@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -14,7 +15,7 @@ import {
   CopyIcon,
   Divider,
   Heading,
-  SafeAreaView,
+  ScrollView,
   Spinner,
   Text,
   Toast,
@@ -43,6 +44,7 @@ type Props = {
 };
 
 const Profile = observer(({ navigation }: Props) => {
+  const insets = useSafeAreaInsets();
   const toast = useToast();
   const [assetListOpen, setAssetListOpen] = useState(false);
   const publicKey = sessionStore.publicKey;
@@ -78,7 +80,7 @@ const Profile = observer(({ navigation }: Props) => {
   const bankCurrency = sessionStore.preferences?.fiatsWithBank ?? [];
 
   return (
-    <SafeAreaView flex={1} bg="$white">
+    <ScrollView flex={1} bg="$white" style={{ paddingTop: insets.top }}>
       <Box flex={1} justifyContent="space-between">
         <VStack p="$4" space="lg">
           <Center>
@@ -155,7 +157,7 @@ const Profile = observer(({ navigation }: Props) => {
             </Button>
           </VStack>
         </VStack>
-        <Box alignItems="center" py="$4">
+        <Box alignItems="center" mb="$12">
           <Button onPress={handleLogout} variant="link" action="negative">
             <ButtonText>Logout</ButtonText>
           </Button>
@@ -164,7 +166,6 @@ const Profile = observer(({ navigation }: Props) => {
           </Text>
         </Box>
       </Box>
-
       {/* Modals and sheets  */}
       <AssetListActionSheet
         assets={myCurrencies}
@@ -175,7 +176,7 @@ const Profile = observer(({ navigation }: Props) => {
           setAssetListOpen(false);
         }}
       />
-    </SafeAreaView>
+    </ScrollView>
   );
 });
 

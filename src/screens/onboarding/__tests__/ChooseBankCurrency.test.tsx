@@ -1,4 +1,5 @@
 import React from 'react';
+import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 
 import { fireEvent } from '@testing-library/react-native';
 
@@ -9,6 +10,8 @@ import { FiatCurrency } from '@/types/assets';
 import { sessionStore } from '@stores/SessionStore';
 
 import { ChooseBankCurrency, ChooseBankCurrencyScreen } from '../ChooseBankCurrency';
+
+jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
 describe('ChooseBankCurrencyScreen component', () => {
   test('Should navigate to PinOnboarding screen when Continue button is pressed', () => {

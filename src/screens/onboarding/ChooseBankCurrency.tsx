@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from 'react-native-screens/native-stack';
 
 import {
@@ -13,7 +14,6 @@ import {
   CheckboxIndicator,
   CheckboxLabel,
   Heading,
-  SafeAreaView,
   Text,
   VStack,
 } from '@gluestack-ui/themed';
@@ -47,37 +47,36 @@ type PageProps = {
 };
 
 export const ChooseBankCurrency = ({ currencies, onContinue }: PageProps) => {
+  const insets = useSafeAreaInsets();
   const [selected, setSelected] = useState<FiatCurrency | null>(null);
 
   return (
-    <SafeAreaView flex={1} bg="$white">
-      <Box flex={1}>
-        <VStack p="$4" space="lg">
-          <Heading>Choose your main currency</Heading>
-          <Text>You should choose the currency that you hold in a bank account.</Text>
+    <Box flex={1} bg="$white" style={{ paddingTop: insets.top }}>
+      <VStack p="$4" space="lg">
+        <Heading>Choose your main currency</Heading>
+        <Text>You should choose the currency that you hold in a bank account.</Text>
 
-          <CheckboxGroup value={[selected ?? '']} my="$4">
-            <VStack space="sm">
-              {currencies.map((currency) => (
-                <Card key={currency} variant={currency === selected ? 'filled' : 'ghost'}>
-                  <Checkbox value={currency} size="md" onChange={() => setSelected(currency)} aria-label={currency}>
-                    <CheckboxIndicator mr="$4">
-                      <CheckboxIcon as={CheckIcon} />
-                    </CheckboxIndicator>
-                    <CheckboxLabel>
-                      <AssetListTile asset={currency} subasset={currency} />
-                    </CheckboxLabel>
-                  </Checkbox>
-                </Card>
-              ))}
-            </VStack>
-          </CheckboxGroup>
+        <CheckboxGroup value={[selected ?? '']} my="$4">
+          <VStack space="sm">
+            {currencies.map((currency) => (
+              <Card key={currency} variant={currency === selected ? 'filled' : 'ghost'}>
+                <Checkbox value={currency} size="md" onChange={() => setSelected(currency)} aria-label={currency}>
+                  <CheckboxIndicator mr="$4">
+                    <CheckboxIcon as={CheckIcon} />
+                  </CheckboxIndicator>
+                  <CheckboxLabel>
+                    <AssetListTile asset={currency} subasset={currency} />
+                  </CheckboxLabel>
+                </Checkbox>
+              </Card>
+            ))}
+          </VStack>
+        </CheckboxGroup>
 
-          <Button onPress={() => selected && onContinue(selected)} isDisabled={!selected} testID="continue-button">
-            <ButtonText>Continue</ButtonText>
-          </Button>
-        </VStack>
-      </Box>
-    </SafeAreaView>
+        <Button onPress={() => selected && onContinue(selected)} isDisabled={!selected} testID="continue-button">
+          <ButtonText>Continue</ButtonText>
+        </Button>
+      </VStack>
+    </Box>
   );
 };
