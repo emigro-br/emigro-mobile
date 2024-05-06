@@ -9,6 +9,7 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
+*.ignore.js
 # ignores all .env files
 .env*
 coverage/
