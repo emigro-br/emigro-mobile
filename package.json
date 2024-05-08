@@ -1,7 +1,7 @@
 {
   "name": "emigro-mobile",
   "description": "Mobile App for Customers.",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "scripts": {
     "start": "expo start --dev-client --clear",
     "android": "expo run:android",
