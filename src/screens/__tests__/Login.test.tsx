@@ -95,7 +95,7 @@ describe('Login screen', () => {
     });
   });
 
-  test('Should show form error messages', async () => {
+  test('Should show form validation error messages', async () => {
     const { getByText, getByTestId } = render(<Login navigation={mockNavigattion} />);
     fireEvent.press(getByTestId('signin-button'));
 

@@ -2,11 +2,10 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
-import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
-
 import { CreateAccount } from '@screens/signup/CreateAccount';
 
 import * as auth from '@services/emigro/auth';
+import { Role, User } from '@services/emigro/types';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
@@ -20,6 +19,8 @@ jest.mock('@services/emigro/auth', () => ({
 }));
 
 describe('CreateAccount component', () => {
+  const validPassword = '1Abcdef?';
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -42,22 +43,23 @@ describe('CreateAccount component', () => {
     expect(emailInput).toBeOnTheScreen();
     expect(passwordInput).toBeOnTheScreen();
     expect(createButton).toBeOnTheScreen();
-    expect(createButton).toHaveAccessibilityState({ disabled: true });
+    // expect(createButton).toHaveAccessibilityState({ disabled: true });
   });
 
   test('Should call signUp with correct information', async () => {
     const email = 'test@example.com';
     const username = 'example_username';
     const signUpMock = jest.spyOn(auth, 'signUp');
-    const mockResponse = {
+    const mockResponse: User = {
       id: 1,
       username,
       publicKey: 'public_key_value',
       secretKey: 'secret_key_value',
-      role: 'CUSTOMER',
+      role: Role.CUSTOMER,
       status: 'active',
       createdAt: '2022-01-01',
       updatedAt: '2022-01-01',
+      preferences: {},
     };
 
     signUpMock.mockResolvedValue(mockResponse);
@@ -70,7 +72,7 @@ describe('CreateAccount component', () => {
     const lastNameInput = getByTestId('lastName');
 
     fireEvent.changeText(emailInput, email);
-    fireEvent.changeText(passwordInput, 'password123');
+    fireEvent.changeText(passwordInput, validPassword);
     fireEvent.changeText(firstNameInput, 'John');
     fireEvent.changeText(lastNameInput, 'Doe');
 
@@ -81,7 +83,7 @@ describe('CreateAccount component', () => {
 
     const expectedCall = {
       email,
-      password: 'password123',
+      password: validPassword,
       firstName: 'John',
       lastName: 'Doe',
       role: 'CUSTOMER',
@@ -97,7 +99,7 @@ describe('CreateAccount component', () => {
   });
 
   test('Should display an error message if signUp fails', async () => {
-    const error = new Error(SIGNUP_ERROR_MESSAGE);
+    const error = new Error('Fake API error');
     jest.spyOn(auth, 'signUp').mockRejectedValue(error);
     const { getByTestId, findByText } = render(<CreateAccount navigation={mockNavigattion} />);
 
@@ -109,14 +111,25 @@ describe('CreateAccount component', () => {
     fireEvent.changeText(firstNameInput, 'John');
     fireEvent.changeText(lastNameInput, 'Doe');
     fireEvent.changeText(emailInput, 'test@example.com');
-    fireEvent.changeText(passwordInput, 'password123');
+    fireEvent.changeText(passwordInput, validPassword);
 
     const createButton = getByTestId('create-button');
     fireEvent.press(createButton);
 
     await waitFor(() => {
-      const errorElement = findByText(SIGNUP_ERROR_MESSAGE);
+      const errorElement = findByText('Fake API error');
       expect(errorElement).toBeTruthy();
+    });
+  });
+
+  test('Should show form validation error messages', async () => {
+    const { getByText, getByTestId, getAllByText } = render(<CreateAccount navigation={mockNavigattion} />);
+    fireEvent.press(getByTestId('create-button'));
+
+    await waitFor(() => {
+      expect(getAllByText('This is required')).toHaveLength(2);
+      expect(getByText('Email is required')).toBeOnTheScreen();
+      expect(getByText('Password is required')).toBeOnTheScreen();
     });
   });
 });

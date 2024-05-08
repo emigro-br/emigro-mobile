@@ -1,4 +1,3 @@
-export const SIGNUP_ERROR_MESSAGE = 'Error during sign up. Please try again.';
 export const INVALID_QR_CODE = 'Invalid QR code, try another one';
 export const QUOTE_NOT_AVAILABLE_ERROR = 'No quotes available for the provided values.';
 export const TRANSACTION_ERROR_MESSAGE = 'Error while sending the transaction. Please try again later.';
