@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -11,103 +12,70 @@ import {
   FormControlError,
   FormControlErrorIcon,
   FormControlErrorText,
-  FormControlLabel,
-  FormControlLabelText,
   HStack,
   Heading,
-  Input,
-  InputField,
   Link,
   ScrollView,
   Text,
   VStack,
 } from '@gluestack-ui/themed';
 
-import { FormField } from '@/types/FormField';
 import { BadRequestException } from '@/types/errors';
-
-import { SIGNUP_ERROR_MESSAGE } from '@constants/errorMessages';
 
 import { AnonStackParamList } from '@navigation/AnonStack';
 
 import { signUp } from '@services/emigro/auth';
 import { RegisterUserRequest, Role } from '@services/emigro/types';
 
+import { EmailControl } from './inputs/EmailInput';
+import { PasswordControl } from './inputs/PasswordInput';
+import { TextControl } from './inputs/TextInput';
+
 type Props = {
   navigation: NativeStackNavigationProp<AnonStackParamList, 'SignUp'>;
 };
 
-const formFields: FormField[] = [
-  { name: 'firstName', label: 'First Name', placeholder: 'e.g. John', keyboardType: 'default' },
-  { name: 'lastName', label: 'Last Name', placeholder: 'e.g. Doe', keyboardType: 'default' },
-  {
-    name: 'email',
-    label: 'Email',
-    placeholder: 'john.doe@example.com',
-    keyboardType: 'email-address',
-    autoCapitalize: 'none',
-  },
-  {
-    name: 'password',
-    label: 'Password',
-    placeholder: 'At least 6 characters',
-    keyboardType: 'default',
-    secureTextEntry: true,
-    returnKeyType: 'done',
-  },
-];
+// for react-hook-form
+type FormData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: Role;
+};
 
 export const CreateAccount = ({ navigation }: Props) => {
-  const [formData, setFormData] = useState<RegisterUserRequest>({
-    email: '',
-    password: '',
-    firstName: '',
-    lastName: '',
-    role: Role.CUSTOMER,
-  });
   const [isLoading, setIsLoading] = useState(false);
-
-  const [error, setError] = useState('');
-
-  const handleChange = (name: string, value: string) => {
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
-  const clearForm = () => {
-    setFormData({
-      email: '',
-      password: '',
+  const [apiError, setApiError] = useState<string | null>(null);
+  const { control, handleSubmit } = useForm<FormData>({
+    defaultValues: {
       firstName: '',
       lastName: '',
+      email: '',
+      password: '',
       role: Role.CUSTOMER,
-    });
-  };
+    },
+  });
 
-  // TODO: improve the validation
-  const isValidForm = formData.firstName && formData.lastName && formData.email && formData.password;
-
-  const handleSubmit = async () => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    setIsLoading(true);
+    setApiError(null);
+    const defaultErrorMesssage = 'An error occurred while creating your account. Please try again.';
     try {
-      setIsLoading(true);
-      setError('');
-      if (!isValidForm) {
-        setError('Invalid form values');
-        return;
-      }
-      const { username } = await signUp(formData);
+      const registerData: RegisterUserRequest = { ...data };
+      const { username } = await signUp(registerData);
       if (!username) {
-        throw new Error(SIGNUP_ERROR_MESSAGE);
+        throw new Error(defaultErrorMesssage);
       }
-      navigation.push('ConfirmAccount', { email: formData.email, username });
-      clearForm();
+      navigation.push('ConfirmAccount', { email: data.email, username });
     } catch (error) {
       if (error instanceof BadRequestException) {
         console.warn('Error', error);
-        setError(SIGNUP_ERROR_MESSAGE);
+        setApiError(defaultErrorMesssage);
       } else if (error instanceof Error) {
-        setError(error.message);
+        setApiError(error.message);
       } else {
-        setError(SIGNUP_ERROR_MESSAGE);
+        setApiError(defaultErrorMesssage);
       }
     } finally {
       setIsLoading(false);
@@ -119,37 +87,22 @@ export const CreateAccount = ({ navigation }: Props) => {
       <Box flex={1} bg="$white">
         <VStack p="$4" space="lg">
           <Heading size="xl">Sign up to Emigro</Heading>
-          <VStack space="2xl">
-            {formFields.map((field) => (
-              <FormControl key={field.name}>
-                <FormControlLabel mb="$1">
-                  <FormControlLabelText>{field.label}</FormControlLabelText>
-                </FormControlLabel>
-                <Input size="xl">
-                  <InputField
-                    placeholder={field.placeholder}
-                    value={formData[field.name]}
-                    onChangeText={(text) => handleChange(field.name, text)}
-                    secureTextEntry={field.secureTextEntry}
-                    keyboardType={field.keyboardType}
-                    autoCapitalize={field.autoCapitalize}
-                    returnKeyType={field.returnKeyType || 'next'}
-                    testID={field.name}
-                  />
-                </Input>
-              </FormControl>
-            ))}
+          <VStack space="xl">
+            <TextControl control={control} name="firstName" label="First Name" placeholder="e.g. John" />
+            <TextControl control={control} name="lastName" label="Last Name" placeholder="e.g. Doe" />
+            <EmailControl control={control} name="email" />
+            <PasswordControl control={control} name="password" validationFull />
 
-            {error && (
-              <FormControl isInvalid={!!error}>
+            {apiError && (
+              <FormControl isInvalid={!!apiError}>
                 <FormControlError>
                   <FormControlErrorIcon as={AlertCircleIcon} />
-                  <FormControlErrorText>{error}</FormControlErrorText>
+                  <FormControlErrorText>{apiError}</FormControlErrorText>
                 </FormControlError>
               </FormControl>
             )}
 
-            <Button onPress={handleSubmit} isDisabled={!isValidForm || isLoading} size="xl" testID="create-button">
+            <Button onPress={handleSubmit(onSubmit)} isDisabled={isLoading} size="xl" testID="create-button">
               <ButtonText>{isLoading ? 'Creating account...' : 'Create Account'}</ButtonText>
             </Button>
             <HStack justifyContent="center">
