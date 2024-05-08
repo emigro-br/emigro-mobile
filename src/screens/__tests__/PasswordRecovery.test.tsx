@@ -34,18 +34,18 @@ describe('PasswordRecovery', () => {
 
   it('should show error toast when email sending fails', async () => {
     const mockToastShow = useToast().show;
-    const resetPassword = jest.spyOn(auth, 'resetPassword').mockRejectedValue(new Error('Invalid email'));
+    const resetPassword = jest.spyOn(auth, 'resetPassword').mockRejectedValue(new Error('Email not found'));
 
     const { getByPlaceholderText, getByText } = render(<PasswordRecovery navigation={mockNavigation} />);
 
-    const invalidEmail = 'invalid-email@a.b.c';
+    const notFoundEmail = 'any-email@found.not'; // valid e-mail, but not found in the system
     const emailInput = getByPlaceholderText('example@email.com');
-    fireEvent.changeText(emailInput, invalidEmail);
+    fireEvent.changeText(emailInput, notFoundEmail);
     fireEvent.press(getByText('Send Email'));
 
     await waitFor(() => {
       expect(Keyboard.dismiss).toHaveBeenCalled();
-      expect(resetPassword).toHaveBeenCalledWith(invalidEmail);
+      expect(resetPassword).toHaveBeenCalledWith(notFoundEmail);
       expect(mockNavigation.navigate).not.toHaveBeenCalled();
       expect(mockToastShow).toHaveBeenCalledWith({
         duration: 10000,

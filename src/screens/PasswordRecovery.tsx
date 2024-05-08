@@ -1,27 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { Keyboard } from 'react-native';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  HStack,
-  Heading,
-  Input,
-  InputField,
-  LockIcon,
-  Text,
-  VStack,
-  useToast,
-} from '@gluestack-ui/themed';
+import { Box, Button, ButtonText, HStack, Heading, LockIcon, Text, VStack, useToast } from '@gluestack-ui/themed';
 
 import { Toast } from '@components/Toast';
+import { EmailInputControl } from '@components/inputs/controls/EmailInputControl';
 
 import { AnonStackParamList } from '@navigation/AnonStack';
 
 import { resetPassword } from '@services/emigro/auth';
+
+// for react-hook-form
+type FormData = {
+  email: string;
+};
 
 type Props = {
   navigation: NativeStackNavigationProp<AnonStackParamList, 'PasswordRecovery'>;
@@ -29,21 +24,18 @@ type Props = {
 
 export const PasswordRecovery = ({ navigation }: Props) => {
   const toast = useToast();
-  const [email, setEmail] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const { control, handleSubmit } = useForm<FormData>({
+    defaultValues: {
+      email: '',
+    },
+  });
 
-  useEffect(() => {
-    return cleanUp;
-  }, []);
-
-  const cleanUp = () => {
-    setEmail('');
-  };
-
-  const handleSendEmail = async () => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     Keyboard.dismiss(); // to see the toast message
+    setIsSending(true);
     try {
-      setIsSending(true);
+      const { email } = data;
       const result = await resetPassword(email);
       if (result.success) {
         navigation.navigate('CreateNewPassword', { email });
@@ -66,12 +58,6 @@ export const PasswordRecovery = ({ navigation }: Props) => {
     }
   };
 
-  // FIXME: use some validation library: react-hook-form, formik, yup
-  const isValidEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
-  const isValidForm = isValidEmail(email);
-
   return (
     <Box flex={1} bg="$white">
       <VStack p="$4" space="4xl">
@@ -80,17 +66,8 @@ export const PasswordRecovery = ({ navigation }: Props) => {
           <Heading>Password Recovery</Heading>
         </HStack>
         <Text>Enter your email address and we will send you a instructions to reset your password.</Text>
-        <Input size="xl">
-          <InputField
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-            placeholder="example@email.com"
-            autoCapitalize="none"
-            keyboardType="email-address"
-            onSubmitEditing={handleSendEmail}
-          />
-        </Input>
-        <Button size="xl" onPress={handleSendEmail} isDisabled={!isValidForm || isSending}>
+        <EmailInputControl control={control} name="email" />
+        <Button size="xl" onPress={handleSubmit(onSubmit)} isDisabled={isSending}>
           <ButtonText>Send Email</ButtonText>
         </Button>
       </VStack>
