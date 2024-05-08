@@ -1,15 +1,6 @@
-import { Controller, FieldError, FieldValues, UseControllerProps } from 'react-hook-form';
-import { TextInputProps } from 'react-native';
+import { Controller, FieldValues, UseControllerProps } from 'react-hook-form';
 
-import {
-  FormControl,
-  FormControlError,
-  FormControlErrorText,
-  FormControlLabel,
-  FormControlLabelText,
-  Input,
-  InputField,
-} from '@gluestack-ui/themed';
+import { TextInput } from './TextInput';
 
 type ControlProps<T extends FieldValues> = {
   ref?: any;
@@ -29,50 +20,20 @@ export const EmailControl = <T extends FieldValues>({ name, ref, control, next }
       }}
       control={control}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <EmailInput
+        <TextInput
           ref={ref}
           value={value}
           onChange={onChange}
           error={error}
           onSubmitEditing={() => next?.current?.focus()}
-        />
-      )}
-    />
-  );
-};
-
-type Props = {
-  ref?: any;
-  value: string;
-  onChange: (text: string) => void;
-  error?: FieldError;
-} & TextInputProps;
-
-export const EmailInput = (props: Props) => {
-  const { ref, value, onChange, error } = props;
-  return (
-    <FormControl isInvalid={!!error}>
-      <FormControlLabel mb="$1">
-        <FormControlLabelText>Email</FormControlLabelText>
-      </FormControlLabel>
-      <Input size="xl">
-        <InputField
-          {...props}
-          ref={ref}
+          label="Email"
           placeholder="example@email.com"
           keyboardType="email-address"
           autoCapitalize="none"
           returnKeyType="next"
-          testID="email"
-          onChangeText={onChange}
-          value={value}
+          testID={name}
         />
-      </Input>
-      {error && (
-        <FormControlError>
-          <FormControlErrorText>{error.message}</FormControlErrorText>
-        </FormControlError>
       )}
-    </FormControl>
+    />
   );
 };

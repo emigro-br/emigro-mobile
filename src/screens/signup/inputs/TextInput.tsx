@@ -42,6 +42,7 @@ export const TextControl = <T extends FieldValues>({
           onChange={onChange}
           error={error}
           onSubmitEditing={() => next?.current?.focus()}
+          returnKeyType="next"
           testID={name}
         />
       )}
@@ -65,7 +66,7 @@ export const TextInput = (props: Props) => {
         <FormControlLabelText>{label}</FormControlLabelText>
       </FormControlLabel>
       <Input size="xl">
-        <InputField {...props} ref={ref} returnKeyType="next" onChangeText={onChange} value={value} />
+        <InputField {...props} ref={ref} onChangeText={onChange} value={value} />
       </Input>
       {error && (
         <FormControlError>
