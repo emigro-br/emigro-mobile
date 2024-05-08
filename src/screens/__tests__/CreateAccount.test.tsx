@@ -8,6 +8,7 @@ import * as auth from '@services/emigro/auth';
 import { Role, User } from '@services/emigro/types';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
+jest.mock('react-native-keyboard-aware-scroll-view');
 
 const mockNavigattion: any = {
   navigate: jest.fn(),
