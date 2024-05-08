@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -8,20 +8,12 @@ import {
   Box,
   Button,
   ButtonText,
-  EyeIcon,
-  EyeOffIcon,
   FormControl,
   FormControlError,
   FormControlErrorIcon,
   FormControlErrorText,
-  FormControlLabel,
-  FormControlLabelText,
   HStack,
   Heading,
-  Input,
-  InputField,
-  InputIcon,
-  InputSlot,
   Link,
   LinkText,
   Text,
@@ -29,6 +21,9 @@ import {
 } from '@gluestack-ui/themed';
 
 import { BadRequestException } from '@/types/errors';
+
+import { EmailInputControl } from '@components/inputs/controls/EmailInputControl';
+import { PasswordInputControl } from '@components/inputs/controls/PasswordInputControl';
 
 import { AnonStackParamList } from '@navigation/AnonStack';
 
@@ -45,16 +40,11 @@ type Props = {
 };
 
 const Login = ({ navigation }: Props) => {
-  const emailRef = useRef(null);
-  const passwordRef = useRef(null);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const passwordRef = useRef<HTMLInputElement>(null);
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string | null>(null);
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>({
+  const { control, handleSubmit } = useForm<FormData>({
     defaultValues: {
       email: '',
       password: '',
@@ -62,7 +52,7 @@ const Login = ({ navigation }: Props) => {
   });
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    setShowPassword(false);
+    // setShowPassword(false);
     setApiError(null);
     setIsLoggingIn(true);
     try {
@@ -82,96 +72,22 @@ const Login = ({ navigation }: Props) => {
     }
   };
 
-  const handleState = () => {
-    setShowPassword((showState) => {
-      return !showState;
-    });
-  };
-
   return (
     <Box flex={1} bg="$white">
       <VStack p="$4" space="lg">
         <Heading size="xl">Sign in to Emigro</Heading>
         <VStack space="2xl">
-          <Controller
+          <EmailInputControl
+            control={control}
             name="email"
-            rules={{
-              required: 'Email is required',
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                message: 'Invalid email address',
-              },
-            }}
-            control={control}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <FormControl isInvalid={!!errors.email}>
-                <FormControlLabel mb="$1">
-                  <FormControlLabelText>Email</FormControlLabelText>
-                </FormControlLabel>
-                <Input size="xl">
-                  <InputField
-                    ref={emailRef}
-                    placeholder="example@email.com"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    returnKeyType="next"
-                    testID="email"
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    value={value}
-                    onSubmitEditing={() => passwordRef.current?.focus()}
-                  />
-                </Input>
-                {errors.email && (
-                  <FormControlError>
-                    <FormControlErrorText>{errors.email.message}</FormControlErrorText>
-                  </FormControlError>
-                )}
-              </FormControl>
-            )}
+            mRef={emailRef}
+            onSubmitEditing={() => passwordRef?.current?.focus()}
           />
-
-          <Controller
-            name="password"
-            rules={{
-              required: 'Password is required',
-              minLength: { value: 8, message: 'Password must be at least 8 characters' },
-            }}
+          <PasswordInputControl
             control={control}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <FormControl isInvalid={!!errors.password}>
-                <FormControlLabel mb="$1">
-                  <FormControlLabelText>Password</FormControlLabelText>
-                </FormControlLabel>
-                <Input size="xl">
-                  <InputField
-                    ref={passwordRef}
-                    type={!showPassword ? 'password' : 'text'}
-                    placeholder="Enter your password"
-                    keyboardType="default"
-                    autoCapitalize="none"
-                    returnKeyType="done"
-                    testID="password"
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    value={value}
-                    onSubmitEditing={handleSubmit(onSubmit)}
-                    blurOnSubmit
-                  />
-                  <InputSlot pr="$3" onPress={handleState}>
-                    <InputIcon
-                      as={showPassword ? EyeIcon : EyeOffIcon}
-                      color={showPassword ? '$primary500' : '$textLight500'}
-                    />
-                  </InputSlot>
-                </Input>
-                {errors.password && (
-                  <FormControlError>
-                    <FormControlErrorText>{errors.password?.message}</FormControlErrorText>
-                  </FormControlError>
-                )}
-              </FormControl>
-            )}
+            name="password"
+            mRef={passwordRef}
+            onSubmitEditing={handleSubmit(onSubmit)}
           />
 
           <Link onPress={() => navigation.push('PasswordRecovery')} testID="forgot-password-link">

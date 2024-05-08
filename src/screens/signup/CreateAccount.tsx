@@ -22,14 +22,14 @@ import {
 
 import { BadRequestException } from '@/types/errors';
 
+import { EmailInputControl } from '@components/inputs/controls/EmailInputControl';
+import { PasswordInputControl } from '@components/inputs/controls/PasswordInputControl';
+import { TextInputControl } from '@components/inputs/controls/TextInputControl';
+
 import { AnonStackParamList } from '@navigation/AnonStack';
 
 import { signUp } from '@services/emigro/auth';
 import { RegisterUserRequest, Role } from '@services/emigro/types';
-
-import { EmailControl } from './inputs/EmailInput';
-import { PasswordControl } from './inputs/PasswordInput';
-import { TextControl } from './inputs/TextInput';
 
 type Props = {
   navigation: NativeStackNavigationProp<AnonStackParamList, 'SignUp'>;
@@ -88,10 +88,10 @@ export const CreateAccount = ({ navigation }: Props) => {
         <VStack p="$4" space="lg">
           <Heading size="xl">Sign up to Emigro</Heading>
           <VStack space="xl">
-            <TextControl control={control} name="firstName" label="First Name" placeholder="e.g. John" />
-            <TextControl control={control} name="lastName" label="Last Name" placeholder="e.g. Doe" />
-            <EmailControl control={control} name="email" />
-            <PasswordControl control={control} name="password" validationFull />
+            <TextInputControl control={control} name="firstName" label="First Name" placeholder="e.g. John" />
+            <TextInputControl control={control} name="lastName" label="Last Name" placeholder="e.g. Doe" />
+            <EmailInputControl control={control} name="email" />
+            <PasswordInputControl control={control} name="password" validationFull />
 
             {apiError && (
               <FormControl isInvalid={!!apiError}>

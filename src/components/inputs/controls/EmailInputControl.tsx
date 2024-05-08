@@ -1,13 +1,13 @@
 import { Controller, FieldValues, UseControllerProps } from 'react-hook-form';
 
-import { TextInput } from './TextInput';
+import { FieldError, TextInput } from '../TextInput';
 
-type ControlProps<T extends FieldValues> = {
-  ref?: any;
-  next?: any;
+type Props<T extends FieldValues> = {
+  mRef?: React.Ref<HTMLInputElement> | null;
+  onSubmitEditing?: () => void;
 } & UseControllerProps<T>;
 
-export const EmailControl = <T extends FieldValues>({ name, ref, control, next }: ControlProps<T>) => {
+export const EmailInputControl = <T extends FieldValues>({ name, control, mRef, onSubmitEditing }: Props<T>) => {
   return (
     <Controller
       name={name}
@@ -21,11 +21,11 @@ export const EmailControl = <T extends FieldValues>({ name, ref, control, next }
       control={control}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
         <TextInput
-          ref={ref}
+          mRef={mRef}
           value={value}
-          onChange={onChange}
-          error={error}
-          onSubmitEditing={() => next?.current?.focus()}
+          onChangeText={onChange}
+          error={error as FieldError}
+          onSubmitEditing={onSubmitEditing}
           label="Email"
           placeholder="example@email.com"
           keyboardType="email-address"
