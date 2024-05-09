@@ -36,7 +36,7 @@ export const OpenURLModal: React.FunctionComponent<Props> = ({
       <ModalBackdrop />
       <ModalContent>
         <ModalHeader>
-          <Heading size="lg">We're taking you to Anchor website</Heading>
+          <Heading size="lg">We're taking you to an external website</Heading>
           <ModalCloseButton onPress={onClose}>
             <Icon as={CloseIcon} />
           </ModalCloseButton>
@@ -50,7 +50,7 @@ export const OpenURLModal: React.FunctionComponent<Props> = ({
               <ButtonText>Close</ButtonText>
             </Button>
             <Button onPress={onConfirm} action="primary">
-              <ButtonText>Continue to Anchor</ButtonText>
+              <ButtonText>Ok, continue</ButtonText>
             </Button>
           </ButtonGroup>
         </ModalFooter>
