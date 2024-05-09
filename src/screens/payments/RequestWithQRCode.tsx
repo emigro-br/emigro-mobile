@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { BackHandler } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
@@ -11,6 +12,7 @@ import {
   ButtonText,
   Center,
   CloseIcon,
+  HStack,
   Heading,
   ModalCloseButton,
   Text,
@@ -80,6 +82,7 @@ const encodeQRCode = (profile: UserProfile, asset: CryptoAsset, amount: number):
 type Props = NativeStackScreenProps<PaymentStackParamList, 'RequestWithQRCode'>;
 
 export const RequestWithQRCode = ({ navigation, route }: Props) => {
+  const insets = useSafeAreaInsets();
   const toast = useToast();
   const { asset, value } = route.params;
   const enableCopy = false;
@@ -128,18 +131,14 @@ export const RequestWithQRCode = ({ navigation, route }: Props) => {
   };
 
   return (
-    <Box flex={1} mt="$4" bg="$white">
-      <ModalCloseButton
-        onPress={() => navigation.popToTop()}
-        position="absolute"
-        top="$4"
-        right="$4"
-        testID="close-button"
-      >
-        <CloseIcon size="lg" />
-      </ModalCloseButton>
+    <Box flex={1} bg="$white" pt={insets.top}>
       <VStack p="$4" space="lg">
-        <Heading>Request with QR Code</Heading>
+        <HStack justifyContent="space-between">
+          <Heading>Request with QR Code</Heading>
+          <ModalCloseButton onPress={() => navigation.popToTop()} testID="close-button" mt="-$4">
+            <CloseIcon size="xl" />
+          </ModalCloseButton>
+        </HStack>
         <Text>Show this QR code or copy and share with who will make this payment</Text>
         <Center my="$4" testID="qr-code">
           <QRCode value={encodedCode} size={QRCodeSize.SMALL} />
