@@ -52,6 +52,17 @@ describe('BalanceStore', () => {
     expect(usersApi.getUserBalance).toHaveBeenCalledTimes(1);
   });
 
+  it('should force to call api twice on fetch balance even in short period', async () => {
+    (usersApi.getUserBalance as jest.Mock).mockResolvedValue(mockBalances);
+    jest.spyOn(balanceStore, 'setUserBalance');
+
+    // call 2x
+    await balanceStore.fetchUserBalance({ force: true });
+    await balanceStore.fetchUserBalance({ force: true });
+
+    expect(usersApi.getUserBalance).toHaveBeenCalledTimes(2);
+  });
+
   it('should throw an error when fetching user balance fails', async () => {
     const message = 'Failed to fetch user balance';
     const error = new Error(message);

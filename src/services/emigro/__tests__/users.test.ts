@@ -5,8 +5,8 @@ import { CryptoAsset } from '@/types/assets';
 
 import { api } from '@services/emigro/api';
 
-import { AuthSession } from '../types';
-import { addAssetToWallet, getUser, getUserBalance, getUserProfile, saveUserPreferences } from '../users';
+import { AuthSession, StellarAccount } from '../types';
+import { addAssetToWallet, createWallet, getUser, getUserBalance, getUserProfile, saveUserPreferences } from '../users';
 
 jest.mock('../api', () => ({
   api: jest.fn(),
@@ -73,6 +73,25 @@ describe('emigro service', () => {
     });
   });
 
+  describe('createWallet', () => {
+    const mockResponse: StellarAccount = {
+      publicKey: 'abc123',
+      balances: [
+        { assetCode: 'USD', assetType: '', balance: '100' },
+        { assetCode: 'BRL', assetType: '', balance: '200' },
+      ],
+    };
+
+    it('should make a POST request to create a stellar account', async () => {
+      const mockAxiosPost = jest.spyOn(instance, 'post');
+      mock.onPost('/user/wallet').reply(200, mockResponse);
+      const result = await createWallet();
+
+      expect(mockAxiosPost).toHaveBeenCalledWith('/user/wallet');
+      expect(result).toEqual(mockResponse);
+    });
+  });
+
   describe('addAssetToWallet', () => {
     const mockAssetCode: CryptoAsset = CryptoAsset.BRL;
     const mockResponse = {
@@ -82,7 +101,7 @@ describe('emigro service', () => {
       ],
     };
 
-    it('should make a POST request to add asset to wallet and return the updated user profile', async () => {
+    it('should make a POST request to add asset to wallet and return the updated balance', async () => {
       const mockAxiosPost = jest.spyOn(instance, 'post');
       mock.onPost('/user/wallet/assets').reply(200, mockResponse);
       const result = await addAssetToWallet(mockAssetCode);

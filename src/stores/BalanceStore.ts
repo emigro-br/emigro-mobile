@@ -37,10 +37,15 @@ export class BalanceStore {
     });
   }
 
-  async fetchUserBalance(): Promise<Balance[]> {
-    const interval = 10 * 1000;
+  async fetchUserBalance({
+    interval = 10 * 1000, // 10 seconds
+    force = false,
+  }: {
+    force?: boolean;
+    interval?: number;
+  } = {}): Promise<Balance[]> {
     const now = Date.now();
-    if (this.lastUpdate === null || now - this.lastUpdate >= interval) {
+    if (force || this.lastUpdate === null || now - this.lastUpdate >= interval) {
       console.debug('Fetching user balance...');
       const balances = await getUserBalance();
       if (balances) {
