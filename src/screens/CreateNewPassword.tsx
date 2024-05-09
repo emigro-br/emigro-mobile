@@ -32,6 +32,8 @@ import { PinScreen } from './PinScreen';
 
 type Props = NativeStackScreenProps<AnonStackParamList, 'CreateNewPassword'>;
 
+const minPasswordLength = 8;
+
 export const CreateNewPassword = ({ navigation, route }: Props) => {
   const toast = useToast();
   const [pin, setPin] = useState('');
@@ -49,12 +51,11 @@ export const CreateNewPassword = ({ navigation, route }: Props) => {
 
   // FIXME: use some validation library: react-hook-form, formik, yup
   const validateForm = () => {
-    const minPasswordLength = 8;
     if (password.length < minPasswordLength) {
-      return 'Password must be at least 6 characters long';
+      return `Password must be at least ${minPasswordLength} characters long`;
     }
     if (confirmPassword.length < minPasswordLength) {
-      return 'Confirm password must be at least 6 characters long';
+      return `Confirm password must be at least ${minPasswordLength} characters long`;
     }
     if (password !== confirmPassword) {
       return 'Passwords do not match';
@@ -139,7 +140,7 @@ export const CreateNewPassword = ({ navigation, route }: Props) => {
             <InputField
               value={password}
               onChangeText={(text) => setPassword(text)}
-              placeholder="at least 8 chars"
+              placeholder={`at least ${minPasswordLength} chars`}
               secureTextEntry
               autoCapitalize="none"
               returnKeyType="next"
