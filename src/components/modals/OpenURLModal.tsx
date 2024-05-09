@@ -36,7 +36,9 @@ export const OpenURLModal: React.FunctionComponent<Props> = ({
       <ModalBackdrop />
       <ModalContent>
         <ModalHeader>
-          <Heading size="lg">We're taking you to an external website</Heading>
+          <Heading size="lg" w="$5/6">
+            We're taking you to an external website
+          </Heading>
           <ModalCloseButton onPress={onClose}>
             <Icon as={CloseIcon} />
           </ModalCloseButton>
