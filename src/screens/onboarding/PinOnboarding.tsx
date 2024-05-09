@@ -2,15 +2,16 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonText, Heading, LockIcon, Text, VStack } from '@gluestack-ui/themed';
 
+import { OnboardingStackParamList } from '@navigation/OnboardingStack';
 import { RootStackParamList } from '@navigation/RootStack';
 
 type Props = {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'PinOnboarding'>;
+  navigation: NativeStackNavigationProp<RootStackParamList & OnboardingStackParamList, 'PinOnboarding'>;
 };
 
 export const PinOnboarding = ({ navigation }: Props) => {
   return (
-    <Box flex={1}>
+    <Box flex={1} bg="$white">
       <VStack flex={1} px="$4" py="$16" justifyContent="space-between" borderWidth={1}>
         <VStack space="lg">
           <Box pt="$12" pb="$6" testID="lock-icon">
