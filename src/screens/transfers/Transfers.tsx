@@ -4,18 +4,18 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Card, Heading, Text, VStack } from '@gluestack-ui/themed';
 
-import { cryptoAssets } from '@/types/assets';
-
 import { AssetList } from '@components/AssetList';
 
 import { WalletStackParamList } from '@navigation/WalletStack';
+
+import { balanceStore } from '@stores/BalanceStore';
 
 type Props = {
   navigation: NativeStackNavigationProp<WalletStackParamList, 'TransfersRoot'>;
 };
 
 export const Transfers = ({ navigation }: Props) => {
-  const data = cryptoAssets();
+  const data = balanceStore.currentAssets();
 
   return (
     <Box flex={1}>

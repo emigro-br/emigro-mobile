@@ -4,7 +4,17 @@ import { fireEvent } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
+import { CryptoAsset } from '@/types/assets';
+
+import { balanceStore } from '@stores/BalanceStore';
+
 import { Transfers } from '../Transfers';
+
+jest.mock('@stores/BalanceStore', () => ({
+  balanceStore: {
+    currentAssets: jest.fn(),
+  },
+}));
 
 const navigationMock: any = {
   navigate: jest.fn(),
@@ -12,6 +22,10 @@ const navigationMock: any = {
 };
 
 describe('Transfers component', () => {
+  beforeEach(() => {
+    (balanceStore.currentAssets as jest.Mock).mockReturnValue([CryptoAsset.XLM]);
+  });
+
   test('Should render the component correctly', () => {
     const { getByText } = render(<Transfers navigation={navigationMock} />);
 
