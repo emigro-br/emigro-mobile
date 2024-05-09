@@ -167,15 +167,18 @@ const Profile = observer(({ navigation }: Props) => {
         </Box>
       </Box>
       {/* Modals and sheets  */}
-      <AssetListActionSheet
-        assets={myCurrencies}
-        isOpen={assetListOpen}
-        onClose={() => setAssetListOpen(false)}
-        onItemPress={(currency) => {
-          sessionStore.updatePreferences({ fiatsWithBank: [currency as FiatCurrency] });
-          setAssetListOpen(false);
-        }}
-      />
+
+      {myCurrencies.length > 0 && (
+        <AssetListActionSheet
+          assets={myCurrencies}
+          isOpen={assetListOpen}
+          onClose={() => setAssetListOpen(false)}
+          onItemPress={(currency) => {
+            sessionStore.updatePreferences({ fiatsWithBank: [currency as FiatCurrency] });
+            setAssetListOpen(false);
+          }}
+        />
+      )}
     </ScrollView>
   );
 });
