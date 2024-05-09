@@ -1,7 +1,7 @@
 import { CryptoAsset } from '@/types/assets';
 
 import { api } from './api';
-import { AuthSession, Balance, User, UserProfile } from './types';
+import { AuthSession, Balance, StellarAccount, User, UserProfile } from './types';
 
 export const getUserBalance = async (): Promise<Balance[]> => {
   const res = await api().get('/user/wallet');
@@ -25,6 +25,12 @@ export const getUser = async (): Promise<User> => {
 
 export const getUserProfile = async (session: AuthSession): Promise<UserProfile> => {
   const res = await api().post('/user/profile', session);
+  return res.data;
+};
+
+export const createWallet = async (): Promise<StellarAccount> => {
+  const timeout = 20 * 1000;
+  const res = await api({ timeout }).post('/user/wallet');
   return res.data;
 };
 

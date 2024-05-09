@@ -55,6 +55,12 @@ export type UserProfile = {
   email: string;
 };
 
+export type StellarAccount = {
+  publicKey: string;
+  secretKey?: string;
+  balances: Balance[];
+};
+
 export type Balance = {
   balance: string; // TODO: convert to number
   assetType: string;
