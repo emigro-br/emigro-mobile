@@ -11,6 +11,8 @@ module.exports = function (api) {
   return {
     presets: ['babel-preset-expo'],
     plugins: [
+      // required by this issue: https://github.com/expo/expo/issues/28618#issuecomment-2099225578
+      'react-native-reanimated/plugin',
       [
         'module-resolver',
         {

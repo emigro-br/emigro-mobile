@@ -1,3 +1,6 @@
+// FIXME: crash workaround for Expo 51: https://github.com/expo/expo/issues/28618#issuecomment-2099225578
+import 'react-native-reanimated';
+
 import App from './src/App';
 import * as Sentry from '@sentry/react-native';
 

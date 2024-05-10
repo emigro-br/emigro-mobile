@@ -38,7 +38,8 @@
           "organization": "emigro",
           "project": "emigro-mobile"
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "splash": {
       "image": "./assets/images/splash.png",

@@ -1,7 +1,7 @@
 import { CameraIcon, QrCodeIcon } from 'react-native-heroicons/solid';
 
 import { Box, Button, ButtonText, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
-import { PermissionResponse, useCameraPermissions } from 'expo-camera/next';
+import { PermissionResponse, useCameraPermissions } from 'expo-camera';
 
 type AskCameraProps = {
   onAnswer: (permission: PermissionResponse) => void;

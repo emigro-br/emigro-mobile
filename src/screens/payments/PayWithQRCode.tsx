@@ -6,9 +6,13 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Ionicons } from '@expo/vector-icons';
 import { Box, Center, Pressable, Text, View } from '@gluestack-ui/themed';
-import { BarCodeScanner, PermissionResponse } from 'expo-barcode-scanner';
-import { BarCodeScanningResult } from 'expo-camera/build/Camera.types';
-import { CameraView, PermissionStatus, useCameraPermissions } from 'expo-camera/next';
+import {
+  BarcodeScanningResult,
+  CameraView,
+  PermissionResponse,
+  PermissionStatus,
+  useCameraPermissions,
+} from 'expo-camera';
 import { PixElementType, hasError, parsePix } from 'pix-utils';
 
 import { Payment, emigroCategoryCode } from '@/types/PixPayment';
@@ -96,7 +100,7 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
     throw new Error(INVALID_QR_CODE);
   };
 
-  const handleBarCodeScanned = (result: BarCodeScanningResult) => {
+  const handleBarCodeScanned = (result: BarcodeScanningResult) => {
     // If a QR code has already been scanned, return early
     if (isScanned) {
       return;
@@ -154,7 +158,7 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
         onBarcodeScanned={handleBarCodeScanned}
         style={[StyleSheet.absoluteFillObject]}
         barcodeScannerSettings={{
-          barcodeTypes: [BarCodeScanner.Constants.BarCodeType.qr], // FIXME: "qr" string is not working
+          barcodeTypes: ['qr'],
         }}
       >
         <View style={styles.rectangleContainer}>
