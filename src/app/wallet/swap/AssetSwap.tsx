@@ -5,8 +5,7 @@ import { SelectCountry } from 'react-native-element-dropdown';
 import { Box, Card, HStack, Input, InputField, Pressable, Text, VStack } from '@gluestack-ui/themed';
 
 import { CryptoAsset, cryptoAssets } from '@/types/assets';
-
-import { AssetToSymbol, iconFor } from '@utils/assets';
+import { AssetToSymbol, iconFor } from '@/utils/assets';
 
 import { SwapType } from './types';
 

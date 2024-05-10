@@ -14,9 +14,8 @@ import {
   View,
 } from '@gluestack-ui/themed';
 
+import { AssetInput } from '@/components/AssetInput';
 import { CryptoOrFiat } from '@/types/assets';
-
-import { AssetInput } from '@components/AssetInput';
 
 type Props = {
   tagline?: string;

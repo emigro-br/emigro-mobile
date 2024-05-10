@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import { api } from '@services/emigro/api';
+import { api } from '@/services/emigro/api';
 
 import { confirmAccount, confirmResetPassword, deleteAccount, refresh, resetPassword, signIn, signUp } from '../auth';
 import { AuthSession, ConfirmUserRequest, RegisterUserRequest, Role } from '../types';

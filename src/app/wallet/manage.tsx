@@ -2,14 +2,11 @@ import { useState } from 'react';
 
 import { Box, Button, ButtonSpinner, ButtonText, Card, Heading, VStack, useToast } from '@gluestack-ui/themed';
 
+import { AssetListTile } from '@/components/AssetListTile';
+import { Toast } from '@/components/Toast';
+import { addAssetToWallet } from '@/services/emigro/users';
+import { balanceStore } from '@/stores/BalanceStore';
 import { CryptoAsset, cryptoAssets } from '@/types/assets';
-
-import { AssetListTile } from '@components/AssetListTile';
-import { Toast } from '@components/Toast';
-
-import { addAssetToWallet } from '@services/emigro/users';
-
-import { balanceStore } from '@stores/BalanceStore';
 
 export const ManageAccountsScreen = () => {
   const toast = useToast();

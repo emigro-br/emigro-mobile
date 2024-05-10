@@ -4,9 +4,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonGroup, ButtonText, Center, Image, Text } from '@gluestack-ui/themed';
 
-import emigroLogo from '@assets/images/emigro-logo.png';
-
-import { AnonStackParamList } from '@navigation/AnonStack';
+import emigroLogo from '@/assets/images/emigro-logo.png';
+import { AnonStackParamList } from '@/navigation/AnonStack';
 
 type Props = {
   navigation: NativeStackNavigationProp<AnonStackParamList, 'Welcome'>;

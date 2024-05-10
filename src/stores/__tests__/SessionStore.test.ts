@@ -1,23 +1,22 @@
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 
+import * as authService from '@/services/emigro/auth';
+import { AuthSession, Role, User, UserCredential, UserProfile } from '@/services/emigro/types';
+import * as usersService from '@/services/emigro/users';
 import { UserPreferences } from '@/types/UserPreferences';
 import { FiatCurrency } from '@/types/assets';
-
-import * as authService from '@services/emigro/auth';
-import { AuthSession, Role, User, UserCredential, UserProfile } from '@services/emigro/types';
-import * as usersService from '@services/emigro/users';
 
 import { SessionStore } from '../SessionStore';
 
 jest.mock('expo-secure-store');
 
-jest.mock('@services/emigro/auth', () => ({
+jest.mock('@/services/emigro/auth', () => ({
   signIn: jest.fn(),
   refresh: jest.fn(),
 }));
 
-jest.mock('@services/emigro/users', () => ({
+jest.mock('@/services/emigro/users', () => ({
   getUser: jest.fn(),
   getUserProfile: jest.fn(),
   saveUserPreferences: jest.fn(),

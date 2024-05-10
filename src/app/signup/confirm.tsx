@@ -26,11 +26,9 @@ import {
 } from '@gluestack-ui/themed';
 import * as Sentry from '@sentry/react-native';
 
-import { CONFIRM_ACCOUNT_ERROR, WRONG_CODE_ERROR } from '@constants/errorMessages';
-
-import { AnonStackParamList } from '@navigation/AnonStack';
-
-import { confirmAccount } from '@services/emigro/auth';
+import { CONFIRM_ACCOUNT_ERROR, WRONG_CODE_ERROR } from '@/constants/errorMessages';
+import { AnonStackParamList } from '@/navigation/AnonStack';
+import { confirmAccount } from '@/services/emigro/auth';
 
 type Props = NativeStackScreenProps<AnonStackParamList, 'ConfirmAccount'>;
 

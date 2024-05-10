@@ -7,9 +7,8 @@ import * as pixUtils from 'pix-utils';
 
 import { render } from 'test-utils';
 
-import { UserProfile } from '@services/emigro/types';
-
-import { sessionStore } from '@stores/SessionStore';
+import { UserProfile } from '@/services/emigro/types';
+import { sessionStore } from '@/stores/SessionStore';
 
 import { RequestWithQRCode } from '../show-qr-code';
 
@@ -25,7 +24,7 @@ jest.mock('@gluestack-ui/themed', () => ({
   useToast: jest.fn().mockReturnValue({ show: jest.fn() }),
 }));
 
-jest.mock('@stores/SessionStore', () => ({
+jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     profile: {
       given_name: 'John',

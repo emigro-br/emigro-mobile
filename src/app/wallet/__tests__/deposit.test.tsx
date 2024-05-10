@@ -6,11 +6,9 @@ import mockConsole from 'jest-mock-console';
 
 import { render } from 'test-utils';
 
+import { depositUrl } from '@/services/emigro/anchors';
+import { sessionStore } from '@/stores/SessionStore';
 import { FiatCurrency } from '@/types/assets';
-
-import { depositUrl } from '@services/emigro/anchors';
-
-import { sessionStore } from '@stores/SessionStore';
 
 import Deposit from '../deposit';
 
@@ -20,7 +18,7 @@ jest.mock('react-native/Libraries/Linking/Linking', () => ({
   openURL: jest.fn(),
 }));
 
-jest.mock('@stores/SessionStore', () => ({
+jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     get accessToken() {
       return 'accessToken';
@@ -32,7 +30,7 @@ jest.mock('@stores/SessionStore', () => ({
   },
 }));
 
-jest.mock('@services/emigro/anchors', () => ({
+jest.mock('@/services/emigro/anchors', () => ({
   depositUrl: jest.fn(() => ({
     url: 'https://anchor.url',
     id: 'transaction-id',

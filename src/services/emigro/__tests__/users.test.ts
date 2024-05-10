@@ -1,9 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
+import { api } from '@/services/emigro/api';
 import { CryptoAsset } from '@/types/assets';
-
-import { api } from '@services/emigro/api';
 
 import { AuthSession, StellarAccount } from '../types';
 import { addAssetToWallet, createWallet, getUser, getUserBalance, getUserProfile, saveUserPreferences } from '../users';

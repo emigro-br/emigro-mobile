@@ -5,8 +5,7 @@ import Wallet from '@/app/wallet';
 import Deposit from '@/app/wallet/deposit';
 import { ManageAccountsScreen } from '@/app/wallet/manage';
 import Withdraw from '@/app/wallet/withdraw';
-
-import Header from '@components/Header';
+import Header from '@/components/Header';
 
 import { SwapStack, SwapStackParamList } from './SwapStack';
 import { TransferStack, TransferStackParamList } from './TrasnsferStack';

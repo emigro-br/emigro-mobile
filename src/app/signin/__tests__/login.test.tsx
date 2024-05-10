@@ -3,12 +3,11 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 import { render } from 'test-utils';
 
 import Login from '@/app/signin';
-
-import { sessionStore } from '@stores/SessionStore';
+import { sessionStore } from '@/stores/SessionStore';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
-jest.mock('@stores/SessionStore', () => ({
+jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     session: {},
     clear: jest.fn(),
@@ -17,7 +16,7 @@ jest.mock('@stores/SessionStore', () => ({
   },
 }));
 
-jest.mock('@services/emigro/users', () => ({
+jest.mock('@/services/emigro/users', () => ({
   getUserPublicKey: jest.fn(),
 }));
 

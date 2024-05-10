@@ -18,20 +18,15 @@ import {
 } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 
+import { AssetList } from '@/components/AssetList';
+import { LoadingModal } from '@/components/modals/LoadingModal';
+import { OpenURLModal } from '@/components/modals/OpenURLModal';
+import { RootStackParamList } from '@/navigation/RootStack';
+import { WalletStackParamList } from '@/navigation/WalletStack';
+import { CallbackType, depositUrl } from '@/services/emigro/anchors';
+import { sessionStore } from '@/stores/SessionStore';
 import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
-
-import { AssetList } from '@components/AssetList';
-import { LoadingModal } from '@components/modals/LoadingModal';
-import { OpenURLModal } from '@components/modals/OpenURLModal';
-
-import { RootStackParamList } from '@navigation/RootStack';
-import { WalletStackParamList } from '@navigation/WalletStack';
-
-import { CallbackType, depositUrl } from '@services/emigro/anchors';
-
-import { sessionStore } from '@stores/SessionStore';
-
-import { CurrencyToAsset } from '@utils/assets';
+import { CurrencyToAsset } from '@/utils/assets';
 
 import { LoadingScreen } from '../../components/Loading';
 

@@ -4,11 +4,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Card, Heading, Text, VStack } from '@gluestack-ui/themed';
 
-import { AssetList } from '@components/AssetList';
-
-import { WalletStackParamList } from '@navigation/WalletStack';
-
-import { balanceStore } from '@stores/BalanceStore';
+import { AssetList } from '@/components/AssetList';
+import { WalletStackParamList } from '@/navigation/WalletStack';
+import { balanceStore } from '@/stores/BalanceStore';
 
 type Props = {
   navigation: NativeStackNavigationProp<WalletStackParamList, 'TransfersRoot'>;

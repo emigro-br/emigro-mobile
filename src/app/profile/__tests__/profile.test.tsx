@@ -8,10 +8,8 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 import { render } from 'test-utils';
 
 import Profile from '@/app/profile';
-
-import { UserProfile } from '@services/emigro/types';
-
-import { sessionStore } from '@stores/SessionStore';
+import { UserProfile } from '@/services/emigro/types';
+import { sessionStore } from '@/stores/SessionStore';
 
 jest.mock('expo-clipboard');
 
@@ -22,7 +20,7 @@ jest.mock('@gluestack-ui/themed', () => ({
 
 jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
-jest.mock('@stores/SessionStore', () => ({
+jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     clear: jest.fn(),
     publicKey: 'test-public',

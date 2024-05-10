@@ -5,20 +5,18 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { inputPIN, render } from 'test-utils';
 
+import { PaymentResponse } from '@/services/emigro/types';
+import { paymentStore } from '@/stores/PaymentStore';
+import { sessionStore } from '@/stores/SessionStore';
 import { CryptoAsset } from '@/types/assets';
-
-import { PaymentResponse } from '@services/emigro/types';
-
-import { paymentStore } from '@stores/PaymentStore';
-import { sessionStore } from '@stores/SessionStore';
 
 import { DetailsSwap } from '../review';
 
-jest.mock('@services/emigro/users', () => ({
+jest.mock('@/services/emigro/users', () => ({
   getUserPublicKey: jest.fn().mockReturnValue('mockedPublicKey'),
 }));
 
-jest.mock('@stores/SessionStore', () => ({
+jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     verifyPin: jest.fn(),
   },

@@ -4,14 +4,11 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonIcon, ButtonText, Center, Heading, RepeatIcon, Text, VStack } from '@gluestack-ui/themed';
 
+import { WalletStackParamList } from '@/navigation/WalletStack';
+import { IQuoteRequest, handleQuote } from '@/services/emigro/quotes';
+import { balanceStore } from '@/stores/BalanceStore';
+import { SwapTransaction, paymentStore as bloc } from '@/stores/PaymentStore';
 import { CryptoAsset } from '@/types/assets';
-
-import { WalletStackParamList } from '@navigation/WalletStack';
-
-import { IQuoteRequest, handleQuote } from '@services/emigro/quotes';
-
-import { balanceStore } from '@stores/BalanceStore';
-import { SwapTransaction, paymentStore as bloc } from '@stores/PaymentStore';
 
 import { AssetSwap } from './AssetSwap';
 import { SwapType } from './types';

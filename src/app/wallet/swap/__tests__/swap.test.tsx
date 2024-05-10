@@ -4,16 +4,14 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
+import * as quotesService from '@/services/emigro/quotes';
+import { balanceStore } from '@/stores/BalanceStore';
+import { paymentStore } from '@/stores/PaymentStore';
 import { CryptoAsset } from '@/types/assets';
-
-import * as quotesService from '@services/emigro/quotes';
-
-import { balanceStore } from '@stores/BalanceStore';
-import { paymentStore } from '@stores/PaymentStore';
 
 import { Swap } from '..';
 
-jest.mock('@services/emigro/quotes', () => ({
+jest.mock('@/services/emigro/quotes', () => ({
   handleQuote: jest.fn(),
 }));
 

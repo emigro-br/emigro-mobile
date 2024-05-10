@@ -4,11 +4,9 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonText, HStack, Heading, VStack } from '@gluestack-ui/themed';
 
+import { AssetInput } from '@/components/AssetInput';
+import { PaymentStackParamList } from '@/navigation/PaymentsStack';
 import { CryptoAsset } from '@/types/assets';
-
-import { AssetInput } from '@components/AssetInput';
-
-import { PaymentStackParamList } from '@navigation/PaymentsStack';
 
 type Props = NativeStackScreenProps<PaymentStackParamList, 'RequestPayment'>;
 

@@ -2,19 +2,19 @@ import React from 'react';
 
 import { fireEvent, render } from '@testing-library/react-native';
 
-import { paymentStore } from '@stores/PaymentStore';
+import { paymentStore } from '@/stores/PaymentStore';
 
 import { SendAsset } from '../SendAsset';
 
 jest.mock('expo-clipboard');
 
-jest.mock('@stores/BalanceStore', () => ({
+jest.mock('@/stores/BalanceStore', () => ({
   balanceStore: {
     get: jest.fn().mockReturnValue(100),
   },
 }));
 
-jest.mock('@stores/PaymentStore', () => ({
+jest.mock('@/stores/PaymentStore', () => ({
   paymentStore: {
     setTransfer: jest.fn(),
   },

@@ -3,7 +3,7 @@ import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import * as Clipboard from 'expo-clipboard';
 
-import { paymentStore } from '@stores/PaymentStore';
+import { paymentStore } from '@/stores/PaymentStore';
 
 import { PastePixCode } from '../copia-e-cola';
 
@@ -11,7 +11,7 @@ jest.mock('expo-clipboard', () => ({
   getStringAsync: jest.fn(),
 }));
 
-jest.mock('@stores/PaymentStore', () => ({
+jest.mock('@/stores/PaymentStore', () => ({
   paymentStore: {
     preview: jest.fn(),
     setScannedPayment: jest.fn(),

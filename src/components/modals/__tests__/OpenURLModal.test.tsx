@@ -2,7 +2,7 @@ import React from 'react';
 
 import { fireEvent, render } from '@testing-library/react-native';
 
-import { OpenURLModal } from '@components/modals/OpenURLModal';
+import { OpenURLModal } from '@/components/modals/OpenURLModal';
 
 // FIXME: gluestack is not rendering Modal on test
 describe.skip('OpenURLModal', () => {

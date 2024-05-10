@@ -5,7 +5,7 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
-import * as auth from '@services/emigro/auth';
+import * as auth from '@/services/emigro/auth';
 
 import { PasswordRecovery } from '../password-recovery';
 

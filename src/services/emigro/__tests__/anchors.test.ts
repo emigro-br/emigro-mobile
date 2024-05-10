@@ -1,9 +1,8 @@
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
+import { api } from '@/services/emigro/api';
 import { CryptoAsset } from '@/types/assets';
-
-import { api } from '@services/emigro/api';
 
 import { CallbackType, confirmWithdraw, depositUrl, getTransaction, withdrawUrl } from '../anchors';
 import { InteractiveUrlRequest, InteractiveUrlResponse, Sep24Transaction, Sep24TransactionStatus } from '../types';

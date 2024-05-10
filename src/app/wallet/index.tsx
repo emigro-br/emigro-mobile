@@ -7,14 +7,12 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Box, ScrollView, VStack } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 
-import { CreateWallet } from '@components/CreateWallet';
-import OperationButtons from '@components/OperationButtons';
-import { WalletBalances } from '@components/WalletBalances';
-
-import { WalletStackParamList } from '@navigation/WalletStack';
-
-import { balanceStore } from '@stores/BalanceStore';
-import { sessionStore } from '@stores/SessionStore';
+import { CreateWallet } from '@/components/CreateWallet';
+import OperationButtons from '@/components/OperationButtons';
+import { WalletBalances } from '@/components/WalletBalances';
+import { WalletStackParamList } from '@/navigation/WalletStack';
+import { balanceStore } from '@/stores/BalanceStore';
+import { sessionStore } from '@/stores/SessionStore';
 
 type Props = {
   navigation: NativeStackNavigationProp<WalletStackParamList>;

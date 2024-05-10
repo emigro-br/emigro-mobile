@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { sessionStore } from '@stores/SessionStore';
+import { sessionStore } from '@/stores/SessionStore';
 
 export const useSession = () => {
   const [isLoading, setIsLoading] = useState(true);

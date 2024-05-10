@@ -4,20 +4,19 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { inputPIN, render } from 'test-utils';
 
-import { PaymentResponse } from '@services/emigro/types';
-
-import { paymentStore } from '@stores/PaymentStore';
-import { sessionStore } from '@stores/SessionStore';
+import { PaymentResponse } from '@/services/emigro/types';
+import { paymentStore } from '@/stores/PaymentStore';
+import { sessionStore } from '@/stores/SessionStore';
 
 import { ReviewTransfer } from '../review';
 
-jest.mock('@stores/SessionStore', () => ({
+jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     verifyPin: jest.fn(),
   },
 }));
 
-jest.mock('@stores/PaymentStore', () => ({
+jest.mock('@/stores/PaymentStore', () => ({
   paymentStore: {
     transaction: {
       from: {

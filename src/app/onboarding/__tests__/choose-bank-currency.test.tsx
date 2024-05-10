@@ -5,9 +5,8 @@ import { fireEvent } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
+import { sessionStore } from '@/stores/SessionStore';
 import { FiatCurrency } from '@/types/assets';
-
-import { sessionStore } from '@stores/SessionStore';
 
 import { ChooseBankCurrency, ChooseBankCurrencyScreen } from '../choose-bank-currency';
 

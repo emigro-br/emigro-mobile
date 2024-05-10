@@ -4,7 +4,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { AddIcon, ArrowRightIcon, ArrowUpIcon, ButtonGroup, RepeatIcon } from '@gluestack-ui/themed';
 
-import { WalletStackParamList } from '@navigation/WalletStack';
+import { WalletStackParamList } from '@/navigation/WalletStack';
 
 import { CircularButton } from './CircularButton';
 

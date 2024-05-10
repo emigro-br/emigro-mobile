@@ -18,12 +18,10 @@ import {
   VStack,
 } from '@gluestack-ui/themed';
 
+import { AssetListTile } from '@/components/AssetListTile';
 import { OnboardingStackParamList } from '@/navigation/OnboardingStack';
+import { sessionStore } from '@/stores/SessionStore';
 import { FiatCurrency } from '@/types/assets';
-
-import { AssetListTile } from '@components/AssetListTile';
-
-import { sessionStore } from '@stores/SessionStore';
 
 type Props = {
   navigation: NativeStackNavigationProp<OnboardingStackParamList, 'ChooseBankCurrency'>;

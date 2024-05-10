@@ -6,8 +6,8 @@ import { waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
-import { balanceStore } from '@stores/BalanceStore';
-import { sessionStore } from '@stores/SessionStore';
+import { balanceStore } from '@/stores/BalanceStore';
+import { sessionStore } from '@/stores/SessionStore';
 
 import RootStack from '../RootStack';
 

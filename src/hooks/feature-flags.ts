@@ -1,4 +1,4 @@
-import { sessionStore } from '@stores/SessionStore';
+import { sessionStore } from '@/stores/SessionStore';
 
 type FeatureFlags = {
   [key: string]: {

@@ -2,8 +2,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonText, Heading, LockIcon, Text, VStack } from '@gluestack-ui/themed';
 
-import { OnboardingStackParamList } from '@navigation/OnboardingStack';
-import { RootStackParamList } from '@navigation/RootStack';
+import { OnboardingStackParamList } from '@/navigation/OnboardingStack';
+import { RootStackParamList } from '@/navigation/RootStack';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList & OnboardingStackParamList, 'PinOnboarding'>;

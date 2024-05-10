@@ -3,9 +3,8 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 import { render } from 'test-utils';
 
 import { CreateAccount } from '@/app/signup';
-
-import * as auth from '@services/emigro/auth';
-import { Role, User } from '@services/emigro/types';
+import * as auth from '@/services/emigro/auth';
+import { Role, User } from '@/services/emigro/types';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 jest.mock('react-native-keyboard-aware-scroll-view');
@@ -15,7 +14,7 @@ const mockNavigattion: any = {
   push: jest.fn(),
 };
 
-jest.mock('@services/emigro/auth', () => ({
+jest.mock('@/services/emigro/auth', () => ({
   signUp: jest.fn(),
 }));
 

@@ -1,11 +1,10 @@
-import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
-
 // https://uxwing.com/
-import arsIcon from '@assets/images/icons/argentina-flag-round-circle-icon.png';
-import brlIcon from '@assets/images/icons/brazil-flag-round-circle-icon.png';
-import eurIcon from '@assets/images/icons/european-union-flag-round-circle-icon.png';
-import xlmIcon from '@assets/images/icons/stellar-xlm-icon.png';
-import usdIcon from '@assets/images/icons/usa-flag-round-circle-icon.png';
+import arsIcon from '@/assets/images/icons/argentina-flag-round-circle-icon.png';
+import brlIcon from '@/assets/images/icons/brazil-flag-round-circle-icon.png';
+import eurIcon from '@/assets/images/icons/european-union-flag-round-circle-icon.png';
+import xlmIcon from '@/assets/images/icons/stellar-xlm-icon.png';
+import usdIcon from '@/assets/images/icons/usa-flag-round-circle-icon.png';
+import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
 
 // convert asset code to currency code
 export const AssetToCurrency = {

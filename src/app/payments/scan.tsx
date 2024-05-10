@@ -16,18 +16,13 @@ import {
 import { PixElementType, hasError, parsePix } from 'pix-utils';
 
 import AskCamera from '@/app/payments/ask-camera';
+import { INVALID_QR_CODE } from '@/constants/errorMessages';
+import { useFeatureFlag } from '@/hooks/feature-flags';
+import { PaymentStackParamList } from '@/navigation/PaymentsStack';
+import { paymentStore } from '@/stores/PaymentStore';
 import { Payment, emigroCategoryCode } from '@/types/PixPayment';
-
-import { INVALID_QR_CODE } from '@constants/errorMessages';
-
-import { useFeatureFlag } from '@hooks/feature-flags';
-
-import { PaymentStackParamList } from '@navigation/PaymentsStack';
-
-import { paymentStore } from '@stores/PaymentStore';
-
-import { isoToCrypto } from '@utils/assets';
-import { brCodeFromMercadoPagoUrl } from '@utils/pix';
+import { isoToCrypto } from '@/utils/assets';
+import { brCodeFromMercadoPagoUrl } from '@/utils/pix';
 
 type ScreenProps = {
   navigation: NativeStackNavigationProp<PaymentStackParamList, 'PayWithQRCode'>;

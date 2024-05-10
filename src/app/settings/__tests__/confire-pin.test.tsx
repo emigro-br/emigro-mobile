@@ -2,11 +2,11 @@ import { fireEvent, screen, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
-import { sessionStore } from '@stores/SessionStore';
+import { sessionStore } from '@/stores/SessionStore';
 
 import { ConfigurePIN } from '../configure-pin';
 
-jest.mock('@stores/SessionStore', () => ({
+jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     savePin: jest.fn(),
   },

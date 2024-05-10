@@ -20,15 +20,11 @@ import {
   useToast,
 } from '@gluestack-ui/themed';
 
+import { PinScreen } from '@/components/PinScreen';
+import { Toast } from '@/components/Toast';
+import { AnonStackParamList } from '@/navigation/AnonStack';
+import { confirmResetPassword } from '@/services/emigro/auth';
 import { CustomError } from '@/types/errors';
-
-import { Toast } from '@components/Toast';
-
-import { AnonStackParamList } from '@navigation/AnonStack';
-
-import { confirmResetPassword } from '@services/emigro/auth';
-
-import { PinScreen } from '../../components/PinScreen';
 
 type Props = NativeStackScreenProps<AnonStackParamList, 'CreateNewPassword'>;
 

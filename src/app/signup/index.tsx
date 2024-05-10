@@ -21,16 +21,13 @@ import {
   VStack,
 } from '@gluestack-ui/themed';
 
+import { EmailInputControl } from '@/components/inputs/controls/EmailInputControl';
+import { PasswordInputControl } from '@/components/inputs/controls/PasswordInputControl';
+import { TextInputControl } from '@/components/inputs/controls/TextInputControl';
+import { AnonStackParamList } from '@/navigation/AnonStack';
+import { signUp } from '@/services/emigro/auth';
+import { RegisterUserRequest, Role } from '@/services/emigro/types';
 import { BadRequestException } from '@/types/errors';
-
-import { EmailInputControl } from '@components/inputs/controls/EmailInputControl';
-import { PasswordInputControl } from '@components/inputs/controls/PasswordInputControl';
-import { TextInputControl } from '@components/inputs/controls/TextInputControl';
-
-import { AnonStackParamList } from '@navigation/AnonStack';
-
-import { signUp } from '@services/emigro/auth';
-import { RegisterUserRequest, Role } from '@services/emigro/types';
 
 type Props = {
   navigation: NativeStackNavigationProp<AnonStackParamList, 'SignUp'>;

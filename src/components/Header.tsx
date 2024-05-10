@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import { Box, Center, Image, Pressable } from '@gluestack-ui/themed';
 
-import emigroLogo from '@assets/images/emigro-logo.png';
+import emigroLogo from '@/assets/images/emigro-logo.png';
 
 const Header: React.FC = () => {
   // https://reactnavigation.org/docs/handling-safe-area/

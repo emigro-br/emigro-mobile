@@ -17,9 +17,8 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import { hasError, parsePix } from 'pix-utils';
 
-import { PaymentStackParamList } from '@navigation/PaymentsStack';
-
-import { paymentStore } from '@stores/PaymentStore';
+import { PaymentStackParamList } from '@/navigation/PaymentsStack';
+import { paymentStore } from '@/stores/PaymentStore';
 
 type Props = {
   navigation: NativeStackNavigationProp<PaymentStackParamList, 'PastePixCode'>;

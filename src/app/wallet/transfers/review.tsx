@@ -4,17 +4,14 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonSpinner, ButtonText, Card, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
 
-import { PinScreen } from '@components/PinScreen';
-import { ErrorDialog } from '@components/dialogs/ErrorDialog';
-import { SuccessDialog } from '@components/dialogs/SuccessDialog';
-
-import { TransferStackParamList } from '@navigation/TrasnsferStack';
-import { WalletStackParamList } from '@navigation/WalletStack';
-
-import { paymentStore as bloc } from '@stores/PaymentStore';
-import { sessionStore } from '@stores/SessionStore';
-
-import { maskWallet } from '@utils/masks';
+import { PinScreen } from '@/components/PinScreen';
+import { ErrorDialog } from '@/components/dialogs/ErrorDialog';
+import { SuccessDialog } from '@/components/dialogs/SuccessDialog';
+import { TransferStackParamList } from '@/navigation/TrasnsferStack';
+import { WalletStackParamList } from '@/navigation/WalletStack';
+import { paymentStore as bloc } from '@/stores/PaymentStore';
+import { sessionStore } from '@/stores/SessionStore';
+import { maskWallet } from '@/utils/masks';
 
 type Props = NativeStackScreenProps<WalletStackParamList & TransferStackParamList, 'ReviewTransfer'>;
 

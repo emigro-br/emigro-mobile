@@ -5,11 +5,9 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box } from '@gluestack-ui/themed';
 
-import { RootStackParamList } from '@navigation/RootStack';
-
-import { sessionStore } from '@stores/SessionStore';
-
-import { PinScreen } from '../components/PinScreen';
+import { PinScreen } from '@/components/PinScreen';
+import { RootStackParamList } from '@/navigation/RootStack';
+import { sessionStore } from '@/stores/SessionStore';
 
 type Props = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Unlock'>;

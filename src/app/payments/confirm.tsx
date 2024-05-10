@@ -19,28 +19,22 @@ import {
 } from '@gluestack-ui/themed';
 import * as Sentry from '@sentry/react-native';
 
+import { InputAmountActionSheet } from '@/components/InputAmountActionSheet';
+import { LoadingScreen } from '@/components/Loading';
+import { PinScreen } from '@/components/PinScreen';
+import { ErrorModal } from '@/components/modals/ErrorModal';
+import { SuccessModal } from '@/components/modals/SuccessModal';
+import { TRANSACTION_ERROR_MESSAGE } from '@/constants/errorMessages';
+import { PaymentStackParamList } from '@/navigation/PaymentsStack';
+import { WalletStackParamList } from '@/navigation/WalletStack';
+import { IQuoteRequest, handleQuote } from '@/services/emigro/quotes';
+import { balanceStore } from '@/stores/BalanceStore';
+import { paymentStore as bloc, paymentStore } from '@/stores/PaymentStore';
+import { sessionStore } from '@/stores/SessionStore';
 import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset, cryptoAssets } from '@/types/assets';
-
-import { InputAmountActionSheet } from '@components/InputAmountActionSheet';
-import { LoadingScreen } from '@components/Loading';
-import { PinScreen } from '@components/PinScreen';
-import { ErrorModal } from '@components/modals/ErrorModal';
-import { SuccessModal } from '@components/modals/SuccessModal';
-
-import { TRANSACTION_ERROR_MESSAGE } from '@constants/errorMessages';
-
-import { PaymentStackParamList } from '@navigation/PaymentsStack';
-import { WalletStackParamList } from '@navigation/WalletStack';
-
-import { IQuoteRequest, handleQuote } from '@services/emigro/quotes';
-
-import { balanceStore } from '@stores/BalanceStore';
-import { paymentStore as bloc, paymentStore } from '@stores/PaymentStore';
-import { sessionStore } from '@stores/SessionStore';
-
-import { AssetToCurrency, symbolFor } from '@utils/assets';
-import { maskWallet } from '@utils/masks';
+import { AssetToCurrency, symbolFor } from '@/utils/assets';
+import { maskWallet } from '@/utils/masks';
 
 enum TransactionStep {
   NONE = 'none',

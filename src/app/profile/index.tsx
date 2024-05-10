@@ -27,17 +27,13 @@ import * as Application from 'expo-application';
 import * as Clipboard from 'expo-clipboard';
 import { observer } from 'mobx-react-lite';
 
+import { AssetListActionSheet } from '@/components/AssetListActionSheet';
+import { ProfileStackParamList } from '@/navigation/ProfileStack';
+import { balanceStore } from '@/stores/BalanceStore';
+import { sessionStore } from '@/stores/SessionStore';
 import { FiatCurrency } from '@/types/assets';
-
-import { AssetListActionSheet } from '@components/AssetListActionSheet';
-
-import { ProfileStackParamList } from '@navigation/ProfileStack';
-
-import { balanceStore } from '@stores/BalanceStore';
-import { sessionStore } from '@stores/SessionStore';
-
-import { AssetToCurrency } from '@utils/assets';
-import { maskWallet } from '@utils/masks';
+import { AssetToCurrency } from '@/utils/assets';
+import { maskWallet } from '@/utils/masks';
 
 type Props = {
   navigation: NativeStackNavigationProp<ProfileStackParamList, 'Profile'>;

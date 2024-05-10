@@ -19,13 +19,10 @@ import {
   useToast,
 } from '@gluestack-ui/themed';
 
-import { Toast } from '@components/Toast';
-
-import { ProfileStackParamList } from '@navigation/ProfileStack';
-
-import { deleteAccount } from '@services/emigro/auth';
-
-import { sessionStore } from '@stores/SessionStore';
+import { Toast } from '@/components/Toast';
+import { ProfileStackParamList } from '@/navigation/ProfileStack';
+import { deleteAccount } from '@/services/emigro/auth';
+import { sessionStore } from '@/stores/SessionStore';
 
 type Props = {
   navigation: NativeStackNavigationProp<ProfileStackParamList, 'Profile'>;

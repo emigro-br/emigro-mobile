@@ -1,8 +1,7 @@
 import { Avatar, AvatarImage } from '@gluestack-ui/themed';
 
 import { CryptoOrFiat } from '@/types/assets';
-
-import { iconFor, labelFor } from '@utils/assets';
+import { iconFor, labelFor } from '@/utils/assets';
 
 type Props = {
   asset: CryptoOrFiat;

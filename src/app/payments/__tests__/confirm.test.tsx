@@ -4,24 +4,22 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { inputPIN, render } from 'test-utils';
 
+import * as quotesService from '@/services/emigro/quotes';
+import { PaymentResponse } from '@/services/emigro/types';
+import { paymentStore } from '@/stores/PaymentStore';
 import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
-import * as quotesService from '@services/emigro/quotes';
-import { PaymentResponse } from '@services/emigro/types';
-
-import { paymentStore } from '@stores/PaymentStore';
-
 import { ConfirmPayment } from '../confirm';
 
-jest.mock('@stores/SessionStore', () => ({
+jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     publicKey: 'mockPublicKey',
     verifyPin: jest.fn().mockResolvedValue(true),
   },
 }));
 
-jest.mock('@stores/BalanceStore', () => ({
+jest.mock('@/stores/BalanceStore', () => ({
   balanceStore: {
     get: jest.fn().mockReturnValue(100),
   },

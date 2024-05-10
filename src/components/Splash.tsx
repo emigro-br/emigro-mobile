@@ -1,6 +1,6 @@
 import { Image, View } from 'react-native';
 
-import splash from '@assets/images/splash.png';
+import splash from '@/assets/images/splash.png';
 
 // Keep this component simple and clean, without gluestack theme
 export const SplashScreen = () => {

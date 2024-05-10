@@ -4,13 +4,13 @@ import { screen, waitFor } from '@testing-library/react-native';
 
 import { inputPIN, render } from 'test-utils';
 
-import { sessionStore } from '@stores/SessionStore';
+import { sessionStore } from '@/stores/SessionStore';
 
 import { UnlockScreen } from '../unlock';
 
 jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
-jest.mock('@stores/SessionStore', () => ({
+jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     verifyPin: jest.fn(),
   },

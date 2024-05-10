@@ -18,30 +18,25 @@ import {
 } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 
-import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
-
-import { AssetList } from '@components/AssetList';
-import { ConfirmationModal } from '@components/modals/ConfirmationModal';
-import { ErrorModal } from '@components/modals/ErrorModal';
-import { LoadingModal } from '@components/modals/LoadingModal';
-import { OpenURLModal } from '@components/modals/OpenURLModal';
-import { SuccessModal } from '@components/modals/SuccessModal';
-
-import { RootStackParamList } from '@navigation/RootStack';
-import { WalletStackParamList } from '@navigation/WalletStack';
-
+import { AssetList } from '@/components/AssetList';
+import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
+import { ErrorModal } from '@/components/modals/ErrorModal';
+import { LoadingModal } from '@/components/modals/LoadingModal';
+import { OpenURLModal } from '@/components/modals/OpenURLModal';
+import { SuccessModal } from '@/components/modals/SuccessModal';
+import { RootStackParamList } from '@/navigation/RootStack';
+import { WalletStackParamList } from '@/navigation/WalletStack';
 import {
   CallbackType,
   ConfirmWithdrawDto,
   confirmWithdraw,
   getTransaction,
   withdrawUrl,
-} from '@services/emigro/anchors';
-import { Sep24Transaction, Sep24TransactionStatus } from '@services/emigro/types';
-
-import { sessionStore } from '@stores/SessionStore';
-
-import { CurrencyToAsset } from '@utils/assets';
+} from '@/services/emigro/anchors';
+import { Sep24Transaction, Sep24TransactionStatus } from '@/services/emigro/types';
+import { sessionStore } from '@/stores/SessionStore';
+import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
+import { CurrencyToAsset } from '@/utils/assets';
 
 import { LoadingScreen } from '../../components/Loading';
 

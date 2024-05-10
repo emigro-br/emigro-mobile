@@ -26,16 +26,12 @@ import * as Clipboard from 'expo-clipboard';
 import { createStaticPix } from 'pix-utils';
 import { CreateStaticPixParams } from 'pix-utils/dist/main/types/pixCreate';
 
+import { PaymentStackParamList } from '@/navigation/PaymentsStack';
+import { UserProfile } from '@/services/emigro/types';
+import { sessionStore } from '@/stores/SessionStore';
 import { emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
-
-import { PaymentStackParamList } from '@navigation/PaymentsStack';
-
-import { UserProfile } from '@services/emigro/types';
-
-import { sessionStore } from '@stores/SessionStore';
-
-import { AssetToCurrency, fiatToIso, symbolFor } from '@utils/assets';
+import { AssetToCurrency, fiatToIso, symbolFor } from '@/utils/assets';
 
 const enum QRCodeSize {
   SMALL = 200,

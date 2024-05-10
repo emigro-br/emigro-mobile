@@ -1,10 +1,9 @@
 import { useToast } from '@gluestack-ui/themed';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
-import { deleteAccount } from '@services/emigro/auth';
-import { AuthSession } from '@services/emigro/types';
-
-import { sessionStore } from '@stores/SessionStore';
+import { deleteAccount } from '@/services/emigro/auth';
+import { AuthSession } from '@/services/emigro/types';
+import { sessionStore } from '@/stores/SessionStore';
 
 import DeleteAccount from '../delete-account';
 
@@ -13,14 +12,14 @@ jest.mock('@gluestack-ui/themed', () => ({
   useToast: jest.fn().mockReturnValue({ show: jest.fn() }),
 }));
 
-jest.mock('@stores/SessionStore', () => ({
+jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     session: null,
     clear: jest.fn(),
   },
 }));
 
-jest.mock('@services/emigro/auth', () => ({
+jest.mock('@/services/emigro/auth', () => ({
   getSession: jest.fn(),
   deleteAccount: jest.fn(),
   clearSession: jest.fn(),

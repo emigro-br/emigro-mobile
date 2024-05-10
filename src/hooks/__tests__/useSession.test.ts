@@ -1,15 +1,14 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
 import mockConsole from 'jest-mock-console';
 
-import { AuthSession } from '@services/emigro/types';
-
-import { sessionStore } from '@stores/SessionStore';
+import { AuthSession } from '@/services/emigro/types';
+import { sessionStore } from '@/stores/SessionStore';
 
 import { useSession } from '../useSession';
 
 const mockSession = { accessToken: 'abc123' } as AuthSession;
 
-jest.mock('@stores/SessionStore', () => ({
+jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     load: jest.fn(),
     refresh: jest.fn(),

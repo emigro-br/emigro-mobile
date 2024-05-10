@@ -23,14 +23,11 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import { ClipboardPasteIcon } from 'lucide-react-native';
 
+import { AssetInput } from '@/components/AssetInput';
+import { TransferStackParamList } from '@/navigation/TrasnsferStack';
+import { balanceStore } from '@/stores/BalanceStore';
+import { paymentStore as bloc } from '@/stores/PaymentStore';
 import { CryptoAsset } from '@/types/assets';
-
-import { AssetInput } from '@components/AssetInput';
-
-import { TransferStackParamList } from '@navigation/TrasnsferStack';
-
-import { balanceStore } from '@stores/BalanceStore';
-import { paymentStore as bloc } from '@stores/PaymentStore';
 
 type Props = NativeStackScreenProps<TransferStackParamList, 'SendAsset'>;
 

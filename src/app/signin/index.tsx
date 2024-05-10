@@ -20,14 +20,11 @@ import {
   VStack,
 } from '@gluestack-ui/themed';
 
+import { EmailInputControl } from '@/components/inputs/controls/EmailInputControl';
+import { PasswordInputControl } from '@/components/inputs/controls/PasswordInputControl';
+import { AnonStackParamList } from '@/navigation/AnonStack';
+import { sessionStore } from '@/stores/SessionStore';
 import { BadRequestException } from '@/types/errors';
-
-import { EmailInputControl } from '@components/inputs/controls/EmailInputControl';
-import { PasswordInputControl } from '@components/inputs/controls/PasswordInputControl';
-
-import { AnonStackParamList } from '@navigation/AnonStack';
-
-import { sessionStore } from '@stores/SessionStore';
 
 // for react-hook-form
 type FormData = {

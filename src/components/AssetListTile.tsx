@@ -1,6 +1,5 @@
 import { CryptoOrFiat } from '@/types/assets';
-
-import { labelFor } from '@utils/assets';
+import { labelFor } from '@/utils/assets';
 
 import { AssetAvatar } from './AssetAvatar';
 import { ListTile } from './ListTile';

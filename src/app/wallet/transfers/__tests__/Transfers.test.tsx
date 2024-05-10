@@ -4,13 +4,12 @@ import { fireEvent } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
+import { balanceStore } from '@/stores/BalanceStore';
 import { CryptoAsset } from '@/types/assets';
-
-import { balanceStore } from '@stores/BalanceStore';
 
 import { Transfers } from '..';
 
-jest.mock('@stores/BalanceStore', () => ({
+jest.mock('@/stores/BalanceStore', () => ({
   balanceStore: {
     currentAssets: jest.fn(),
   },

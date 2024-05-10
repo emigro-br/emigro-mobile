@@ -4,17 +4,15 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
+import * as anchor from '@/services/emigro/anchors';
+import { sessionStore } from '@/stores/SessionStore';
 import { FiatCurrency } from '@/types/assets';
-
-import * as anchor from '@services/emigro/anchors';
-
-import { sessionStore } from '@stores/SessionStore';
 
 import Withdraw from '../withdraw';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
-jest.mock('@services/emigro/anchors', () => ({
+jest.mock('@/services/emigro/anchors', () => ({
   withdrawUrl: jest.fn(),
   getTransaction: jest.fn().mockResolvedValue({
     status: 'completed',
@@ -24,11 +22,11 @@ jest.mock('@services/emigro/anchors', () => ({
   },
 }));
 
-jest.mock('@services/emigro/users', () => ({
+jest.mock('@/services/emigro/users', () => ({
   getUserPublicKey: jest.fn().mockResolvedValue('somePublicKey'),
 }));
 
-jest.mock('@stores/SessionStore', () => ({
+jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     session: {},
     get accessToken() {

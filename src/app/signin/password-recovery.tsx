@@ -6,12 +6,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonText, HStack, Heading, LockIcon, Text, VStack, useToast } from '@gluestack-ui/themed';
 
-import { Toast } from '@components/Toast';
-import { EmailInputControl } from '@components/inputs/controls/EmailInputControl';
-
-import { AnonStackParamList } from '@navigation/AnonStack';
-
-import { resetPassword } from '@services/emigro/auth';
+import { Toast } from '@/components/Toast';
+import { EmailInputControl } from '@/components/inputs/controls/EmailInputControl';
+import { AnonStackParamList } from '@/navigation/AnonStack';
+import { resetPassword } from '@/services/emigro/auth';
 
 // for react-hook-form
 type FormData = {

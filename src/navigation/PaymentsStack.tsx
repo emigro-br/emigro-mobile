@@ -6,8 +6,7 @@ import { PastePixCode } from '@/app/payments/pix/copia-e-cola';
 import { RequestPayment } from '@/app/payments/request';
 import { RequestWithQRCode } from '@/app/payments/request/show-qr-code';
 import { PayWithQRCode } from '@/app/payments/scan';
-
-import Header from '@components/Header';
+import Header from '@/components/Header';
 
 import screenOptions from './screenOptions';
 

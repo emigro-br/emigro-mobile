@@ -5,12 +5,10 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { Box } from '@gluestack-ui/themed';
 
-import { PinScreen } from '@components/PinScreen';
-
-import { ProfileStackParamList } from '@navigation/ProfileStack';
-import { RootStackParamList } from '@navigation/RootStack';
-
-import { sessionStore } from '@stores/SessionStore';
+import { PinScreen } from '@/components/PinScreen';
+import { ProfileStackParamList } from '@/navigation/ProfileStack';
+import { RootStackParamList } from '@/navigation/RootStack';
+import { sessionStore } from '@/stores/SessionStore';
 
 type PinRefType = {
   clear: () => void;

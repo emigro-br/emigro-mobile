@@ -4,14 +4,12 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Box, Button, ButtonText, Card, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
 
-import { PinScreen } from '@components/PinScreen';
-import { ErrorModal } from '@components/modals/ErrorModal';
-
-import { SwapStackParamList } from '@navigation/SwapStack';
-import { WalletStackParamList } from '@navigation/WalletStack';
-
-import { paymentStore as bloc } from '@stores/PaymentStore';
-import { sessionStore } from '@stores/SessionStore';
+import { PinScreen } from '@/components/PinScreen';
+import { ErrorModal } from '@/components/modals/ErrorModal';
+import { SwapStackParamList } from '@/navigation/SwapStack';
+import { WalletStackParamList } from '@/navigation/WalletStack';
+import { paymentStore as bloc } from '@/stores/PaymentStore';
+import { sessionStore } from '@/stores/SessionStore';
 
 interface DetailsSwapProps {
   navigation: NativeStackNavigationProp<WalletStackParamList & SwapStackParamList, 'SwapReview'>;

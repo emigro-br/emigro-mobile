@@ -1,12 +1,12 @@
 import axios, { AxiosInstance, CreateAxiosDefaults } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import { sessionStore } from '@stores/SessionStore';
+import { sessionStore } from '@/stores/SessionStore';
 
 import { api, withRefreshTokenInterceptor } from '../api';
 import { AuthSession } from '../types';
 
-jest.mock('@stores/SessionStore', () => ({
+jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     session: true,
     accessToken: 'testAccessToken',

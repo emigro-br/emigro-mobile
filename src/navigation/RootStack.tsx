@@ -4,8 +4,7 @@ import { CommonActions, NavigatorScreenParams, useNavigation } from '@react-navi
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { UnlockScreen } from '@/app/unlock';
-
-import { sessionStore } from '@stores/SessionStore';
+import { sessionStore } from '@/stores/SessionStore';
 
 import { AnonStack } from './AnonStack';
 import { MainApp, TabNavParamList } from './MainApp';

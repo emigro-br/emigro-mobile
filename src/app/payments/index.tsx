@@ -5,14 +5,11 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Box, ButtonGroup, CopyIcon, Heading, VStack } from '@gluestack-ui/themed';
 import { HandCoinsIcon, QrCodeIcon } from 'lucide-react-native';
 
+import { AssetListActionSheet } from '@/components/AssetListActionSheet';
+import { CircularButton } from '@/components/CircularButton';
+import { useFeatureFlag } from '@/hooks/feature-flags';
+import { PaymentStackParamList } from '@/navigation/PaymentsStack';
 import { cryptoAssets } from '@/types/assets';
-
-import { AssetListActionSheet } from '@components/AssetListActionSheet';
-import { CircularButton } from '@components/CircularButton';
-
-import { useFeatureFlag } from '@hooks/feature-flags';
-
-import { PaymentStackParamList } from '@navigation/PaymentsStack';
 
 type Props = {
   navigation: NativeStackNavigationProp<PaymentStackParamList, 'Payments'>;
