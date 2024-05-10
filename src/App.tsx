@@ -8,13 +8,10 @@ import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
 import { observer } from 'mobx-react-lite';
 
-import { config } from '@config/gluestack-ui.config';
-
-import { useSession } from '@hooks/useSession';
-
-import RootStack from '@navigation/RootStack';
-
-import { SplashScreen } from '@screens/Splash';
+import { SplashScreen } from '@/components/Splash';
+import { config } from '@/config/gluestack-ui.config';
+import { useSession } from '@/hooks/useSession';
+import RootStack from '@/navigation/RootStack';
 
 async function onFetchUpdateAsync() {
   try {

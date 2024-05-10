@@ -1,4 +1,4 @@
-import { Balance } from '@services/emigro/types';
+import { Balance } from '@/services/emigro/types';
 
 export const userBalance: Balance[] = [
   { balance: '10', assetType: 'Asset Type 1', assetCode: 'BRL' },

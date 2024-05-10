@@ -1,12 +1,11 @@
 import { NavigatorScreenParams } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import Header from '@components/Header';
-
-import Deposit from '@screens/Deposit';
-import { ManageAccountsScreen } from '@screens/ManageAccounts';
-import Wallet from '@screens/Wallet';
-import Withdraw from '@screens/Withdraw';
+import Wallet from '@/app/wallet';
+import Deposit from '@/app/wallet/deposit';
+import { ManageAccountsScreen } from '@/app/wallet/manage';
+import Withdraw from '@/app/wallet/withdraw';
+import Header from '@/components/Header';
 
 import { SwapStack, SwapStackParamList } from './SwapStack';
 import { TransferStack, TransferStackParamList } from './TrasnsferStack';

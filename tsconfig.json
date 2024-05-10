@@ -20,55 +20,20 @@
   "skipLibCheck": true,
   "resolveJsonModule": true,
   "strict": true,
-  "baseUrl": ".",
   "compilerOptions": {
+    "baseUrl": "./",
     "strict": true,
     "module": "es6",
     "types":["@testing-library/jest-native", "jest", "node"],
     "paths": {
-      "test-utils": ["./src/__utils__/test-utils"],
-      "@api/*": [
-        "./src/api/*"
+      "test-utils": ["src/__utils__/test-utils"],
+      "@/assets/*": [
+        "assets/*"
       ],
-      "@assets/*": [
-        "./assets/*"
+      "@/config/*": [
+        "config/*"
       ],
-      "@config/*": [
-        "./config/*"
-      ],
-      "@components/*": [
-        "./src/components/*"
-      ],
-      "@constants/*": [
-        "./src/constants/*"
-      ],
-      "@contexts/*": [
-        "./src/contexts/*"
-      ],
-      "@hooks/*": [
-        "./src/hooks/*"
-      ],
-      "@navigation/*": [
-        "./src/navigation/*"
-      ],
-      "@screens/*": [
-        "./src/screens/*"
-      ],
-      "@services/*": [
-        "./src/services/*"
-      ],
-      "@storage/*": [
-        "./src/storage/*"
-      ],
-      "@stores/*": [
-        "./src/stores/*"
-      ],
-      "@utils/*": [
-        "./src/utils/*"
-      ],
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["src/*"]
     }
   }
 }

@@ -1,9 +1,9 @@
-import { Balance } from '@services/emigro/types';
-import * as usersApi from '@services/emigro/users';
+import { Balance } from '@/services/emigro/types';
+import * as usersApi from '@/services/emigro/users';
 
 import { BalanceStore } from '../BalanceStore';
 
-jest.mock('@services/emigro/users', () => ({
+jest.mock('@/services/emigro/users', () => ({
   getUserBalance: jest.fn(),
 }));
 

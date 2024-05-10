@@ -1,8 +1,7 @@
+import * as transactionApi from '@/services/emigro/transactions';
+import { PaymentResponse } from '@/services/emigro/types';
 import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
-
-import * as transactionApi from '@services/emigro/transactions';
-import { PaymentResponse } from '@services/emigro/types';
 
 import { PaymentStore, SwapTransaction } from '../PaymentStore';
 
@@ -10,7 +9,7 @@ jest.mock('expo-crypto', () => ({
   randomUUID: jest.fn().mockReturnValue('mocked-uuid'),
 }));
 
-jest.mock('@stores/SessionStore', () => ({
+jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     publicKey: 'mockedPublicKey',
   },

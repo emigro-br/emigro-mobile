@@ -3,8 +3,7 @@ import CurrencyInput from 'react-native-currency-input';
 import { Input, InputField } from '@gluestack-ui/themed';
 
 import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
-
-import { AssetToSymbol } from '@utils/assets';
+import { AssetToSymbol } from '@/utils/assets';
 
 type InputWithoutValue = Omit<React.ComponentProps<typeof InputField>, 'value'>;
 

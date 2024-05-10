@@ -10,8 +10,7 @@ import {
 } from '@gluestack-ui/themed';
 
 import { CryptoOrFiat } from '@/types/assets';
-
-import { labelFor } from '@utils/assets';
+import { labelFor } from '@/utils/assets';
 
 import { AssetAvatar } from './AssetAvatar';
 

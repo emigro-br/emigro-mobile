@@ -1,11 +1,11 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { CreateNewPassword } from '@screens/CreateNewPassword';
-import Login from '@screens/Login';
-import { PasswordRecovery } from '@screens/PasswordRecovery';
-import { Welcome } from '@screens/Welcome';
-import ConfirmAccount from '@screens/signup/ConfirmAccount';
-import { CreateAccount } from '@screens/signup/CreateAccount';
+import Login from '@/app/signin';
+import { CreateNewPassword } from '@/app/signin/create-new-password';
+import { PasswordRecovery } from '@/app/signin/password-recovery';
+import { CreateAccount } from '@/app/signup';
+import ConfirmAccount from '@/app/signup/confirm';
+import { Welcome } from '@/app/welcome';
 
 import screenOptions from './screenOptions';
 

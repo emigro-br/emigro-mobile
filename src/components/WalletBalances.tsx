@@ -2,13 +2,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { AddIcon, Button, ButtonIcon, Card, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
 
+import { WalletStackParamList } from '@/navigation/WalletStack';
+import { Balance } from '@/services/emigro/types';
 import { CryptoAsset } from '@/types/assets';
-
-import { WalletStackParamList } from '@navigation/WalletStack';
-
-import { Balance } from '@services/emigro/types';
-
-import { AssetToCurrency, AssetToSymbol } from '@utils/assets';
+import { AssetToCurrency, AssetToSymbol } from '@/utils/assets';
 
 import { AssetListTile } from './AssetListTile';
 

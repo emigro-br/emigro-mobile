@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 
 import { Button, ButtonText, Card, Heading, Text } from '@gluestack-ui/themed';
 
+import { createWallet } from '@/services/emigro/users';
+import { balanceStore } from '@/stores/BalanceStore';
+import { sessionStore } from '@/stores/SessionStore';
 import { CryptoAsset } from '@/types/assets';
-
-import { createWallet } from '@services/emigro/users';
-
-import { balanceStore } from '@stores/BalanceStore';
-import { sessionStore } from '@stores/SessionStore';
 
 export const CreateWallet = () => {
   const [isCreating, setIsCreating] = useState(false);

@@ -1,8 +1,8 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import ReviewTransfer from '@screens/transfers/ReviewTransfer';
-import SendAsset from '@screens/transfers/SendAsset';
-import Transfers from '@screens/transfers/Transfers';
+import Transfers from '@/app/wallet/transfers';
+import SendAsset from '@/app/wallet/transfers/SendAsset';
+import ReviewTransfer from '@/app/wallet/transfers/review';
 
 import screenOptions from './screenOptions';
 

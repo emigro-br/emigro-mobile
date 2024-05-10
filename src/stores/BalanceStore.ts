@@ -1,9 +1,8 @@
 import { action, makeAutoObservable, observable } from 'mobx';
 
+import { Balance } from '@/services/emigro/types';
+import { getUserBalance } from '@/services/emigro/users';
 import { CryptoAsset } from '@/types/assets';
-
-import { Balance } from '@services/emigro/types';
-import { getUserBalance } from '@services/emigro/users';
 
 export class BalanceStore {
   userBalance: Balance[] = [];

@@ -7,7 +7,7 @@ const defaultTimeout = 10000;
 
 export const api = (config: CreateAxiosDefaults = {}): AxiosInstance => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { sessionStore } = require('@stores/SessionStore'); // workaround to avoid circular dependency
+  const { sessionStore } = require('@/stores/SessionStore'); // workaround to avoid circular dependency
 
   const instance = axios.create({
     baseURL: backendUrl,

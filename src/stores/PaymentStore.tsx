@@ -2,15 +2,12 @@ import * as Crypto from 'expo-crypto';
 import { action, makeAutoObservable, observable } from 'mobx';
 import { PixElementType, hasError, parsePix } from 'pix-utils';
 
+import { brcodePayment, brcodePaymentPreview, sendTransaction } from '@/services/emigro/transactions';
+import { TransactionRequest, TransactionType } from '@/services/emigro/types';
+import { sessionStore } from '@/stores/SessionStore';
 import { Payment, PixPayment, emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
-
-import { brcodePayment, brcodePaymentPreview, sendTransaction } from '@services/emigro/transactions';
-import { TransactionRequest, TransactionType } from '@services/emigro/types';
-
-import { sessionStore } from '@stores/SessionStore';
-
-import { isoToCrypto } from '@utils/assets';
+import { isoToCrypto } from '@/utils/assets';
 
 export type SwapTransaction = {
   from: CryptoAsset;

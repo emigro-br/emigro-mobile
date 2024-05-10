@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { DetailsSwap } from '@screens/swap/DetailsSwap';
-import { Swap } from '@screens/swap/Swap';
+import { Swap } from '@/app/wallet/swap';
+import { DetailsSwap } from '@/app/wallet/swap/review';
 
 import screenOptions from './screenOptions';
 

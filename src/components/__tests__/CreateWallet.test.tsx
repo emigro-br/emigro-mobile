@@ -3,16 +3,15 @@ import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import mockConsole from 'jest-mock-console';
 
-import * as users from '@services/emigro/users';
-
-import { balanceStore } from '@stores/BalanceStore';
-import { sessionStore } from '@stores/SessionStore';
+import * as users from '@/services/emigro/users';
+import { balanceStore } from '@/stores/BalanceStore';
+import { sessionStore } from '@/stores/SessionStore';
 
 import { CreateWallet } from '../CreateWallet';
 
-jest.mock('@services/emigro/users');
-jest.mock('@stores/BalanceStore');
-jest.mock('@stores/SessionStore', () => ({
+jest.mock('@/services/emigro/users');
+jest.mock('@/stores/BalanceStore');
+jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     fetchUser: jest.fn().mockResolvedValue({}),
   },

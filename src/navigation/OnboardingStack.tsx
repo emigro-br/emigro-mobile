@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { ChooseBankCurrencyScreen } from '@screens/onboarding/ChooseBankCurrency';
-import { PinOnboarding } from '@screens/onboarding/PinOnboarding';
+import { ChooseBankCurrencyScreen } from '@/app/onboarding/choose-bank-currency';
+import { PinOnboarding } from '@/app/onboarding/pin';
 
 export type OnboardingStackParamList = {
   ChooseBankCurrency: undefined;
