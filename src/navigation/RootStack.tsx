@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { CommonActions, NavigatorScreenParams, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { UnlockScreen } from '@screens/Unlock';
+import { UnlockScreen } from '@/app/unlock';
 
 import { sessionStore } from '@stores/SessionStore';
 

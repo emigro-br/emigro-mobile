@@ -1,8 +1,8 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { ConfigurePIN } from '@screens/profile/ConfigurePIN';
-import DeleteAccount from '@screens/profile/DeleteAccount';
-import Profile from '@screens/profile/Profile';
+import Profile from '@/app/profile';
+import DeleteAccount from '@/app/profile/delete-account';
+import { ConfigurePIN } from '@/app/settings/configure-pin';
 
 import screenOptions from './screenOptions';
 

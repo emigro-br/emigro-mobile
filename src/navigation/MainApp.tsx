@@ -5,7 +5,7 @@ import * as IconsSolid from 'react-native-heroicons/solid';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigatorScreenParams, Route, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
-import Location from '@screens/Location';
+import Location from '@/app/location';
 
 import { PaymentStack, PaymentStackParamList } from './PaymentsStack';
 import { ProfileStack, ProfileStackParamList } from './ProfileStack';

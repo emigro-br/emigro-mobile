@@ -51,9 +51,6 @@
       "@navigation/*": [
         "./src/navigation/*"
       ],
-      "@screens/*": [
-        "./src/screens/*"
-      ],
       "@services/*": [
         "./src/services/*"
       ],

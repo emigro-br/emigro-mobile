@@ -1,13 +1,13 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import Header from '@components/Header';
+import { Payments } from '@/app/payments';
+import { ConfirmPayment } from '@/app/payments/confirm';
+import { PastePixCode } from '@/app/payments/pix/copia-e-cola';
+import { RequestPayment } from '@/app/payments/request';
+import { RequestWithQRCode } from '@/app/payments/request/show-qr-code';
+import { PayWithQRCode } from '@/app/payments/scan';
 
-import { ConfirmPayment } from '@screens/payments/ConfirmPayment';
-import { PastePixCode } from '@screens/payments/PastePixCode';
-import { PayWithQRCode } from '@screens/payments/PayWithQRCode';
-import { Payments } from '@screens/payments/Payments';
-import { RequestPayment } from '@screens/payments/RequestPayment';
-import { RequestWithQRCode } from '@screens/payments/RequestWithQRCode';
+import Header from '@components/Header';
 
 import screenOptions from './screenOptions';
 
