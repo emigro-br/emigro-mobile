@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 
+import { securityStore } from '@/stores/SecurityStore';
 import { sessionStore } from '@/stores/SessionStore';
 
 export const useSession = () => {
@@ -20,6 +21,7 @@ export const useSession = () => {
           sessionStore.fetchUser();
           sessionStore.fetchProfile();
         }
+        await securityStore.loadPin();
       } catch (error) {
         console.warn('Can not load the token, cleaning session', error);
         await sessionStore.clear();

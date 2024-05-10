@@ -8,7 +8,7 @@ import { Box } from '@gluestack-ui/themed';
 import { PinScreen } from '@/components/PinScreen';
 import { ProfileStackParamList } from '@/navigation/ProfileStack';
 import { RootStackParamList } from '@/navigation/RootStack';
-import { sessionStore } from '@/stores/SessionStore';
+import { securityStore } from '@/stores/SecurityStore';
 
 type PinRefType = {
   clear: () => void;
@@ -33,7 +33,7 @@ export const ConfigurePIN = ({ navigation, route }: Props) => {
       setPin(enteredPin);
       setIsReEnter(true);
     } else {
-      await sessionStore.savePin(enteredPin);
+      await securityStore.savePin(enteredPin);
       if (backTo === 'Root') {
         navigation.replace('Root');
       } else {

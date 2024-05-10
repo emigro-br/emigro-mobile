@@ -15,6 +15,12 @@ import { ConfirmPayment } from '../confirm';
 jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     publicKey: 'mockPublicKey',
+  },
+}));
+
+jest.mock('@/stores/SecurityStore', () => ({
+  securityStore: {
+    pin: '1234',
     verifyPin: jest.fn().mockResolvedValue(true),
   },
 }));

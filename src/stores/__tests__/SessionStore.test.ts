@@ -1,4 +1,3 @@
-import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 
 import * as authService from '@/services/emigro/auth';
@@ -37,24 +36,9 @@ describe('SessionStore', () => {
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
+    SecureStore.clear(); // eslint-disable-line import/namespace
     sessionStore = new SessionStore();
-    const inMemoryStorage: Record<string, string> = {};
-
-    (SecureStore.setItemAsync as jest.Mock).mockImplementation(async (key, value) => {
-      // Save the value in memory
-      inMemoryStorage[key] = value;
-    });
-
-    (SecureStore.getItemAsync as jest.Mock).mockImplementation(async (key) => {
-      // Retrieve the value from memory
-      return inMemoryStorage[key];
-    });
-
-    (SecureStore.deleteItemAsync as jest.Mock).mockImplementation(async (key) => {
-      // delete the value from memory
-      delete inMemoryStorage[key];
-    });
   });
 
   it('should save and load session', async () => {
@@ -148,7 +132,6 @@ describe('SessionStore', () => {
     expect(sessionStore.justLoggedIn).toBe(false);
     expect(sessionStore.publicKey).toBeUndefined();
     expect(sessionStore.accessToken).toBeUndefined();
-    expect(sessionStore.loadPin()).resolves.toBeUndefined();
   });
 
   it('should get access token', () => {
@@ -286,70 +269,5 @@ describe('SessionStore', () => {
     await sessionStore.signOut();
 
     expect(sessionStore.clear).toHaveBeenCalledTimes(1);
-  });
-
-  describe('PIN', () => {
-    it('should save PIN', async () => {
-      const pin = '1234';
-      const hashedPin = 'hashed_1234';
-
-      jest.spyOn(Crypto, 'digestStringAsync').mockResolvedValueOnce(hashedPin);
-
-      await sessionStore.savePin(pin);
-
-      expect(Crypto.digestStringAsync).toHaveBeenCalledWith(Crypto.CryptoDigestAlgorithm.SHA256, pin);
-      expect(SecureStore.setItemAsync).toHaveBeenCalledWith('pin', hashedPin);
-    });
-
-    it('should load PIN', async () => {
-      const pin = '1234';
-      const hashedPin = 'hashed_1234';
-      jest.spyOn(Crypto, 'digestStringAsync').mockResolvedValueOnce(hashedPin);
-
-      await sessionStore.savePin(pin);
-      const loadedPin = await sessionStore.loadPin();
-
-      expect(loadedPin).toBe(hashedPin);
-    });
-
-    it('should return null if there is no PIN', async () => {
-      const loadedPin = await sessionStore.loadPin();
-
-      expect(loadedPin).toBeUndefined();
-    });
-
-    it('should clear PIN', async () => {
-      await sessionStore.savePin('1234');
-      await sessionStore.clearPin();
-
-      expect(SecureStore.deleteItemAsync).toHaveBeenCalledWith('pin');
-    });
-
-    it('should return true if the PIN is correct', async () => {
-      const pin = '1234';
-      const hashedPin = 'hashed_1234';
-      jest.spyOn(Crypto, 'digestStringAsync').mockResolvedValue(hashedPin);
-
-      await sessionStore.savePin(pin);
-      const result = await sessionStore.verifyPin(pin);
-
-      expect(result).toBe(true);
-    });
-
-    it('should return false if the PIN is incorrect', async () => {
-      const pin = '1234';
-      jest.spyOn(Crypto, 'digestStringAsync').mockResolvedValueOnce('hashed_1234');
-
-      await sessionStore.savePin(pin);
-
-      jest.spyOn(Crypto, 'digestStringAsync').mockResolvedValueOnce('hashed_4321');
-      const result = await sessionStore.verifyPin('4321');
-
-      expect(result).toBe(false);
-    });
-
-    it('should throw an error if there is no PIN', async () => {
-      await expect(sessionStore.verifyPin('1234')).rejects.toThrow('PIN not set');
-    });
   });
 });

@@ -7,6 +7,7 @@ import { Box } from '@gluestack-ui/themed';
 
 import { PinScreen } from '@/components/PinScreen';
 import { RootStackParamList } from '@/navigation/RootStack';
+import { securityStore } from '@/stores/SecurityStore';
 import { sessionStore } from '@/stores/SessionStore';
 
 type Props = {
@@ -33,7 +34,7 @@ export const UnlockScreen = ({ navigation }: Props) => {
       <PinScreen
         tagline="Enter your PIN"
         btnLabel="Unlock"
-        verifyPin={(pin) => sessionStore.verifyPin(pin)}
+        verifyPin={(pin) => securityStore.verifyPin(pin)}
         onPinSuccess={() => setUnlocked(true)}
         onPinFail={handlePinFail}
         autoSubmit

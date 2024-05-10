@@ -7,7 +7,9 @@ import { waitFor } from '@testing-library/react-native';
 import { render } from 'test-utils';
 
 import { balanceStore } from '@/stores/BalanceStore';
+import { securityStore } from '@/stores/SecurityStore';
 import { sessionStore } from '@/stores/SessionStore';
+import { FiatCurrency } from '@/types/assets';
 
 import RootStack from '../RootStack';
 
@@ -44,7 +46,8 @@ describe('RootStack', () => {
   });
 
   it('should render Unlock when signed in and has pin', async () => {
-    jest.spyOn(sessionStore, 'loadPin').mockResolvedValue('1234');
+    sessionStore.preferences = { fiatsWithBank: [FiatCurrency.USD] };
+    securityStore.setPin('1234');
 
     const { getByText } = render(
       <NavigationContainer>

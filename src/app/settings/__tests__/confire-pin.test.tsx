@@ -2,12 +2,12 @@ import { fireEvent, screen, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
-import { sessionStore } from '@/stores/SessionStore';
+import { securityStore } from '@/stores/SecurityStore';
 
 import { ConfigurePIN } from '../configure-pin';
 
-jest.mock('@/stores/SessionStore', () => ({
-  sessionStore: {
+jest.mock('@/stores/SecurityStore', () => ({
+  securityStore: {
     savePin: jest.fn(),
   },
 }));
@@ -66,7 +66,7 @@ describe('ConfigurePIN component', () => {
 
     // check success
     await waitFor(() => {
-      expect(sessionStore.savePin).toHaveBeenCalledWith('1234');
+      expect(securityStore.savePin).toHaveBeenCalledWith('1234');
       expect(mockNavigation.popToTop).toHaveBeenCalled();
     });
   });
@@ -95,7 +95,7 @@ describe('ConfigurePIN component', () => {
     const enterTitle = screen.getByText('Enter your new PIN code');
     expect(enterTitle).toBeOnTheScreen();
 
-    expect(sessionStore.savePin).not.toHaveBeenCalled();
+    expect(securityStore.savePin).not.toHaveBeenCalled();
     expect(mockNavigation.popToTop).not.toHaveBeenCalled();
   });
 });

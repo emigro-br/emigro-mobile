@@ -30,6 +30,7 @@ import { WalletStackParamList } from '@/navigation/WalletStack';
 import { IQuoteRequest, handleQuote } from '@/services/emigro/quotes';
 import { balanceStore } from '@/stores/BalanceStore';
 import { paymentStore as bloc, paymentStore } from '@/stores/PaymentStore';
+import { securityStore } from '@/stores/SecurityStore';
 import { sessionStore } from '@/stores/SessionStore';
 import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset, cryptoAssets } from '@/types/assets';
@@ -150,7 +151,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
         tagline="Enter your PIN code"
         btnLabel="Confirm"
         autoSubmit
-        verifyPin={async (pin) => await sessionStore.verifyPin(pin)}
+        verifyPin={async (pin) => await securityStore.verifyPin(pin)}
         onPinSuccess={() => {
           setShowPinScreen(false);
           handleConfirmPayment();

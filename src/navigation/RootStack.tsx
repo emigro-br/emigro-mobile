@@ -4,6 +4,7 @@ import { CommonActions, NavigatorScreenParams, useNavigation } from '@react-navi
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import { UnlockScreen } from '@/app/unlock';
+import { securityStore } from '@/stores/SecurityStore';
 import { sessionStore } from '@/stores/SessionStore';
 
 import { AnonStack } from './AnonStack';
@@ -37,21 +38,18 @@ function RootStack({ isSignedIn }: Props) {
   };
 
   useEffect(() => {
-    const checkUnlockAsync = async () => {
-      // TODO: load the PIN in the store to prevent check async
-      const pin = await sessionStore.loadPin();
-      if (pin) {
-        navReplace('Unlock');
-      }
-    };
-
     if (isSignedIn) {
-      checkUnlockAsync();
+      const hasCurrencyChoosen = (sessionStore.preferences?.fiatsWithBank || []).length > 0;
+      if (!hasCurrencyChoosen) {
+        navReplace('Onboarding', { screen: 'ChooseBankCurrency' });
+        return;
+      }
 
-      // TODO: also check the PIN
-      const onboardingComplete = (sessionStore.preferences?.fiatsWithBank || []).length > 0;
-      if (!onboardingComplete) {
-        navReplace('Onboarding');
+      const hasPin = securityStore.pin;
+      if (hasPin) {
+        navReplace('Unlock');
+      } else {
+        navReplace('Onboarding', { screen: 'PinOnboarding' });
       }
     }
   }, [isSignedIn]);

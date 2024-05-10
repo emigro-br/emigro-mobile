@@ -7,7 +7,7 @@ import { inputPIN, render } from 'test-utils';
 
 import { PaymentResponse } from '@/services/emigro/types';
 import { paymentStore } from '@/stores/PaymentStore';
-import { sessionStore } from '@/stores/SessionStore';
+import { securityStore } from '@/stores/SecurityStore';
 import { CryptoAsset } from '@/types/assets';
 
 import { DetailsSwap } from '../review';
@@ -16,8 +16,8 @@ jest.mock('@/services/emigro/users', () => ({
   getUserPublicKey: jest.fn().mockReturnValue('mockedPublicKey'),
 }));
 
-jest.mock('@/stores/SessionStore', () => ({
-  sessionStore: {
+jest.mock('@/stores/SecurityStore', () => ({
+  securityStore: {
     verifyPin: jest.fn(),
   },
 }));
@@ -88,7 +88,7 @@ describe('DetailsSwap', () => {
   });
 
   it('show PIN on button press and pay when confirm', async () => {
-    const verifyPinSpy = jest.spyOn(sessionStore, 'verifyPin').mockResolvedValueOnce(true);
+    const verifyPinSpy = jest.spyOn(securityStore, 'verifyPin').mockResolvedValueOnce(true);
     const { getByText } = render(
       <NavigationContainer>
         <Stack.Navigator>
@@ -110,7 +110,7 @@ describe('DetailsSwap', () => {
   });
 
   it('shows error message', async () => {
-    jest.spyOn(sessionStore, 'verifyPin').mockResolvedValueOnce(true);
+    jest.spyOn(securityStore, 'verifyPin').mockResolvedValueOnce(true);
     jest.spyOn(paymentStore, 'pay').mockRejectedValueOnce(new Error('error message'));
 
     const { getByText, getByTestId } = render(

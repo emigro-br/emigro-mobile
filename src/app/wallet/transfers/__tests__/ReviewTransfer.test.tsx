@@ -6,12 +6,12 @@ import { inputPIN, render } from 'test-utils';
 
 import { PaymentResponse } from '@/services/emigro/types';
 import { paymentStore } from '@/stores/PaymentStore';
-import { sessionStore } from '@/stores/SessionStore';
+import { securityStore } from '@/stores/SecurityStore';
 
 import { ReviewTransfer } from '../review';
 
-jest.mock('@/stores/SessionStore', () => ({
-  sessionStore: {
+jest.mock('@/stores/SecurityStore', () => ({
+  securityStore: {
     verifyPin: jest.fn(),
   },
 }));
@@ -51,7 +51,7 @@ describe('ReviewTransfer', () => {
   });
 
   test('Should call handlePress when Send button is pressed', async () => {
-    const verifyPinSpy = jest.spyOn(sessionStore, 'verifyPin').mockResolvedValueOnce(true);
+    const verifyPinSpy = jest.spyOn(securityStore, 'verifyPin').mockResolvedValueOnce(true);
     // mock pay function
     jest.spyOn(paymentStore, 'pay').mockResolvedValue({ transactionHash: 'hash' } as PaymentResponse);
 

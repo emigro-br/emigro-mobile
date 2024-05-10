@@ -16,7 +16,7 @@ describe('Payments component', () => {
   };
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     render(<Payments navigation={navigation} />);
   });
 

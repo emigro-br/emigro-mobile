@@ -4,14 +4,14 @@ import { screen, waitFor } from '@testing-library/react-native';
 
 import { inputPIN, render } from 'test-utils';
 
-import { sessionStore } from '@/stores/SessionStore';
+import { securityStore } from '@/stores/SecurityStore';
 
 import { UnlockScreen } from '../unlock';
 
 jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
-jest.mock('@/stores/SessionStore', () => ({
-  sessionStore: {
+jest.mock('@/stores/SecurityStore', () => ({
+  securityStore: {
     verifyPin: jest.fn(),
   },
 }));
@@ -22,7 +22,7 @@ describe('UnlockScreen component', () => {
   };
 
   it('should navigate to "Root" when unlocked is true', async () => {
-    jest.spyOn(sessionStore, 'verifyPin').mockResolvedValueOnce(true);
+    jest.spyOn(securityStore, 'verifyPin').mockResolvedValueOnce(true);
 
     render(<UnlockScreen navigation={navigation} />);
     expect(screen.getByText('Enter your PIN')).toBeOnTheScreen();
@@ -32,7 +32,7 @@ describe('UnlockScreen component', () => {
 
     await waitFor(() => {
       expect(navigation.replace).toHaveBeenCalledWith('Root');
-      expect(sessionStore.verifyPin).toHaveBeenCalledWith('1234');
+      expect(securityStore.verifyPin).toHaveBeenCalledWith('1234');
     });
   });
 });

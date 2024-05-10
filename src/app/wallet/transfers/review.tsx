@@ -10,7 +10,7 @@ import { SuccessDialog } from '@/components/dialogs/SuccessDialog';
 import { TransferStackParamList } from '@/navigation/TrasnsferStack';
 import { WalletStackParamList } from '@/navigation/WalletStack';
 import { paymentStore as bloc } from '@/stores/PaymentStore';
-import { sessionStore } from '@/stores/SessionStore';
+import { securityStore } from '@/stores/SecurityStore';
 import { maskWallet } from '@/utils/masks';
 
 type Props = NativeStackScreenProps<WalletStackParamList & TransferStackParamList, 'ReviewTransfer'>;
@@ -60,7 +60,7 @@ export const ReviewTransfer = ({ navigation }: Props) => {
         tagline="Enter your PIN code"
         btnLabel="Confirm"
         autoSubmit
-        verifyPin={async (pin) => await sessionStore.verifyPin(pin)}
+        verifyPin={async (pin) => await securityStore.verifyPin(pin)}
         onPinSuccess={() => {
           setShowPinScreen(false);
           handleConfirmTransaction();
