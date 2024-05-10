@@ -7,7 +7,7 @@ import { HandCoinsIcon, QrCodeIcon } from 'lucide-react-native';
 
 import { AssetListActionSheet } from '@/components/AssetListActionSheet';
 import { CircularButton } from '@/components/CircularButton';
-import { useFeatureFlag } from '@/hooks/feature-flags';
+import { useFeatureFlags } from '@/hooks/feature-flags';
 import { PaymentStackParamList } from '@/navigation/PaymentsStack';
 import { cryptoAssets } from '@/types/assets';
 
@@ -16,7 +16,8 @@ type Props = {
 };
 
 export const Payments: React.FC<Props> = ({ navigation }) => {
-  const enablePix = useFeatureFlag('pix-payment');
+  const isFeatureEnabled = useFeatureFlags();
+  const enablePix = isFeatureEnabled('pix-payment');
   const [assetListOpen, setAssetListOpen] = useState(false);
 
   const availableAssets = cryptoAssets();
