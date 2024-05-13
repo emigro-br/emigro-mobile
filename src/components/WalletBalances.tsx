@@ -1,8 +1,6 @@
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
 import { AddIcon, Button, ButtonIcon, Card, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
+import { useRouter } from 'expo-router';
 
-import { WalletStackParamList } from '@/navigation/WalletStack';
 import { Balance } from '@/services/emigro/types';
 import { CryptoAsset } from '@/types/assets';
 import { symbolFor } from '@/utils/assets';
@@ -10,16 +8,16 @@ import { symbolFor } from '@/utils/assets';
 import { AssetListTile } from './AssetListTile';
 
 interface Props {
-  navigation: NativeStackNavigationProp<WalletStackParamList>;
   userBalance: Balance[];
 }
 
-export const WalletBalances: React.FC<Props> = ({ userBalance, navigation }) => {
+export const WalletBalances: React.FC<Props> = ({ userBalance }) => {
+  const router = useRouter();
   return (
     <VStack space="sm">
       <HStack justifyContent="space-between">
         <Heading>Accounts</Heading>
-        <Button variant="link" px="$2" onPress={() => navigation.push('ManageAccounts')} testID="add-button">
+        <Button variant="link" px="$2" onPress={() => router.push('/wallet/manage')} testID="add-button">
           <ButtonIcon as={AddIcon} color="$primary500" />
         </Button>
       </HStack>

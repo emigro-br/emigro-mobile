@@ -6,7 +6,7 @@ import { inputPIN, render } from 'test-utils';
 
 import { securityStore } from '@/stores/SecurityStore';
 
-import { UnlockScreen } from '../unlock';
+import { UnlockScreen } from '../(auth)/unlock';
 
 jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 

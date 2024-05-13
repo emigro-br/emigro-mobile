@@ -7,6 +7,8 @@ import { getUser, getUserProfile, saveUserPreferences } from '@/services/emigro/
 import { UserPreferences } from '@/types/UserPreferences';
 import { InvalidSessionError } from '@/types/errors';
 
+import { securityStore } from './SecurityStore';
+
 export class SessionStore {
   // Observable states
   justLoggedIn = false;
@@ -216,6 +218,8 @@ export class SessionStore {
     this.setPreferences(null);
 
     this.setJustLoggedIn(false);
+
+    securityStore.clearPin();
   }
 
   signIn = async (email: string, password: string) => {

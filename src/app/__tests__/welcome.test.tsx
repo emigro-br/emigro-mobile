@@ -7,9 +7,9 @@ import { fireEvent } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
+import { Welcome } from '@/app/(public)/welcome';
 import Login from '@/app/signin';
 import { CreateAccount } from '@/app/signup';
-import { Welcome } from '@/app/welcome';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 

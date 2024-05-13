@@ -6,6 +6,7 @@
     "version": "1.8.1",
     "description": "The traveler's digital wallet",
     "orientation": "portrait",
+    "scheme": "emigro",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "light",
     "platforms": [
@@ -39,7 +40,8 @@
           "project": "emigro-mobile"
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-router"
     ],
     "splash": {
       "image": "./assets/images/splash.png",
