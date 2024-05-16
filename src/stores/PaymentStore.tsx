@@ -2,8 +2,13 @@ import * as Crypto from 'expo-crypto';
 import { action, makeAutoObservable, observable } from 'mobx';
 import { PixElementType, hasError, parsePix } from 'pix-utils';
 
-import { brcodePayment, brcodePaymentPreview, sendTransaction } from '@/services/emigro/transactions';
-import { TransactionRequest, TransactionType } from '@/services/emigro/types';
+import {
+  brcodePaymentPreview,
+  createBrcodePayment,
+  getBrcodePayment,
+  sendTransaction,
+} from '@/services/emigro/transactions';
+import { BrcodePaymentRequest, TransactionRequest, TransactionType } from '@/services/emigro/types';
 import { sessionStore } from '@/stores/SessionStore';
 import { Payment, PixPayment, emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
@@ -123,13 +128,15 @@ export class PaymentStore {
 
     const res = await brcodePaymentPreview(brCode);
 
+    const assetCode = isoToCrypto[res.payment.currency as keyof typeof isoToCrypto] ?? CryptoAsset.BRL; // Pix is aways in BRL
+
     const pixPayment: PixPayment = {
       brCode,
       merchantName: res.payment.name,
       merchantCity: pix.merchantCity,
       transactionAmount: res.payment.amount,
       pixKey: res.payment.pixKey,
-      assetCode: CryptoAsset.BRL, // Pix is aways in BRL
+      assetCode,
       taxId: res.payment.taxId,
       bankName: res.payment.bankName,
       txid: res.payment.txId,
@@ -162,18 +169,32 @@ export class PaymentStore {
     }
 
     const pixPayment = this.scannedPayment as PixPayment;
-    const paymentRequest = {
+    const paymentRequest: BrcodePaymentRequest = {
       brcode: pixPayment.brCode,
       amount: this.transaction.to.value, // BRL value
       sourceAsset: this.transaction.from.asset, // selected Asset
       taxId: pixPayment.taxId,
       description: pixPayment.infoAdicional || 'Payment via Emigro Wallet',
     };
-    const result = await brcodePayment(paymentRequest);
+    let result = await createBrcodePayment(paymentRequest);
+    console.debug('Payment request sent:', result.id, result.status);
+
+    // Wait for payment to be processed
+    let attempts = 0;
+    const interval = 2000;
+    const maxAttempts = 20; // 40 seconds
+    const waitStatus = ['created', 'pending'];
+    while (waitStatus.includes(result.status) && attempts < maxAttempts) {
+      await new Promise((resolve) => setTimeout(resolve, interval));
+      result = await getBrcodePayment(result.id);
+      console.debug('Payment status:', result.status);
+      attempts++;
+    }
+
     if (result.status === 'failed') {
       throw new Error('Pix Payment failed');
     }
-    // TODO: deal with status 'pending'
+
     return result;
   }
 }

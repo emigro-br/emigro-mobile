@@ -130,6 +130,46 @@ export type PaymentResponse = {
   sourceAssetIssuer: string;
 };
 
+// PIX
+
+export type BrcodePaymentRequest = {
+  brcode: string;
+  sourceAsset: string;
+  amount: number;
+  taxId: string;
+  description: string;
+};
+
+export type BrcodePaymentResponse = {
+  id: string;
+  brcode: string;
+  taxId: string;
+  description: string;
+  amount: number;
+  status: string;
+};
+
+export type DictKey = {
+  pixKey: string;
+  taxId: string;
+  bankName: string;
+};
+
+export type PaymentPreview = {
+  type: string;
+  payment: Payment;
+};
+
+export type Payment = {
+  pixKey: string;
+  amount: number;
+  currency?: string;
+  bankName: string;
+  name: string;
+  taxId: string;
+  txId: string;
+};
+
 //-- Stellar Network
 export enum Sep24TransactionStatus {
   COMPLETED = 'completed',

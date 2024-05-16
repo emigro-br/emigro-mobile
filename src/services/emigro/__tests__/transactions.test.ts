@@ -2,8 +2,14 @@ import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
 import { api } from '../api';
-import { PaymentPreview, brcodePayment, brcodePaymentPreview, getTransactions, sendTransaction } from '../transactions';
-import { TransactionRequest } from '../types';
+import {
+  brcodePaymentPreview,
+  createBrcodePayment,
+  getBrcodePayment,
+  getTransactions,
+  sendTransaction,
+} from '../transactions';
+import { BrcodePaymentResponse, PaymentPreview, TransactionRequest } from '../types';
 
 jest.mock('../api', () => ({
   api: jest.fn(),
@@ -60,7 +66,7 @@ describe('transaction service', () => {
   });
 
   describe('brcodePaymentPreview', () => {
-    it('should make a POST request to /transaction/payment-preview with the provided brcode', async () => {
+    it('should make a POST request to /pix/payment-preview with the provided brcode', async () => {
       const mockAxiosPost = jest.spyOn(instance, 'post');
       const mockApiResponse: PaymentPreview = {
         type: 'brcode-payment',
@@ -74,25 +80,25 @@ describe('transaction service', () => {
         },
       };
 
-      mock.onPost('/transaction/payment-preview', { brcode: 'testBrcode' }).reply(200, mockApiResponse);
+      mock.onPost('/pix/payment-preview', { brcode: 'testBrcode' }).reply(200, mockApiResponse);
 
       const brcode = 'testBrcode';
       const result = await brcodePaymentPreview(brcode);
 
-      expect(mockAxiosPost).toHaveBeenCalledWith('/transaction/payment-preview', { brcode });
+      expect(mockAxiosPost).toHaveBeenCalledWith('/pix/payment-preview', { brcode });
       expect(result).toEqual(mockApiResponse);
     });
   });
 
   describe('brcodePayment', () => {
-    it('should make a POST request to /transaction/brcode-payment with the provided data', async () => {
+    it('should make a POST request to /pix/brcode-payment with the provided data', async () => {
       const mockAxiosPost = jest.spyOn(instance, 'post');
       const mockApiResponse = {
         success: true,
         message: 'Payment successful',
       };
 
-      mock.onPost('/transaction/brcode-payment').reply(200, mockApiResponse);
+      mock.onPost('/pix/brcode-payment').reply(200, mockApiResponse);
 
       const data = {
         brcode: 'testBrcode',
@@ -102,10 +108,31 @@ describe('transaction service', () => {
         description: 'Test payment',
       };
 
-      const result = await brcodePayment(data);
+      const result = await createBrcodePayment(data);
 
-      expect(mockAxiosPost).toHaveBeenCalledWith('/transaction/brcode-payment', data);
+      expect(mockAxiosPost).toHaveBeenCalledWith('/pix/brcode-payment', data);
       expect(result).toEqual(mockApiResponse);
+    });
+  });
+
+  describe('getBrcodePayment', () => {
+    const mockResponse: BrcodePaymentResponse = {
+      id: 'testId',
+      brcode: 'testBrcode',
+      status: 'paid',
+      amount: 100,
+      taxId: '123456789',
+      description: 'Test payment',
+    };
+
+    it('should make a GET request to fetch the brcode payment and return the payment response', async () => {
+      const mockAxiosGet = jest.spyOn(instance, 'get');
+      const transactionId = 'testTransactionId';
+      mock.onGet(`/pix/brcode-payment/${transactionId}`).reply(200, mockResponse);
+      const result = await getBrcodePayment(transactionId);
+
+      expect(mockAxiosGet).toHaveBeenCalledWith(`/pix/brcode-payment/${transactionId}`);
+      expect(result).toEqual(mockResponse);
     });
   });
 });

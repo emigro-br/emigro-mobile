@@ -1,5 +1,5 @@
 import * as transactionApi from '@/services/emigro/transactions';
-import { PaymentResponse } from '@/services/emigro/types';
+import { BrcodePaymentResponse, PaymentResponse } from '@/services/emigro/types';
 import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
@@ -171,9 +171,11 @@ describe('PaymentStore', () => {
   });
 
   it('should call pay with pix payment correctly', async () => {
-    const brcodePayment = jest
-      .spyOn(transactionApi, 'brcodePayment')
-      .mockResolvedValueOnce({ transactionHash: 'hash' });
+    const createdResponse = { id: 'test-id', status: 'created' } as BrcodePaymentResponse;
+    const paidResponse = { id: 'test-id', status: 'paid' } as BrcodePaymentResponse;
+    const createSpy = jest.spyOn(transactionApi, 'createBrcodePayment').mockResolvedValueOnce(createdResponse);
+
+    const getSpy = jest.spyOn(transactionApi, 'getBrcodePayment').mockResolvedValueOnce(paidResponse);
 
     const pixPayment: PixPayment = {
       assetCode: CryptoAsset.BRL,
@@ -208,8 +210,10 @@ describe('PaymentStore', () => {
 
     const result = await swapBloc.payPix();
 
+    expect(result).toEqual(paidResponse);
+
     // check sendTransaction is called with correct parameters
-    expect(brcodePayment).toHaveBeenCalledWith({
+    expect(createSpy).toHaveBeenCalledWith({
       brcode: pixPayment.brCode,
       sourceAsset: transaction.from.asset,
       amount: transaction.to.value,
@@ -217,6 +221,6 @@ describe('PaymentStore', () => {
       description: 'test-infoAdicional',
     });
 
-    expect(result).toEqual({ transactionHash: 'hash' });
+    expect(getSpy).toHaveBeenCalledWith(createdResponse.id);
   });
 });

@@ -120,7 +120,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
   const handleConfirmPayment = async () => {
     setStep(TransactionStep.PROCESSING);
     try {
-      let result;
+      let result: any; // FIXME: try to define the type
 
       // TODO: move to paymentStore
       if (isPix) {
@@ -129,8 +129,16 @@ export const ConfirmPayment = ({ navigation }: Props) => {
         result = await bloc.pay();
       }
 
-      if (result.transactionHash) {
+      if (result.status === 'paid' || result.transactionHash) {
         setStep(TransactionStep.SUCCESS);
+      } else if (['created', 'pending'].includes(result.status)) {
+        setStep(TransactionStep.ERROR);
+        setTransactionError(
+          'The payment processing is taking longer than expected. Please verify your balance and try again.',
+        );
+      } else {
+        setStep(TransactionStep.ERROR);
+        setTransactionError(TRANSACTION_ERROR_MESSAGE);
       }
     } catch (error) {
       Sentry.captureException(error);

@@ -1,33 +1,12 @@
 import { api } from './api';
-import { PaymentResponse, Transaction, TransactionRequest } from './types';
-
-type BrcodePaymentRequest = {
-  brcode: string;
-  sourceAsset: string;
-  amount: number;
-  taxId: string;
-  description: string;
-};
-
-export type DictKey = {
-  pixKey: string;
-  taxId: string;
-  bankName: string;
-};
-
-export type PaymentPreview = {
-  type: string;
-  payment: Payment;
-};
-
-export type Payment = {
-  pixKey: string;
-  amount: number;
-  bankName: string;
-  name: string;
-  taxId: string;
-  txId: string;
-};
+import {
+  BrcodePaymentRequest,
+  BrcodePaymentResponse,
+  PaymentPreview,
+  PaymentResponse,
+  Transaction,
+  TransactionRequest,
+} from './types';
 
 export const getTransactions = async (): Promise<Transaction[]> => {
   const res = await api().get('/transaction/all');
@@ -36,7 +15,7 @@ export const getTransactions = async (): Promise<Transaction[]> => {
 };
 
 export const sendTransaction = async (data: TransactionRequest): Promise<PaymentResponse> => {
-  const timeout = 30000; // some transactions may take longer
+  const timeout = 30 * 1000; // some transactions may take longer
   const res = await api({ timeout }).post('/transaction', data);
   return res.data;
 };
@@ -46,14 +25,21 @@ export const sendTransaction = async (data: TransactionRequest): Promise<Payment
 //   return res.data;
 // };
 
+// PIX
 export const brcodePaymentPreview = async (brcode: string): Promise<PaymentPreview> => {
-  const res = await api().post('/transaction/payment-preview', {
+  const res = await api().post('/pix/payment-preview', {
     brcode,
   });
   return res.data;
 };
 
-export const brcodePayment = async (data: BrcodePaymentRequest) => {
-  const res = await api({ timeout: 30000 }).post('/transaction/brcode-payment', data);
+export const createBrcodePayment = async (data: BrcodePaymentRequest): Promise<BrcodePaymentResponse> => {
+  const timeout = 15 * 1000; // some transactions may take longer
+  const res = await api({ timeout }).post('/pix/brcode-payment', data);
+  return res.data;
+};
+
+export const getBrcodePayment = async (transactionId: string): Promise<BrcodePaymentResponse> => {
+  const res = await api().get(`/pix/brcode-payment/${transactionId}`);
   return res.data;
 };
