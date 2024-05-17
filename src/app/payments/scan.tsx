@@ -17,7 +17,7 @@ import { PixElementType, hasError, parsePix } from 'pix-utils';
 
 import AskCamera from '@/app/payments/ask-camera';
 import { INVALID_QR_CODE } from '@/constants/errorMessages';
-import { useFeatureFlag } from '@/hooks/feature-flags';
+import { useFeatureFlags } from '@/hooks/feature-flags';
 import { PaymentStackParamList } from '@/navigation/PaymentsStack';
 import { paymentStore } from '@/stores/PaymentStore';
 import { Payment, emigroCategoryCode } from '@/types/PixPayment';
@@ -52,7 +52,8 @@ type Props = {
 };
 
 export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
-  const enablePix = useFeatureFlag('pix-payment');
+  const isFeatureEnabled = useFeatureFlags();
+  const enablePix = isFeatureEnabled('pix-payment');
   const [cameraPermission, setCameraPermission] = useState<PermissionResponse | null>(null);
   const [isScanned, setIsScanned] = useState(false);
   const [error, setError] = useState('');
