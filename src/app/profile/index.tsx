@@ -25,6 +25,7 @@ import {
 } from '@gluestack-ui/themed';
 import * as Application from 'expo-application';
 import * as Clipboard from 'expo-clipboard';
+import * as Haptics from 'expo-haptics';
 import { observer } from 'mobx-react-lite';
 
 import { AssetListActionSheet } from '@/components/AssetListActionSheet';
@@ -60,6 +61,7 @@ const Profile = observer(({ navigation }: Props) => {
           </Toast>
         ),
       });
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
   };
 
