@@ -23,30 +23,34 @@ type Props = {
   testID?: string;
 };
 
-export const LoadingModal: React.FC<Props> = ({ isOpen, text, onClose, testID = 'loading-modal' }) => (
-  <View testID={testID}>
-    <Modal isOpen={isOpen}>
-      <ModalBackdrop />
-      <ModalContent>
-        <ModalHeader />
-        <ModalBody>
-          <Center>
-            <HStack>
-              <Spinner size="small" />
-              <Text size="lg" bold ml="$2">
-                {text || 'Loading...'}
-              </Text>
-            </HStack>
-          </Center>
-        </ModalBody>
-        <ModalFooter justifyContent="center">
-          {onClose && (
-            <Button onPress={onClose} action="primary">
-              <ButtonText>Close</ButtonText>
-            </Button>
-          )}
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  </View>
-);
+export const LoadingModal: React.FC<Props> = ({ isOpen, text, onClose, testID = 'loading-modal' }) => {
+  if (!isOpen) return;
+
+  return (
+    <View testID={testID}>
+      <Modal isOpen={isOpen}>
+        <ModalBackdrop />
+        <ModalContent>
+          <ModalHeader />
+          <ModalBody>
+            <Center>
+              <HStack>
+                <Spinner size="small" />
+                <Text size="lg" bold ml="$2">
+                  {text || 'Loading...'}
+                </Text>
+              </HStack>
+            </Center>
+          </ModalBody>
+          <ModalFooter justifyContent="center">
+            {onClose && (
+              <Button onPress={onClose} action="primary">
+                <ButtonText>Close</ButtonText>
+              </Button>
+            )}
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </View>
+  );
+};

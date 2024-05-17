@@ -104,6 +104,7 @@ const Deposit = observer(({ navigation }: Props) => {
         isOpen={!!selectedAsset && !isLoading}
         onClose={() => setSelectedAsset(null)}
         onConfirm={() => handleOpenConfimed(selectedAsset!)}
+        testID="open-url-modal"
       />
 
       <Box flex={1}>

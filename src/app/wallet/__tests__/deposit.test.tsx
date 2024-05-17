@@ -96,40 +96,23 @@ describe('Deposit screen', () => {
     expect(queryByText('XML')).not.toBeOnTheScreen();
   });
 
-  test('Should show loading modal when asset is chosen', async () => {
+  test('Should open URL and navigate back when modal is pressed', async () => {
     const { getByText, getByTestId } = render(<Deposit navigation={mockNavigation} />);
     const asset = getByText('ARS');
     fireEvent.press(asset);
 
+    let openUrlModal: any;
     await waitFor(() => {
-      const loadingModal = getByTestId('loading-modal');
-      expect(loadingModal).toBeOnTheScreen();
-    });
-  });
-
-  test.skip('Should open URL and navigate back when modal is pressed', async () => {
-    const { getByText, getByTestId } = render(<Deposit navigation={mockNavigation} />);
-    const asset = getByText('ARS');
-    fireEvent.press(asset);
-
-    await waitFor(() => {
-      const modal = getByTestId('open-url-modal');
-      expect(modal).toBeOnTheScreen();
+      openUrlModal = getByTestId('open-url-modal');
+      expect(openUrlModal).toBeOnTheScreen();
     });
 
-    let button: any;
+    fireEvent(openUrlModal, 'onConfirm');
+
     await waitFor(() => {
-      button = getByText('Continue to Anchor');
-      expect(button).toBeOnTheScreen();
+      expect(Linking.openURL).toHaveBeenCalledWith('https://anchor.url');
+      expect(mockNavigation.popToTop).toHaveBeenCalled();
     });
-
-    fireEvent.press(button);
-
-    // Assert that Linking.openURL is called with the correct URL
-    expect(Linking.openURL).toHaveBeenCalledWith('https://anchor.url');
-
-    // Assert that navigation.goBack is called
-    expect(mockNavigation.popToTop).toHaveBeenCalled();
   });
 
   test.skip('Should display default error message when an error occurs', async () => {

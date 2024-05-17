@@ -13,12 +13,13 @@ import {
   FormControlErrorText,
   HStack,
   Heading,
+  Pressable,
   Text,
   VStack,
 } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 
-import { AssetList } from '@/components/AssetList';
+import { AssetListTile } from '@/components/AssetListTile';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { ErrorModal } from '@/components/modals/ErrorModal';
 import { LoadingModal } from '@/components/modals/LoadingModal';
@@ -34,6 +35,7 @@ import {
   withdrawUrl,
 } from '@/services/emigro/anchors';
 import { Sep24Transaction, Sep24TransactionStatus } from '@/services/emigro/types';
+import { balanceStore } from '@/stores/BalanceStore';
 import { sessionStore } from '@/stores/SessionStore';
 import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
 import { CurrencyToAsset } from '@/utils/assets';
@@ -85,6 +87,14 @@ const Withdraw = observer(({ navigation }: Props) => {
     setPendingAction(null);
     setErrorMessage(null);
     setStep(TransactionStep.NONE);
+  };
+
+  const handleSelectAsset = (asset: CryptoOrFiat) => {
+    if (balanceStore.get(asset) <= 0.01) {
+      setErrorMessage('You have no balance to withdraw');
+    } else {
+      setSelectedAsset(asset);
+    }
   };
 
   const handleOpenUrlPressed = async (asset: CryptoOrFiat) => {
@@ -285,7 +295,11 @@ const Withdraw = observer(({ navigation }: Props) => {
             <>
               <Text>Choose the currency you want to withdraw</Text>
               <Card variant="flat">
-                <AssetList data={fiatsWithBank} onPress={(item) => setSelectedAsset(item)} />
+                {fiatsWithBank.map((asset) => (
+                  <Pressable key={asset} onPress={() => handleSelectAsset(asset)}>
+                    <AssetListTile asset={asset} subtitle={`${balanceStore.get(asset).toFixed(2)} ${asset}`} />
+                  </Pressable>
+                ))}
               </Card>
             </>
           )}
