@@ -15,6 +15,13 @@ jest.mock('@/services/emigro/quotes', () => ({
   handleQuote: jest.fn(),
 }));
 
+jest.mock('@/stores/BalanceStore', () => ({
+  balanceStore: {
+    currentAssets: jest.fn(),
+    get: jest.fn(),
+  },
+}));
+
 const mockNavigation: any = {
   navigate: jest.fn(),
   push: jest.fn(),
@@ -26,13 +33,10 @@ describe('Swap component', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.useFakeTimers();
+    jest.spyOn(balanceStore, 'currentAssets').mockReturnValue([fromAsset, toAsset]);
   });
 
   test('Should render Swap component correctly', async () => {
-    jest
-      .spyOn(quotesService, 'handleQuote')
-      .mockResolvedValueOnce({ destination_amount: 1.0829 } as quotesService.IQuoteResponse);
     const { getByText, getByTestId } = render(<Swap navigation={mockNavigation} />);
 
     // check title
@@ -43,18 +47,9 @@ describe('Swap component', () => {
     const arrowIcon = getByTestId('arrowIcon');
     expect(arrowIcon).toBeDefined();
 
-    await waitFor(() => {
-      // check rate
-      const buyText = getByText(`1 ${toAsset} ≈ 0.923446 ${fromAsset}`);
-      expect(buyText).toBeDefined();
-      expect(quotesService.handleQuote).toHaveBeenCalledTimes(1);
-      expect(quotesService.handleQuote).toHaveBeenCalledWith({
-        from: fromAsset,
-        to: toAsset,
-        amount: '1.00',
-        type: 'strict_send',
-      });
-    });
+    // check rate
+    const buyText = getByText(`1 ${fromAsset} ≈ 1.000000 ${fromAsset}`); // initial state
+    expect(buyText).toBeDefined();
   });
 
   test('Should update sellValue and buyValue when onChangeValue is called', async () => {
@@ -64,7 +59,10 @@ describe('Swap component', () => {
     jest
       .spyOn(quotesService, 'handleQuote')
       .mockResolvedValueOnce({ destination_amount: 10.829 } as quotesService.IQuoteResponse);
-    const { findAllByPlaceholderText } = render(<Swap navigation={mockNavigation} />);
+    const { findAllByPlaceholderText, findByTestId } = render(<Swap navigation={mockNavigation} />);
+
+    const buyBox = await findByTestId('buy-box');
+    fireEvent(buyBox, 'onChangeAsset', toAsset, 'buy');
 
     const [sellInput, buyInput] = await findAllByPlaceholderText('0');
 
@@ -105,7 +103,10 @@ describe('Swap component', () => {
     const spy = jest.spyOn(paymentStore, 'setSwap');
     jest.spyOn(balanceStore, 'get').mockReturnValue(100); // enough balance
 
-    const { getByText, findAllByPlaceholderText } = render(<Swap navigation={mockNavigation} />);
+    const { getByText, findAllByPlaceholderText, findByTestId } = render(<Swap navigation={mockNavigation} />);
+
+    const buyBox = await findByTestId('buy-box');
+    fireEvent(buyBox, 'onChangeAsset', toAsset, 'buy');
 
     const [sellInput, buyInput] = await findAllByPlaceholderText('0');
     fireEvent.changeText(sellInput, '10');

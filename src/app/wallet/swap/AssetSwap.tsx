@@ -4,7 +4,7 @@ import { SelectCountry } from 'react-native-element-dropdown';
 
 import { Box, Card, HStack, Input, InputField, Pressable, Text, VStack } from '@gluestack-ui/themed';
 
-import { CryptoAsset, cryptoAssets } from '@/types/assets';
+import { CryptoAsset } from '@/types/assets';
 import { AssetToSymbol, iconFor } from '@/utils/assets';
 
 import { SwapType } from './types';
@@ -13,18 +13,23 @@ type Props = {
   asset: CryptoAsset;
   balance: number;
   sellOrBuy: SwapType;
+  assets: CryptoAsset[];
   value?: number;
   isActive?: boolean;
+  testID?: string;
   onPress?: () => void;
   onChangeAsset: (asset: CryptoAsset, type: SwapType) => void;
   onChangeValue: (value: number, type: SwapType) => void;
 };
 
+//TODO: rename to SwapBox
 export const AssetSwap = ({
   sellOrBuy,
   asset,
   balance,
+  assets,
   isActive,
+  testID,
   value: propValue,
   onPress,
   onChangeAsset,
@@ -94,14 +99,6 @@ export const AssetSwap = ({
     }
   };
 
-  const filteredAssets = cryptoAssets();
-
-  const data = filteredAssets.map((asset) => ({
-    label: asset,
-    value: asset,
-    image: iconFor(asset),
-  }));
-
   const hasBalance = sellOrBuy === SwapType.SELL && Number(value) > balance;
 
   const activeProps = isActive
@@ -109,7 +106,7 @@ export const AssetSwap = ({
     : { bg: '$backgroundLight100' };
 
   return (
-    <Pressable onPress={handlePress} testID="touchable">
+    <Pressable onPress={handlePress} testID={testID}>
       <Card variant="filled" {...activeProps} py="$2">
         <VStack space="sm">
           <Text size="sm">{sellOrBuy === SwapType.SELL ? 'You sell' : 'You get'}</Text>
@@ -131,15 +128,10 @@ export const AssetSwap = ({
               </Input>
             </HStack>
             <Box w="$2/6">
-              <SelectCountry
-                style={styles.dropdown}
-                selectedTextStyle={styles.selectedTextStyle}
-                data={data}
-                value={asset}
-                labelField="label"
-                valueField="value"
-                imageField="image"
-                onChange={(selectedItem) => onChangeAsset(selectedItem.value, sellOrBuy)}
+              <AssetsDropdown
+                selected={asset}
+                assets={assets}
+                onChange={(selected) => onChangeAsset(selected, sellOrBuy)}
               />
             </Box>
           </HStack>
@@ -156,6 +148,33 @@ export const AssetSwap = ({
         </VStack>
       </Card>
     </Pressable>
+  );
+};
+
+type DropdownProps = {
+  selected: CryptoAsset;
+  assets: CryptoAsset[];
+  onChange: (asset: CryptoAsset) => void;
+};
+
+const AssetsDropdown = ({ selected, assets, onChange }: DropdownProps) => {
+  const data = assets.map((asset) => ({
+    label: asset,
+    value: asset,
+    image: iconFor(asset),
+  }));
+
+  return (
+    <SelectCountry
+      style={styles.dropdown}
+      selectedTextStyle={styles.selectedTextStyle}
+      data={data}
+      value={selected}
+      labelField="label"
+      valueField="value"
+      imageField="image"
+      onChange={(selectedItem) => onChange(selectedItem.value)}
+    />
   );
 };
 

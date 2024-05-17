@@ -10,6 +10,8 @@ import { AssetSwap } from '../AssetSwap';
 import { SwapType } from '../types';
 
 describe('AssetSwap component', () => {
+  const assets = [CryptoAsset.BRL, CryptoAsset.EURC, CryptoAsset.USDC];
+
   test('Should render AssetSwap component correctly', () => {
     const mockSetAsset = jest.fn();
     const mockOnChangeValue = jest.fn();
@@ -17,6 +19,7 @@ describe('AssetSwap component', () => {
     const { getByText } = render(
       <AssetSwap
         asset={CryptoAsset.BRL}
+        assets={assets}
         balance={1.0}
         onChangeAsset={mockSetAsset}
         sellOrBuy={SwapType.SELL}
@@ -38,6 +41,7 @@ describe('AssetSwap component', () => {
     const { getByPlaceholderText } = render(
       <AssetSwap
         asset={CryptoAsset.EURC}
+        assets={assets}
         balance={1.0}
         onChangeAsset={mockSetAsset}
         sellOrBuy={SwapType.SELL}
@@ -56,19 +60,22 @@ describe('AssetSwap component', () => {
     const mockOnChangeValue = jest.fn();
     const onPressMock = jest.fn();
 
+    const testID = 'my-box';
     const { getByTestId } = render(
       <AssetSwap
         asset={CryptoAsset.EURC}
+        assets={assets}
         balance={1.0}
         onChangeAsset={mockSetAsset}
         sellOrBuy={SwapType.SELL}
         onChangeValue={mockOnChangeValue}
         onPress={onPressMock}
+        testID={testID}
       />,
     );
 
-    const touchable = getByTestId('touchable');
-    fireEvent.press(touchable);
+    const myBox = getByTestId(testID);
+    fireEvent.press(myBox);
 
     expect(onPressMock).toHaveBeenCalled();
   });
@@ -81,6 +88,7 @@ describe('AssetSwap component', () => {
     const { getByPlaceholderText, getByText } = render(
       <AssetSwap
         asset={CryptoAsset.EURC}
+        assets={assets}
         balance={1.0}
         onChangeAsset={mockSetAsset}
         sellOrBuy={SwapType.SELL}
