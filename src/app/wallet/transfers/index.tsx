@@ -2,7 +2,7 @@ import React from 'react';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { Box, Card, Heading, Text, VStack } from '@gluestack-ui/themed';
+import { Box, Card, ChevronRightIcon, Heading, Icon, Text, VStack } from '@gluestack-ui/themed';
 
 import { AssetList } from '@/components/AssetList';
 import { WalletStackParamList } from '@/navigation/WalletStack';
@@ -23,6 +23,7 @@ export const Transfers = ({ navigation }: Props) => {
         <Card variant="flat">
           <AssetList
             data={data}
+            trailing={<Icon as={ChevronRightIcon} size="md" />}
             onPress={(item) =>
               navigation.push('TransfersRoot', {
                 screen: 'SendAsset',

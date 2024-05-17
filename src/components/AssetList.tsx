@@ -9,15 +9,16 @@ import { AssetListTile } from './AssetListTile';
 type Props = {
   data: CryptoOrFiat[];
   onPress: (item: CryptoOrFiat) => void;
+  trailing?: React.ReactNode;
 };
 
-export const AssetList = ({ data, onPress }: Props) => {
+export const AssetList = ({ data, trailing, onPress }: Props) => {
   return (
     <FlatList
       data={data}
       renderItem={({ item }: { item: CryptoOrFiat }) => (
         <Pressable onPress={() => onPress(item)}>
-          <AssetListTile asset={item} subasset={item} />
+          <AssetListTile asset={item} subasset={item} trailing={trailing} />
         </Pressable>
       )}
       keyExtractor={(item: CryptoOrFiat) => item}
