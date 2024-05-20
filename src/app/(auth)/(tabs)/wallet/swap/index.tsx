@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
 import {
   Box,
   Button,

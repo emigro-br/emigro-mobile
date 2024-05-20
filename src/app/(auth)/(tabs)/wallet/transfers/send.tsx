@@ -32,12 +32,12 @@ export const SendAsset = () => {
   const { asset } = useLocalSearchParams<{ asset: CryptoAsset }>();
   const [amount, setAmount] = useState<number | null>(null);
   const [address, setAddress] = useState<string>('');
-  const balance = balanceStore.get(asset);
 
   if (!asset) {
     return <></>;
   }
 
+  const balance = balanceStore.get(asset);
   const stellarKeySize = 56;
   const isValidAddress = address.length && address.length === stellarKeySize;
   const isBalanceExceeded = !!amount && amount > balance;
