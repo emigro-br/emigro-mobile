@@ -6,7 +6,7 @@ import { Box, Button, ButtonSpinner, ButtonText, Card, HStack, Heading, Text, VS
 
 import { PinScreen } from '@/components/PinScreen';
 import { ErrorDialog } from '@/components/dialogs/ErrorDialog';
-import { SuccessDialog } from '@/components/dialogs/SuccessDialog';
+import { SuccessModal } from '@/components/modals/SuccessModal';
 import { TransferStackParamList } from '@/navigation/TrasnsferStack';
 import { WalletStackParamList } from '@/navigation/WalletStack';
 import { paymentStore as bloc } from '@/stores/PaymentStore';
@@ -21,7 +21,7 @@ export const ReviewTransfer = ({ navigation }: Props) => {
   const [isSuccessDialogOpen, setIsSuccessDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const { from, to } = bloc.transaction!;
+  const { to } = bloc.transaction!;
   const destinationWallet = to.wallet;
   const amount = to.value;
   const asset = to.asset;
@@ -75,7 +75,9 @@ export const ReviewTransfer = ({ navigation }: Props) => {
 
   return (
     <>
-      <SuccessDialog isOpen={isSuccessDialogOpen} publicKey={from.wallet} onClose={handleCloseModal} />
+      <SuccessModal isOpen={isSuccessDialogOpen} title="Transfer Successful" onClose={handleCloseModal}>
+        <Text>Your transfer was successful</Text>
+      </SuccessModal>
       <ErrorDialog isOpen={!!errorMessage} onClose={() => setErrorMessage('')} errorMessage={errorMessage} />
       <Box flex={1}>
         <VStack p="$4" space="lg">

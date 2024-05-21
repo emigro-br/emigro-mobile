@@ -1,5 +1,3 @@
-import { Linking } from 'react-native';
-
 import {
   AlertDialog,
   AlertDialogBackdrop,
@@ -13,43 +11,36 @@ import {
   CloseIcon,
   Heading,
   Icon,
-  Text,
+  View,
 } from '@gluestack-ui/themed';
 
-type DialogProps = {
+type Props = {
   isOpen: boolean;
+  title: string;
+  children?: React.ReactNode;
   onClose: () => void;
-  onConfirm?: () => void;
-  publicKey: string;
+  testID?: string;
 };
-export const SuccessDialog = ({ isOpen, onClose, onConfirm, publicKey }: DialogProps) => {
+export const SuccessDialog = ({ isOpen, title, children, onClose, testID = 'success-dialog' }: Props) => {
   return (
-    <AlertDialog isOpen={isOpen} onClose={onClose}>
-      <AlertDialogBackdrop />
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <Heading size="lg">Transaction successful!</Heading>
-          <AlertDialogCloseButton>
-            <Icon as={CloseIcon} />
-          </AlertDialogCloseButton>
-        </AlertDialogHeader>
-        <AlertDialogBody>
-          <Text size="sm">
-            You can check the status of your transaction in the{' '}
-            <Text
-              style={{ color: '#1D4ED8' }}
-              onPress={() => Linking.openURL(`https://stellar.expert/explorer/public/account/${publicKey}`)}
-            >
-              Stellar explorer
-            </Text>
-          </Text>
-        </AlertDialogBody>
-        <AlertDialogFooter>
-          <Button variant="outline" size="sm" action="secondary" mr="$3" onPress={onConfirm ?? onClose}>
-            <ButtonText>Okay</ButtonText>
-          </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <View testID={testID}>
+      <AlertDialog isOpen={isOpen} onClose={onClose}>
+        <AlertDialogBackdrop />
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <Heading size="lg">{title}</Heading>
+            <AlertDialogCloseButton>
+              <Icon as={CloseIcon} />
+            </AlertDialogCloseButton>
+          </AlertDialogHeader>
+          <AlertDialogBody>{children}</AlertDialogBody>
+          <AlertDialogFooter>
+            <Button variant="outline" size="sm" action="secondary" mr="$3" onPress={onClose}>
+              <ButtonText>Okay</ButtonText>
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </View>
   );
 };

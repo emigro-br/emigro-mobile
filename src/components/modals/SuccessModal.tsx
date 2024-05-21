@@ -16,7 +16,7 @@ import {
   View,
 } from '@gluestack-ui/themed';
 
-type SuccessModalProps = {
+type Props = {
   isOpen: boolean;
   title: string;
   children?: React.ReactNode;
@@ -24,13 +24,7 @@ type SuccessModalProps = {
   testID?: string;
 };
 
-export const SuccessModal: React.FC<SuccessModalProps> = ({
-  isOpen,
-  onClose,
-  title,
-  children,
-  testID = 'success-modal',
-}) => (
+export const SuccessModal: React.FC<Props> = ({ isOpen, title, children, onClose, testID = 'success-modal' }) => (
   <View testID={testID}>
     <Modal isOpen={isOpen}>
       <ModalBackdrop />
