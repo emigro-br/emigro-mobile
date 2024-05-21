@@ -17,6 +17,7 @@ import {
   Text,
   VStack,
 } from '@gluestack-ui/themed';
+import * as Sentry from '@sentry/react-native';
 import { observer } from 'mobx-react-lite';
 
 import { AssetListTile } from '@/components/AssetListTile';
@@ -125,8 +126,11 @@ const Withdraw = observer(({ navigation }: Props) => {
         throw new Error('Can not fetch the interactive url');
       }
     } catch (error) {
-      console.warn(error);
-      setErrorMessage(defaultErrorMessage);
+      Sentry.withScope((scope) => {
+        scope.setExtra('asset', asset);
+        Sentry.captureException(error);
+      });
+      setErrorMessage(`Could not connect with the ${asset} anchor. Please try again later.`);
       setStep(TransactionStep.ERROR);
     } finally {
       setSelectedAsset(null);
@@ -273,7 +277,7 @@ const Withdraw = observer(({ navigation }: Props) => {
       <ErrorModal
         isOpen={step === TransactionStep.ERROR}
         title="Transaction Failed"
-        errorMessage={`Failed message: ${errorMessage || defaultErrorMessage}`}
+        errorMessage={errorMessage || defaultErrorMessage}
         onClose={() => setStep(TransactionStep.NONE)}
       />
 
