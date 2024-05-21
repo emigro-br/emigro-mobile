@@ -114,6 +114,7 @@ export const AssetSwap = ({
             <HStack alignItems="center" justifyContent="flex-start" w="$4/6">
               <Input variant="underlined" borderBottomWidth={0} isFocused={isActive} w="$full">
                 <InputField
+                  aria-label={`${sellOrBuy === SwapType.SELL ? 'sell' : 'buy'}-input`}
                   fontWeight="bold"
                   textAlign="left"
                   size="2xl"

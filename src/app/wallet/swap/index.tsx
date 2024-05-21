@@ -2,7 +2,19 @@ import React, { useEffect, useState } from 'react';
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { Box, Button, ButtonIcon, ButtonText, Center, Heading, RepeatIcon, Text, VStack } from '@gluestack-ui/themed';
+import {
+  Box,
+  Button,
+  ButtonIcon,
+  ButtonText,
+  Center,
+  HStack,
+  Heading,
+  RepeatIcon,
+  Spinner,
+  Text,
+  VStack,
+} from '@gluestack-ui/themed';
 
 import { WalletStackParamList } from '@/navigation/WalletStack';
 import { IQuoteRequest, handleQuote } from '@/services/emigro/quotes';
@@ -38,6 +50,11 @@ export const Swap = ({ navigation }: SwapProps) => {
       setRate(1);
       return 1;
     }
+    if (!sellValue) {
+      // using the last rate value when the sellValue is 0 (empty)
+      return;
+    }
+
     setFetchingRate(true);
     setRate(null);
     const sourceAmount = sellValue > 0 ? sellValue : 1;
@@ -155,7 +172,8 @@ export const Swap = ({ navigation }: SwapProps) => {
     });
   };
 
-  const isButtonEnabled = () => sellValue > 0 && sellValue <= balanceStore.get(sellAsset) && buyValue > 0;
+  const isButtonEnabled = () =>
+    !fetchingRate && sellValue > 0 && sellValue <= balanceStore.get(sellAsset) && buyValue > 0;
 
   return (
     <Box flex={1} bg="$white">
@@ -192,9 +210,12 @@ export const Swap = ({ navigation }: SwapProps) => {
         />
         <Box my="$1.5" ml="$1">
           {fetchingRate && (
-            <Text size="xs" color="$red">
-              Fetching best price...
-            </Text>
+            <HStack space="md" testID="fetching">
+              <Spinner size="small" color="$textLight500" />
+              <Text size="xs" color="$textLight500">
+                Fetching best price...
+              </Text>
+            </HStack>
           )}
           {sellAsset && buyAsset && !fetchingRate && rate === null && (
             <Text size="xs" color="$error500">

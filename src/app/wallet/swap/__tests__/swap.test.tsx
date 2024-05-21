@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { fireEvent, waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
@@ -55,35 +55,30 @@ describe('Swap component', () => {
   test('Should update sellValue and buyValue when onChangeValue is called', async () => {
     jest
       .spyOn(quotesService, 'handleQuote')
-      .mockResolvedValueOnce({ destination_amount: 1.0829 } as quotesService.IQuoteResponse);
-    jest
-      .spyOn(quotesService, 'handleQuote')
       .mockResolvedValueOnce({ destination_amount: 10.829 } as quotesService.IQuoteResponse);
-    const { findAllByPlaceholderText, findByTestId } = render(<Swap navigation={mockNavigation} />);
+
+    const { getByLabelText, findByTestId, getByTestId } = render(<Swap navigation={mockNavigation} />);
 
     const buyBox = await findByTestId('buy-box');
     fireEvent(buyBox, 'onChangeAsset', toAsset, 'buy');
 
-    const [sellInput, buyInput] = await findAllByPlaceholderText('0');
+    const sellInput = getByLabelText('sell-input');
+    const buyInput = getByLabelText('buy-input');
+
+    expect(sellInput).toBeOnTheScreen();
+    expect(buyInput).toBeOnTheScreen();
 
     fireEvent.changeText(sellInput, '10');
+    await waitForElementToBeRemoved(() => getByTestId('fetching'));
 
     await waitFor(() => {
-      expect(sellInput.props.value).toBe('10');
+      expect(sellInput).toHaveAccessibilityValue('10');
     });
 
     await waitFor(() => {
-      expect(buyInput.props.value).toBe('10.83');
+      expect(buyInput).toHaveAccessibilityValue('10.83');
     });
 
-    // calend twice to check if the rate is being called twice
-    expect(quotesService.handleQuote).toHaveBeenCalledTimes(2); // 1 for 1.00 and 1 for 10.00
-    expect(quotesService.handleQuote).toHaveBeenCalledWith({
-      from: fromAsset,
-      to: toAsset,
-      amount: '1.00',
-      type: 'strict_send',
-    });
     expect(quotesService.handleQuote).toHaveBeenCalledWith({
       from: fromAsset,
       to: toAsset,
@@ -95,24 +90,21 @@ describe('Swap component', () => {
   test('Should update bloc and navigate to DetailsSwap when button is pressed', async () => {
     jest
       .spyOn(quotesService, 'handleQuote')
-      .mockResolvedValueOnce({ destination_amount: 1.0829 } as quotesService.IQuoteResponse);
-    jest
-      .spyOn(quotesService, 'handleQuote')
       .mockResolvedValueOnce({ destination_amount: 10.829 } as quotesService.IQuoteResponse);
 
     const spy = jest.spyOn(paymentStore, 'setSwap');
     jest.spyOn(balanceStore, 'get').mockReturnValue(100); // enough balance
 
-    const { getByText, findAllByPlaceholderText, findByTestId } = render(<Swap navigation={mockNavigation} />);
+    const { getByText, getByLabelText, findByTestId } = render(<Swap navigation={mockNavigation} />);
 
     const buyBox = await findByTestId('buy-box');
     fireEvent(buyBox, 'onChangeAsset', toAsset, 'buy');
 
-    const [sellInput, buyInput] = await findAllByPlaceholderText('0');
+    const sellInput = getByLabelText('sell-input');
     fireEvent.changeText(sellInput, '10');
 
     await waitFor(() => {
-      expect(buyInput.props.value).toBe('10.83');
+      expect(sellInput).toHaveAccessibilityValue('10');
     });
 
     const button = getByText('Review order');
