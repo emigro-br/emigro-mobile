@@ -9,7 +9,7 @@ import { AssetListActionSheet } from '@/components/AssetListActionSheet';
 import { CircularButton } from '@/components/CircularButton';
 import { useFeatureFlags } from '@/hooks/feature-flags';
 import { PaymentStackParamList } from '@/navigation/PaymentsStack';
-import { cryptoAssets } from '@/types/assets';
+import { balanceStore } from '@/stores/BalanceStore';
 
 type Props = {
   navigation: NativeStackNavigationProp<PaymentStackParamList, 'Payments'>;
@@ -20,7 +20,7 @@ export const Payments: React.FC<Props> = ({ navigation }) => {
   const enablePix = isFeatureEnabled('pix-payment');
   const [assetListOpen, setAssetListOpen] = useState(false);
 
-  const availableAssets = cryptoAssets();
+  const availableAssets = balanceStore.currentAssets();
 
   const w = 120;
   return (
