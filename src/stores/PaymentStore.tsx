@@ -157,9 +157,14 @@ export class PaymentStore {
       idempotencyKey,
     };
 
-    let res = await createTransaction(transactionRequest);
-    res = await this.waitTransaction(res.id, getTransaction);
-    return res;
+    let result = await createTransaction(transactionRequest);
+    result = await this.waitTransaction(result.id, getTransaction);
+
+    if (result.status === 'failed') {
+      throw new Error('Transaction failed');
+    }
+
+    return result;
   }
 
   async payPix() {
