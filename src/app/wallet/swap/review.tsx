@@ -28,7 +28,7 @@ export const DetailsSwap = ({ navigation }: DetailsSwapProps) => {
 
     try {
       const result = await bloc.pay();
-      if (result.transactionHash) {
+      if (result.status === 'paid' || result.transactionHash) {
         navigation.navigate('Wallet');
       }
     } catch (error) {

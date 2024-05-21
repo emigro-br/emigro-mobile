@@ -1,5 +1,5 @@
 import * as transactionApi from '@/services/emigro/transactions';
-import { BrcodePaymentResponse, PaymentResponse } from '@/services/emigro/types';
+import { BrcodePaymentResponse, Transaction } from '@/services/emigro/types';
 import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
@@ -15,23 +15,40 @@ jest.mock('@/stores/SessionStore', () => ({
   },
 }));
 
-const mockedResponse = {
-  transactionHash: 'mocked-hash',
-} as PaymentResponse;
+jest.mock('@/services/emigro/transactions', () => ({
+  sendTransaction: jest.fn(),
+  createTransaction: jest.fn(),
+  getTransaction: jest.fn(),
+  brcodePaymentPreview: jest.fn(),
+  createBrcodePayment: jest.fn(),
+  getBrcodePayment: jest.fn(),
+}));
+
+const mockTransaction = (status: string): Transaction => ({
+  id: 'test-id',
+  status,
+  type: 'payment',
+  from: 'from-wallet',
+  to: 'to-wallet',
+  amount: 100,
+  successful: true, // TODO: created is successful?
+  createdAt: new Date(),
+});
 
 describe('PaymentStore', () => {
-  let swapBloc: PaymentStore;
+  let paymentStore: PaymentStore;
 
   beforeEach(() => {
-    swapBloc = new PaymentStore();
+    paymentStore = new PaymentStore();
   });
 
   it('should pay with correct parameters', async () => {
-    const sendTransactionMock = jest.spyOn(transactionApi, 'sendTransaction').mockResolvedValueOnce(mockedResponse);
+    const createSpy = jest.spyOn(transactionApi, 'createTransaction').mockResolvedValueOnce(mockTransaction('created'));
+    const waitSpy = jest.spyOn(paymentStore, 'waitTransaction').mockResolvedValueOnce(mockTransaction('paid'));
 
     const sourceAsset = CryptoAsset.XLM;
     const destAsset = CryptoAsset.USDC;
-    swapBloc.setTransaction({
+    paymentStore.setTransaction({
       type: 'payment',
       from: {
         wallet: 'user-public',
@@ -47,9 +64,9 @@ describe('PaymentStore', () => {
       fees: 0,
     });
 
-    await swapBloc.pay();
+    await paymentStore.pay();
 
-    expect(sendTransactionMock).toHaveBeenCalledWith({
+    expect(createSpy).toHaveBeenCalledWith({
       type: 'payment',
       maxAmountToSend: '100',
       destinationAmount: '10',
@@ -58,17 +75,19 @@ describe('PaymentStore', () => {
       destinationAssetCode: destAsset,
       idempotencyKey: expect.any(String),
     });
+    expect(waitSpy).toHaveBeenCalledWith('test-id', transactionApi.getTransaction);
   });
 
   it('should call transfer with correct parameters', async () => {
-    const sendTransactionMock = jest.spyOn(transactionApi, 'sendTransaction').mockResolvedValueOnce(mockedResponse);
+    const createSpy = jest.spyOn(transactionApi, 'createTransaction').mockResolvedValueOnce(mockTransaction('created'));
+    const waitSpy = jest.spyOn(paymentStore, 'waitTransaction').mockResolvedValueOnce(mockTransaction('paid'));
 
     const asset = CryptoAsset.BRL;
-    swapBloc.setTransfer(100, asset, 'mockedPublicKey');
+    paymentStore.setTransfer(100, asset, 'mockedPublicKey');
 
-    await swapBloc.pay();
+    await paymentStore.pay();
 
-    expect(sendTransactionMock).toHaveBeenCalledWith({
+    expect(createSpy).toHaveBeenCalledWith({
       type: 'transfer',
       maxAmountToSend: '100',
       destinationAmount: '100',
@@ -77,10 +96,12 @@ describe('PaymentStore', () => {
       destinationAssetCode: asset,
       idempotencyKey: expect.any(String),
     });
+    expect(waitSpy).toHaveBeenCalledWith('test-id', transactionApi.getTransaction);
   });
 
   it('should call swap with correct parameters', async () => {
-    const sendTransactionMock = jest.spyOn(transactionApi, 'sendTransaction').mockResolvedValueOnce(mockedResponse);
+    const createSpy = jest.spyOn(transactionApi, 'createTransaction').mockResolvedValueOnce(mockTransaction('created'));
+    const waitSpy = jest.spyOn(paymentStore, 'waitTransaction').mockResolvedValueOnce(mockTransaction('paid'));
 
     const transaction: SwapTransaction = {
       from: CryptoAsset.EURC,
@@ -91,12 +112,12 @@ describe('PaymentStore', () => {
       fees: 0,
     };
 
-    swapBloc.setSwap(transaction);
+    paymentStore.setSwap(transaction);
 
-    await swapBloc.pay();
+    await paymentStore.pay();
 
     // check sendTransaction is called with correct parameters
-    expect(sendTransactionMock).toHaveBeenCalledWith({
+    expect(createSpy).toHaveBeenCalledWith({
       type: 'swap',
       maxAmountToSend: '100', // cry
       destinationAmount: '120',
@@ -105,6 +126,7 @@ describe('PaymentStore', () => {
       destinationAssetCode: CryptoAsset.BRL,
       idempotencyKey: expect.any(String),
     });
+    expect(waitSpy).toHaveBeenCalledWith('test-id', transactionApi.getTransaction);
   });
 
   it('should call preview pix payment correctly', async () => {
@@ -125,7 +147,7 @@ describe('PaymentStore', () => {
     //TODO: we can also use pix-utils to generate a valid brCode
     const validBrCode = `00020126320014br.gov.bcb.pix0110random-key520400005303986540115802BR5904${merchantName}6006${merchantCity}62070503***6304ACF0`;
 
-    const preview = await swapBloc.preview(validBrCode);
+    const preview = await paymentStore.preview(validBrCode);
 
     expect(brcodePaymentPreview).toHaveBeenCalledWith(validBrCode);
 
@@ -150,7 +172,7 @@ describe('PaymentStore', () => {
     const emigroBrCode =
       '00020126780014br.gov.bcb.pix0156GDIYUSNDY67L7U4IRT2KDT2POUOYBTKKSOUQNFYNDZNKH62AKK74ZPYS52049999530303254040.125802BR5907MERDA M6009SAO PAULO62070503***63040701';
 
-    const preview = await swapBloc.preview(emigroBrCode);
+    const preview = await paymentStore.preview(emigroBrCode);
 
     const expectedPixPayment: Payment = {
       brCode: emigroBrCode,
@@ -167,7 +189,7 @@ describe('PaymentStore', () => {
 
   it('should throw error when preview with invalid brcode', async () => {
     const invalidBrCode = 'invalid-brcode';
-    await expect(swapBloc.preview(invalidBrCode)).rejects.toThrow('Invalid Pix code');
+    await expect(paymentStore.preview(invalidBrCode)).rejects.toThrow('Invalid Pix code');
   });
 
   it('should call pay with pix payment correctly', async () => {
@@ -205,10 +227,10 @@ describe('PaymentStore', () => {
       fees: 0,
     };
 
-    swapBloc.setScannedPayment(pixPayment);
-    swapBloc.setTransaction(transaction);
+    paymentStore.setScannedPayment(pixPayment);
+    paymentStore.setTransaction(transaction);
 
-    const result = await swapBloc.payPix();
+    const result = await paymentStore.payPix();
 
     expect(result).toEqual(paidResponse);
 

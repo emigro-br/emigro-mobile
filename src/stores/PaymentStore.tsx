@@ -5,10 +5,11 @@ import { PixElementType, hasError, parsePix } from 'pix-utils';
 import {
   brcodePaymentPreview,
   createBrcodePayment,
+  createTransaction,
   getBrcodePayment,
-  sendTransaction,
+  getTransaction,
 } from '@/services/emigro/transactions';
-import { BrcodePaymentRequest, TransactionRequest, TransactionType } from '@/services/emigro/types';
+import { BrcodePaymentRequest, CreateTransactionRequest, TransactionType } from '@/services/emigro/types';
 import { sessionStore } from '@/stores/SessionStore';
 import { Payment, PixPayment, emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
@@ -146,7 +147,7 @@ export class PaymentStore {
 
   async pay() {
     const { type, from, to, idempotencyKey } = this.transaction!;
-    const transactionRequest: TransactionRequest = {
+    const transactionRequest: CreateTransactionRequest = {
       type,
       maxAmountToSend: from.value.toString(), // cry
       sourceAssetCode: from.asset,
@@ -155,7 +156,9 @@ export class PaymentStore {
       destinationAssetCode: to.asset,
       idempotencyKey,
     };
-    const res = await sendTransaction(transactionRequest);
+
+    let res = await createTransaction(transactionRequest);
+    res = await this.waitTransaction(res.id, getTransaction);
     return res;
   }
 
@@ -179,22 +182,31 @@ export class PaymentStore {
     let result = await createBrcodePayment(paymentRequest);
     console.debug('Payment request sent:', result.id, result.status);
 
-    // Wait for payment to be processed
-    let attempts = 0;
-    const interval = 2000;
-    const maxAttempts = 20; // 40 seconds
-    const waitStatus = ['created', 'pending'];
-    while (waitStatus.includes(result.status) && attempts < maxAttempts) {
-      await new Promise((resolve) => setTimeout(resolve, interval));
-      result = await getBrcodePayment(result.id);
-      console.debug('Payment status:', result.status);
-      attempts++;
-    }
+    result = await this.waitTransaction(result.id, getBrcodePayment);
 
     if (result.status === 'failed') {
       throw new Error('Pix Payment failed');
     }
 
+    return result;
+  }
+
+  async waitTransaction(transactionId: string, fetchFn: (id: string) => Promise<any>) {
+    // Wait for payment to be processed
+    let attempts = 0;
+    const interval = 2000;
+    const maxAttempts = 20; // 40 seconds
+    let result;
+    let status = 'created';
+
+    const waitStatus = ['created', 'pending'];
+    while (waitStatus.includes(status) && attempts < maxAttempts) {
+      await new Promise((resolve) => setTimeout(resolve, interval));
+      result = await fetchFn(transactionId);
+      console.debug('Payment status:', result.status);
+      status = result.status;
+      attempts++;
+    }
     return result;
   }
 }

@@ -93,7 +93,7 @@ export type TransactionType =
   | 'refund'
   | 'other';
 
-export type TransactionRequest = {
+export type CreateTransactionRequest = {
   type: TransactionType;
   maxAmountToSend: string | undefined;
   destinationAmount: string;
@@ -104,15 +104,17 @@ export type TransactionRequest = {
 };
 
 export type Transaction = {
-  createdAt: Date;
-  amount: string;
-  assetCode: string;
-  direction: string;
-  sourceAssetCode: string;
-  sourceAmount: string;
+  id: string;
   type: string;
+  from: string;
+  to: string;
+  amount: number;
+  status: string;
+  successful: boolean;
+  createdAt: Date;
 };
 
+// DERECATED: old transaction response
 export type PaymentResponse = {
   transactionHash: string;
   sourceAccount: string;

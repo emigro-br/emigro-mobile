@@ -32,7 +32,7 @@ export const ReviewTransfer = ({ navigation }: Props) => {
     try {
       // Send the transaction
       const result = await bloc.pay();
-      if (result.transactionHash) {
+      if (result.status === 'paid' || result.transactionHash) {
         setIsSuccessDialogOpen(true);
       } else {
         setErrorMessage(defaultError);

@@ -2,21 +2,31 @@ import { api } from './api';
 import {
   BrcodePaymentRequest,
   BrcodePaymentResponse,
+  CreateTransactionRequest,
   PaymentPreview,
-  PaymentResponse,
   Transaction,
-  TransactionRequest,
 } from './types';
 
-export const getTransactions = async (): Promise<Transaction[]> => {
-  const res = await api().get('/transaction/all');
-  const { transactions } = res.data;
-  return transactions;
+// export const getTransactions = async (): Promise<Transaction[]> => {
+//   const res = await api().get('/transaction/all');
+//   const { transactions } = res.data;
+//   return transactions;
+// };
+
+//TODO: change the endpoint to /transaction/run
+// export const sendTransaction = async (data: CreateTransactionRequest): Promise<PaymentResponse> => {
+//   const timeout = 30 * 1000; // some transactions may take longer
+//   const res = await api({ timeout }).post('/transaction', data);
+//   return res.data;
+// };
+
+export const createTransaction = async (data: CreateTransactionRequest): Promise<Transaction> => {
+  const res = await api().post('/transaction/create', data);
+  return res.data;
 };
 
-export const sendTransaction = async (data: TransactionRequest): Promise<PaymentResponse> => {
-  const timeout = 30 * 1000; // some transactions may take longer
-  const res = await api({ timeout }).post('/transaction', data);
+export const getTransaction = async (transactionId: string): Promise<Transaction> => {
+  const res = await api().get(`/transaction/${transactionId}`);
   return res.data;
 };
 
