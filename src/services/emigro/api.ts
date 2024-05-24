@@ -2,6 +2,8 @@ import axios, { AxiosInstance, CreateAxiosDefaults } from 'axios';
 
 import { CustomError } from '@/types/errors';
 
+import { AuthSession } from './types';
+
 export const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
 const defaultTimeout = 10000;
 
@@ -41,7 +43,7 @@ const withDebug = (instance: AxiosInstance) => {
   });
 };
 
-export function withRefreshTokenInterceptor(instance: AxiosInstance, refreshFn: () => Promise<string>) {
+export function withRefreshTokenInterceptor(instance: AxiosInstance, refreshFn: () => Promise<AuthSession>) {
   let isRefreshing = false;
 
   instance.interceptors.response.use(
@@ -61,8 +63,9 @@ export function withRefreshTokenInterceptor(instance: AxiosInstance, refreshFn: 
           try {
             const newSession = await refreshFn();
             if (newSession) {
-              instance.defaults.headers.common['Authorization'] = `Bearer ${newSession}`;
-              originalRequest.headers['Authorization'] = `Bearer ${newSession}`;
+              const { accessToken } = newSession;
+              instance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+              originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
               isRefreshing = false;
             }
           } catch (err) {

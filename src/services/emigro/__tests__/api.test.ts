@@ -49,6 +49,7 @@ describe('api', () => {
 describe('withRefreshTokenInterceptor', () => {
   let mock: MockAdapter;
   let instance: AxiosInstance;
+  const newSession = { accessToken: 'newAccessToken' } as AuthSession;
 
   beforeEach(() => {
     instance = axios.create();
@@ -56,7 +57,7 @@ describe('withRefreshTokenInterceptor', () => {
   });
 
   it('should add the refresh token interceptor to the axios instance', async () => {
-    const refreshFn = jest.fn().mockResolvedValue('newAccessToken');
+    const refreshFn = jest.fn().mockResolvedValueOnce(newSession);
     withRefreshTokenInterceptor(instance, refreshFn);
 
     // Mock a 401 and 200 response
@@ -74,7 +75,7 @@ describe('withRefreshTokenInterceptor', () => {
   });
 
   it('should retry the original request after refreshing the token', async () => {
-    const refreshFn = jest.fn().mockResolvedValue('newAccessToken');
+    const refreshFn = jest.fn().mockResolvedValueOnce(newSession);
     withRefreshTokenInterceptor(instance, refreshFn);
 
     // Mock a 401 response
@@ -95,7 +96,7 @@ describe('withRefreshTokenInterceptor', () => {
   });
 
   it('should retry to refresh the token only one time', async () => {
-    const refreshFn = jest.fn().mockResolvedValue('newAccessToken');
+    const refreshFn = jest.fn().mockResolvedValueOnce(newSession);
     withRefreshTokenInterceptor(instance, refreshFn);
 
     // Mock to always 401 response
@@ -109,7 +110,7 @@ describe('withRefreshTokenInterceptor', () => {
   });
 
   it('should throw an error if the refresh function fails', async () => {
-    const refreshFn = jest.fn().mockRejectedValue(new Error('Refresh failed'));
+    const refreshFn = jest.fn().mockRejectedValueOnce(new Error('Refresh failed'));
     withRefreshTokenInterceptor(instance, refreshFn);
 
     // Mock a 401 response
@@ -121,7 +122,7 @@ describe('withRefreshTokenInterceptor', () => {
   });
 
   it('should throw an error if the response contains a custom error', async () => {
-    const refreshFn = jest.fn().mockResolvedValue('newAccessToken');
+    const refreshFn = jest.fn().mockResolvedValueOnce(newSession);
     withRefreshTokenInterceptor(instance, refreshFn);
 
     // Mock a 500 response with a custom error
