@@ -180,7 +180,7 @@ export class PaymentStore {
     const paymentRequest: BrcodePaymentRequest = {
       brcode: pixPayment.brCode,
       amount: this.transaction.to.value, // BRL value
-      sourceAsset: this.transaction.from.asset, // selected Asset
+      exchangeAsset: this.transaction.from.asset, // selected Asset
       taxId: pixPayment.taxId,
       description: pixPayment.infoAdicional || 'Payment via Emigro Wallet',
     };

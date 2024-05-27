@@ -136,7 +136,7 @@ export type PaymentResponse = {
 
 export type BrcodePaymentRequest = {
   brcode: string;
-  sourceAsset: string;
+  exchangeAsset: string;
   amount: number;
   taxId: string;
   description: string;

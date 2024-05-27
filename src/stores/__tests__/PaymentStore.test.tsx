@@ -237,7 +237,7 @@ describe('PaymentStore', () => {
     // check sendTransaction is called with correct parameters
     expect(createSpy).toHaveBeenCalledWith({
       brcode: pixPayment.brCode,
-      sourceAsset: transaction.from.asset,
+      exchangeAsset: transaction.from.asset,
       amount: transaction.to.value,
       taxId: pixPayment.taxId,
       description: 'test-infoAdicional',
