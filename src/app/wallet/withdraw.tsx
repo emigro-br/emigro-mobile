@@ -91,7 +91,10 @@ const Withdraw = observer(({ navigation }: Props) => {
   };
 
   const handleSelectAsset = (asset: CryptoOrFiat) => {
-    if (balanceStore.get(asset) <= 0.01) {
+    // could be a fiat or crypto asset
+    const cryptoAsset = CurrencyToAsset[asset as FiatCurrency] ?? (asset as CryptoAsset);
+    const balance = balanceStore.get(cryptoAsset);
+    if (balance <= 0.01) {
       setErrorMessage('You have no balance to withdraw');
     } else {
       setSelectedAsset(asset);
@@ -299,11 +302,15 @@ const Withdraw = observer(({ navigation }: Props) => {
             <>
               <Text>Choose the currency you want to withdraw</Text>
               <Card variant="flat">
-                {fiatsWithBank.map((asset) => (
-                  <Pressable key={asset} onPress={() => handleSelectAsset(asset)}>
-                    <AssetListTile asset={asset} subtitle={`${balanceStore.get(asset).toFixed(2)} ${asset}`} />
-                  </Pressable>
-                ))}
+                {fiatsWithBank.map((currency) => {
+                  const asset = CurrencyToAsset[currency];
+                  const balance = balanceStore.get(asset);
+                  return (
+                    <Pressable key={currency} onPress={() => handleSelectAsset(currency)}>
+                      <AssetListTile asset={currency} subtitle={`${balance.toFixed(2)} ${asset}`} />
+                    </Pressable>
+                  );
+                })}
               </Card>
             </>
           )}

@@ -85,8 +85,8 @@ describe('Withdraw', () => {
       fiatsWithBank: [FiatCurrency.BRL, FiatCurrency.USD],
     };
     balanceStore.userBalance = [
-      { balance: '100', assetCode: 'BRL', assetType: 'fiat' },
-      { balance: '200', assetCode: 'USD', assetType: 'fiat' },
+      { balance: '100', assetCode: 'BRL', assetType: 'credit_alphanum4' },
+      { balance: '200', assetCode: 'USDC', assetType: 'credit_alphanum4' },
     ];
 
     const { getByText, queryByText } = render(<Withdraw navigation={mockNavigation} />);
@@ -97,7 +97,7 @@ describe('Withdraw', () => {
     expect(getByText('Brazilian Real')).toBeOnTheScreen();
     expect(getByText('100.00 BRL')).toBeOnTheScreen();
     expect(getByText('US Dollar')).toBeOnTheScreen();
-    expect(getByText('200.00 USD')).toBeOnTheScreen();
+    expect(getByText('200.00 USDC')).toBeOnTheScreen();
     expect(queryByText('XML')).not.toBeOnTheScreen();
   });
 
@@ -105,7 +105,7 @@ describe('Withdraw', () => {
     sessionStore.preferences = {
       fiatsWithBank: [FiatCurrency.ARS],
     };
-    balanceStore.userBalance = [{ balance: '0', assetCode: 'ARS', assetType: 'fiat' }];
+    balanceStore.userBalance = [{ balance: '0', assetCode: 'ARS', assetType: 'credit_alphanum4' }];
 
     const { getByText } = render(<Withdraw navigation={mockNavigation} />);
     const button = getByText('Argentine Peso');
@@ -121,7 +121,7 @@ describe('Withdraw', () => {
     sessionStore.preferences = {
       fiatsWithBank: [FiatCurrency.ARS],
     };
-    balanceStore.userBalance = [{ balance: '10', assetCode: 'ARS', assetType: 'fiat' }];
+    balanceStore.userBalance = [{ balance: '10', assetCode: 'ARS', assetType: 'credit_alphanum4' }];
 
     (anchor.withdrawUrl as jest.Mock).mockResolvedValue({
       url: 'http://anchor.ars',

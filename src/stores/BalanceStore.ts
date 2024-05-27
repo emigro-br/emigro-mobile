@@ -20,11 +20,11 @@ export class BalanceStore {
     this.lastUpdate = Date.now();
   }
 
-  find(assetCode: string): Balance | undefined {
+  find(assetCode: CryptoAsset): Balance | undefined {
     return this.userBalance.find((balance) => balance.assetCode === assetCode);
   }
 
-  get(assetCode: string): number {
+  get(assetCode: CryptoAsset): number {
     const found = this.find(assetCode);
     if (found) return Number(found.balance); //TODO: change the balance to number
     return 0;
