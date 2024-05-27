@@ -158,7 +158,7 @@ export type DictKey = {
 };
 
 export type PaymentPreview = {
-  type: string;
+  brcode: string;
   payment: Payment;
 };
 

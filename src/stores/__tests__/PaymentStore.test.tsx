@@ -131,7 +131,7 @@ describe('PaymentStore', () => {
 
   it('should call preview pix payment correctly', async () => {
     const brcodePaymentPreview = jest.spyOn(transactionApi, 'brcodePaymentPreview').mockResolvedValueOnce({
-      type: 'test-type',
+      brcode: 'test-brcode',
       payment: {
         pixKey: 'test-pixKey',
         amount: 100,
