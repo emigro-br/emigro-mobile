@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { fireEvent, waitFor, waitForElementToBeRemoved } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
@@ -10,6 +11,12 @@ import { paymentStore } from '@/stores/PaymentStore';
 import { CryptoAsset } from '@/types/assets';
 
 import { Swap } from '..';
+
+jest.mock('expo-router', () => ({
+  useRouter: jest.fn().mockReturnValue({
+    push: jest.fn(),
+  }),
+}));
 
 jest.mock('@/services/emigro/quotes', () => ({
   handleQuote: jest.fn(),
@@ -22,22 +29,19 @@ jest.mock('@/stores/BalanceStore', () => ({
   },
 }));
 
-const mockNavigation: any = {
-  navigate: jest.fn(),
-  push: jest.fn(),
-};
-
 describe('Swap component', () => {
   const fromAsset = CryptoAsset.USDC;
   const toAsset = CryptoAsset.BRL;
+  let router: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
     jest.spyOn(balanceStore, 'currentAssets').mockReturnValue([fromAsset, toAsset]);
+    router = useRouter();
   });
 
   test('Should render Swap component correctly', async () => {
-    const { getByText, getByTestId } = render(<Swap navigation={mockNavigation} />);
+    const { getByText, getByTestId } = render(<Swap />);
 
     // check title
     const sellText = getByText(`Sell ${fromAsset}`);
@@ -57,7 +61,7 @@ describe('Swap component', () => {
       .spyOn(quotesService, 'handleQuote')
       .mockResolvedValueOnce({ destination_amount: 10.829 } as quotesService.IQuoteResponse);
 
-    const { getByLabelText, findByTestId, getByTestId } = render(<Swap navigation={mockNavigation} />);
+    const { getByLabelText, findByTestId, getByTestId } = render(<Swap />);
 
     const buyBox = await findByTestId('buy-box');
     fireEvent(buyBox, 'onChangeAsset', toAsset, 'buy');
@@ -95,7 +99,7 @@ describe('Swap component', () => {
     const spy = jest.spyOn(paymentStore, 'setSwap');
     jest.spyOn(balanceStore, 'get').mockReturnValue(100); // enough balance
 
-    const { getByText, getByLabelText, findByTestId } = render(<Swap navigation={mockNavigation} />);
+    const { getByText, getByLabelText, findByTestId } = render(<Swap />);
 
     const buyBox = await findByTestId('buy-box');
     fireEvent(buyBox, 'onChangeAsset', toAsset, 'buy');
@@ -121,7 +125,7 @@ describe('Swap component', () => {
 
     await waitFor(() => {
       expect(spy).toHaveBeenCalledWith(transaction);
-      expect(mockNavigation.push).toHaveBeenCalled();
+      expect(router.push).toHaveBeenCalledWith('/wallet/swap/review');
     });
   });
 });

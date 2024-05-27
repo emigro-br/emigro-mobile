@@ -3,6 +3,7 @@ import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 
 import { fireEvent } from '@testing-library/react-native';
 import * as Clipboard from 'expo-clipboard';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as pixUtils from 'pix-utils';
 
 import { render } from 'test-utils';
@@ -35,20 +36,20 @@ jest.mock('@/stores/SessionStore', () => ({
 }));
 
 describe('RequestWithQRCode component', () => {
-  const mockNavigation: any = {
-    popToTop: jest.fn(),
-    goBack: jest.fn(),
+  let router: any;
+  const params = {
+    asset: 'USDC',
+    value: 10,
   };
 
-  const mockRoute: any = {
-    params: {
-      asset: 'USDC',
-      value: 10,
-    },
-  };
+  beforeEach(() => {
+    jest.clearAllMocks();
+    router = useRouter();
+    (useLocalSearchParams as jest.Mock).mockReturnValue(params);
+  });
 
   it('renders the component correctly', () => {
-    const { getByText, getByTestId } = render(<RequestWithQRCode navigation={mockNavigation} route={mockRoute} />);
+    const { getByText, getByTestId } = render(<RequestWithQRCode />);
 
     expect(getByText('Request with QR Code')).toBeOnTheScreen();
     expect(getByText('Show this QR code or copy and share with who will make this payment')).toBeOnTheScreen();
@@ -66,7 +67,7 @@ describe('RequestWithQRCode component', () => {
       address: '123 Main St',
     } as UserProfile;
 
-    const { getByText, getByTestId } = render(<RequestWithQRCode navigation={mockNavigation} route={mockRoute} />);
+    const { getByText, getByTestId } = render(<RequestWithQRCode />);
 
     expect(getByText('Request with QR Code')).toBeOnTheScreen();
     expect(getByText('Show this QR code or copy and share with who will make this payment')).toBeOnTheScreen();
@@ -81,13 +82,13 @@ describe('RequestWithQRCode component', () => {
       throw new Error('Failed to generate QR code');
     });
 
-    render(<RequestWithQRCode navigation={mockNavigation} route={mockRoute} />);
+    render(<RequestWithQRCode />);
 
-    expect(mockNavigation.goBack).toHaveBeenCalled();
+    expect(router.back).toHaveBeenCalled();
   });
 
   it.skip('calls the copyToClipboard function when the "Copy the code" button is pressed', () => {
-    const { getByText } = render(<RequestWithQRCode navigation={mockNavigation} route={mockRoute} />);
+    const { getByText } = render(<RequestWithQRCode />);
     const copyButton = getByText('Copy the code');
 
     fireEvent.press(copyButton);
@@ -96,11 +97,11 @@ describe('RequestWithQRCode component', () => {
   });
 
   it('calls the navigation.popToTop function when the close button is pressed', () => {
-    const { getByTestId } = render(<RequestWithQRCode navigation={mockNavigation} route={mockRoute} />);
+    const { getByTestId } = render(<RequestWithQRCode />);
     const closeButton = getByTestId('close-button');
 
     fireEvent.press(closeButton);
 
-    expect(mockNavigation.popToTop).toHaveBeenCalled();
+    expect(router.replace).toHaveBeenCalled();
   });
 });

@@ -1,16 +1,13 @@
 import React from 'react';
 
 import { fireEvent, render } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 
 import { PinOnboarding } from '../pin';
 
 describe('PinOnboarding', () => {
-  const mockNavigation: any = {
-    navigate: jest.fn(),
-  };
-
   it('should render correctly', () => {
-    const { getByText, getByTestId } = render(<PinOnboarding navigation={mockNavigation} />);
+    const { getByText, getByTestId } = render(<PinOnboarding />);
 
     expect(getByTestId('lock-icon')).toBeOnTheScreen();
     expect(getByText('Set up your mobile PIN')).toBeOnTheScreen();
@@ -23,17 +20,15 @@ describe('PinOnboarding', () => {
   });
 
   it('should navigate to ProfileTab with ConfigurePIN screen when "Set up my PIN" button is pressed', () => {
-    const { getByText } = render(<PinOnboarding navigation={mockNavigation} />);
+    const router = useRouter();
+    const { getByText } = render(<PinOnboarding />);
     const button = getByText('Set up my PIN');
 
     fireEvent.press(button);
 
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('Root', {
-      screen: 'ProfileTab',
-      params: {
-        screen: 'ConfigurePIN',
-        params: { backTo: 'Root' },
-      },
+    expect(router.navigate).toHaveBeenCalledWith({
+      pathname: '/settings/configure-pin',
+      params: { backTo: '/' },
     });
   });
 });

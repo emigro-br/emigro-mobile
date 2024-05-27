@@ -1,9 +1,11 @@
 import { fireEvent, waitFor } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
-import Login from '@/app/signin';
 import { sessionStore } from '@/stores/SessionStore';
+
+import Login from '../login';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
@@ -20,18 +22,13 @@ jest.mock('@/services/emigro/users', () => ({
   getUserPublicKey: jest.fn(),
 }));
 
-const mockNavigattion: any = {
-  navigate: jest.fn(),
-  push: jest.fn(),
-};
-
 describe('Login screen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   test('Should render correctly', async () => {
-    const { getByTestId } = render(<Login navigation={mockNavigattion} />);
+    const { getByTestId } = render(<Login />);
 
     const emailInput = getByTestId('email');
     const passwordInput = getByTestId('password');
@@ -46,7 +43,7 @@ describe('Login screen', () => {
   });
 
   test('Should call signIn with correct credentials', async () => {
-    const { getByTestId } = render(<Login navigation={mockNavigattion} />);
+    const { getByTestId } = render(<Login />);
 
     const emailInput = getByTestId('email');
     const passwordInput = getByTestId('password');
@@ -69,7 +66,7 @@ describe('Login screen', () => {
   test('Should show api error', async () => {
     const error = new Error('Custom API error');
     jest.spyOn(sessionStore, 'signIn').mockRejectedValueOnce(error);
-    const { getByTestId, getByText } = render(<Login navigation={mockNavigattion} />);
+    const { getByTestId, getByText } = render(<Login />);
 
     const email = 'test@test.com';
     const password = 'testpass';
@@ -84,18 +81,19 @@ describe('Login screen', () => {
   });
 
   test('Should navigate to forgot password screen', async () => {
-    const { getByTestId } = render(<Login navigation={mockNavigattion} />);
+    const router = useRouter();
+    const { getByTestId } = render(<Login />);
 
     const forgotPasswordLink = getByTestId('forgot-password-link');
     fireEvent.press(forgotPasswordLink);
 
     await waitFor(() => {
-      expect(mockNavigattion.push).toHaveBeenCalledWith('PasswordRecovery');
+      expect(router.push).toHaveBeenCalledWith('/password-recovery');
     });
   });
 
   test('Should show form validation error messages', async () => {
-    const { getByText, getByTestId } = render(<Login navigation={mockNavigattion} />);
+    const { getByText, getByTestId } = render(<Login />);
     fireEvent.press(getByTestId('signin-button'));
 
     await waitFor(() => {

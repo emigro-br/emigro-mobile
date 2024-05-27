@@ -1,18 +1,15 @@
 import { fireEvent, waitFor } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
-import { CreateAccount } from '@/app/signup';
 import * as auth from '@/services/emigro/auth';
 import { Role, User } from '@/services/emigro/types';
 
+import CreateAccount from '..';
+
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 jest.mock('react-native-keyboard-aware-scroll-view');
-
-const mockNavigattion: any = {
-  navigate: jest.fn(),
-  push: jest.fn(),
-};
 
 jest.mock('@/services/emigro/auth', () => ({
   signUp: jest.fn(),
@@ -30,7 +27,7 @@ describe('CreateAccount component', () => {
   });
 
   test('Should render correctly', async () => {
-    const { getByTestId } = render(<CreateAccount navigation={mockNavigattion} />);
+    const { getByTestId } = render(<CreateAccount />);
 
     const firstNameInput = getByTestId('firstName');
     const lastNameInput = getByTestId('lastName');
@@ -47,6 +44,7 @@ describe('CreateAccount component', () => {
   });
 
   test('Should call signUp with correct information', async () => {
+    const router = useRouter();
     const email = 'test@example.com';
     const username = 'example_username';
     const signUpMock = jest.spyOn(auth, 'signUp');
@@ -64,7 +62,7 @@ describe('CreateAccount component', () => {
 
     signUpMock.mockResolvedValue(mockResponse);
 
-    const { getByTestId } = render(<CreateAccount navigation={mockNavigattion} />);
+    const { getByTestId } = render(<CreateAccount />);
 
     const emailInput = getByTestId('email');
     const passwordInput = getByTestId('password');
@@ -91,17 +89,14 @@ describe('CreateAccount component', () => {
 
     await waitFor(() => {
       expect(signUpMock).toHaveBeenCalledWith(expectedCall);
-      expect(mockNavigattion.push).toHaveBeenCalledWith('ConfirmAccount', {
-        email,
-        username,
-      });
+      expect(router.push).toHaveBeenCalledWith({ pathname: '/signup/confirm', params: { email, username } });
     });
   });
 
   test('Should display an error message if signUp fails', async () => {
     const error = new Error('Fake API error');
     jest.spyOn(auth, 'signUp').mockRejectedValue(error);
-    const { getByTestId, findByText } = render(<CreateAccount navigation={mockNavigattion} />);
+    const { getByTestId, findByText } = render(<CreateAccount />);
 
     const emailInput = getByTestId('email');
     const passwordInput = getByTestId('password');
@@ -123,7 +118,7 @@ describe('CreateAccount component', () => {
   });
 
   test('Should show form validation error messages', async () => {
-    const { getByText, getByTestId, getAllByText } = render(<CreateAccount navigation={mockNavigattion} />);
+    const { getByText, getByTestId, getAllByText } = render(<CreateAccount />);
     fireEvent.press(getByTestId('create-button'));
 
     await waitFor(() => {

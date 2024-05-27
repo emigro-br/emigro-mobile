@@ -1,19 +1,16 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { ExpoRouter } from 'expo-router/types/expo-router';
 
 import { RequestPayment } from '..';
 
 describe('RequestPayment component', () => {
-  const navigation: any = {
-    push: jest.fn(),
-  };
-  const route: any = {
-    params: {
-      asset: 'BRL',
-    },
-  };
+  let router: ExpoRouter.Router;
 
   beforeEach(() => {
-    render(<RequestPayment navigation={navigation} route={route} />);
+    router = useRouter();
+    (useLocalSearchParams as jest.Mock).mockReturnValue({ asset: 'BRL' });
+    render(<RequestPayment />);
   });
 
   it('Should render the component correctly', () => {
@@ -43,9 +40,9 @@ describe('RequestPayment component', () => {
 
     fireEvent.press(generateQRCodeButton);
 
-    expect(navigation.push).toHaveBeenCalledWith('RequestWithQRCode', {
-      asset: 'BRL',
-      value: 1,
+    expect(router.navigate).toHaveBeenCalledWith({
+      pathname: '/payments/request/show-qr-code',
+      params: { asset: 'BRL', value: '1' },
     });
   });
 
@@ -54,9 +51,9 @@ describe('RequestPayment component', () => {
 
     fireEvent.press(requestOpenAmountButton);
 
-    expect(navigation.push).toHaveBeenCalledWith('RequestWithQRCode', {
-      asset: 'BRL',
-      value: 0,
+    expect(router.navigate).toHaveBeenCalledWith({
+      pathname: '/payments/request/show-qr-code',
+      params: { asset: 'BRL', value: '0' },
     });
   });
 });

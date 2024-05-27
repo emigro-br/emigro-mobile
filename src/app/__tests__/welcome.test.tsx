@@ -1,32 +1,24 @@
 import React from 'react';
 
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
 import { fireEvent } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
 import { Welcome } from '@/app/(public)/welcome';
-import Login from '@/app/signin';
-import { CreateAccount } from '@/app/signup';
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
 
-const Stack = createNativeStackNavigator();
-const TestNavigator = () => (
-  <NavigationContainer>
-    <Stack.Navigator initialRouteName="Welcome">
-      <Stack.Screen name="Welcome" component={Welcome} />
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="SignUp" component={CreateAccount} />
-    </Stack.Navigator>
-  </NavigationContainer>
-);
-
 describe('Welcome screen', () => {
+  let router: any;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    router = useRouter();
+  });
+
   test('Should render the Welcome screen correctly', () => {
-    const { getByText } = render(<TestNavigator />);
+    const { getByText } = render(<Welcome />);
 
     const welcomeText = getByText('Instant cross-border payments');
     expect(welcomeText).toBeOnTheScreen();
@@ -39,22 +31,20 @@ describe('Welcome screen', () => {
   });
 
   test('Should navigates to Login when "Log In" is pressed', () => {
-    const { getByText } = render(<TestNavigator />);
+    const { getByText } = render(<Welcome />);
 
     const logInButton = getByText('Login');
     fireEvent.press(logInButton);
 
-    const loginText = getByText('Sign in');
-    expect(loginText).toBeOnTheScreen();
+    expect(router.push).toHaveBeenCalledWith('/login');
   });
 
   test('Should navigates to CreateAccount when "Sign Up" is pressed', () => {
-    const { getByText } = render(<TestNavigator />);
+    const { getByText } = render(<Welcome />);
 
     const signUpButton = getByText('Create an Account');
     fireEvent.press(signUpButton);
 
-    const createAccountText = getByText('Sign up to Emigro');
-    expect(createAccountText).toBeOnTheScreen();
+    expect(router.push).toHaveBeenCalledWith('/signup');
   });
 });

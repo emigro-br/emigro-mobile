@@ -1,17 +1,10 @@
 import { fireEvent, screen } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
 import { userBalance } from '../../__mocks__/mock-balance';
 import { WalletBalances } from '../WalletBalances';
-import { useRouter } from 'expo-router';
-
-
-jest.mock('expo-router', () => ({
-  useRouter: () => ({
-    push: jest.fn(),
-  }),
-}));
 
 describe('WalletBalances component', () => {
   beforeEach(() => {

@@ -2,6 +2,7 @@ import { Keyboard } from 'react-native';
 
 import { useToast } from '@gluestack-ui/themed';
 import { fireEvent, waitFor } from '@testing-library/react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { inputPIN, render } from 'test-utils';
 
@@ -17,24 +18,20 @@ jest.mock('@gluestack-ui/themed', () => ({
 jest.spyOn(Keyboard, 'dismiss');
 
 describe('CreateNewPassword', () => {
-  const mockNavigation: any = {
-    navigate: jest.fn(),
-  };
+  let router: any;
 
-  const mockRoute: any = {
-    params: {
-      email: 'test@example.com',
-    },
+  const paramas = {
+    email: 'test@example.com',
   };
 
   beforeEach(() => {
     jest.clearAllMocks();
+    router = useRouter();
+    (useLocalSearchParams as jest.Mock).mockReturnValue(paramas);
   });
 
   it('should render the create new password screen correctly', async () => {
-    const { getByText, getByPlaceholderText } = render(
-      <CreateNewPassword navigation={mockNavigation} route={mockRoute} />,
-    );
+    const { getByText, getByPlaceholderText } = render(<CreateNewPassword />);
 
     expect(getByText('Password Reset Code')).toBeOnTheScreen();
     expect(getByText('Enter the code you received in your email.')).toBeOnTheScreen();
@@ -54,9 +51,7 @@ describe('CreateNewPassword', () => {
     const mockToastShow = useToast().show;
     const confirmResetPassword = jest.spyOn(auth, 'confirmResetPassword').mockRejectedValue(new Error('Invalid code'));
 
-    const { getByPlaceholderText, getByText } = render(
-      <CreateNewPassword navigation={mockNavigation} route={mockRoute} />,
-    );
+    const { getByPlaceholderText, getByText } = render(<CreateNewPassword />);
 
     inputPIN('123456');
 
@@ -72,7 +67,7 @@ describe('CreateNewPassword', () => {
 
     await waitFor(() => {
       expect(confirmResetPassword).toHaveBeenCalledWith('test@example.com', '123456', 'password');
-      expect(mockNavigation.navigate).not.toHaveBeenCalled();
+      expect(router.navigate).not.toHaveBeenCalled();
       expect(mockToastShow).toHaveBeenCalledWith({
         duration: 10000,
         render: expect.any(Function),
@@ -83,9 +78,7 @@ describe('CreateNewPassword', () => {
   it('should navigate to Login screen when password creation succeeds', async () => {
     const confirmResetPassword = jest.spyOn(auth, 'confirmResetPassword').mockResolvedValue({ success: true });
 
-    const { getByPlaceholderText, getByText } = render(
-      <CreateNewPassword navigation={mockNavigation} route={mockRoute} />,
-    );
+    const { getByPlaceholderText, getByText } = render(<CreateNewPassword />);
 
     inputPIN('123456');
 
@@ -102,8 +95,7 @@ describe('CreateNewPassword', () => {
     await waitFor(() => {
       expect(Keyboard.dismiss).toHaveBeenCalled();
       expect(confirmResetPassword).toHaveBeenCalledWith('test@example.com', '123456', 'password');
-      expect(mockNavigation.navigate).toHaveBeenCalledTimes(1);
-      expect(mockNavigation.navigate).toHaveBeenCalledWith('Login');
+      expect(router.push).toHaveBeenCalledWith('/login');
     });
   });
 });

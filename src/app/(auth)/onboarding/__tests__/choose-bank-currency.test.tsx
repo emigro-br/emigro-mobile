@@ -2,6 +2,7 @@ import React from 'react';
 import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 
 import { fireEvent } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
@@ -15,9 +16,9 @@ jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
 describe('ChooseBankCurrencyScreen component', () => {
   test('Should navigate to PinOnboarding screen when Continue button is pressed', () => {
+    const router = useRouter();
     const updatePreferencesMock = jest.spyOn(sessionStore, 'updatePreferences').mockImplementation(jest.fn());
-    const mockNavigation: any = { navigate: jest.fn() };
-    const { getByTestId, getByLabelText } = render(<ChooseBankCurrencyScreen navigation={mockNavigation} />);
+    const { getByTestId, getByLabelText } = render(<ChooseBankCurrencyScreen />);
 
     const selectedCurrency = FiatCurrency.USD;
     const checkbox = getByLabelText(selectedCurrency);
@@ -27,7 +28,7 @@ describe('ChooseBankCurrencyScreen component', () => {
     fireEvent.press(continueButton);
 
     expect(updatePreferencesMock).toHaveBeenCalledWith({ fiatsWithBank: [selectedCurrency] });
-    expect(mockNavigation.navigate).toHaveBeenCalledWith('PinOnboarding');
+    expect(router.navigate).toHaveBeenCalledWith('./pin');
   });
 });
 

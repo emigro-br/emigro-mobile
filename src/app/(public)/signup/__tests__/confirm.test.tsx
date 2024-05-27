@@ -1,8 +1,10 @@
 import * as Sentry from '@sentry/react-native';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { useLocalSearchParams } from 'expo-router';
 
 import { CONFIRM_ACCOUNT_ERROR } from '@/constants/errorMessages';
 import * as auth from '@/services/emigro/auth';
+import { Role, User } from '@/services/emigro/types';
 
 import ConfirmAccount from '../confirm';
 
@@ -12,28 +14,21 @@ jest.mock('@sentry/react-native', () => ({
   captureException: jest.fn(),
 }));
 
-const mockNavigation: any = {
-  navigate: jest.fn(),
-};
-
-const mockRoute: any = {
-  params: {
+describe('ConfirmAccount component', () => {
+  const params = {
     email: 'example@example.com',
     username: 'example_username',
-  },
-};
+  };
 
-describe('ConfirmAccount component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
   });
 
   it('Should render correctly', async () => {
-    const { getByPlaceholderText, getByText } = render(
-      <ConfirmAccount navigation={mockNavigation} route={mockRoute} />,
-    );
-    const { email } = mockRoute.params;
+    (useLocalSearchParams as jest.Mock).mockReturnValue(params);
+    const { getByPlaceholderText, getByText } = render(<ConfirmAccount />);
+    const { email } = params;
     expect(getByText('Enter Confirmation Code')).toBeOnTheScreen();
     expect(getByText(`Enter the confirmation code we sent to ${email}:`)).toBeOnTheScreen();
 
@@ -48,22 +43,21 @@ describe('ConfirmAccount component', () => {
   });
 
   it('Should handle confirmation with success', async () => {
-    const mockResponse = {
+    const mockResponse: User = {
       id: 1,
       username: 'example_username',
       publicKey: 'public_key_value',
       secretKey: 'secret_key_value',
-      role: 'user',
+      role: Role.CUSTOMER,
       status: 'active',
       createdAt: '2022-01-01',
       updatedAt: '2022-01-01',
+      preferences: {},
     };
     const confirmAccount = jest.spyOn(auth, 'confirmAccount');
     confirmAccount.mockResolvedValue(mockResponse);
 
-    const { getByPlaceholderText, getByTestId } = render(
-      <ConfirmAccount navigation={mockNavigation} route={mockRoute} />,
-    );
+    const { getByPlaceholderText, getByTestId } = render(<ConfirmAccount />);
 
     const code = '123456';
     const confirmationCodeInput = getByPlaceholderText('Confirmation code');
@@ -72,7 +66,7 @@ describe('ConfirmAccount component', () => {
     const confirmButton = getByTestId('confirm-button');
     fireEvent.press(confirmButton);
 
-    const { email, username } = mockRoute.params;
+    const { email, username } = params;
     await waitFor(() => {
       expect(confirmAccount).toHaveBeenCalledWith({
         email,
@@ -87,9 +81,7 @@ describe('ConfirmAccount component', () => {
   it('Should handle error from confirmAccount', async () => {
     jest.spyOn(auth, 'confirmAccount').mockRejectedValue(CONFIRM_ACCOUNT_ERROR);
 
-    const { getByPlaceholderText, getByTestId } = render(
-      <ConfirmAccount navigation={mockNavigation} route={mockRoute} />,
-    );
+    const { getByPlaceholderText, getByTestId } = render(<ConfirmAccount />);
 
     const confirmationCodeInput = getByPlaceholderText('Confirmation code');
     fireEvent.changeText(confirmationCodeInput, '654321');

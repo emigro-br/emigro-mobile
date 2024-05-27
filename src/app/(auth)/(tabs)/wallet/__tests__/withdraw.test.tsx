@@ -2,6 +2,7 @@ import React from 'react';
 import { Linking } from 'react-native';
 
 import { fireEvent, waitFor } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
@@ -40,10 +41,6 @@ jest.mock('@/stores/SessionStore', () => ({
   },
 }));
 
-const mockNavigation: any = {
-  replace: jest.fn(),
-};
-
 describe('Withdraw', () => {
   beforeEach(() => {
     jest.useFakeTimers(); // Please, keep this to avoid act() warning
@@ -58,18 +55,19 @@ describe('Withdraw', () => {
     // session not ready
     jest.spyOn(sessionStore, 'accessToken', 'get').mockReturnValueOnce(undefined);
 
-    const { getByTestId } = render(<Withdraw navigation={mockNavigation} />);
+    const { getByTestId } = render(<Withdraw />);
     const loadingSpinner = getByTestId('loading-spinner');
 
     expect(loadingSpinner).toBeOnTheScreen();
   });
 
   test('Should show profile message when fiats are not avaiable', () => {
+    const router = useRouter();
     sessionStore.preferences = {
       fiatsWithBank: [],
     };
 
-    const { getByText, getByTestId } = render(<Withdraw navigation={mockNavigation} />);
+    const { getByText, getByTestId } = render(<Withdraw />);
     const message = getByTestId('no-currencies-msg');
     const button = getByText('Go to Profile');
     expect(message).toBeOnTheScreen();
@@ -77,7 +75,7 @@ describe('Withdraw', () => {
 
     fireEvent.press(button);
 
-    expect(mockNavigation.replace).toHaveBeenCalledWith('Root', { screen: 'ProfileTab' });
+    expect(router.replace).toHaveBeenCalledWith('/profile');
   });
 
   it('Should render correctly', async () => {
@@ -89,7 +87,7 @@ describe('Withdraw', () => {
       { balance: '200', assetCode: 'USDC', assetType: 'credit_alphanum4' },
     ];
 
-    const { getByText, queryByText } = render(<Withdraw navigation={mockNavigation} />);
+    const { getByText, queryByText } = render(<Withdraw />);
 
     expect(getByText('Withdraw money')).toBeOnTheScreen();
     expect(getByText('Choose the currency you want to withdraw')).toBeOnTheScreen();
@@ -107,7 +105,7 @@ describe('Withdraw', () => {
     };
     balanceStore.userBalance = [{ balance: '0', assetCode: 'ARS', assetType: 'credit_alphanum4' }];
 
-    const { getByText } = render(<Withdraw navigation={mockNavigation} />);
+    const { getByText } = render(<Withdraw />);
     const button = getByText('Argentine Peso');
 
     fireEvent.press(button);
@@ -128,7 +126,7 @@ describe('Withdraw', () => {
       type: 'withdraw',
       id: 'someId',
     });
-    const { getByText, getByTestId } = render(<Withdraw navigation={mockNavigation} />);
+    const { getByText, getByTestId } = render(<Withdraw />);
     const button = getByText('Argentine Peso');
 
     fireEvent.press(button);

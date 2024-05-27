@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { fireEvent, render } from '@testing-library/react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { paymentStore } from '@/stores/PaymentStore';
 
@@ -20,21 +21,15 @@ jest.mock('@/stores/PaymentStore', () => ({
   },
 }));
 
-const navigationMock: any = {
-  navigate: jest.fn(),
-};
-
-const routeMock: any = {
-  params: {
-    asset: 'XLM',
-  },
-};
-
 const validAddress = 'G'.repeat(56);
 
 describe('SendAsset component', () => {
+  beforeEach(() => {
+    (useLocalSearchParams as jest.Mock).mockReturnValue({ asset: 'XLM' });
+  });
+
   test('Should render SendAsset component', () => {
-    const { getByText, getByPlaceholderText } = render(<SendAsset navigation={navigationMock} route={routeMock} />);
+    const { getByText, getByPlaceholderText } = render(<SendAsset />);
 
     expect(getByText('Send XLM')).toBeDefined();
     expect(getByPlaceholderText('Enter the wallet address here')).toBeDefined();
@@ -42,7 +37,7 @@ describe('SendAsset component', () => {
   });
 
   test('Should show form error when balance exceeds', () => {
-    const { getByText, getByPlaceholderText } = render(<SendAsset navigation={navigationMock} route={routeMock} />);
+    const { getByText, getByPlaceholderText } = render(<SendAsset />);
 
     const amountInput = getByPlaceholderText('0 XLM');
     fireEvent.changeText(amountInput, '9999999999999');
@@ -52,7 +47,7 @@ describe('SendAsset component', () => {
   });
 
   test('Should show not form error when balance not exceeds', () => {
-    const { queryByText, getByPlaceholderText } = render(<SendAsset navigation={navigationMock} route={routeMock} />);
+    const { queryByText, getByPlaceholderText } = render(<SendAsset />);
 
     const amountInput = getByPlaceholderText('0 XLM');
     fireEvent.changeText(amountInput, '1');
@@ -61,7 +56,7 @@ describe('SendAsset component', () => {
   });
 
   test('Should show form error when address is invalid', () => {
-    const { getByText, getByPlaceholderText } = render(<SendAsset navigation={navigationMock} route={routeMock} />);
+    const { getByText, getByPlaceholderText } = render(<SendAsset />);
 
     const addressInput = getByPlaceholderText('Enter the wallet address here');
     fireEvent.changeText(addressInput, 'invalidAddress');
@@ -71,7 +66,7 @@ describe('SendAsset component', () => {
   });
 
   test('Should not show form error when address is valid', () => {
-    const { queryByText, getByPlaceholderText } = render(<SendAsset navigation={navigationMock} route={routeMock} />);
+    const { queryByText, getByPlaceholderText } = render(<SendAsset />);
 
     const addressInput = getByPlaceholderText('Enter the wallet address here');
 
@@ -81,7 +76,8 @@ describe('SendAsset component', () => {
   });
 
   test('Should enable and call handler when Continue button is pressed', () => {
-    const { getByText, getByPlaceholderText } = render(<SendAsset navigation={navigationMock} route={routeMock} />);
+    const router = useRouter();
+    const { getByText, getByPlaceholderText } = render(<SendAsset />);
 
     const addressInput = getByPlaceholderText('Enter the wallet address here');
     const amountInput = getByPlaceholderText('0 XLM');
@@ -92,6 +88,6 @@ describe('SendAsset component', () => {
     fireEvent.press(continueButton);
 
     expect(paymentStore.setTransfer).toHaveBeenCalledWith(50, 'XLM', validAddress);
-    expect(navigationMock.navigate).toHaveBeenCalledWith('ReviewTransfer');
+    expect(router.push).toHaveBeenCalledWith('./review');
   });
 });

@@ -1,10 +1,15 @@
+import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
+
 import { fireEvent, screen, waitFor } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
 import { securityStore } from '@/stores/SecurityStore';
 
 import { ConfigurePIN } from '../configure-pin';
+
+jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
 jest.mock('@/stores/SecurityStore', () => ({
   securityStore: {
@@ -13,18 +18,12 @@ jest.mock('@/stores/SecurityStore', () => ({
 }));
 
 describe('ConfigurePIN component', () => {
-  const mockNavigation: any = {
-    replace: jest.fn(),
-    popToTop: jest.fn(),
-  };
-
-  const mockRoute: any = {
-    params: {},
-  };
+  let router: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    render(<ConfigurePIN navigation={mockNavigation} route={mockRoute} />);
+    router = useRouter();
+    render(<ConfigurePIN />);
   });
 
   it('Should render the PIN input correctly', () => {
@@ -67,7 +66,7 @@ describe('ConfigurePIN component', () => {
     // check success
     await waitFor(() => {
       expect(securityStore.savePin).toHaveBeenCalledWith('1234');
-      expect(mockNavigation.popToTop).toHaveBeenCalled();
+      expect(router.back).toHaveBeenCalled();
     });
   });
 
@@ -96,7 +95,7 @@ describe('ConfigurePIN component', () => {
     expect(enterTitle).toBeOnTheScreen();
 
     expect(securityStore.savePin).not.toHaveBeenCalled();
-    expect(mockNavigation.popToTop).not.toHaveBeenCalled();
+    expect(router.back).not.toHaveBeenCalled();
   });
 });
 

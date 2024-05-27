@@ -1,4 +1,5 @@
 import { fireEvent, screen } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
@@ -11,13 +12,12 @@ jest.mock('@/hooks/feature-flags', () => ({
 }));
 
 describe('Payments component', () => {
-  const navigation: any = {
-    push: jest.fn(),
-  };
+  let router: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
-    render(<Payments navigation={navigation} />);
+    router = useRouter();
+    render(<Payments />);
   });
 
   it('Should render correctly', () => {
@@ -30,7 +30,7 @@ describe('Payments component', () => {
   it('Should open the scanner when Scan a Payment button is pressed', () => {
     const scanButton = screen.getByText('Scan to Pay');
     fireEvent.press(scanButton);
-    expect(navigation.push).toHaveBeenCalledWith('PayWithQRCode');
+    expect(router.push).toHaveBeenCalledWith('/payments/scan');
   });
 
   it('Should open the asset list action sheet when Request with a QR Code button is pressed', () => {
@@ -52,12 +52,12 @@ describe('Payments component', () => {
     fireEvent.press(requestButton);
     const assetItem = screen.getByText(CryptoAsset.BRL);
     fireEvent.press(assetItem);
-    expect(navigation.push).toHaveBeenCalledWith('RequestPayment', { asset: CryptoAsset.BRL });
+    expect(router.push).toHaveBeenCalledWith('RequestPayment', { asset: CryptoAsset.BRL });
   });
 
   it('Should open the Pix Copia & Cola screen when Pix Copia & Cola button is pressed', () => {
     const pixButton = screen.getByText('Pix Copia & Cola');
     fireEvent.press(pixButton);
-    expect(navigation.push).toHaveBeenCalledWith('PastePixCode');
+    expect(router.push).toHaveBeenCalledWith('/payments/pix/copia-e-cola');
   });
 });

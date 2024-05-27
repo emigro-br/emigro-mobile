@@ -2,6 +2,7 @@ import React from 'react';
 import { Linking } from 'react-native';
 
 import { fireEvent, waitFor } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 import mockConsole from 'jest-mock-console';
 
 import { render } from 'test-utils';
@@ -38,17 +39,13 @@ jest.mock('@/services/emigro/anchors', () => ({
   CallbackType: {},
 }));
 
-const mockNavigation: any = {
-  navigate: jest.fn(),
-  push: jest.fn(),
-  replace: jest.fn(),
-  goBack: jest.fn(),
-  popToTop: jest.fn(),
-};
-
 describe('Deposit screen', () => {
+  let router: any;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    router = useRouter();
+
     sessionStore.preferences = {
       fiatsWithBank: [FiatCurrency.ARS],
     };
@@ -62,7 +59,7 @@ describe('Deposit screen', () => {
     // session not ready
     jest.spyOn(sessionStore, 'accessToken', 'get').mockReturnValueOnce(undefined);
 
-    const { getByTestId } = render(<Deposit navigation={mockNavigation} />);
+    const { getByTestId } = render(<Deposit />);
     const loadingSpinner = getByTestId('loading-spinner');
 
     expect(loadingSpinner).toBeOnTheScreen();
@@ -73,7 +70,7 @@ describe('Deposit screen', () => {
       fiatsWithBank: [],
     };
 
-    const { getByText, getByTestId } = render(<Deposit navigation={mockNavigation} />);
+    const { getByText, getByTestId } = render(<Deposit />);
     const message = getByTestId('no-currencies-msg');
     const button = getByText('Go to Profile');
     expect(message).toBeOnTheScreen();
@@ -81,7 +78,7 @@ describe('Deposit screen', () => {
 
     fireEvent.press(button);
 
-    expect(mockNavigation.replace).toHaveBeenCalledWith('Root', { screen: 'ProfileTab' });
+    expect(router.replace).toHaveBeenCalledWith('/profile');
   });
 
   test('Should display available assets', () => {
@@ -89,7 +86,7 @@ describe('Deposit screen', () => {
       fiatsWithBank: [FiatCurrency.BRL, FiatCurrency.USD],
     };
 
-    const { getByText, queryByText } = render(<Deposit navigation={mockNavigation} />);
+    const { getByText, queryByText } = render(<Deposit />);
 
     expect(getByText('Brazilian Real')).toBeOnTheScreen();
     expect(getByText('BRL')).toBeOnTheScreen();
@@ -100,7 +97,7 @@ describe('Deposit screen', () => {
   });
 
   test('Should open URL and navigate back when modal is pressed', async () => {
-    const { getByText, getByTestId } = render(<Deposit navigation={mockNavigation} />);
+    const { getByText, getByTestId } = render(<Deposit />);
     const asset = getByText('ARS');
     fireEvent.press(asset);
 
@@ -114,7 +111,7 @@ describe('Deposit screen', () => {
 
     await waitFor(() => {
       expect(Linking.openURL).toHaveBeenCalledWith('https://anchor.url');
-      expect(mockNavigation.popToTop).toHaveBeenCalled();
+      expect(router.back).toHaveBeenCalled();
     });
   });
 
@@ -124,7 +121,7 @@ describe('Deposit screen', () => {
     const error = new Error('An error occurred');
     (depositUrl as jest.Mock).mockRejectedValueOnce(error);
 
-    const { getByText, getByTestId } = render(<Deposit navigation={mockNavigation} />);
+    const { getByText, getByTestId } = render(<Deposit />);
     const asset = getByText('ARS');
     fireEvent.press(asset);
 

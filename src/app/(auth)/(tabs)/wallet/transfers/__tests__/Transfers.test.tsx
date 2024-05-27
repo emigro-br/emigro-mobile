@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { fireEvent } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
@@ -15,18 +16,13 @@ jest.mock('@/stores/BalanceStore', () => ({
   },
 }));
 
-const navigationMock: any = {
-  navigate: jest.fn(),
-  push: jest.fn(),
-};
-
 describe('Transfers component', () => {
   beforeEach(() => {
     (balanceStore.currentAssets as jest.Mock).mockReturnValue([CryptoAsset.XLM]);
   });
 
   test('Should render the component correctly', () => {
-    const { getByText } = render(<Transfers navigation={navigationMock} />);
+    const { getByText } = render(<Transfers />);
 
     expect(getByText('Send money')).toBeOnTheScreen();
     expect(getByText('XLM')).toBeOnTheScreen();
@@ -34,16 +30,15 @@ describe('Transfers component', () => {
   });
 
   test('Should navigate to SendAsset screen when an asset is pressed', () => {
-    const { getByText } = render(<Transfers navigation={navigationMock} />);
+    const router = useRouter();
+    const { getByText } = render(<Transfers />);
     const assetButton = getByText('XLM');
 
     fireEvent.press(assetButton);
 
-    expect(navigationMock.push).toHaveBeenCalledWith('TransfersRoot', {
-      screen: 'SendAsset',
-      params: {
-        asset: 'XLM',
-      },
+    expect(router.push).toHaveBeenCalledWith({
+      pathname: '/wallet/transfers/send',
+      params: { asset: CryptoAsset.XLM },
     });
   });
 });

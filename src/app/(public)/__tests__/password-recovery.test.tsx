@@ -2,6 +2,7 @@ import { Keyboard } from 'react-native';
 
 import { useToast } from '@gluestack-ui/themed';
 import { fireEvent, waitFor } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
@@ -17,16 +18,15 @@ jest.mock('@gluestack-ui/themed', () => ({
 jest.spyOn(Keyboard, 'dismiss');
 
 describe('PasswordRecovery', () => {
-  const mockNavigation: any = {
-    navigate: jest.fn(),
-  };
+  let router: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    router = useRouter();
   });
 
   it('should render the password recovery screen correctly', () => {
-    const { getByText, getByPlaceholderText } = render(<PasswordRecovery navigation={mockNavigation} />);
+    const { getByText, getByPlaceholderText } = render(<PasswordRecovery />);
 
     expect(getByText('Password Recovery')).toBeOnTheScreen();
     expect(getByPlaceholderText('example@email.com')).toBeOnTheScreen();
@@ -36,7 +36,7 @@ describe('PasswordRecovery', () => {
     const mockToastShow = useToast().show;
     const resetPassword = jest.spyOn(auth, 'resetPassword').mockRejectedValue(new Error('Email not found'));
 
-    const { getByPlaceholderText, getByText } = render(<PasswordRecovery navigation={mockNavigation} />);
+    const { getByPlaceholderText, getByText } = render(<PasswordRecovery />);
 
     const notFoundEmail = 'any-email@found.not'; // valid e-mail, but not found in the system
     const emailInput = getByPlaceholderText('example@email.com');
@@ -46,7 +46,7 @@ describe('PasswordRecovery', () => {
     await waitFor(() => {
       expect(Keyboard.dismiss).toHaveBeenCalled();
       expect(resetPassword).toHaveBeenCalledWith(notFoundEmail);
-      expect(mockNavigation.navigate).not.toHaveBeenCalled();
+      expect(router.navigate).not.toHaveBeenCalled();
       expect(mockToastShow).toHaveBeenCalledWith({
         duration: 10000,
         render: expect.any(Function),
@@ -61,7 +61,7 @@ describe('PasswordRecovery', () => {
   it('should navigate to CreateNewPassword screen when email sending succeeds', async () => {
     const resetPassword = jest.spyOn(auth, 'resetPassword').mockResolvedValue({ success: true });
 
-    const { getByPlaceholderText, getByText } = render(<PasswordRecovery navigation={mockNavigation} />);
+    const { getByPlaceholderText, getByText } = render(<PasswordRecovery />);
 
     const validEmail = 'valid-email@example.com';
     const emailInput = getByPlaceholderText('example@email.com');
@@ -70,9 +70,9 @@ describe('PasswordRecovery', () => {
 
     await waitFor(() => {
       expect(resetPassword).toHaveBeenCalledWith(validEmail);
-      expect(mockNavigation.navigate).toHaveBeenCalledTimes(1);
-      expect(mockNavigation.navigate).toHaveBeenCalledWith('CreateNewPassword', {
-        email: validEmail,
+      expect(router.push).toHaveBeenCalledWith({
+        pathname: '/create-password',
+        params: { email: validEmail },
       });
     });
   });

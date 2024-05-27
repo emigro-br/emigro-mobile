@@ -7,18 +7,18 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
-import Profile from '@/app/profile';
 import { UserProfile } from '@/services/emigro/types';
 import { sessionStore } from '@/stores/SessionStore';
 
+import Profile from '..';
+
 jest.mock('expo-clipboard');
+jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
 jest.mock('@gluestack-ui/themed', () => ({
   ...jest.requireActual('@gluestack-ui/themed'),
   useToast: jest.fn(),
 }));
-
-jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
 jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
@@ -40,10 +40,6 @@ const renderWithProviders = (component: JSX.Element) => {
   return render(<NavigationContext.Provider value={navContext}>{component}</NavigationContext.Provider>);
 };
 
-const mockNavigattion: any = {
-  push: jest.fn(),
-};
-
 describe('Profile screen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -51,7 +47,7 @@ describe('Profile screen', () => {
 
   test('Should appear loading screen while fetching the user information', async () => {
     jest.spyOn(sessionStore, 'profile', 'get').mockReturnValue(null);
-    const { getByTestId } = renderWithProviders(<Profile navigation={mockNavigattion} />);
+    const { getByTestId } = renderWithProviders(<Profile />);
 
     await waitFor(() => {
       expect(getByTestId('loading')).toBeOnTheScreen();
@@ -65,7 +61,7 @@ describe('Profile screen', () => {
       email: 'test@email.com',
       address: 'Test Address',
     } as UserProfile);
-    const { getByText, queryAllByText } = renderWithProviders(<Profile navigation={mockNavigattion} />);
+    const { getByText, queryAllByText } = renderWithProviders(<Profile />);
 
     await waitFor(() => {
       expect(getByText('Full Name')).toBeOnTheScreen();
@@ -80,7 +76,7 @@ describe('Profile screen', () => {
   });
 
   test('Should trigger the Logout action and clear the storage', async () => {
-    const { getByText } = renderWithProviders(<Profile navigation={mockNavigattion} />);
+    const { getByText } = renderWithProviders(<Profile />);
 
     await waitFor(() => {
       expect(getByText('Full Name')).toBeOnTheScreen();
