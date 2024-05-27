@@ -28,6 +28,7 @@ jest.mock('@/stores/SecurityStore', () => ({
 jest.mock('@/stores/BalanceStore', () => ({
   balanceStore: {
     get: jest.fn().mockReturnValue(100),
+    currentAssets: jest.fn().mockReturnValue([]),
   },
 }));
 

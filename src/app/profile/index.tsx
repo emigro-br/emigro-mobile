@@ -33,7 +33,7 @@ import { ProfileStackParamList } from '@/navigation/ProfileStack';
 import { balanceStore } from '@/stores/BalanceStore';
 import { sessionStore } from '@/stores/SessionStore';
 import { FiatCurrency } from '@/types/assets';
-import { AssetToCurrency } from '@/utils/assets';
+import { fiatsFromCryptoCodes } from '@/utils/assets';
 import { maskWallet } from '@/utils/masks';
 
 type Props = {
@@ -45,7 +45,7 @@ const Profile = observer(({ navigation }: Props) => {
   const toast = useToast();
   const [assetListOpen, setAssetListOpen] = useState(false);
   const publicKey = sessionStore.publicKey;
-  const myCurrencies = balanceStore.currentAssets().map((asset) => AssetToCurrency[asset]);
+  const myCurrencies = fiatsFromCryptoCodes(balanceStore.currentAssets());
 
   const handleLogout = async () => {
     await sessionStore.clear();

@@ -7,6 +7,7 @@ import { render } from 'test-utils';
 
 import { sessionStore } from '@/stores/SessionStore';
 import { FiatCurrency } from '@/types/assets';
+import { labelForFiat } from '@/utils/assets';
 
 import { ChooseBankCurrency, ChooseBankCurrencyScreen } from '../choose-bank-currency';
 
@@ -44,7 +45,7 @@ describe('ChooseBankCurrency component', () => {
     expect(text).toBeOnTheScreen();
 
     currencies.forEach((currency) => {
-      const checkbox = getByLabelText(currency);
+      const checkbox = getByLabelText(labelForFiat(currency));
       expect(checkbox).toBeOnTheScreen();
     });
 

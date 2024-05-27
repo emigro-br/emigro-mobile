@@ -33,7 +33,7 @@ import { paymentStore as bloc, paymentStore } from '@/stores/PaymentStore';
 import { securityStore } from '@/stores/SecurityStore';
 import { sessionStore } from '@/stores/SessionStore';
 import { Payment, PixPayment } from '@/types/PixPayment';
-import { CryptoAsset, cryptoAssets } from '@/types/assets';
+import { CryptoAsset, FiatCurrency } from '@/types/assets';
 import { AssetToCurrency, symbolFor } from '@/utils/assets';
 import { maskWallet } from '@/utils/masks';
 
@@ -172,8 +172,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
     );
   }
 
-  const availableAssets = cryptoAssets();
-  const data = availableAssets.map((asset) => ({
+  const data = balanceStore.currentAssets().map((asset) => ({
     label: asset,
     value: asset,
   }));
@@ -207,7 +206,7 @@ export const ConfirmPayment = ({ navigation }: Props) => {
         onClose={() => setShowEditAmount(false)}
         tagline="Enter the amount you want to pay"
         initialAmount={requestedAmount}
-        asset={AssetToCurrency[scannedPayment.assetCode]} //TODO: improve this
+        asset={AssetToCurrency[scannedPayment.assetCode] as FiatCurrency} //TODO: improve this
         onSave={(amount) => setRequestedAmount(amount)}
       />
 

@@ -13,12 +13,13 @@ import {
   FormControlErrorText,
   HStack,
   Heading,
+  Pressable,
   Text,
   VStack,
 } from '@gluestack-ui/themed';
 import { observer } from 'mobx-react-lite';
 
-import { AssetList } from '@/components/AssetList';
+import { AssetListTile } from '@/components/AssetListTile';
 import { LoadingModal } from '@/components/modals/LoadingModal';
 import { OpenURLModal } from '@/components/modals/OpenURLModal';
 import { RootStackParamList } from '@/navigation/RootStack';
@@ -121,14 +122,23 @@ const Deposit = observer(({ navigation }: Props) => {
               </HStack>
             </>
           )}
+
           {fiatsWithBank.length > 0 && (
             <>
-              <Text>Choose the currency you want to deposit</Text>
+              <Text>Choose the currency you want to withdraw</Text>
               <Card variant="flat">
-                <AssetList data={fiatsWithBank} onPress={(item) => setSelectedAsset(item)} />
+                {fiatsWithBank.map((currency) => {
+                  const asset = CurrencyToAsset[currency];
+                  return (
+                    <Pressable key={currency} onPress={() => setSelectedAsset(currency)}>
+                      <AssetListTile asset={currency} subtitle={asset} assetType="fiat" />
+                    </Pressable>
+                  );
+                })}
               </Card>
             </>
           )}
+
           {errorMessage && <FormControlErrorText>{errorMessage}</FormControlErrorText>}
         </VStack>
       </Box>

@@ -91,8 +91,11 @@ describe('Deposit screen', () => {
 
     const { getByText, queryByText } = render(<Deposit navigation={mockNavigation} />);
 
+    expect(getByText('Brazilian Real')).toBeOnTheScreen();
     expect(getByText('BRL')).toBeOnTheScreen();
-    expect(getByText('USD')).toBeOnTheScreen();
+
+    expect(getByText('US Dollar')).toBeOnTheScreen();
+    expect(getByText('USDC')).toBeOnTheScreen();
     expect(queryByText('XML')).not.toBeOnTheScreen();
   });
 

@@ -7,12 +7,12 @@ import { AssetListTile } from '../AssetListTile';
 describe('AssetListTile', () => {
   test('renders correctly for crypto', () => {
     const testID = 'asset-list-tile';
-    const item = CryptoAsset.USDC;
+    const item = CryptoAsset.ARS;
     const { getByText, queryByText, getByTestId } = render(<AssetListTile asset={item} testID={testID} />);
 
-    const assetName = getByText('USD Coin');
+    const assetName = getByText('Peso Argentino Digital');
     const assetAvatar = getByTestId('asset-avatar');
-    const assetCode = queryByText('USDC');
+    const assetCode = queryByText('ARS');
     const assetTile = getByTestId(testID);
 
     expect(assetName).toBeOnTheScreen();
@@ -22,11 +22,11 @@ describe('AssetListTile', () => {
   });
 
   test('renders correctly for currency', () => {
-    const asset = FiatCurrency.EUR;
-    const { getByText, queryByText, getByTestId } = render(<AssetListTile asset={asset} />);
+    const asset = FiatCurrency.ARS;
+    const { getByText, queryByText, getByTestId } = render(<AssetListTile asset={asset} assetType="fiat" />);
 
-    const assetName = getByText('Euro');
-    const assetCode = queryByText('EUR');
+    const assetName = getByText('Argentine Peso');
+    const assetCode = queryByText('ARS');
     const assetAvatar = getByTestId('asset-avatar');
 
     expect(assetName).toBeOnTheScreen();

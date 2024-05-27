@@ -10,6 +10,7 @@ import { CircularButton } from '@/components/CircularButton';
 import { useFeatureFlags } from '@/hooks/feature-flags';
 import { PaymentStackParamList } from '@/navigation/PaymentsStack';
 import { balanceStore } from '@/stores/BalanceStore';
+import { allCryptoCodesToObjs } from '@/utils/assets';
 
 type Props = {
   navigation: NativeStackNavigationProp<PaymentStackParamList, 'Payments'>;
@@ -20,7 +21,7 @@ export const Payments: React.FC<Props> = ({ navigation }) => {
   const enablePix = isFeatureEnabled('pix-payment');
   const [assetListOpen, setAssetListOpen] = useState(false);
 
-  const availableAssets = balanceStore.currentAssets();
+  const availableAssets = allCryptoCodesToObjs(balanceStore.currentAssets());
 
   const w = 120;
   return (

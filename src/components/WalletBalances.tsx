@@ -5,7 +5,7 @@ import { AddIcon, Button, ButtonIcon, Card, HStack, Heading, Text, VStack } from
 import { WalletStackParamList } from '@/navigation/WalletStack';
 import { Balance } from '@/services/emigro/types';
 import { CryptoAsset } from '@/types/assets';
-import { AssetToSymbol } from '@/utils/assets';
+import { symbolFor } from '@/utils/assets';
 
 import { AssetListTile } from './AssetListTile';
 
@@ -33,11 +33,7 @@ export const WalletBalances: React.FC<Props> = ({ userBalance, navigation }) => 
                 key={index}
                 asset={asset}
                 subasset={asset}
-                trailing={
-                  <Text>
-                    {AssetToSymbol[asset]} {Number(balance).toFixed(2)}
-                  </Text>
-                }
+                trailing={<Text>{symbolFor(asset, Number(balance))}</Text>}
                 dense
               />
             );

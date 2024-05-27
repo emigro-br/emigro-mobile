@@ -9,13 +9,12 @@ import {
   View,
 } from '@gluestack-ui/themed';
 
-import { CryptoOrFiat } from '@/types/assets';
-import { labelFor } from '@/utils/assets';
+import { Asset, CryptoOrFiat } from '@/types/assets';
 
 import { AssetAvatar } from './AssetAvatar';
 
 type Props = {
-  assets: CryptoOrFiat[];
+  assets: Asset[];
   isOpen: boolean;
   onClose: () => void;
   onItemPress: (asset: CryptoOrFiat) => void;
@@ -31,9 +30,9 @@ export const AssetListActionSheet = ({ assets, isOpen, onClose, onItemPress }: P
             <ActionsheetDragIndicator />
           </ActionsheetDragIndicatorWrapper>
           {assets.map((asset) => (
-            <ActionsheetItem key={asset} onPress={() => onItemPress(asset)}>
-              <AssetAvatar asset={asset} size="sm" />
-              <ActionsheetItemText>{labelFor(asset)}</ActionsheetItemText>
+            <ActionsheetItem key={asset.code} onPress={() => onItemPress(asset.code as CryptoOrFiat)}>
+              <AssetAvatar asset={asset.code as CryptoOrFiat} icon={asset.icon} size="sm" alt={asset.name} />
+              <ActionsheetItemText>{asset.name}</ActionsheetItemText>
             </ActionsheetItem>
           ))}
         </ActionsheetContent>

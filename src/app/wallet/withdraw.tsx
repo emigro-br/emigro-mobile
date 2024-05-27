@@ -307,7 +307,7 @@ const Withdraw = observer(({ navigation }: Props) => {
                   const balance = balanceStore.get(asset);
                   return (
                     <Pressable key={currency} onPress={() => handleSelectAsset(currency)}>
-                      <AssetListTile asset={currency} subtitle={`${balance.toFixed(2)} ${asset}`} />
+                      <AssetListTile asset={currency} subtitle={`${balance.toFixed(2)} ${asset}`} assetType="fiat" />
                     </Pressable>
                   );
                 })}

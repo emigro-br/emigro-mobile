@@ -5,7 +5,7 @@ import { SelectCountry } from 'react-native-element-dropdown';
 import { Box, Card, HStack, Input, InputField, Pressable, Text, VStack } from '@gluestack-ui/themed';
 
 import { CryptoAsset } from '@/types/assets';
-import { AssetToSymbol, iconFor } from '@/utils/assets';
+import { iconFor, symbolFor } from '@/utils/assets';
 
 import { SwapType } from './types';
 
@@ -138,7 +138,7 @@ export const AssetSwap = ({
           </HStack>
           <HStack justifyContent="space-between">
             <Text size="xs" color={`${hasBalance ? '$red' : '$gray'}`}>
-              Balance: {AssetToSymbol[asset]} {Number(balance).toFixed(2)}
+              Balance: {symbolFor(asset, balance)}
             </Text>
             {hasBalance && (
               <Text color="$red" size="xs">

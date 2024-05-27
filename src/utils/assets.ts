@@ -1,13 +1,56 @@
 // https://uxwing.com/
-import arsIcon from '@/assets/images/icons/argentina-flag-round-circle-icon.png';
-import brlIcon from '@/assets/images/icons/brazil-flag-round-circle-icon.png';
-import eurcIcon from '@/assets/images/icons/eurc-icon.png';
-import eurIcon from '@/assets/images/icons/european-union-flag-round-circle-icon.png';
-import xlmIcon from '@/assets/images/icons/stellar-xlm-icon.png';
-import usdIcon from '@/assets/images/icons/usa-flag-round-circle-icon.png';
+import argentineFlag from '@/assets/images/icons/argentina-flag-round-circle-icon.png';
+import arsIcon from '@/assets/images/icons/ars-icon.png';
+import brazilFlag from '@/assets/images/icons/brazil-flag-round-circle-icon.png';
 // Digital assets
+import brlIcon from '@/assets/images/icons/brl-icon.png';
+import eurcIcon from '@/assets/images/icons/eurc-icon.png';
+import euroFlag from '@/assets/images/icons/european-union-flag-round-circle-icon.png';
+import xlmIcon from '@/assets/images/icons/stellar-xlm-icon.png';
+import usaFlag from '@/assets/images/icons/usa-flag-round-circle-icon.png';
 import usdcIcon from '@/assets/images/icons/usdc-icon.png';
-import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
+import { Asset, CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
+
+// TODO: fetch those data from the Emigro API
+const cryptosData = [
+  { type: 'crypto', code: 'XLM', name: 'Stellar Lumens', icon: xlmIcon, symbol: 'XLM' },
+  { type: 'crypto', code: 'USDC', name: 'USD Coin', icon: usdcIcon, symbol: '$', currency: 'USD' },
+  { type: 'crypto', code: 'EURC', name: 'EURo Coin', icon: eurcIcon, symbol: '€', currency: 'EUR' },
+  { type: 'crypto', code: 'BRL', name: 'Brazilian Real', icon: brlIcon, symbol: 'R$', currency: 'BRL' },
+  { type: 'crypto', code: 'ARS', name: 'Peso Argentino Digital', icon: arsIcon, symbol: '$', currency: 'ARS' },
+];
+
+const fiatsData = [
+  { type: 'fiat', code: FiatCurrency.ARS, name: 'Argentine Peso', icon: argentineFlag, symbol: '$' },
+  { type: 'fiat', code: FiatCurrency.BRL, name: 'Brazilian Real', icon: brazilFlag, symbol: 'R$' },
+  { type: 'fiat', code: FiatCurrency.EUR, name: 'Euro', icon: euroFlag, symbol: '€' },
+  { type: 'fiat', code: FiatCurrency.USD, name: 'US Dollar', icon: usaFlag, symbol: '$' },
+];
+
+export const stablecoins = cryptosData.map(
+  ({ type, code, name, icon, symbol, currency }) => new Asset(type, code, name, symbol, currency, icon),
+);
+export const currencies = fiatsData.map(
+  ({ type, code, name, icon, symbol }) => new Asset(type, code, name, symbol, undefined, icon),
+);
+
+export const fiatByCode: Record<string, Asset> = currencies.reduce((acc, asset) => {
+  return { ...acc, [asset.code]: asset };
+}, {});
+
+export const fiatByCrypto: Record<string, Asset> = stablecoins.reduce((acc, asset) => {
+  return { ...acc, [asset.code]: asset.currency ? fiatByCode[asset.currency] : undefined };
+}, {});
+
+export const allCryptoCodesToObjs = (cryptos: CryptoAsset[]): Asset[] => {
+  return cryptos.map((crypto) => cryptoCodeToObj(crypto));
+};
+export const cryptoCodeToObj = (asset: CryptoAsset): Asset => cryptosData.find((a) => a.code === asset) as Asset;
+export const fiatCodeToObj = (asset: FiatCurrency): Asset => currencies.find((a) => a.code === asset) as Asset;
+
+export const fiatsFromCryptoCodes = (cryptos: CryptoAsset[]): Asset[] => {
+  return cryptos.map((crypto) => fiatByCrypto[crypto]);
+};
 
 // convert asset code to currency code
 export const AssetToCurrency = {
@@ -18,14 +61,6 @@ export const AssetToCurrency = {
   [CryptoAsset.ARS]: FiatCurrency.ARS,
 };
 
-const AssetToName = {
-  [CryptoAsset.XLM]: 'Stellar Lumens',
-  [CryptoAsset.USDC]: 'USD Coin',
-  [CryptoAsset.EURC]: 'EURo Coin',
-  [CryptoAsset.BRL]: 'Brazilian Real Coin',
-  [CryptoAsset.ARS]: 'Argentine Peso Coin',
-};
-
 export const CurrencyToAsset = {
   [FiatCurrency.EUR]: CryptoAsset.EURC,
   [FiatCurrency.USD]: CryptoAsset.USDC,
@@ -33,22 +68,7 @@ export const CurrencyToAsset = {
   [FiatCurrency.ARS]: CryptoAsset.ARS,
 };
 
-const FiatToName = {
-  [FiatCurrency.EUR]: 'Euro',
-  [FiatCurrency.USD]: 'US Dollar',
-  [FiatCurrency.BRL]: 'Brazilian Real',
-  [FiatCurrency.ARS]: 'Argentine Peso',
-};
-
-export const labelFor = (asset: CryptoOrFiat): string | undefined => {
-  // FIXME: Fiat is prioritized over Crypto due name collision
-  if (asset in FiatCurrency) {
-    return FiatToName[asset as FiatCurrency];
-  } else if (asset in CryptoAsset) {
-    return AssetToName[asset as CryptoAsset];
-  }
-};
-
+// FIXME: used by some place that should be refactored
 export const AssetToSymbol = {
   [CryptoAsset.XLM]: 'XLM',
   [CryptoAsset.USDC]: '$',
@@ -59,26 +79,6 @@ export const AssetToSymbol = {
   [FiatCurrency.USD]: '$',
   [FiatCurrency.BRL]: 'R$',
   [FiatCurrency.ARS]: '$',
-};
-
-export const symbolFor = (asset: CryptoOrFiat, value: number = 0) =>
-  `${AssetToSymbol[asset]} ${Number(value).toFixed(2)}`;
-
-const AssetToIcon: Record<CryptoOrFiat, any> = {
-  [CryptoAsset.EURC]: eurcIcon,
-  [CryptoAsset.USDC]: usdcIcon,
-  [CryptoAsset.ARS]: arsIcon,
-  [CryptoAsset.BRL]: brlIcon,
-  [CryptoAsset.XLM]: xlmIcon,
-
-  [FiatCurrency.EUR]: eurIcon,
-  [FiatCurrency.USD]: usdIcon,
-  // [FiatCurrencies.BRL]: brlIcon,
-  // [FiatCurrencies.ARS]: arsIcon,
-};
-
-export const iconFor = (asset: CryptoOrFiat) => {
-  return AssetToIcon[asset];
 };
 
 // https://en.wikipedia.org/wiki/ISO_4217
@@ -96,4 +96,36 @@ export const isoToCrypto = {
   '840': CryptoAsset.USDC,
   '986': CryptoAsset.BRL,
   '032': CryptoAsset.ARS,
+};
+
+const allAssets = [...stablecoins, ...currencies];
+
+export const labelFor = (asset: CryptoOrFiat, type?: string): string | undefined => {
+  if (type === 'fiat') {
+    return labelForFiat(asset as FiatCurrency);
+  }
+  const assetObj = allAssets.find((a) => a.code === asset);
+  return assetObj?.name;
+};
+
+export const labelForFiat = (asset: FiatCurrency): string => {
+  const assetObj = currencies.find((a) => a.code === asset);
+  return assetObj?.name || asset;
+};
+
+export const symbolFor = (asset: CryptoOrFiat, value: number = 0) => {
+  const assetObj = allAssets.find((a) => a.code === asset);
+  if (assetObj) {
+    return `${assetObj.symbol} ${Number(value).toFixed(2)}`;
+  }
+  return `${value.toFixed(2)} ${asset}`;
+};
+
+export const iconFor = (asset: CryptoOrFiat, type?: string) => {
+  if (type === 'fiat') {
+    const assetObj = currencies.find((a) => a.code === asset);
+    return assetObj?.icon;
+  }
+  const assetObj = allAssets.find((a) => a.code === asset);
+  return assetObj?.icon;
 };

@@ -63,7 +63,7 @@ export const ChooseBankCurrency = ({ currencies, onContinue }: PageProps) => {
                     <CheckboxIcon as={CheckIcon} />
                   </CheckboxIndicator>
                   <CheckboxLabel>
-                    <AssetListTile asset={currency} subasset={currency} />
+                    <AssetListTile asset={currency} subasset={currency} assetType="fiat" />
                   </CheckboxLabel>
                 </Checkbox>
               </Card>
