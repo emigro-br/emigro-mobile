@@ -20,25 +20,23 @@ describe('WalletBalances component', () => {
     expect(balanceElement).toBeOnTheScreen();
 
     expect(screen.getByTestId('add-button')).toBeOnTheScreen();
-
-    const disclaimerElement = screen.getByText('All values are in equivalent stablecoin currency');
-    expect(disclaimerElement).toBeOnTheScreen();
   });
 
   it('Should display the correct asset codes and balances', () => {
     render(<WalletBalances userBalance={userBalance} navigation={mockNavigation} />);
     const brlAsset = screen.getByText('Brazilian Real');
-    const usdcAsset = screen.getByText('US Dollar');
-    const eurocAsset = screen.getByText('Euro');
     const brlBalance = screen.getByText('R$ 10.00');
-    const usdcBalance = screen.getByText('$ 30.00');
-    const euroBalance = screen.getByText('€ 0.00');
-
     expect(brlAsset).toBeOnTheScreen();
-    expect(usdcAsset).toBeOnTheScreen();
-    expect(eurocAsset).toBeOnTheScreen();
     expect(brlBalance).toBeOnTheScreen();
+
+    const usdcAsset = screen.getByText('USD Coin');
+    const usdcBalance = screen.getByText('$ 30.00');
+    expect(usdcAsset).toBeOnTheScreen();
     expect(usdcBalance).toBeOnTheScreen();
+
+    const eurocAsset = screen.getByText('EURo Coin');
+    const euroBalance = screen.getByText('€ 0.00');
+    expect(eurocAsset).toBeOnTheScreen();
     expect(euroBalance).toBeOnTheScreen();
   });
 

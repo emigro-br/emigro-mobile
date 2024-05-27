@@ -1,9 +1,12 @@
 // https://uxwing.com/
 import arsIcon from '@/assets/images/icons/argentina-flag-round-circle-icon.png';
 import brlIcon from '@/assets/images/icons/brazil-flag-round-circle-icon.png';
+import eurcIcon from '@/assets/images/icons/eurc-icon.png';
 import eurIcon from '@/assets/images/icons/european-union-flag-round-circle-icon.png';
 import xlmIcon from '@/assets/images/icons/stellar-xlm-icon.png';
 import usdIcon from '@/assets/images/icons/usa-flag-round-circle-icon.png';
+// Digital assets
+import usdcIcon from '@/assets/images/icons/usdc-icon.png';
 import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
 
 // convert asset code to currency code
@@ -18,7 +21,7 @@ export const AssetToCurrency = {
 const AssetToName = {
   [CryptoAsset.XLM]: 'Stellar Lumens',
   [CryptoAsset.USDC]: 'USD Coin',
-  [CryptoAsset.EURC]: 'Euro Coin',
+  [CryptoAsset.EURC]: 'EURo Coin',
   [CryptoAsset.BRL]: 'Brazilian Real Coin',
   [CryptoAsset.ARS]: 'Argentine Peso Coin',
 };
@@ -62,8 +65,8 @@ export const symbolFor = (asset: CryptoOrFiat, value: number = 0) =>
   `${AssetToSymbol[asset]} ${Number(value).toFixed(2)}`;
 
 const AssetToIcon: Record<CryptoOrFiat, any> = {
-  [CryptoAsset.EURC]: eurIcon,
-  [CryptoAsset.USDC]: usdIcon,
+  [CryptoAsset.EURC]: eurcIcon,
+  [CryptoAsset.USDC]: usdcIcon,
   [CryptoAsset.ARS]: arsIcon,
   [CryptoAsset.BRL]: brlIcon,
   [CryptoAsset.XLM]: xlmIcon,

@@ -5,7 +5,7 @@ import { AddIcon, Button, ButtonIcon, Card, HStack, Heading, Text, VStack } from
 import { WalletStackParamList } from '@/navigation/WalletStack';
 import { Balance } from '@/services/emigro/types';
 import { CryptoAsset } from '@/types/assets';
-import { AssetToCurrency, AssetToSymbol } from '@/utils/assets';
+import { AssetToSymbol } from '@/utils/assets';
 
 import { AssetListTile } from './AssetListTile';
 
@@ -28,11 +28,11 @@ export const WalletBalances: React.FC<Props> = ({ userBalance, navigation }) => 
           {userBalance?.map(({ balance, assetCode, assetType }, index) => {
             const asset: CryptoAsset =
               assetType === 'native' ? CryptoAsset.XLM : CryptoAsset[assetCode as keyof typeof CryptoAsset];
-            const currency = asset === CryptoAsset.XLM ? CryptoAsset.XLM : AssetToCurrency[asset];
             return (
               <AssetListTile
                 key={index}
-                asset={currency}
+                asset={asset}
+                subasset={asset}
                 trailing={
                   <Text>
                     {AssetToSymbol[asset]} {Number(balance).toFixed(2)}
@@ -44,9 +44,6 @@ export const WalletBalances: React.FC<Props> = ({ userBalance, navigation }) => 
           })}
         </VStack>
       </Card>
-      <Text size="xs" italic>
-        All values are in equivalent stablecoin currency
-      </Text>
     </VStack>
   );
 };
