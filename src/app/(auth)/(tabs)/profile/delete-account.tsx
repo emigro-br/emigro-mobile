@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
 import {
   Box,
   Button,
@@ -18,17 +16,14 @@ import {
   VStack,
   useToast,
 } from '@gluestack-ui/themed';
+import { useRouter } from 'expo-router';
 
 import { Toast } from '@/components/Toast';
-import { ProfileStackParamList } from '@/navigation/ProfileStack';
 import { deleteAccount } from '@/services/emigro/auth';
 import { sessionStore } from '@/stores/SessionStore';
 
-type Props = {
-  navigation: NativeStackNavigationProp<ProfileStackParamList, 'Profile'>;
-};
-
-const DeleteAccount = ({ navigation }: Props) => {
+const DeleteAccount = () => {
+  const router = useRouter();
   const toast = useToast();
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
@@ -100,7 +95,7 @@ const DeleteAccount = ({ navigation }: Props) => {
             <Button variant="solid" onPress={() => handleDeleteAccount()} isDisabled={!isChecked || isDeleting}>
               <ButtonText>Yes, delete my account permanently</ButtonText>
             </Button>
-            <Button variant="link" onPress={() => navigation.popToTop()} isDisabled={isDeleting}>
+            <Button variant="link" onPress={() => router.back()} isDisabled={isDeleting}>
               <ButtonText>No, keep my account</ButtonText>
             </Button>
           </ButtonGroup>

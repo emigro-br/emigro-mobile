@@ -1,5 +1,6 @@
 import { useToast } from '@gluestack-ui/themed';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 
 import { deleteAccount } from '@/services/emigro/auth';
 import { AuthSession } from '@/services/emigro/types';
@@ -25,11 +26,6 @@ jest.mock('@/services/emigro/auth', () => ({
   clearSession: jest.fn(),
 }));
 
-const mockNavigattion: any = {
-  push: jest.fn(),
-  popToTop: jest.fn(),
-};
-
 describe('DeleteAccount component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -39,7 +35,7 @@ describe('DeleteAccount component', () => {
     sessionStore.session = {
       accessToken: 'accessToken',
     } as AuthSession;
-    const { getByText, getByTestId } = render(<DeleteAccount navigation={mockNavigattion} />);
+    const { getByText, getByTestId } = render(<DeleteAccount />);
 
     const checkbox = getByTestId('checkbox');
     const deleteButton = getByText('Yes, delete my account permanently');
@@ -71,7 +67,7 @@ describe('DeleteAccount component', () => {
     const error = new Error('Delete account error');
     (deleteAccount as jest.Mock).mockRejectedValue(error);
 
-    const { getByText, getByTestId } = render(<DeleteAccount navigation={mockNavigattion} />);
+    const { getByText, getByTestId } = render(<DeleteAccount />);
 
     const checkbox = getByTestId('checkbox');
     fireEvent.press(checkbox);
@@ -90,11 +86,12 @@ describe('DeleteAccount component', () => {
   });
 
   it('Should navigate back when "No" button is pressed', () => {
-    const { getByText } = render(<DeleteAccount navigation={mockNavigattion} />);
+    const router = useRouter();
+    const { getByText } = render(<DeleteAccount />);
 
     const noButton = getByText('No, keep my account');
     fireEvent.press(noButton);
 
-    expect(mockNavigattion.popToTop).toHaveBeenCalled();
+    expect(router.back).toHaveBeenCalled();
   });
 });

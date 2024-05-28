@@ -68,7 +68,7 @@ describe('ReviewTransfer', () => {
   //   (paymentStore.pay as jest.Mock).mockRejectedValue(new Error('Error'));
 
   //   const { getByText } = render(
-  //       <ReviewTransfer navigation={navigationMock} route={routeMock} />
+  //       <ReviewTransfer />
   //   );
   //   const sendButton = getByText('Send');
 

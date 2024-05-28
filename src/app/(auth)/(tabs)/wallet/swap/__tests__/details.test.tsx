@@ -1,6 +1,3 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
 import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { inputPIN, render } from 'test-utils';
@@ -22,13 +19,7 @@ jest.mock('@/stores/SecurityStore', () => ({
   },
 }));
 
-const Stack = createNativeStackNavigator();
-
 describe('DetailsSwap', () => {
-  const navigation: any = {
-    navigate: jest.fn(),
-  };
-
   const transaction = {
     from: CryptoAsset.EURC,
     fromValue: 100,
@@ -39,7 +30,7 @@ describe('DetailsSwap', () => {
   };
 
   // Create a separate component
-  const DetailsSwapScreen = () => <DetailsSwap navigation={navigation} />;
+  const DetailsSwapScreen = () => <DetailsSwap />;
 
   beforeAll(() => {
     jest.useFakeTimers();
@@ -53,13 +44,7 @@ describe('DetailsSwap', () => {
   });
 
   it('renders correctly', () => {
-    const { getByText } = render(
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen name="DetailsSwap" component={DetailsSwapScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>,
-    );
+    const { getByText } = render(<DetailsSwapScreen />);
 
     expect(getByText('Confirm Swap')).toBeOnTheScreen();
 
@@ -89,13 +74,7 @@ describe('DetailsSwap', () => {
 
   it('show PIN on button press and pay when confirm', async () => {
     const verifyPinSpy = jest.spyOn(securityStore, 'verifyPin').mockResolvedValueOnce(true);
-    const { getByText } = render(
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen name="DetailsSwap" component={DetailsSwapScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>,
-    );
+    const { getByText } = render(<DetailsSwapScreen />);
 
     fireEvent.press(getByText('Swap EURC for BRL'));
 
@@ -113,13 +92,7 @@ describe('DetailsSwap', () => {
     jest.spyOn(securityStore, 'verifyPin').mockResolvedValueOnce(true);
     jest.spyOn(paymentStore, 'pay').mockRejectedValueOnce(new Error('error message'));
 
-    const { getByText, getByTestId } = render(
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen name="DetailsSwap" component={DetailsSwapScreen} />
-        </Stack.Navigator>
-      </NavigationContainer>,
-    );
+    const { getByText, getByTestId } = render(<DetailsSwapScreen />);
 
     fireEvent.press(getByText('Swap EURC for BRL'));
 
