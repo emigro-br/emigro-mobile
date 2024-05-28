@@ -35,7 +35,7 @@ export const PayWithQRCode = () => {
         try {
           const payment = await paymentStore.preview(scanned.brCode);
           paymentStore.setScannedPayment(payment);
-          router.push('/confirm');
+          router.push('/payments/confirm');
         } catch (error) {
           // FIXME: how show this error to the user?
           console.warn('[onScanPayment]', error);
