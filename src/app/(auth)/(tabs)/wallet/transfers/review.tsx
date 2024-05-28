@@ -47,6 +47,7 @@ export const ReviewTransfer = () => {
 
   const handleCloseModal = () => {
     setIsSuccessDialogOpen(false);
+    router.dismissAll(); // clear the stack
     router.replace('/');
   };
 

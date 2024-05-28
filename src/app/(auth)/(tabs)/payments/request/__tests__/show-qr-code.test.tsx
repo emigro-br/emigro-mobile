@@ -96,12 +96,13 @@ describe('RequestWithQRCode component', () => {
     expect(Clipboard.setStringAsync).toHaveBeenCalled();
   });
 
-  it('calls the navigation.popToTop function when the close button is pressed', () => {
+  it('should back when press close button is pressed', () => {
     const { getByTestId } = render(<RequestWithQRCode />);
     const closeButton = getByTestId('close-button');
 
     fireEvent.press(closeButton);
 
-    expect(router.replace).toHaveBeenCalled();
+    // dismiss modal is: ../
+    expect(router.replace).toHaveBeenCalledWith('../');
   });
 });

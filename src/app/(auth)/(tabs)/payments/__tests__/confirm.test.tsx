@@ -33,15 +33,6 @@ jest.mock('@/stores/BalanceStore', () => ({
 }));
 
 describe('ConfirmPayment component', () => {
-  const mockNavigation: any = {
-    popToTop: jest.fn(),
-    navigate: jest.fn(),
-  };
-
-  const mockProps = {
-    navigation: mockNavigation,
-  };
-
   const mockScannedPayment: Payment = {
     brCode: 'mocked-brCode',
     assetCode: CryptoAsset.USDC,
@@ -74,7 +65,7 @@ describe('ConfirmPayment component', () => {
     jest
       .spyOn(quotesService, 'handleQuote')
       .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
-    const { getByText, queryByText } = render(<ConfirmPayment {...mockProps} />);
+    const { getByText, queryByText } = render(<ConfirmPayment />);
 
     // receiver info
     expect(getByText('Review the payment')).toBeOnTheScreen();
@@ -108,7 +99,7 @@ describe('ConfirmPayment component', () => {
     jest
       .spyOn(quotesService, 'handleQuote')
       .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
-    const { getByText, queryByText } = render(<ConfirmPayment {...mockProps} />);
+    const { getByText, queryByText } = render(<ConfirmPayment />);
 
     // receiver info
     expect(getByText('Review the payment')).toBeOnTheScreen();
@@ -146,7 +137,7 @@ describe('ConfirmPayment component', () => {
       .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const mockPixZeroAmount = { ...mockPixPayment, transactionAmount: 0 };
     paymentStore.setScannedPayment(mockPixZeroAmount); // for full test coverage
-    const { getByText, getByTestId } = render(<ConfirmPayment {...mockProps} />);
+    const { getByText, getByTestId } = render(<ConfirmPayment />);
     expect(getByText('$ 0.00')).toBeOnTheScreen();
     const edit = getByText('Edit');
     expect(edit).toBeOnTheScreen();
@@ -163,7 +154,7 @@ describe('ConfirmPayment component', () => {
       .spyOn(quotesService, 'handleQuote')
       .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const setTransactionMock = jest.spyOn(paymentStore, 'setTransaction');
-    const { getByText, getByTestId } = render(<ConfirmPayment {...mockProps} />);
+    const { getByText, getByTestId } = render(<ConfirmPayment />);
 
     // wait the quote is fetched and displayed
     await waitFor(() => {
@@ -186,7 +177,7 @@ describe('ConfirmPayment component', () => {
     const payMock = jest
       .spyOn(paymentStore, 'pay')
       .mockResolvedValue({ transactionHash: 'mockHash' } as PaymentResponse);
-    const { getByText, getByTestId } = render(<ConfirmPayment {...mockProps} />);
+    const { getByText, getByTestId } = render(<ConfirmPayment />);
 
     // wait the quote is fetched and displayed
     await waitFor(() => {
@@ -214,7 +205,7 @@ describe('ConfirmPayment component', () => {
       .spyOn(quotesService, 'handleQuote')
       .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const payMock = jest.spyOn(paymentStore, 'pay').mockRejectedValue(new Error('Payment failed'));
-    const { getByText, getByTestId } = render(<ConfirmPayment {...mockProps} />);
+    const { getByText, getByTestId } = render(<ConfirmPayment />);
 
     // wait the quote is fetched and displayed
     await waitFor(() => {

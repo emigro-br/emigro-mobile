@@ -32,15 +32,9 @@ jest.mock('@/stores/PaymentStore', () => ({
   },
 }));
 
-const navigationMock: any = {
-  navigate: jest.fn(),
-};
-
-const routeMock: any = {};
-
 describe('ReviewTransfer', () => {
   test('Should render review transfer details', () => {
-    const { getByText } = render(<ReviewTransfer navigation={navigationMock} route={routeMock} />);
+    const { getByText } = render(<ReviewTransfer />);
 
     expect(getByText('Review Transfer')).toBeOnTheScreen();
     expect(getByText('You Pay')).toBeOnTheScreen();
@@ -55,7 +49,7 @@ describe('ReviewTransfer', () => {
     // mock pay function
     jest.spyOn(paymentStore, 'pay').mockResolvedValue({ transactionHash: 'hash' } as PaymentResponse);
 
-    const { getByText } = render(<ReviewTransfer navigation={navigationMock} route={routeMock} />);
+    const { getByText } = render(<ReviewTransfer />);
     const sendButton = getByText('Send');
 
     fireEvent.press(sendButton);

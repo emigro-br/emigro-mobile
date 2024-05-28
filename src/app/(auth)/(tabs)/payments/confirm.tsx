@@ -143,7 +143,8 @@ export const ConfirmPayment = () => {
 
   const handleCloseFinishedModal = () => {
     setStep(TransactionStep.NONE);
-    router.replace('/wallet');
+    router.dismissAll(); // clear the stack
+    router.push('/');
   };
 
   if (showPinScreen) {
