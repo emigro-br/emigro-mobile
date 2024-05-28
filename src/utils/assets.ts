@@ -49,7 +49,7 @@ export const cryptoCodeToObj = (asset: CryptoAsset): Asset => cryptosData.find((
 export const fiatCodeToObj = (asset: FiatCurrency): Asset => currencies.find((a) => a.code === asset) as Asset;
 
 export const fiatsFromCryptoCodes = (cryptos: CryptoAsset[]): Asset[] => {
-  return cryptos.map((crypto) => fiatByCrypto[crypto]);
+  return cryptos.map((crypto) => fiatByCrypto[crypto]).filter((a) => a !== undefined) as Asset[]; // filter out undefined, XLM has no fiat
 };
 
 // convert asset code to currency code
