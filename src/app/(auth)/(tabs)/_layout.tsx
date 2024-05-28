@@ -1,24 +1,25 @@
 import * as IconsOutline from 'react-native-heroicons/outline';
 import * as IconsSolid from 'react-native-heroicons/solid';
 
-// import { Route, getFocusedRouteNameFromRoute } from '@react-navigation/native';
-import { Tabs } from 'expo-router';
+import { Tabs, usePathname } from 'expo-router';
+import { ViewStyle } from 'react-native';
 
-// const getTabBarStyle = (route: Partial<Route<string>>): ViewStyle => {
-//   // https://stackoverflow.com/questions/51352081/react-navigation-how-to-hide-tabbar-from-inside-stack-navigation#comment121635652_64789273
-//   const tabHiddenRoutes = ['PayWithQRCode', 'RequestWithQRCode'];
-//   const routeName = getFocusedRouteNameFromRoute(route) ?? 'WalletTab';
-//   if (tabHiddenRoutes.includes(routeName)) {
-//     return { display: 'none' };
-//   }
-//   return { display: 'flex' };
-// };
+const getTabBarStyle = (path: string): ViewStyle => {
+  // https://github.com/expo/router/issues/518
+  // https://stackoverflow.com/questions/51352081/react-navigation-how-to-hide-tabbar-from-inside-stack-navigation#comment121635652_64789273
+  const tabHiddenRoutes = ['/payments/scan', '/payments/request/show-qr-code'];
+  if (tabHiddenRoutes.includes(path)) {
+    return { display: 'none' };
+  }
+  return { display: 'flex' };
+};
 
 export const unstable_settings = {
   initialRouteName: 'wallet',
 };
 
 export default function TabLayout() {
+  const path = usePathname();
   return (
     <Tabs
       screenOptions={{
@@ -40,6 +41,7 @@ export default function TabLayout() {
         options={{
           title: 'Payments',
           tabBarIcon: ({ color, size }) => <IconsOutline.QrCodeIcon size={size} color={color} />,
+          tabBarStyle: getTabBarStyle(path)
         }}
       />
 
