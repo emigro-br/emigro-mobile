@@ -1,4 +1,5 @@
 import { fireEvent, screen } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
@@ -6,16 +7,12 @@ import { userBalance } from '../../__mocks__/mock-balance';
 import { WalletBalances } from '../WalletBalances';
 
 describe('WalletBalances component', () => {
-  const mockNavigation: any = {
-    push: jest.fn(),
-  };
-
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('Should render the balance component correctly', () => {
-    render(<WalletBalances userBalance={userBalance} navigation={mockNavigation} />);
+    render(<WalletBalances userBalance={userBalance} />);
     const balanceElement = screen.getByText('Accounts');
     expect(balanceElement).toBeOnTheScreen();
 
@@ -23,7 +20,7 @@ describe('WalletBalances component', () => {
   });
 
   it('Should display the correct asset codes and balances', () => {
-    render(<WalletBalances userBalance={userBalance} navigation={mockNavigation} />);
+    render(<WalletBalances userBalance={userBalance} />);
     const brlAsset = screen.getByText('Brazilian Real');
     const brlBalance = screen.getByText('R$ 10.00');
     expect(brlAsset).toBeOnTheScreen();
@@ -41,11 +38,12 @@ describe('WalletBalances component', () => {
   });
 
   it('Should go to manage accounts when press add button', () => {
-    render(<WalletBalances userBalance={userBalance} navigation={mockNavigation} />);
+    const mockNavigation = useRouter();
+    render(<WalletBalances userBalance={userBalance} />);
     const addButton = screen.getByTestId('add-button');
 
     fireEvent.press(addButton);
 
-    expect(mockNavigation.push).toHaveBeenCalledWith('ManageAccounts');
+    expect(mockNavigation.push).toHaveBeenCalledWith('/wallet/manage');
   });
 });

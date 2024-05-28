@@ -1,12 +1,13 @@
 import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 
 import { screen, waitFor } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 
 import { inputPIN, render } from 'test-utils';
 
 import { securityStore } from '@/stores/SecurityStore';
 
-import { UnlockScreen } from '../unlock';
+import { UnlockScreen } from '../(auth)/unlock';
 
 jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
@@ -17,21 +18,18 @@ jest.mock('@/stores/SecurityStore', () => ({
 }));
 
 describe('UnlockScreen component', () => {
-  const navigation: any = {
-    replace: jest.fn(),
-  };
-
   it('should navigate to "Root" when unlocked is true', async () => {
+    const router = useRouter();
     jest.spyOn(securityStore, 'verifyPin').mockResolvedValueOnce(true);
 
-    render(<UnlockScreen navigation={navigation} />);
+    render(<UnlockScreen />);
     expect(screen.getByText('Enter your PIN')).toBeOnTheScreen();
-    expect(navigation.replace).not.toHaveBeenCalledWith('Root');
+    expect(router.replace).not.toHaveBeenCalledWith('/');
 
     inputPIN('1234');
 
     await waitFor(() => {
-      expect(navigation.replace).toHaveBeenCalledWith('Root');
+      expect(router.replace).toHaveBeenCalledWith('/');
       expect(securityStore.verifyPin).toHaveBeenCalledWith('1234');
     });
   });
