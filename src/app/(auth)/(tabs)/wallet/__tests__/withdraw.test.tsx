@@ -89,13 +89,14 @@ describe('Withdraw', () => {
 
     const { getByText, queryByText } = render(<Withdraw />);
 
-    expect(getByText('Withdraw money')).toBeOnTheScreen();
-    expect(getByText('Choose the currency you want to withdraw')).toBeOnTheScreen();
+    expect(getByText('Choose your currency')).toBeOnTheScreen();
 
     expect(getByText('Brazilian Real')).toBeOnTheScreen();
-    expect(getByText('100.00 BRL')).toBeOnTheScreen();
+    expect(getByText('BRL')).toBeOnTheScreen();
+    expect(getByText('R$ 100.00')).toBeOnTheScreen();
     expect(getByText('US Dollar')).toBeOnTheScreen();
-    expect(getByText('200.00 USDC')).toBeOnTheScreen();
+    expect(getByText('USDC')).toBeOnTheScreen();
+    expect(getByText('$ 200.00')).toBeOnTheScreen();
     expect(queryByText('XML')).not.toBeOnTheScreen();
   });
 

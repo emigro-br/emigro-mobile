@@ -37,7 +37,7 @@ import { Sep24Transaction, Sep24TransactionStatus } from '@/services/emigro/type
 import { balanceStore } from '@/stores/BalanceStore';
 import { sessionStore } from '@/stores/SessionStore';
 import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
-import { CurrencyToAsset } from '@/utils/assets';
+import { CurrencyToAsset, symbolFor } from '@/utils/assets';
 
 enum TransactionStep {
   NONE = 'none',
@@ -279,7 +279,7 @@ const Withdraw = observer(() => {
 
       <Box flex={1}>
         <VStack p="$4" space="md">
-          <Heading size="xl">Withdraw money</Heading>
+          <Heading size="xl">Choose your currency</Heading>
           {fiatsWithBank.length === 0 && (
             <>
               <Text testID="no-currencies-msg">Please navigate to your profile and select your bank's currency.</Text>
@@ -293,14 +293,18 @@ const Withdraw = observer(() => {
           )}
           {fiatsWithBank.length > 0 && (
             <>
-              <Text>Choose the currency you want to withdraw</Text>
               <Card variant="flat">
                 {fiatsWithBank.map((currency) => {
                   const asset = CurrencyToAsset[currency];
                   const balance = balanceStore.get(asset);
                   return (
                     <Pressable key={currency} onPress={() => handleSelectAsset(currency)}>
-                      <AssetListTile asset={currency} subtitle={`${balance.toFixed(2)} ${asset}`} assetType="fiat" />
+                      <AssetListTile
+                        asset={currency}
+                        assetType="fiat"
+                        subtitle={asset}
+                        trailing={<Text>{symbolFor(asset, balance)}</Text>}
+                      />
                     </Pressable>
                   );
                 })}
