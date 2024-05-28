@@ -12,12 +12,6 @@ import { CryptoAsset } from '@/types/assets';
 
 import { Swap } from '..';
 
-jest.mock('expo-router', () => ({
-  useRouter: jest.fn().mockReturnValue({
-    push: jest.fn(),
-  }),
-}));
-
 jest.mock('@/services/emigro/quotes', () => ({
   handleQuote: jest.fn(),
 }));
