@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -15,6 +16,7 @@ import {
 import { useRouter } from 'expo-router';
 import { PixElementType, hasError, parsePix } from 'pix-utils';
 
+import { Spacer } from '@/components/Spacer';
 import { INVALID_QR_CODE } from '@/constants/errorMessages';
 import { useFeatureFlags } from '@/hooks/feature-flags';
 import { paymentStore } from '@/stores/PaymentStore';
@@ -51,7 +53,9 @@ type Props = {
 export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
   const isFeatureEnabled = useFeatureFlags();
   const enablePix = isFeatureEnabled('pix-payment');
+  const insets = useSafeAreaInsets();
   const [cameraPermission, setCameraPermission] = useState<PermissionResponse | null>(null);
+  const [cameraReady, setCameraReady] = useState(false);
   const [isScanned, setIsScanned] = useState(false);
   const [error, setError] = useState('');
 
@@ -128,8 +132,8 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
 
   const QRRectangule = () => <View style={styles.rectangle} />;
   const CloseButton = () => (
-    <Pressable right={0} top={0} mt="$8" mr="$4" position="absolute" onPress={onCancel} p="$1">
-      <Ionicons name="close" size={36} color="white" />
+    <Pressable onPress={() => onCancel()} p="$2" mr="$2">
+      <Ionicons name="close" size={24} color="white" />
     </Pressable>
   );
 
@@ -147,25 +151,36 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
   return (
     <Box flex={1}>
       <CameraView
+        style={[styles.camera]}
+        onCameraReady={() => setCameraReady(true)}
         onBarcodeScanned={handleBarCodeScanned}
-        style={[StyleSheet.absoluteFillObject]}
         barcodeScannerSettings={{
           barcodeTypes: ['qr'],
         }}
       >
-        <View style={styles.rectangleContainer}>
+        <View style={{ ...styles.buttonContainer, paddingTop: insets.top }}>
+          <Spacer />
           <CloseButton />
-
-          <QRRectangule />
-
-          <InfoText />
         </View>
+        {cameraReady && (
+          <View style={styles.rectangleContainer}>
+            <QRRectangule />
+            <InfoText />
+          </View>
+        )}
       </CameraView>
     </Box>
   );
 };
 
 const styles = StyleSheet.create({
+  camera: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+  },
   rectangleContainer: {
     flex: 1,
     alignItems: 'center',

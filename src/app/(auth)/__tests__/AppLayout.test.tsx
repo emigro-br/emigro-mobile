@@ -8,6 +8,7 @@ import { balanceStore } from '@/stores/BalanceStore';
 import { securityStore } from '@/stores/SecurityStore';
 import { sessionStore } from '@/stores/SessionStore';
 import { FiatCurrency } from '@/types/assets';
+
 import { AppLayout } from '../_layout';
 
 describe.skip('AppLayout', () => {
@@ -17,9 +18,7 @@ describe.skip('AppLayout', () => {
   });
 
   it('should render AnonRoot when not signed in', async () => {
-    const { getByText } = render(
-      <AppLayout />,
-    );
+    const { getByText } = render(<AppLayout />);
 
     await waitFor(() => {
       expect(getByText('Login')).toBeOnTheScreen();

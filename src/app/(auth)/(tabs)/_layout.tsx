@@ -1,8 +1,8 @@
+import { ViewStyle } from 'react-native';
 import * as IconsOutline from 'react-native-heroicons/outline';
 import * as IconsSolid from 'react-native-heroicons/solid';
 
 import { Tabs, usePathname } from 'expo-router';
-import { ViewStyle } from 'react-native';
 
 const getTabBarStyle = (path: string): ViewStyle => {
   // https://github.com/expo/router/issues/518
@@ -41,7 +41,7 @@ export default function TabLayout() {
         options={{
           title: 'Payments',
           tabBarIcon: ({ color, size }) => <IconsOutline.QrCodeIcon size={size} color={color} />,
-          tabBarStyle: getTabBarStyle(path)
+          tabBarStyle: getTabBarStyle(path),
         }}
       />
 
