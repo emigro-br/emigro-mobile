@@ -12,11 +12,12 @@ import {
   HStack,
   Heading,
   Pressable,
+  Spinner,
   Text,
   VStack,
 } from '@gluestack-ui/themed';
 import * as Sentry from '@sentry/react-native';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { observer } from 'mobx-react-lite';
 
 import { AssetListTile } from '@/components/AssetListTile';
@@ -37,7 +38,7 @@ import { Sep24Transaction, Sep24TransactionStatus } from '@/services/emigro/type
 import { balanceStore } from '@/stores/BalanceStore';
 import { sessionStore } from '@/stores/SessionStore';
 import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
-import { CurrencyToAsset, symbolFor } from '@/utils/assets';
+import { AssetToCurrency, CurrencyToAsset, symbolFor } from '@/utils/assets';
 
 enum TransactionStep {
   NONE = 'none',
@@ -55,13 +56,13 @@ type WithdrawAction = {
   transactionId: string;
   assetCode: CryptoAsset;
   anchorUrl: string;
+  status?: Sep24TransactionStatus;
 };
 
 const Withdraw = observer(() => {
   const router = useRouter();
   const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
   const [currentAction, setCurrentAction] = useState<WithdrawAction | null>(null);
-  const [pendingAction, setPendingAction] = useState<WithdrawAction | null>(null);
   const [transaction, setTransaction] = useState<Sep24Transaction | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedAsset, setSelectedAsset] = useState<CryptoOrFiat | null>(null);
@@ -78,10 +79,19 @@ const Withdraw = observer(() => {
     setSelectedAsset(null);
     // setTransactionId(null);
     setCurrentAction(null);
-    setPendingAction(null);
     setErrorMessage(null);
     setStep(TransactionStep.NONE);
+
+    stopFetchingTransaction();
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        stopFetchingTransaction();
+      };
+    }, []),
+  );
 
   const handleSelectAsset = (asset: CryptoOrFiat) => {
     // could be a fiat or crypto asset
@@ -98,6 +108,11 @@ const Withdraw = observer(() => {
     if (!sessionStore.accessToken || !sessionStore.publicKey) {
       setErrorMessage('Invalid session');
       return;
+    }
+
+    if (currentAction) {
+      stopFetchingTransaction();
+      setCurrentAction(null);
     }
 
     // setTransactionId(null);
@@ -133,18 +148,10 @@ const Withdraw = observer(() => {
     }
   };
 
-  const handleCloseWait = () => {
-    setPendingAction(currentAction);
-    setCurrentAction(null);
-    stopFetchingTransaction();
-    setStep(TransactionStep.NONE);
-  };
-
   const handleConfirmTransaction = async (transactionId: string, assetCode: CryptoAsset) => {
     const data: ConfirmWithdrawDto = {
       transactionId,
       assetCode,
-      from: sessionStore.publicKey!,
     };
     try {
       await confirmWithdraw(data);
@@ -181,6 +188,7 @@ const Withdraw = observer(() => {
       const transaction = await getTransaction(transactionId, assetCode);
       const currentStatus = transaction.status;
       console.debug('Current status:', currentStatus);
+      action.status = currentStatus;
 
       if (endStatuses.includes(currentStatus)) {
         stopFetchingTransaction(currentStatus);
@@ -202,10 +210,7 @@ const Withdraw = observer(() => {
       }
     } catch (error) {
       stopFetchingTransaction(Sep24TransactionStatus.ERROR); // clean up
-      console.error('Error getting transaction', error);
-      if (error instanceof Error) {
-        setErrorMessage(error.message);
-      }
+      console.warn('Error getting transaction', error);
     }
   };
 
@@ -226,13 +231,6 @@ const Withdraw = observer(() => {
         isOpen={step === TransactionStep.STARTED && !currentAction}
         text="Connecting to anchor..."
         testID="loading-url-modal"
-      />
-
-      <LoadingModal
-        isOpen={step === TransactionStep.WAITING && !!currentAction}
-        text="Awaiting transaction completion..."
-        onClose={handleCloseWait}
-        testID="waiting-transaction-modal"
       />
 
       {transaction && currentAction && (
@@ -262,7 +260,7 @@ const Withdraw = observer(() => {
       <SuccessModal
         isOpen={step === TransactionStep.SUCCESS}
         title="Transaction successful!"
-        onClose={() => setStep(TransactionStep.NONE)}
+        onClose={() => router.navigate('/wallet')}
       >
         <Text>
           Your withdrawal request has been successfully processed. The funds will be transferred to your account
@@ -312,10 +310,16 @@ const Withdraw = observer(() => {
             </>
           )}
 
-          {pendingAction && step === TransactionStep.NONE && (
-            <Button variant="link" onPress={() => waitWithdrawOnAnchorComplete(pendingAction)} alignSelf="flex-start">
-              <ButtonText>Check pending transaction: {pendingAction.transactionId}</ButtonText>
-            </Button>
+          {currentAction && (
+            <VStack space="lg">
+              <Heading size="lg">In progress</Heading>
+              <TransactionInprogress
+                assetCode={currentAction.assetCode}
+                // amount={5}
+                status={currentAction?.status ?? Sep24TransactionStatus.INCOMPLETE}
+                onUserAction={() => waitWithdrawOnAnchorComplete(currentAction)}
+              />
+            </VStack>
           )}
           {errorMessage && <FormControlErrorText>{errorMessage}</FormControlErrorText>}
         </VStack>
@@ -323,5 +327,67 @@ const Withdraw = observer(() => {
     </>
   );
 });
+
+type TransactionInprogressProps = {
+  assetCode: CryptoAsset;
+  amount?: number;
+  status: Sep24TransactionStatus;
+  onUserAction?: () => void;
+};
+
+const TransactionInprogress = ({ assetCode, amount, status, onUserAction }: TransactionInprogressProps) => {
+  const currency = AssetToCurrency[assetCode] as FiatCurrency;
+
+  const handlePress = () => {
+    if (status === Sep24TransactionStatus.PENDING_USER_TRANSFER_START && onUserAction) {
+      onUserAction();
+    }
+  };
+
+  return (
+    <Pressable onPress={handlePress}>
+      <Card variant="flat" bg="$amber50" borderColor="$amber500" borderWidth={1}>
+        <AssetListTile
+          asset={currency}
+          assetType="fiat"
+          subtitle={assetCode}
+          trailing={amount ? <Text bold>{symbolFor(assetCode, -amount)}</Text> : null}
+        />
+        <HStack ml="$12" mt="$4">
+          <Spinner size="small" color="$amber500" pl="$2" />
+          <Text size="sm" color="$amber500" ml="$3">
+            {statusText(status)}
+          </Text>
+        </HStack>
+      </Card>
+    </Pressable>
+  );
+};
+
+const statusText = (status: Sep24TransactionStatus) => {
+  switch (status) {
+    case Sep24TransactionStatus.COMPLETED:
+      return 'Completed';
+    case Sep24TransactionStatus.ERROR:
+      return 'Error';
+    case Sep24TransactionStatus.INCOMPLETE:
+      return 'Incomplete or cancelled';
+    // case Sep24TransactionStatus.NON_INTERACTIVE_CUSTOMER_INFO_NEEDED:
+    // case Sep24TransactionStatus.PENDING_ANCHOR:
+    // case Sep24TransactionStatus.PENDING_CUSTOMER_INFO_UPDATE:
+    // case Sep24TransactionStatus.PENDING_EXTERNAL:
+    // case Sep24TransactionStatus.PENDING_RECEIVER:
+    // case Sep24TransactionStatus.PENDING_SENDER:
+    // case Sep24TransactionStatus.PENDING_STELLAR:
+    // case Sep24TransactionStatus.PENDING_TRANSACTION_INFO_UPDATE:
+    // case Sep24TransactionStatus.PENDING_TRUST:
+    case Sep24TransactionStatus.PENDING_USER_TRANSFER_START:
+      return 'User Action Required';
+    // case Sep24TransactionStatus.PENDING_USER:
+    //   return 'Waiting';
+    default:
+      return 'In progress';
+  }
+};
 
 export default Withdraw;

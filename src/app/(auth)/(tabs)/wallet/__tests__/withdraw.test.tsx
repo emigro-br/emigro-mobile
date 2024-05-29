@@ -141,8 +141,7 @@ describe('Withdraw', () => {
 
     await waitFor(() => {
       expect(Linking.openURL).toHaveBeenCalledWith('http://anchor.ars');
-      const loadingModal = getByTestId('waiting-transaction-modal');
-      expect(loadingModal).toBeOnTheScreen();
+      expect(getByText('In progress')).toBeOnTheScreen();
     });
   });
 });

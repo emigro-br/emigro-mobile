@@ -15,3 +15,5 @@ const routerMock = {
 export const useRouter = (): ExpoRouter.Router => routerMock;
 
 export const useLocalSearchParams = jest.fn().mockImplementation(() => ({}));
+
+export const useFocusEffect = jest.fn();

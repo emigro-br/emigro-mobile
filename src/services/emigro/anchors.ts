@@ -16,7 +16,6 @@ export enum CallbackType {
 export type ConfirmWithdrawDto = {
   transactionId: string;
   assetCode: string;
-  from: string;
 };
 
 const getInteractiveUrl = async (
