@@ -23,7 +23,9 @@ export function AppLayout() {
 
       const hasPin = securityStore.pin;
       if (hasPin) {
-        router.replace('/unlock');
+        if (!__DEV__) {
+          router.replace('/unlock');
+        }
       } else {
         router.replace('/onboarding/pin');
       }
