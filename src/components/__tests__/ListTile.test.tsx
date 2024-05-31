@@ -35,4 +35,16 @@ describe('ListTile component', () => {
     expect(leadingElementRendered).toBeOnTheScreen();
     expect(trailingElementRendered).toBeOnTheScreen();
   });
+
+  it('Should render the title and subtitle as components correctly', () => {
+    const title = <View testID="title-component">Title Component</View>;
+    const subtitle = <View testID="subtitle-component">Subtitle Component</View>;
+
+    const { getByTestId } = render(<ListTile title={title} subtitle={subtitle} />);
+    const titleElement = getByTestId('title-component');
+    const subtitleElement = getByTestId('subtitle-component');
+
+    expect(titleElement).toBeOnTheScreen();
+    expect(subtitleElement).toBeOnTheScreen();
+  });
 });
