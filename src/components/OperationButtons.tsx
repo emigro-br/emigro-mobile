@@ -10,13 +10,19 @@ const OperationButtons = () => {
   const w = 80; // set with to keep the buttons spaced equally
   return (
     <ButtonGroup justifyContent="space-around" py="$2">
-      <CircularButton label="Deposit" bg="$white" w={w} icon={AddIcon} onPress={() => router.push('/wallet/deposit')} />
+      <CircularButton
+        label="Deposit"
+        bg="$white"
+        w={w}
+        icon={AddIcon}
+        onPress={() => router.push('/wallet/ramp/deposit')}
+      />
       <CircularButton
         label="Withdraw"
         bg="$white"
         w={w}
         icon={ArrowUpIcon}
-        onPress={() => router.push('/wallet/withdraw')}
+        onPress={() => router.push('/wallet/ramp/withdraw')}
       />
       <CircularButton
         label="Send"

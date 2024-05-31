@@ -20,12 +20,19 @@ import {
 
 type Props = {
   isOpen: boolean;
+  isLoading?: boolean;
   onConfirm: () => void;
   onClose?: () => void;
   testID?: string;
 };
 
-export const OpenURLModal: React.FC<Props> = ({ isOpen, onClose, onConfirm, testID = 'open-url-modal' }) => {
+export const OpenURLModal: React.FC<Props> = ({
+  isOpen,
+  isLoading = false,
+  onClose,
+  onConfirm,
+  testID = 'open-url-modal',
+}) => {
   if (!isOpen) return;
 
   return (
@@ -49,8 +56,8 @@ export const OpenURLModal: React.FC<Props> = ({ isOpen, onClose, onConfirm, test
               <Button variant="outline" action="secondary" onPress={onClose}>
                 <ButtonText>Close</ButtonText>
               </Button>
-              <Button onPress={onConfirm} action="primary">
-                <ButtonText>Ok, continue</ButtonText>
+              <Button onPress={onConfirm} action="primary" isDisabled={isLoading}>
+                <ButtonText>{isLoading ? 'Please wait...' : 'Ok, continue'}</ButtonText>
               </Button>
             </ButtonGroup>
           </ModalFooter>
