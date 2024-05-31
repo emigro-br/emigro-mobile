@@ -4,7 +4,15 @@ import MockAdapter from 'axios-mock-adapter';
 import { api } from '@/services/emigro/api';
 import { CryptoAsset } from '@/types/assets';
 
-import { CallbackType, confirmWithdraw, depositUrl, getTransaction, withdrawUrl } from '../anchors';
+import {
+  CallbackType,
+  OperationKind,
+  confirmWithdraw,
+  depositUrl,
+  getTransaction,
+  listTransactions,
+  withdrawUrl,
+} from '../anchors';
 import { InteractiveUrlRequest, InteractiveUrlResponse, Sep24Transaction, Sep24TransactionStatus } from '../types';
 
 jest.mock('../api', () => ({
@@ -35,7 +43,7 @@ describe('anchor service', () => {
         type: 'deposit',
       };
 
-      mock.onPost('/anchor/deposit', anchorParams).reply(200, mockResponse);
+      mock.onPost('/anchor/deposit').reply(200, mockResponse);
 
       const result = await depositUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
 
@@ -58,7 +66,7 @@ describe('anchor service', () => {
         id: '123456789',
       };
 
-      mock.onPost('/anchor/withdraw', anchorParams).reply(200, mockResponse);
+      mock.onPost('/anchor/withdraw').reply(200, mockResponse);
 
       const result = await withdrawUrl(anchorParams, CallbackType.EVENT_POST_MESSAGE);
 
@@ -81,12 +89,35 @@ describe('anchor service', () => {
         status: Sep24TransactionStatus.COMPLETED,
       } as Sep24Transaction;
 
-      mock.onGet('/anchor/transaction', { params: { id, assetCode } }).reply(200, mockResponse);
+      mock.onGet('/anchor/transaction').reply(200, mockResponse);
 
       const result = await getTransaction(id, assetCode);
 
       expect(result).toEqual(mockResponse);
       expect(mockAxiosGet).toHaveBeenCalledWith('/anchor/transaction', { params: { id, assetCode } });
+    });
+  });
+
+  describe('listTransactions', () => {
+    const assetCode: CryptoAsset = CryptoAsset.USDC;
+
+    it('should make a GET request to get the withdrawal transactions', async () => {
+      const mockAxiosGet = jest.spyOn(instance, 'get');
+      const transaction: Sep24Transaction = {
+        id: '123456789',
+        amount_in: '100',
+        status: Sep24TransactionStatus.COMPLETED,
+      } as Sep24Transaction;
+      const mockResponse = { transactions: [transaction] };
+
+      mock.onGet('/anchor/transactions').reply(200, mockResponse);
+
+      const result = await listTransactions(assetCode, OperationKind.WITHDRAW);
+
+      expect(result).toEqual(mockResponse.transactions);
+      expect(mockAxiosGet).toHaveBeenCalledWith('/anchor/transactions', {
+        params: { assetCode, kind: 'withdrawal', limit: 5 },
+      });
     });
   });
 
@@ -101,7 +132,7 @@ describe('anchor service', () => {
       const mockAxiosPost = jest.spyOn(instance, 'post');
       const mockResponse = { success: true };
 
-      mock.onPost('/anchor/withdraw-confirm', data).reply(200, mockResponse);
+      mock.onPost('/anchor/withdraw-confirm').reply(200, mockResponse);
 
       const result = await confirmWithdraw(data);
 

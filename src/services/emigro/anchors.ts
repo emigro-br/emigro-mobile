@@ -3,7 +3,7 @@ import { CryptoAsset } from '@/types/assets';
 import { api, backendUrl } from './api';
 import { InteractiveUrlRequest, InteractiveUrlResponse, Sep24Transaction } from './types';
 
-const enum OperationType {
+export const enum OperationKind {
   DEPOSIT = 'DEPOSIT',
   WITHDRAW = 'WITHDRAW',
 }
@@ -19,11 +19,11 @@ export type ConfirmWithdrawDto = {
 };
 
 const getInteractiveUrl = async (
-  operation: OperationType,
+  kind: OperationKind,
   params: InteractiveUrlRequest,
   callback: CallbackType,
 ): Promise<InteractiveUrlResponse> => {
-  const endpoint = operation === OperationType.WITHDRAW ? 'withdraw' : 'deposit';
+  const endpoint = kind === OperationKind.WITHDRAW ? 'withdraw' : 'deposit';
   const timeout = 15 * 1000;
   const res = await api({ timeout }).post(`/anchor/${endpoint}`, params);
 
@@ -39,11 +39,17 @@ const getInteractiveUrl = async (
 };
 
 export const depositUrl = async (params: InteractiveUrlRequest, callback: CallbackType) => {
-  return getInteractiveUrl(OperationType.DEPOSIT, params, callback);
+  return getInteractiveUrl(OperationKind.DEPOSIT, params, callback);
 };
 
 export const withdrawUrl = async (params: InteractiveUrlRequest, callback: CallbackType) => {
-  return getInteractiveUrl(OperationType.WITHDRAW, params, callback);
+  return getInteractiveUrl(OperationKind.WITHDRAW, params, callback);
+};
+
+export const confirmWithdraw = async (data: ConfirmWithdrawDto) => {
+  const timeout = 30 * 1000;
+  const res = await api({ timeout }).post('/anchor/withdraw-confirm', data);
+  return res.data;
 };
 
 export const getTransaction = async (id: string, assetCode: CryptoAsset): Promise<Sep24Transaction> => {
@@ -57,8 +63,15 @@ export const getTransaction = async (id: string, assetCode: CryptoAsset): Promis
   return res.data;
 };
 
-export const confirmWithdraw = async (data: ConfirmWithdrawDto) => {
+export const listTransactions = async (assetCode: CryptoAsset, kind: OperationKind): Promise<Sep24Transaction[]> => {
   const timeout = 30 * 1000;
-  const res = await api({ timeout }).post('/anchor/withdraw-confirm', data);
-  return res.data;
+  const res = await api({ timeout }).get('/anchor/transactions', {
+    params: {
+      assetCode,
+      kind: kind === OperationKind.DEPOSIT ? 'deposit' : 'withdrawal',
+      limit: 5,
+    },
+  });
+
+  return res.data.transactions;
 };
