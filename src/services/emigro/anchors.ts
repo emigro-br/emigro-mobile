@@ -52,6 +52,7 @@ export const confirmWithdraw = async (data: ConfirmWithdrawDto) => {
   return res.data;
 };
 
+// TODO: rename to getSep24Transaction
 export const getTransaction = async (id: string, assetCode: CryptoAsset): Promise<Sep24Transaction> => {
   const timeout = 20 * 1000;
   const res = await api({ timeout }).get('/anchor/transaction', {

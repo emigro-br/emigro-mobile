@@ -1,8 +1,12 @@
 import {
+  ArrowRightIcon,
   ArrowUpIcon,
   Badge,
   BadgeText,
   Box,
+  Button,
+  ButtonIcon,
+  ButtonText,
   ClockIcon,
   Heading,
   Icon,
@@ -10,6 +14,7 @@ import {
   Text,
   VStack,
 } from '@gluestack-ui/themed';
+import { useRouter } from 'expo-router';
 
 import { Sep24Transaction, Sep24TransactionStatus } from '@/services/emigro/types';
 import { CryptoAsset } from '@/types/assets';
@@ -85,6 +90,7 @@ const statusBadge = (status: Sep24TransactionStatus) => {
 const statusIcon = (status: Sep24TransactionStatus) => {
   const size = 'md';
   switch (status) {
+    case 'error':
     case 'incomplete':
       return <Icon as={SlashIcon} size={size} testID="icon-incomplete" />;
     case 'completed':
@@ -115,6 +121,7 @@ const TransactionDate = ({ date }: { date: string }) => {
 };
 
 const TransactionItem = ({ transaction, asset }: { transaction: Sep24Transaction; asset: CryptoAsset }) => {
+  const router = useRouter();
   const { status } = transaction;
 
   const title = <Text strikeThrough={status === Sep24TransactionStatus.INCOMPLETE}>{labelFor(asset) as string}</Text>;
@@ -129,11 +136,33 @@ const TransactionItem = ({ transaction, asset }: { transaction: Sep24Transaction
   };
 
   return (
-    <ListTile
-      title={title}
-      leading={statusIcon(status)}
-      subtitle={statusBadge(status)}
-      trailing={trailing(transaction.started_at, transaction.amount_in)}
-    />
+    <>
+      <ListTile
+        title={title}
+        leading={statusIcon(status)}
+        subtitle={statusBadge(status)}
+        trailing={trailing(transaction.started_at, transaction.amount_in)}
+      />
+      {status === Sep24TransactionStatus.PENDING_USER_TRANSFER_START && (
+        <Button
+          variant="link"
+          onPress={() =>
+            router.push({
+              pathname: './confirm',
+              params: {
+                asset,
+                id: transaction.id,
+              },
+            })
+          }
+          ml="$8"
+          mt="-$4"
+          alignSelf="flex-start"
+        >
+          <ButtonText>Confirm payment</ButtonText>
+          <ButtonIcon as={ArrowRightIcon} />
+        </Button>
+      )}
+    </>
   );
 };
