@@ -8,7 +8,7 @@ type Props = {
   asset: CryptoOrFiat;
   assetType?: 'crypto' | 'fiat'; // TODO: workaround for icon and title
   subasset?: CryptoOrFiat;
-  subtitle?: string;
+  subtitle?: string | React.ReactNode;
   trailing?: React.ReactNode;
   dense?: boolean;
   testID?: string;

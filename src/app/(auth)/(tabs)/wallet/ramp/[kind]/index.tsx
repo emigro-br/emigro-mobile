@@ -5,8 +5,8 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
 import { CardAssetList } from '@/components/AssetList';
 import { balanceStore } from '@/stores/BalanceStore';
-import { CryptoAsset } from '@/types/assets';
-import { AssetToCurrency } from '@/utils/assets';
+import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
+import { AssetToCurrency, CurrencyToAsset } from '@/utils/assets';
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -19,6 +19,12 @@ export const AssetForOperation = () => {
     .currentAssets()
     .filter((asset) => asset !== CryptoAsset.XLM)
     .map((asset) => AssetToCurrency[asset]);
+
+  const renderSubtitle = (currency: CryptoOrFiat) => {
+    const asset = CurrencyToAsset[currency as FiatCurrency];
+    const balance = balanceStore.get(asset);
+    return `${balance.toFixed(2)} ${asset}`;
+  };
 
   return (
     <>
@@ -33,6 +39,7 @@ export const AssetForOperation = () => {
           <CardAssetList
             data={myCurrencies}
             trailing={<Icon as={ChevronRightIcon} size="md" />}
+            renderSubtitle={renderSubtitle}
             onPress={(currency) =>
               router.push({
                 pathname: `./${currency}`,
