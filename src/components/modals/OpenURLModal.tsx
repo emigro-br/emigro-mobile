@@ -39,10 +39,10 @@ export const OpenURLModal: React.FC<Props> = ({
     <View testID={testID}>
       <Modal isOpen={isOpen}>
         <ModalBackdrop />
-        <ModalContent>
+        <ModalContent width="90%">
           <ModalHeader>
             <Heading size="lg" w="$5/6">
-              We're taking you to an external website
+              Finish this transaction alongside our partner
             </Heading>
             <ModalCloseButton onPress={onClose}>
               <Icon as={CloseIcon} />
@@ -57,7 +57,7 @@ export const OpenURLModal: React.FC<Props> = ({
                 <ButtonText>Close</ButtonText>
               </Button>
               <Button onPress={onConfirm} action="primary" isDisabled={isLoading}>
-                <ButtonText>{isLoading ? 'Please wait...' : 'Ok, continue'}</ButtonText>
+                <ButtonText>{isLoading ? 'Please wait...' : 'Continue'}</ButtonText>
               </Button>
             </ButtonGroup>
           </ModalFooter>
