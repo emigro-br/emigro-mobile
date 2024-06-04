@@ -1,8 +1,7 @@
-import { useEffect, useState } from 'react';
-import { Linking } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { Box, Button, ButtonText, Heading, Text, VStack } from '@gluestack-ui/themed';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 
 import { TransactionHistory } from '@/components/TransactionHistory';
 import { OpenURLModal } from '@/components/modals/OpenURLModal';
@@ -47,44 +46,29 @@ type LayoutProps = {
 };
 
 const OperationLayout = ({ operationTitle, kind, currency }: LayoutProps) => {
+  const router = useRouter();
   const [isOpenUrlModal, setIsOpenUrlModal] = useState(false);
-  const [isGettingUrl, setIsGettingUrl] = useState(false);
   const [refreshedAt, setRefreshedAt] = useState<Date>(new Date()); // to force refresh of transaction history
   const fiat = fiatByCode[currency as string];
   const asset = CurrencyToAsset[fiat.code as FiatCurrency];
   const balance = balanceStore.get(asset);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setRefreshedAt(new Date());
+    }, []),
+  );
 
   const handleNewTransaction = (kind: OperationKind) => {
     setIsOpenUrlModal(true);
   };
 
   const handleOpenConfimed = async () => {
-    setIsGettingUrl(true);
-
-    const anchorParams = {
-      asset_code: asset,
-    };
-
-    try {
-      //TODO: webview change navigation thwors error for CallbackType.CALLBACK_URL
-      const getUrlFn = kind === OperationKind.DEPOSIT ? depositUrl : withdrawUrl;
-      const { url, id } = await getUrlFn(anchorParams, CallbackType.EVENT_POST_MESSAGE);
-
-      if (id) {
-        console.debug('Transaction id:', id);
-        // setTransactionId(id);
-      }
-
-      if (url) {
-        Linking.openURL(url!);
-      } else {
-        console.error('Error opening URL');
-      }
-    } finally {
-      setRefreshedAt(new Date());
-      setIsGettingUrl(false);
-      setIsOpenUrlModal(false);
-    }
+    router.push({
+      pathname: `/wallet/ramp/${kind}/webview`,
+      params: { asset }, // FIXME: asset vs currency
+    });
+    setIsOpenUrlModal(false);
   };
 
   return (
@@ -97,7 +81,6 @@ const OperationLayout = ({ operationTitle, kind, currency }: LayoutProps) => {
 
       <OpenURLModal
         isOpen={isOpenUrlModal}
-        isLoading={isGettingUrl}
         onClose={() => setIsOpenUrlModal(false)}
         onConfirm={() => handleOpenConfimed()}
         testID="open-url-modal"
