@@ -13,6 +13,12 @@ export default function Layout() {
           presentation: 'modal',
         }}
       />
+      <Stack.Screen
+        name="webview"
+        options={{
+          presentation: 'modal',
+        }}
+      />
     </Stack>
   );
 }
