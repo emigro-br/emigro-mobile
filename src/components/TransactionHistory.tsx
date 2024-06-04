@@ -143,7 +143,7 @@ const TransactionItem = ({ transaction, asset }: { transaction: Sep24Transaction
         subtitle={statusBadge(status)}
         trailing={trailing(transaction.started_at, transaction.amount_in)}
       />
-      {status === Sep24TransactionStatus.PENDING_USER_TRANSFER_START && (
+      {transaction.kind === 'withdrawal' && status === Sep24TransactionStatus.PENDING_USER_TRANSFER_START && (
         <Button
           variant="link"
           onPress={() =>

@@ -4,8 +4,8 @@ import { api, backendUrl } from './api';
 import { InteractiveUrlRequest, InteractiveUrlResponse, Sep24Transaction } from './types';
 
 export const enum OperationKind {
-  DEPOSIT = 'DEPOSIT',
-  WITHDRAW = 'WITHDRAW',
+  DEPOSIT = 'deposit',
+  WITHDRAW = 'withdraw',
 }
 
 export enum CallbackType {
