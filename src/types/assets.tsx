@@ -5,6 +5,7 @@ export enum CryptoAsset {
   EURC = 'EURC',
   USDC = 'USDC',
   XLM = 'XLM',
+  SRT = 'SRT',
 }
 
 export enum FiatCurrency {
@@ -12,6 +13,7 @@ export enum FiatCurrency {
   BRL = 'BRL', // Brazilian Real
   EUR = 'EUR', // Euro
   USD = 'USD', // United States Dollar
+  SRT = 'SRT', // SRT - fake currency
 }
 
 export type CryptoOrFiat = CryptoAsset | FiatCurrency;
@@ -41,5 +43,5 @@ export const cryptoAssets = () => {
   if (__DEV__) {
     return allAssets;
   }
-  return allAssets.filter((asset) => asset !== CryptoAsset.XLM);
+  return allAssets.filter((asset) => asset !== CryptoAsset.XLM && asset !== CryptoAsset.SRT);
 };

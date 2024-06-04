@@ -14,6 +14,7 @@ import { Asset, CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
 // TODO: fetch those data from the Emigro API
 const cryptosData = [
   { type: 'crypto', code: 'XLM', name: 'Stellar Lumens', icon: xlmIcon, symbol: 'XLM' },
+  { type: 'crypto', code: 'SRT', name: 'Stellar Reference Token', icon: xlmIcon, symbol: 'SRT' },
   { type: 'crypto', code: 'USDC', name: 'USD Coin', icon: usdcIcon, symbol: '$', currency: 'USD' },
   { type: 'crypto', code: 'EURC', name: 'EURo Coin', icon: eurcIcon, symbol: '€', currency: 'EUR' },
   { type: 'crypto', code: 'BRL', name: 'Brazilian Real', icon: brlIcon, symbol: 'R$', currency: 'BRL' },
@@ -25,6 +26,7 @@ const fiatsData = [
   { type: 'fiat', code: FiatCurrency.BRL, name: 'Brazilian Real', icon: brazilFlag, symbol: 'R$' },
   { type: 'fiat', code: FiatCurrency.EUR, name: 'Euro', icon: euroFlag, symbol: '€' },
   { type: 'fiat', code: FiatCurrency.USD, name: 'US Dollar', icon: usaFlag, symbol: '$' },
+  { type: 'fiat', code: FiatCurrency.SRT, name: 'Stellar Reference Token', icon: xlmIcon, symbol: 'SRT' },
 ];
 
 export const stablecoins = cryptosData.map(
@@ -55,6 +57,7 @@ export const fiatsFromCryptoCodes = (cryptos: CryptoAsset[]): Asset[] => {
 // convert asset code to currency code
 export const AssetToCurrency = {
   [CryptoAsset.XLM]: null,
+  [CryptoAsset.SRT]: FiatCurrency.SRT,
   [CryptoAsset.USDC]: FiatCurrency.USD,
   [CryptoAsset.EURC]: FiatCurrency.EUR,
   [CryptoAsset.BRL]: FiatCurrency.BRL,
@@ -66,11 +69,13 @@ export const CurrencyToAsset = {
   [FiatCurrency.USD]: CryptoAsset.USDC,
   [FiatCurrency.BRL]: CryptoAsset.BRL,
   [FiatCurrency.ARS]: CryptoAsset.ARS,
+  [FiatCurrency.SRT]: CryptoAsset.SRT,
 };
 
 // FIXME: used by some place that should be refactored
 export const AssetToSymbol = {
   [CryptoAsset.XLM]: 'XLM',
+  [CryptoAsset.SRT]: 'SRT',
   [CryptoAsset.USDC]: '$',
   [CryptoAsset.EURC]: '€',
 
