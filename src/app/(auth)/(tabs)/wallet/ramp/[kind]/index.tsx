@@ -4,10 +4,10 @@ import { Box, ChevronRightIcon, Heading, Icon, VStack } from '@gluestack-ui/them
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
 import { CardAssetList } from '@/components/AssetList';
+import { SimpleModal } from '@/components/modals/SimpleModal';
 import { balanceStore } from '@/stores/BalanceStore';
 import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
 import { AssetToCurrency, CurrencyToAsset } from '@/utils/assets';
-import { SimpleModal } from '@/components/modals/SimpleModal';
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -64,14 +64,12 @@ export const AssetForOperation = () => {
                   pathname: `./${currency}`,
                 });
               }
-            }
-            }
+            }}
           />
         </VStack>
       </Box>
     </>
   );
 };
-
 
 export default AssetForOperation;

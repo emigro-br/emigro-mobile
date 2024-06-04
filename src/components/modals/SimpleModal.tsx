@@ -26,14 +26,7 @@ type Props = {
   testID?: string;
 };
 
-export const SimpleModal = ({
-  isOpen,
-  title,
-  children,
-  onClose,
-  onAction,
-  testID,
-}: Props) => {
+export const SimpleModal = ({ isOpen, title, children, onClose, onAction, testID }: Props) => {
   if (!isOpen) return;
 
   return (
