@@ -57,6 +57,7 @@ export const WithdrawlConfirmScreen = () => {
       router.replace(`${path}/success`);
     } catch (error) {
       console.error(error);
+      router.replace(`${path}/error`);
     }
   };
 

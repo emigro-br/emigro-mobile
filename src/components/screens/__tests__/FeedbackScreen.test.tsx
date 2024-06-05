@@ -2,17 +2,20 @@ import React from 'react';
 import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 import { render } from 'test-utils';
 import { fireEvent } from '@testing-library/react-native';
-import { SuccessScreen } from '../SuccessScreen';
+import { FeedbackScreen } from '../FeedbackScreen';
 
 jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
-describe('SuccessScreen component', () => {
+describe('FeedbackScreen component', () => {
   const mockOnContinue = jest.fn();
 
-  test('Should render SuccessScreen component correctly', () => {
+  test('Should render component correctly', () => {
     const { getByText, getByTestId } = render(
-      <SuccessScreen title="Success" message="Congratulations!" onContinue={mockOnContinue} />,
+      <FeedbackScreen title="Success" message="Congratulations!" onContinue={mockOnContinue} />,
     );
+
+    const successIcon = getByTestId('success-icon');
+    expect(successIcon).toBeOnTheScreen();
 
     const title = getByText('Success');
     expect(title).toBeOnTheScreen();
@@ -25,9 +28,18 @@ describe('SuccessScreen component', () => {
     expect(continueButton).toHaveTextContent('Continue');
   });
 
+  test('Should render error icon when action is error', () => {
+    const { getByTestId } = render(
+      <FeedbackScreen title="Error" message="Something went wrong" action="error" onContinue={mockOnContinue} />,
+    );
+
+    const errorIcon = getByTestId('error-icon');
+    expect(errorIcon).toBeOnTheScreen();
+  });
+
   test('Should call onContinue when Continue button is pressed', () => {
     const { getByTestId } = render(
-      <SuccessScreen title="Success" message="Congratulations!" onContinue={mockOnContinue} />,
+      <FeedbackScreen title="Success" message="Congratulations!" onContinue={mockOnContinue} />,
     );
 
     const continueButton = getByTestId('action-button');

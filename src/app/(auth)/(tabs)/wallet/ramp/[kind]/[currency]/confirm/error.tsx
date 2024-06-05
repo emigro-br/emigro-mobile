@@ -6,10 +6,10 @@ const WithdrawalSuccess = () => {
   const router = useRouter();
   return (
     <FeedbackScreen
-      action="success"
-      title="Withdrawal successfully confirmed!"
-      message="Please note that the funds may take some time to reflect in your account. Thank you for using our service!"
-      btnLabel="Done"
+      action="error"
+      title="Failed to confirm transaction"
+      message="Please try again later. If you're facing this issue repeatedly, contact us at support@emigro.com"
+      btnLabel="Got it"
       onContinue={() => router.dismiss()}
     />
   );
