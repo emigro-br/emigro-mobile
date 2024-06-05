@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Box, Button, ButtonText, Heading, Text, VStack } from '@gluestack-ui/themed';
+import { Box, Button, ButtonText, Heading, ScrollView, Text, VStack } from '@gluestack-ui/themed';
 import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 
 import { TransactionHistory } from '@/components/TransactionHistory';
@@ -87,21 +87,23 @@ const OperationLayout = ({ operationTitle, kind, currency }: LayoutProps) => {
         testID="open-url-modal"
       />
 
-      <Box flex={1} bg="$white">
-        <VStack p="$4" space="md">
-          <Heading size="xl">
-            {operationTitle} in {fiat.name}
-          </Heading>
-          <Text bold mb="$2">
-            Balance: {symbolFor(asset, balance)}
-          </Text>
-          <Button variant="outline" onPress={() => handleNewTransaction(kind)}>
-            <ButtonText>New transaction</ButtonText>
-          </Button>
-          <Box mb="$4" />
-          <TransactionHistoryContainer asset={asset} kind={kind} refreshedAt={refreshedAt} />
-        </VStack>
-      </Box>
+      <ScrollView flex={1} bg="$white">
+        <Box flex={1}>
+          <VStack p="$4" space="md">
+            <Heading size="xl">
+              {operationTitle} in {fiat.name}
+            </Heading>
+            <Text bold mb="$2">
+              Balance: {symbolFor(asset, balance)}
+            </Text>
+            <Button variant="outline" onPress={() => handleNewTransaction(kind)}>
+              <ButtonText>New transaction</ButtonText>
+            </Button>
+            <Box mb="$4" />
+            <TransactionHistoryContainer asset={asset} kind={kind} refreshedAt={refreshedAt} />
+          </VStack>
+        </Box>
+      </ScrollView>
     </>
   );
 };
