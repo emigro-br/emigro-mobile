@@ -88,17 +88,21 @@ const statusBadge = (status: Sep24TransactionStatus) => {
 };
 
 const statusIcon = (status: Sep24TransactionStatus) => {
-  const size = 'md';
+  const props = {
+    size: 'md',
+    color: '$backgroundLight800', // TODO: use theme
+  };
   switch (status) {
     case 'error':
     case 'incomplete':
-      return <Icon as={SlashIcon} size={size} testID="icon-incomplete" />;
+      return <Icon as={SlashIcon} testID="icon-incomplete" {...props} />;
     case 'completed':
-      return <Icon as={ArrowUpIcon} size={size} testID="icon-complete" />;
+      return <Icon as={ArrowUpIcon} testID="icon-complete" {...props} />;
     case 'pending_external':
     case 'pending_user_transfer_start':
     default:
-      return <Icon as={ClockIcon} size={size} color="$warning500" testID="icon-pending" />;
+      props.color = '$warning500';
+      return <Icon as={ClockIcon} testID="icon-pending" {...props} />;
   }
 };
 
