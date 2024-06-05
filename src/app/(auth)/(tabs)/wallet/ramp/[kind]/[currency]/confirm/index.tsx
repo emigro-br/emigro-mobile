@@ -13,7 +13,7 @@ import {
   Text,
   VStack,
 } from '@gluestack-ui/themed';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, usePathname, useRouter } from 'expo-router';
 
 import { AssetAvatar } from '@/components/AssetAvatar';
 import { DetailsTable } from '@/components/DetailsTable';
@@ -25,6 +25,7 @@ import { AssetToCurrency, symbolFor } from '@/utils/assets';
 
 export const WithdrawlConfirmScreen = () => {
   const router = useRouter();
+  const path = usePathname();
   const { asset, id } = useLocalSearchParams<{ asset: CryptoAsset; id: string }>();
   const [transaction, setTransaction] = useState<Sep24Transaction | null>(null);
 
@@ -53,6 +54,7 @@ export const WithdrawlConfirmScreen = () => {
 
       // sleep to simulate the request
       // await new Promise(resolve => setTimeout(resolve, 2000));
+      router.replace(`${path}/success`);
     } catch (error) {
       console.error(error);
     }
@@ -63,7 +65,7 @@ export const WithdrawlConfirmScreen = () => {
       asset={asset}
       transaction={transaction}
       onConfirm={() => handleConfirmTransaction(transaction.id, asset)}
-      onClose={() => router.replace('../')}
+      onClose={() => router.dismiss()}
     />
   );
 };

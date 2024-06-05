@@ -1,7 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import { Box, Button, ButtonText, Heading, ScrollView, Text, VStack } from '@gluestack-ui/themed';
-import { Stack, useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import {
+  Stack,
+  useFocusEffect,
+  useGlobalSearchParams,
+  useLocalSearchParams,
+  usePathname,
+  useRouter,
+} from 'expo-router';
 
 import { TransactionHistory } from '@/components/TransactionHistory';
 import { OpenURLModal } from '@/components/modals/OpenURLModal';
@@ -13,7 +20,9 @@ import { CryptoAsset, FiatCurrency } from '@/types/assets';
 import { CurrencyToAsset, fiatByCode, symbolFor } from '@/utils/assets';
 
 const OperationRouter = () => {
-  const { kind, currency } = useLocalSearchParams();
+  const { kind } = useGlobalSearchParams();
+  const { currency } = useLocalSearchParams();
+  // console.debug('OperationRouter', kind, currency);
 
   if (kind === 'deposit') {
     return <Deposit currency={currency as FiatCurrency} />;
@@ -48,9 +57,11 @@ type LayoutProps = {
 
 const OperationLayout = ({ operationTitle, kind, currency }: LayoutProps) => {
   const router = useRouter();
+  const path = usePathname();
   const [isOpenUrlModal, setIsOpenUrlModal] = useState(false);
   const [refreshedAt, setRefreshedAt] = useState<Date>(new Date()); // to force refresh of transaction history
   const fiat = fiatByCode[currency as string];
+  // console.debug('fiat', currency, fiat);
   const asset = CurrencyToAsset[fiat.code as FiatCurrency];
   const balance = balanceStore.get(asset);
 
@@ -66,7 +77,7 @@ const OperationLayout = ({ operationTitle, kind, currency }: LayoutProps) => {
 
   const handleOpenConfimed = async () => {
     router.push({
-      pathname: `/wallet/ramp/${kind}/webview`,
+      pathname: `${path}/webview`,
       params: { asset }, // FIXME: asset vs currency
     });
     setIsOpenUrlModal(false);
@@ -118,6 +129,7 @@ const watcher = new Watcher(); // FIXME: doesn't creating a new watcher in the c
 
 export const TransactionHistoryContainer = ({ asset, kind, refreshedAt }: ContainerProps) => {
   const router = useRouter();
+  const path = usePathname();
   const { latest } = useLocalSearchParams<{ latest: string }>();
   const lastFetchTime = useRef<Date | null>(null);
   const watcherRef = useRef<any>();
@@ -132,7 +144,7 @@ export const TransactionHistoryContainer = ({ asset, kind, refreshedAt }: Contai
       transaction.status === Sep24TransactionStatus.PENDING_USER_TRANSFER_START
     ) {
       router.push({
-        pathname: './confirm',
+        pathname: `${path}/confirm`,
         params: { asset, id: transaction.id },
       });
     }

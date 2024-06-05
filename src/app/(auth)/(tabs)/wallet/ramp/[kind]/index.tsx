@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { Box, ChevronRightIcon, Heading, Icon, VStack } from '@gluestack-ui/themed';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, usePathname, useRouter } from 'expo-router';
 
 import { CardAssetList } from '@/components/AssetList';
 import { SimpleModal } from '@/components/modals/SimpleModal';
@@ -13,6 +13,7 @@ const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export const AssetForOperation = () => {
   const router = useRouter();
+  const path = usePathname();
   const { kind } = useLocalSearchParams();
   const [currencyForDeposit, setCurrencyForDeposit] = useState<FiatCurrency | null>(null);
 
@@ -60,9 +61,7 @@ export const AssetForOperation = () => {
               if (kind === 'withdraw' && balanceStore.get(asset) <= 0.01) {
                 setCurrencyForDeposit(currency as FiatCurrency);
               } else {
-                router.push({
-                  pathname: `./${currency}`,
-                });
+                router.push(`${path}/${currency}`);
               }
             }}
           />

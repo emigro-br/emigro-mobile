@@ -17,7 +17,7 @@ import {
   Text,
   VStack,
 } from '@gluestack-ui/themed';
-import { useRouter } from 'expo-router';
+import { usePathname, useRouter } from 'expo-router';
 
 import { Sep24Transaction, Sep24TransactionStatus } from '@/services/emigro/types';
 import { CryptoAsset } from '@/types/assets';
@@ -132,6 +132,7 @@ const TransactionDate = ({ date }: { date: string }) => {
 
 const TransactionItem = ({ transaction, asset }: { transaction: Sep24Transaction; asset: CryptoAsset }) => {
   const router = useRouter();
+  const path = usePathname(); // workaround for nested routes
   const { status } = transaction;
 
   const title = (
@@ -162,7 +163,7 @@ const TransactionItem = ({ transaction, asset }: { transaction: Sep24Transaction
           variant="link"
           onPress={() =>
             router.push({
-              pathname: './confirm',
+              pathname: `${path}/confirm`,
               params: {
                 asset,
                 id: transaction.id,
