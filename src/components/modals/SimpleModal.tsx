@@ -31,9 +31,9 @@ export const SimpleModal = ({ isOpen, title, children, onClose, onAction, testID
 
   return (
     <View testID={testID}>
-      <Modal isOpen={isOpen}>
+      <Modal isOpen={isOpen} size="lg">
         <ModalBackdrop />
-        <ModalContent width="90%">
+        <ModalContent>
           <ModalHeader>
             <Heading size="lg" w="$5/6">
               {title}

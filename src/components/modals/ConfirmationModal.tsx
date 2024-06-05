@@ -48,7 +48,7 @@ export const ConfirmationModal: React.FC<Props> = ({
 
   return (
     <View testID={testID}>
-      <Modal isOpen={isOpen}>
+      <Modal isOpen={isOpen} size="lg">
         <ModalBackdrop />
         <ModalContent>
           <ModalHeader>
