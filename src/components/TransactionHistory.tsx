@@ -1,3 +1,5 @@
+import React from 'react';
+
 import {
   ArrowRightIcon,
   ArrowUpIcon,
@@ -8,6 +10,7 @@ import {
   ButtonIcon,
   ButtonText,
   ClockIcon,
+  Divider,
   Heading,
   Icon,
   SlashIcon,
@@ -36,8 +39,11 @@ export const TransactionHistory = ({ asset, transactions }: Props) => {
     <Box>
       <Heading mb="$4">History</Heading>
       <VStack space="lg">
-        {transactions.map((transaction) => (
-          <TransactionItem key={transaction.id} transaction={transaction} asset={asset} />
+        {transactions.map((transaction, index) => (
+          <React.Fragment key={transaction.id}>
+            <TransactionItem transaction={transaction} asset={asset} />
+            {index < transactions.length - 1 && <Divider my="$4" />}
+          </React.Fragment>
         ))}
       </VStack>
     </Box>
@@ -128,13 +134,17 @@ const TransactionItem = ({ transaction, asset }: { transaction: Sep24Transaction
   const router = useRouter();
   const { status } = transaction;
 
-  const title = <Text strikeThrough={status === Sep24TransactionStatus.INCOMPLETE}>{labelFor(asset) as string}</Text>;
+  const title = (
+    <Text strikeThrough={status === Sep24TransactionStatus.INCOMPLETE} color="$textLight950" fontWeight="$medium">
+      {labelFor(asset) as string}
+    </Text>
+  );
 
   const trailing = (date: string, amount: string) => {
     return (
       <VStack space="xs" height="$full" alignItems="flex-end" testID="transaction-item">
         <TransactionDate date={date} />
-        {amount && <Text>{symbolFor(asset, Number(amount))}</Text>}
+        {amount && <Text fontWeight="$medium">{symbolFor(asset, Number(amount))}</Text>}
       </VStack>
     );
   };
@@ -160,11 +170,11 @@ const TransactionItem = ({ transaction, asset }: { transaction: Sep24Transaction
             })
           }
           ml="$8"
-          mt="-$4"
+          my="-$4"
           alignSelf="flex-start"
         >
           <ButtonText>Confirm payment</ButtonText>
-          <ButtonIcon as={ArrowRightIcon} />
+          <ButtonIcon as={ArrowRightIcon} size="2xs" ml="$1" />
         </Button>
       )}
     </>
