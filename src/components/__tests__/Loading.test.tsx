@@ -7,8 +7,9 @@ import { LoadingScreen } from '../Loading';
 describe('LoadingScreen', () => {
   it('should render the loading spinner', () => {
     const { getByTestId } = render(<LoadingScreen />);
-    const spinner = getByTestId('loading-spinner');
 
+    expect(getByTestId('loading-screen')).toBeOnTheScreen();
+    const spinner = getByTestId('loading-spinner');
     expect(spinner).toBeOnTheScreen();
   });
 });

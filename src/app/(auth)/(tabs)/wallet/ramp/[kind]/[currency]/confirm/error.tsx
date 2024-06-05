@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 
 import { FeedbackScreen } from '@/components/screens/FeedbackScreen';
 
-const WithdrawalSuccess = () => {
+const WithdrawalError = () => {
   const router = useRouter();
   return (
     <FeedbackScreen
@@ -15,4 +15,4 @@ const WithdrawalSuccess = () => {
   );
 };
 
-export default WithdrawalSuccess;
+export default WithdrawalError;

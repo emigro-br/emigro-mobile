@@ -18,7 +18,7 @@ export const useLocalSearchParams = jest.fn().mockImplementation(() => ({}));
 
 export const useFocusEffect = jest.fn();
 
-export const usePathname = jest.fn().mockImplementation(() => '/');
+export const usePathname = jest.fn().mockImplementation(() => '/<path>');
 
 const stackMock = {
   Screen: jest.fn(),

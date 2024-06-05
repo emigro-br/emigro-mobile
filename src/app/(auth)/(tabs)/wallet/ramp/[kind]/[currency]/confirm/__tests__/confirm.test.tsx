@@ -2,15 +2,82 @@ import React from 'react';
 import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 
 import { fireEvent, waitFor } from '@testing-library/react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
+import * as anchors from '@/services/emigro/anchors';
 import { Sep24Transaction, Sep24TransactionStatus } from '@/services/emigro/types';
 import { CryptoAsset } from '@/types/assets';
 
-import { WithdrawlConfirm } from '..';
+import { WithdrawlConfirm, WithdrawlConfirmScreen } from '..';
 
 jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
+
+jest.mock('@/services/emigro/anchors', () => ({
+  getTransaction: jest.fn(() => Promise.resolve({ id: 'transactionId', status: 'pending_user_transfer_start' })),
+  confirmWithdraw: jest.fn(() => Promise.resolve()),
+}));
+
+describe('WithdrawlConfirmScreen', () => {
+  let router: any;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    router = useRouter();
+    (useLocalSearchParams as jest.Mock).mockReturnValue({ asset: CryptoAsset.USDC, id: 'transactionId' });
+  });
+
+  it('should render loading screen when transaction is null', () => {
+    (anchors.getTransaction as jest.Mock).mockResolvedValueOnce(null);
+    const { getByTestId } = render(<WithdrawlConfirmScreen />);
+    expect(getByTestId('loading-screen')).toBeOnTheScreen();
+  });
+
+  it('should render WithdrawlConfirm when transaction is not null', async () => {
+    const { findByTestId } = render(<WithdrawlConfirmScreen />);
+    await waitFor(() => expect(anchors.getTransaction).toHaveBeenCalled());
+
+    const withdrawlConfirm = await findByTestId('confirm-button');
+    expect(withdrawlConfirm).toBeOnTheScreen();
+  });
+
+  it('should call confirmWithdraw and navigate to success screen on confirm button press', async () => {
+    const { findByTestId } = render(<WithdrawlConfirmScreen />);
+    const confirmButton = await findByTestId('confirm-button');
+
+    fireEvent.press(confirmButton);
+
+    expect(anchors.confirmWithdraw).toHaveBeenCalledWith({
+      transactionId: 'transactionId',
+      assetCode: CryptoAsset.USDC,
+    });
+    await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/<path>/success'));
+  });
+
+  it('should navigate to error screen on confirmWithdraw error', async () => {
+    (anchors.confirmWithdraw as jest.Mock).mockRejectedValueOnce(new Error('Error'));
+    const { findByTestId } = render(<WithdrawlConfirmScreen />);
+    const confirmButton = await findByTestId('confirm-button');
+
+    fireEvent.press(confirmButton);
+
+    expect(anchors.confirmWithdraw).toHaveBeenCalledWith({
+      transactionId: 'transactionId',
+      assetCode: CryptoAsset.USDC,
+    });
+    await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/<path>/error'));
+  });
+
+  it('should navigate to previous screen on close button press', async () => {
+    const { findByTestId } = render(<WithdrawlConfirmScreen />);
+    const closeButton = await findByTestId('close-button');
+
+    fireEvent.press(closeButton);
+
+    expect(router.dismiss).toHaveBeenCalled();
+  });
+});
 
 describe('WithdrawlConfirm component', () => {
   const mockAsset: CryptoAsset = CryptoAsset.USDC;
