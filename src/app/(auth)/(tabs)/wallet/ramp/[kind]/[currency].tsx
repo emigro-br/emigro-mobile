@@ -114,17 +114,20 @@ type ContainerProps = {
   refreshedAt?: Date;
 };
 
+const watcher = new Watcher(); // FIXME: doesn't creating a new watcher in the container to not clean the registered transactions
+
 export const TransactionHistoryContainer = ({ asset, kind, refreshedAt }: ContainerProps) => {
   const router = useRouter();
+  const { latest } = useLocalSearchParams<{ latest: string }>();
   const lastFetchTime = useRef<Date | null>(null);
-  const watchingRef = useRef<any>();
+  const watcherRef = useRef<any>();
   const [transactions, setTransactions] = useState<Sep24Transaction[]>([]);
   const [updated, setUpdated] = useState<Sep24Transaction | null>();
-  const watcher = new Watcher();
 
   const onMessage = async (transaction: Sep24Transaction) => {
-    console.debug('Transaction onMessage', transaction);
+    console.debug('onMessage', transaction);
     if (
+      transaction.id === latest &&
       transaction.kind === 'withdrawal' &&
       transaction.status === Sep24TransactionStatus.PENDING_USER_TRANSFER_START
     ) {
@@ -149,56 +152,48 @@ export const TransactionHistoryContainer = ({ asset, kind, refreshedAt }: Contai
 
       console.debug('Fetching transactions', asset, kind, refreshedAt);
       const transactions = await listTransactions(asset, kind);
-      watcher.updateTransactionsRegistry(transactions);
 
       setTransactions(transactions as Sep24Transaction[]);
 
-      checkforUpdates(transactions);
+      // if there is a latest transaction, start watching it
+      if (transactions.length > 0 && transactions[0].id === latest) {
+        watchTransaction(transactions[0]);
+      }
     };
     fetchTransactions();
   }, [asset, kind, refreshedAt]);
 
-  // useEffect(() => {
-  //   if (transactions.length > 0) {
-  //     checkforUpdates(transactions);
-  //   }
-  // }, [transactions]);
-
   useEffect(() => {
     return () => {
-      console.debug('Clean up on unmount', watchingRef.current);
-      watchingRef.current?.stop();
+      console.debug('Clean up on unmount', watcherRef.current);
+      watcherRef.current?.stop();
     };
   }, []);
 
-  const checkforUpdates = (transactions: Sep24Transaction[]) => {
-    if (transactions.length === 0) return;
-
-    const last = transactions[0];
+  const watchTransaction = (transaction: Sep24Transaction) => {
     const endStatuses = [
       Sep24TransactionStatus.INCOMPLETE, // user closed the popup window
       Sep24TransactionStatus.COMPLETED,
       Sep24TransactionStatus.ERROR,
     ];
 
-    if (!endStatuses.includes(last.status)) {
-      if (watchingRef.current) {
-        console.debug('Clearing prev watchers', watchingRef.current);
-        watchingRef.current.stop();
+    if (!endStatuses.includes(transaction.status)) {
+      if (watcherRef.current) {
+        console.debug('Clearing prev watchers', watcherRef.current);
+        watcherRef.current.stop();
       }
 
-      watchingRef.current = watcher.watchOneTransaction({
+      watcherRef.current = watcher.watchOneTransaction({
         assetCode: asset,
-        id: last.id,
+        id: transaction.id,
         onMessage,
-        onSuccess: (transaction) => {
-          // setTransactions([transaction, ...transactions]);
-          console.debug('Transaction completed', transaction);
-          setUpdated(transaction);
+        onSuccess: (updated) => {
+          console.debug('Transaction completed', updated);
+          setUpdated(updated);
         },
-        onError: (transaction) => {
-          console.error('Transaction error', transaction);
-          setUpdated(transaction);
+        onError: (updated) => {
+          console.error('Transaction error', updated);
+          setUpdated(updated);
         },
       });
     }
