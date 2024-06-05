@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useRouter } from 'expo-router';
+import { usePathname, useRouter } from 'expo-router';
 
 import { fireEvent, render } from 'test-utils';
 
@@ -51,6 +51,7 @@ describe('TransactionHistory', () => {
   // test the payment button
   it('should press the payment button', () => {
     const router = useRouter();
+    (usePathname as jest.Mock).mockReturnValueOnce('/path');
     const pendingPayment = transactions.find((transaction) => transaction.status === 'pending_user_transfer_start');
     expect(pendingPayment).toBeDefined();
     if (!pendingPayment) {
@@ -66,7 +67,7 @@ describe('TransactionHistory', () => {
 
     // check if the router was called
     expect(router.push).toHaveBeenCalledWith({
-      pathname: './confirm',
+      pathname: '/path/confirm',
       params: {
         asset,
         id: pendingPayment.id,

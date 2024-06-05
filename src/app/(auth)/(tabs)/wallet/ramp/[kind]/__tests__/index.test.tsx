@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, usePathname, useRouter } from 'expo-router';
 
 import { fireEvent, render } from 'test-utils';
 
@@ -31,11 +31,12 @@ describe('AssetForOperation', () => {
 
   it('should navigate on press', () => {
     const router = useRouter();
+    (usePathname as jest.Mock).mockReturnValue('/path');
     const { getByText } = render(<AssetForOperation />);
     const item = getByText('10.00 USDC');
 
     fireEvent.press(item);
 
-    expect(router.push).toHaveBeenCalledWith({ pathname: './USD' });
+    expect(router.push).toHaveBeenCalledWith('/path/USD');
   });
 });

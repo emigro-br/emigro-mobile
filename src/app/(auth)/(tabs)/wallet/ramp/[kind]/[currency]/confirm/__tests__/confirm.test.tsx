@@ -7,8 +7,8 @@ import { render } from 'test-utils';
 
 import { Sep24Transaction, Sep24TransactionStatus } from '@/services/emigro/types';
 import { CryptoAsset } from '@/types/assets';
+import { WithdrawlConfirm } from '..';
 
-import { WithdrawlConfirm } from '../[currency]/confirm';
 
 jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
