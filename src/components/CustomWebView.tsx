@@ -27,7 +27,6 @@ export const CustomWebView = ({ url, onMessage, onClose }: Props) => {
   `;
 
   const handleClose = () => {
-    console.debug('close');
     webview.current?.stopLoading();
     onClose?.();
   };
@@ -49,6 +48,7 @@ export const CustomWebView = ({ url, onMessage, onClose }: Props) => {
         // originWhitelist={['*']}
         // source={{ html }}
         injectedJavaScript={injectedJavaScript}
+        testID="custom-webview"
       />
     </Box>
   );
@@ -57,9 +57,6 @@ export const CustomWebView = ({ url, onMessage, onClose }: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // alignItems: 'center',
-    // justifyContent: 'center',
     paddingTop: Constants.statusBarHeight,
-    // backgroundColor: '#ecf0f1',
   },
 });
