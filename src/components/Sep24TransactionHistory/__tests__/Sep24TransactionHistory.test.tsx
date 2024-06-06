@@ -7,13 +7,13 @@ import { fireEvent, render } from 'test-utils';
 import { transactions } from '@/mocks/api/transactions.json';
 import { CryptoAsset } from '@/types/assets';
 
-import { TransactionHistory } from '../TransactionHistory';
+import { Sep24TransactionHistory } from '../Sep24TransactionHistory';
 
-describe('TransactionHistory', () => {
+describe('Sep24TransactionHistory', () => {
   const asset = CryptoAsset.BRL;
   it('should render the transaction history', () => {
     const { getByText, getAllByText, getAllByTestId } = render(
-      <TransactionHistory asset={asset} transactions={transactions} />,
+      <Sep24TransactionHistory asset={asset} transactions={transactions} />,
     );
 
     // Assert that the transaction history is rendered
@@ -30,7 +30,7 @@ describe('TransactionHistory', () => {
 
   it('should render the transaction history with the correct status', () => {
     const { getByText, getByTestId, getAllByTestId } = render(
-      <TransactionHistory asset={asset} transactions={transactions} />,
+      <Sep24TransactionHistory asset={asset} transactions={transactions} />,
     );
 
     // pending user and anchor
@@ -57,7 +57,7 @@ describe('TransactionHistory', () => {
     if (!pendingPayment) {
       throw new Error('Pending payment not found');
     }
-    const { getByText } = render(<TransactionHistory asset={asset} transactions={[pendingPayment]} />);
+    const { getByText } = render(<Sep24TransactionHistory asset={asset} transactions={[pendingPayment]} />);
 
     // check the payment button
     const button = getByText('Confirm payment');
@@ -76,7 +76,7 @@ describe('TransactionHistory', () => {
   });
 
   it('should not render anything when there are no transactions', () => {
-    const { queryByText } = render(<TransactionHistory asset={asset} transactions={[]} />);
+    const { queryByText } = render(<Sep24TransactionHistory asset={asset} transactions={[]} />);
 
     // Assert that the container is empty
     expect(queryByText('History')).toBeNull();

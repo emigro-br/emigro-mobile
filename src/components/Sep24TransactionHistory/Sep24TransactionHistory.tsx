@@ -19,18 +19,17 @@ import {
 } from '@gluestack-ui/themed';
 import { usePathname, useRouter } from 'expo-router';
 
+import { ListTile } from '@/components/ListTile';
 import { Sep24Transaction, Sep24TransactionStatus } from '@/services/emigro/types';
 import { CryptoAsset } from '@/types/assets';
 import { labelFor, symbolFor } from '@/utils/assets';
-
-import { ListTile } from './ListTile';
 
 type Props = {
   asset: CryptoAsset; // TODO: asset or fiat?
   transactions: Sep24Transaction[];
 };
 
-export const TransactionHistory = ({ asset, transactions }: Props) => {
+export const Sep24TransactionHistory = ({ asset, transactions }: Props) => {
   if (transactions && transactions.length === 0) {
     return null;
   }
