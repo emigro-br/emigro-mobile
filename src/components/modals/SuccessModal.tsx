@@ -26,7 +26,7 @@ type Props = {
 
 export const SuccessModal: React.FC<Props> = ({ isOpen, title, children, onClose, testID = 'success-modal' }) => (
   <View testID={testID}>
-    <Modal isOpen={isOpen}>
+    <Modal isOpen={isOpen} size="lg">
       <ModalBackdrop />
       <ModalContent>
         <ModalHeader>

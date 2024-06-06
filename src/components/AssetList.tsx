@@ -10,12 +10,17 @@ type Props = {
   data: CryptoOrFiat[];
   onPress: (item: CryptoOrFiat) => void;
   trailing?: React.ReactNode;
+  renderSubtitle?: (item: CryptoOrFiat) => string | React.ReactNode;
 };
 
-export const AssetList = ({ data, trailing, onPress }: Props) => {
+export const AssetList = ({ data, trailing, onPress, renderSubtitle }: Props) => {
+  const _subtitle = (item: CryptoOrFiat) => {
+    return renderSubtitle ? renderSubtitle(item) : item;
+  };
+
   const renderItem = ({ item }) => (
     <Pressable onPress={() => onPress(item)}>
-      <AssetListTile asset={item} subasset={item} trailing={trailing} />
+      <AssetListTile asset={item} subtitle={_subtitle(item)} trailing={trailing} />
     </Pressable>
   );
 
@@ -33,8 +38,8 @@ type CardProps = Props & {
   variant?: 'flat' | 'outline' | 'elevated' | 'ghost' | 'filled' | undefined;
 };
 
-export const CardAssetList = ({ variant = 'flat', data, trailing, onPress }: CardProps) => (
-  <Card variant={variant}>
-    <AssetList data={data} trailing={trailing} onPress={onPress} />
+export const CardAssetList = (props: CardProps) => (
+  <Card variant={props.variant ?? 'flat'}>
+    <AssetList {...props} />
   </Card>
 );

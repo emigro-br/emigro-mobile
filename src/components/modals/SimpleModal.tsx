@@ -14,25 +14,19 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Text,
   View,
 } from '@gluestack-ui/themed';
 
 type Props = {
   isOpen: boolean;
-  isLoading?: boolean;
-  onConfirm: () => void;
+  title: string;
+  children?: React.ReactNode;
+  onAction?: () => void;
   onClose?: () => void;
   testID?: string;
 };
 
-export const OpenURLModal: React.FC<Props> = ({
-  isOpen,
-  isLoading = false,
-  onClose,
-  onConfirm,
-  testID = 'open-url-modal',
-}) => {
+export const SimpleModal = ({ isOpen, title, children, onClose, onAction, testID }: Props) => {
   if (!isOpen) return;
 
   return (
@@ -42,22 +36,20 @@ export const OpenURLModal: React.FC<Props> = ({
         <ModalContent>
           <ModalHeader>
             <Heading size="lg" w="$5/6">
-              Finish this transaction alongside our partner
+              {title}
             </Heading>
             <ModalCloseButton onPress={onClose}>
               <Icon as={CloseIcon} />
             </ModalCloseButton>
           </ModalHeader>
-          <ModalBody>
-            <Text>You'll be taken outside Emigro app to complete this transaction in the Anchor website.</Text>
-          </ModalBody>
+          {children && <ModalBody>{children}</ModalBody>}
           <ModalFooter>
             <ButtonGroup>
               <Button variant="outline" action="secondary" onPress={onClose}>
                 <ButtonText>Close</ButtonText>
               </Button>
-              <Button onPress={onConfirm} action="primary" isDisabled={isLoading}>
-                <ButtonText>{isLoading ? 'Please wait...' : 'Continue'}</ButtonText>
+              <Button onPress={onAction} action="primary">
+                <ButtonText>Deposit now</ButtonText>
               </Button>
             </ButtonGroup>
           </ModalFooter>

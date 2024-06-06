@@ -33,6 +33,7 @@
       "@/config/*": [
         "config/*"
       ],
+      "@/mocks/*": ["src/__mocks__/*"],
       "@/*": ["src/*"]
     }
   }

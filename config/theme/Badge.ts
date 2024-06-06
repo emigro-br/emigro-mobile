@@ -3,7 +3,7 @@ import { createStyle } from '@gluestack-style/react';
 export const Badge = createStyle({
   flexDirection: 'row',
   alignItems: 'center',
-  borderRadius: '$xs',
+  borderRadius: '$full',
   variants: {
     action: {
       error: {

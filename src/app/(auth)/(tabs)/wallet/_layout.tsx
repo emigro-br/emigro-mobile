@@ -21,6 +21,7 @@ export default function WalletLayout() {
       <Stack.Screen name="swap" options={{ title: 'Swap' }} />
       <Stack.Screen name="transfers" options={{ title: 'Transfers' }} />
       <Stack.Screen name="manage" options={{ title: 'Accounts' }} />
+      <Stack.Screen name="ramp/[kind]" options={{ title: '' }} />
     </Stack>
   );
 }

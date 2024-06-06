@@ -4,8 +4,8 @@ import { api, backendUrl } from './api';
 import { InteractiveUrlRequest, InteractiveUrlResponse, Sep24Transaction } from './types';
 
 export const enum OperationKind {
-  DEPOSIT = 'DEPOSIT',
-  WITHDRAW = 'WITHDRAW',
+  DEPOSIT = 'deposit',
+  WITHDRAW = 'withdraw',
 }
 
 export enum CallbackType {
@@ -52,6 +52,7 @@ export const confirmWithdraw = async (data: ConfirmWithdrawDto) => {
   return res.data;
 };
 
+// TODO: rename to getSep24Transaction
 export const getTransaction = async (id: string, assetCode: CryptoAsset): Promise<Sep24Transaction> => {
   const timeout = 20 * 1000;
   const res = await api({ timeout }).get('/anchor/transaction', {
