@@ -21,19 +21,18 @@ import { CurrencyToAsset, fiatByCode, symbolFor } from '@/utils/assets';
 
 const OperationRouter = () => {
   const { kind } = useGlobalSearchParams();
-  const { currency } = useLocalSearchParams();
-  // console.debug('OperationRouter', kind, currency);
+  const { currency } = useLocalSearchParams<{ currency: FiatCurrency }>();
+
+  if (!currency) {
+    throw new Error('Currency is required');
+  }
 
   if (kind === 'deposit') {
-    return <Deposit currency={currency as FiatCurrency} />;
+    return <Deposit currency={currency} />;
   } else if (kind === 'withdraw') {
-    return <Withdrawal currency={currency as FiatCurrency} />;
+    return <Withdrawal currency={currency} />;
   } else {
-    return (
-      <Box>
-        <Heading>Invalid kind operation</Heading>
-      </Box>
-    );
+    throw new Error('Invalid kind operation: ' + kind);
   }
 };
 
@@ -42,26 +41,25 @@ type KindProps = {
 };
 
 const Deposit = ({ currency }: KindProps) => {
-  return <OperationLayout operationTitle="Deposit" kind={OperationKind.DEPOSIT} currency={currency} />;
+  return <OperationHome title="Deposit" kind={OperationKind.DEPOSIT} currency={currency} />;
 };
 
-export const Withdrawal = ({ currency }: KindProps) => {
-  return <OperationLayout operationTitle="Withdrawl" kind={OperationKind.WITHDRAW} currency={currency} />;
+const Withdrawal = ({ currency }: KindProps) => {
+  return <OperationHome title="Withdrawl" kind={OperationKind.WITHDRAW} currency={currency} />;
 };
 
 type LayoutProps = {
-  operationTitle: string;
+  title: string;
   kind: OperationKind;
   currency: string;
 };
 
-const OperationLayout = ({ operationTitle, kind, currency }: LayoutProps) => {
+export const OperationHome = ({ title, kind, currency }: LayoutProps) => {
   const router = useRouter();
   const path = usePathname();
   const [isOpenUrlModal, setIsOpenUrlModal] = useState(false);
   const [refreshedAt, setRefreshedAt] = useState<Date>(new Date()); // to force refresh of transaction history
   const fiat = fiatByCode[currency as string];
-  // console.debug('fiat', currency, fiat);
   const asset = CurrencyToAsset[fiat.code as FiatCurrency];
   const balance = balanceStore.get(asset);
 
@@ -87,7 +85,7 @@ const OperationLayout = ({ operationTitle, kind, currency }: LayoutProps) => {
     <>
       <Stack.Screen
         options={{
-          title: operationTitle,
+          title,
         }}
       />
 
@@ -102,7 +100,7 @@ const OperationLayout = ({ operationTitle, kind, currency }: LayoutProps) => {
         <Box flex={1}>
           <VStack p="$4" space="md">
             <Heading size="xl">
-              {operationTitle} in {fiat.name}
+              {title} in {fiat.name}
             </Heading>
             <Text bold mb="$2">
               Balance: {symbolFor(asset, balance)}
