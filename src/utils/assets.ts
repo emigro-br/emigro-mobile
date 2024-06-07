@@ -4,6 +4,7 @@ import arsIcon from '@/assets/images/icons/ars-icon.png';
 import brazilFlag from '@/assets/images/icons/brazil-flag-round-circle-icon.png';
 // Digital assets
 import brlIcon from '@/assets/images/icons/brl-icon.png';
+import brzIcon from '@/assets/images/icons/brz-icon.png';
 import eurcIcon from '@/assets/images/icons/eurc-icon.png';
 import euroFlag from '@/assets/images/icons/european-union-flag-round-circle-icon.png';
 import xlmIcon from '@/assets/images/icons/stellar-xlm-icon.png';
@@ -18,6 +19,7 @@ const cryptosData = [
   { type: 'crypto', code: 'USDC', name: 'USD Coin', icon: usdcIcon, symbol: '$', currency: 'USD' },
   { type: 'crypto', code: 'EURC', name: 'EURo Coin', icon: eurcIcon, symbol: '€', currency: 'EUR' },
   { type: 'crypto', code: 'BRL', name: 'Brazilian Real', icon: brlIcon, symbol: 'R$', currency: 'BRL' },
+  { type: 'crypto', code: 'BRZ', name: 'Brazilian Digital Token', icon: brzIcon, symbol: 'R$', currency: 'BRL' },
   { type: 'crypto', code: 'ARS', name: 'Peso Argentino Digital', icon: arsIcon, symbol: '$', currency: 'ARS' },
 ];
 
@@ -61,6 +63,7 @@ export const AssetToCurrency = {
   [CryptoAsset.USDC]: FiatCurrency.USD,
   [CryptoAsset.EURC]: FiatCurrency.EUR,
   [CryptoAsset.BRL]: FiatCurrency.BRL,
+  [CryptoAsset.BRZ]: FiatCurrency.BRL,
   [CryptoAsset.ARS]: FiatCurrency.ARS,
 };
 
@@ -78,6 +81,7 @@ export const AssetToSymbol = {
   [CryptoAsset.SRT]: 'SRT',
   [CryptoAsset.USDC]: '$',
   [CryptoAsset.EURC]: '€',
+  [CryptoAsset.BRZ]: 'R$',
 
   // currencies
   [FiatCurrency.EUR]: '€',

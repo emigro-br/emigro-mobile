@@ -2,6 +2,7 @@ export enum CryptoAsset {
   // keep alphametical order
   ARS = 'ARS',
   BRL = 'BRL',
+  BRZ = 'BRZ',
   EURC = 'EURC',
   USDC = 'USDC',
   XLM = 'XLM',
@@ -43,5 +44,6 @@ export const cryptoAssets = () => {
   if (__DEV__) {
     return allAssets;
   }
-  return allAssets.filter((asset) => asset !== CryptoAsset.XLM && asset !== CryptoAsset.SRT);
+  const excludedAssets = [CryptoAsset.SRT, CryptoAsset.XLM, CryptoAsset.BRZ];
+  return allAssets.filter((asset) => !excludedAssets.includes(asset));
 };
