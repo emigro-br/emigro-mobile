@@ -32,7 +32,6 @@ export const WalletBalances: React.FC<Props> = ({ userBalance }) => {
                 asset={asset}
                 subasset={asset}
                 trailing={<Text>{symbolFor(asset, Number(balance))}</Text>}
-                dense
               />
             );
           })}

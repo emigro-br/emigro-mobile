@@ -15,7 +15,7 @@ import {
 } from '@gluestack-ui/themed';
 import { useLocalSearchParams, usePathname, useRouter } from 'expo-router';
 
-import { AssetAvatar } from '@/components/AssetAvatar';
+import { AssetImage } from '@/components/AssetImage';
 import { DetailsTable } from '@/components/DetailsTable';
 import { LoadingScreen } from '@/components/Loading';
 import { ConfirmWithdrawDto, confirmWithdraw, getTransaction } from '@/services/emigro/anchors';
@@ -110,7 +110,7 @@ export const WithdrawlConfirm = ({ asset, transaction, onConfirm, onClose }: Pro
       <VStack p="$4">
         <HStack justifyContent="space-between">
           <Heading size="xl">Withdrawing</Heading>
-          <AssetAvatar asset={asset} size="md" />
+          <AssetImage asset={asset} size="md" />
         </HStack>
         <Heading size="3xl">{symbolFor(currency, amount_out)}</Heading>
         <Box h="$12" />

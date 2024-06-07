@@ -1,7 +1,7 @@
 import { CryptoOrFiat } from '@/types/assets';
-import { iconFor, labelFor } from '@/utils/assets';
+import { labelFor } from '@/utils/assets';
 
-import { AssetAvatar } from './AssetAvatar';
+import { AssetImage } from './AssetImage';
 import { ListTile } from './ListTile';
 
 type Props = {
@@ -16,14 +16,13 @@ type Props = {
 
 export const AssetListTile = ({ asset, assetType = 'crypto', subasset, subtitle, trailing, dense, testID }: Props) => {
   const title = labelFor(asset, assetType);
-  const icon = iconFor(asset, assetType);
 
   if (subasset && !subtitle) {
     subtitle = asset === subasset ? `${subasset}` : labelFor(subasset);
   }
   return (
     <ListTile
-      leading={<AssetAvatar asset={asset} icon={icon} size={dense ? 'sm' : 'md'} />}
+      leading={<AssetImage asset={asset} size={dense ? '2xs' : 'xs'} />}
       title={title ?? asset}
       subtitle={subtitle}
       trailing={trailing}

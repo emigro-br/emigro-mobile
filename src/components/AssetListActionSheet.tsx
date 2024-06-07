@@ -11,7 +11,7 @@ import {
 
 import { Asset, CryptoOrFiat } from '@/types/assets';
 
-import { AssetAvatar } from './AssetAvatar';
+import { AssetImage } from './AssetImage';
 
 type Props = {
   assets: Asset[];
@@ -31,7 +31,7 @@ export const AssetListActionSheet = ({ assets, isOpen, onClose, onItemPress }: P
           </ActionsheetDragIndicatorWrapper>
           {assets.map((asset) => (
             <ActionsheetItem key={asset.code} onPress={() => onItemPress(asset.code as CryptoOrFiat)}>
-              <AssetAvatar asset={asset.code as CryptoOrFiat} icon={asset.icon} size="sm" alt={asset.name} />
+              <AssetImage asset={asset} size="xs" />
               <ActionsheetItemText>{asset.name}</ActionsheetItemText>
             </ActionsheetItem>
           ))}
