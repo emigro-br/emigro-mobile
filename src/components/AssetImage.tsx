@@ -12,6 +12,11 @@ type Props = ImageProps & {
 };
 
 export const AssetImage = ({ asset, size = 'sm', testID = 'asset-avatar' }: Props) => {
+  if (!asset) {
+    console.debug('AssetImage: asset is required');
+    return null;
+  }
+
   let imageSource;
   let imageAlt;
   if (typeof asset === 'string') {
@@ -21,6 +26,13 @@ export const AssetImage = ({ asset, size = 'sm', testID = 'asset-avatar' }: Prop
     imageSource = asset.icon;
     imageAlt = asset.name;
   }
+
+  if (!imageSource) {
+    //FIXME: add placeholder image
+    console.debug(`AssetImage: icon not found for ${asset}`);
+    return null;
+  }
+
   return (
     <Image
       size={size}

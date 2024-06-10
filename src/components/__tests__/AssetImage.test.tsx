@@ -25,4 +25,14 @@ describe('AssetAvatar component', () => {
     expect(image).toBeOnTheScreen();
     expect(image.props.source).toEqual(asset.icon);
   });
+
+  it('not render without asset', () => {
+    const { queryByTestId } = render(<AssetImage asset={null} />);
+    expect(queryByTestId('asset-avatar')).toBeNull();
+  });
+
+  it('not render with invalid asset', () => {
+    const { queryByTestId } = render(<AssetImage asset="XXX" />);
+    expect(queryByTestId('asset-avatar')).toBeNull();
+  });
 });

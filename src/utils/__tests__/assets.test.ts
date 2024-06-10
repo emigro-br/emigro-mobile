@@ -13,9 +13,9 @@ describe('labelFor', () => {
     expect(label).toBe('US Dollar');
   });
 
-  it('should return undefined for an unknown asset', () => {
+  it('should return the asset string for an unknown asset', () => {
     const label = labelFor('XYZ' as CryptoAsset);
-    expect(label).toBeUndefined();
+    expect(label).toBe('XYZ');
   });
 });
 

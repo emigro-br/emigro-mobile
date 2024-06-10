@@ -32,7 +32,7 @@ export class BalanceStore {
 
   currentAssets(): CryptoAsset[] {
     return this.userBalance.map((balance) => {
-      return CryptoAsset[balance.assetCode as keyof typeof CryptoAsset];
+      return balance.assetCode as CryptoAsset;
     });
   }
 

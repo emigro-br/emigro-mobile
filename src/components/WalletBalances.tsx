@@ -24,8 +24,7 @@ export const WalletBalances: React.FC<Props> = ({ userBalance }) => {
       <Card variant="flat">
         <VStack space="lg">
           {userBalance?.map(({ balance, assetCode, assetType }, index) => {
-            const asset: CryptoAsset =
-              assetType === 'native' ? CryptoAsset.XLM : CryptoAsset[assetCode as keyof typeof CryptoAsset];
+            const asset: CryptoAsset = assetType === 'native' ? CryptoAsset.XLM : (assetCode as CryptoAsset);
             return (
               <AssetListTile
                 key={index}

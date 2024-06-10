@@ -22,7 +22,8 @@ export const AssetForOperation = () => {
   const myCurrencies = balanceStore
     .currentAssets()
     .filter((asset) => asset !== CryptoAsset.XLM)
-    .map((asset) => AssetToCurrency[asset]);
+    .map((asset) => AssetToCurrency[asset])
+    .filter((a) => a !== undefined) as FiatCurrency[];
 
   const renderSubtitle = (currency: CryptoOrFiat) => {
     const asset = CurrencyToAsset[currency as FiatCurrency];

@@ -45,7 +45,7 @@ export const fiatByCrypto: Record<string, Asset> = stablecoins.reduce((acc, asse
 }, {});
 
 export const allCryptoCodesToObjs = (cryptos: CryptoAsset[]): Asset[] => {
-  return cryptos.map((crypto) => cryptoCodeToObj(crypto));
+  return cryptos.map((crypto) => cryptoCodeToObj(crypto)).filter((a) => a !== undefined) as Asset[];
 };
 export const cryptoCodeToObj = (asset: CryptoAsset): Asset => cryptosData.find((a) => a.code === asset) as Asset;
 export const fiatCodeToObj = (asset: FiatCurrency): Asset => currencies.find((a) => a.code === asset) as Asset;
@@ -110,7 +110,7 @@ export const labelFor = (asset: CryptoOrFiat, type?: string): string | undefined
     return labelForFiat(asset as FiatCurrency);
   }
   const assetObj = allAssets.find((a) => a.code === asset);
-  return assetObj?.name;
+  return assetObj?.name ?? asset;
 };
 
 export const labelForFiat = (asset: FiatCurrency): string => {
