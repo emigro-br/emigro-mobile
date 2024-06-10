@@ -12,6 +12,7 @@ import {
   HStack,
   Heading,
   Pressable,
+  ScrollView,
   Text,
   VStack,
 } from '@gluestack-ui/themed';
@@ -204,93 +205,95 @@ export const ConfirmPayment = () => {
         onSave={(amount) => setRequestedAmount(amount)}
       />
 
-      <Box flex={1} bg="$white">
-        <VStack p="$4" space="lg">
-          <Heading size="xl">Review the payment</Heading>
+      <ScrollView flex={1} bg="$white">
+        <Box flex={1}>
+          <VStack p="$4" space="lg">
+            <Heading size="xl">Review the payment</Heading>
 
-          <HStack alignItems="center">
-            <Pressable onPress={() => isAmountEditable && setShowEditAmount(true)}>
-              <Text size="4xl" color="$textLight800" bold>
-                {symbolFor(scannedPayment.assetCode, requestedAmount)}
-              </Text>
-            </Pressable>
-            {isAmountEditable && (
-              <Button variant="link" ml="$2" onPress={() => setShowEditAmount(true)}>
-                <ButtonText>Edit</ButtonText>
-              </Button>
-            )}
-          </HStack>
-
-          <VStack space="3xl">
-            <Box>
-              <Text size="lg">
-                for{' '}
-                <Text bold size="lg">
-                  {scannedPayment.merchantName}
+            <HStack alignItems="center">
+              <Pressable onPress={() => isAmountEditable && setShowEditAmount(true)}>
+                <Text size="4xl" color="$textLight800" bold>
+                  {symbolFor(scannedPayment.assetCode, requestedAmount)}
                 </Text>
-              </Text>
-              {scannedPayment.merchantCity && (
-                <Text>
-                  in <Text>{scannedPayment.merchantCity}</Text>
-                </Text>
+              </Pressable>
+              {isAmountEditable && (
+                <Button variant="link" ml="$2" onPress={() => setShowEditAmount(true)}>
+                  <ButtonText>Edit</ButtonText>
+                </Button>
               )}
-            </Box>
+            </HStack>
 
-            {scannedPayment.infoAdicional && (
-              <Center>
-                <Card variant="filled" bg="$backgroundLight100">
-                  <Text textAlign="center">{scannedPayment.infoAdicional}</Text>
-                </Card>
-              </Center>
-            )}
+            <VStack space="3xl">
+              <Box>
+                <Text size="lg" numberOfLines={1} ellipsizeMode="tail">
+                  for{' '}
+                  <Text bold size="lg">
+                    {scannedPayment.merchantName}
+                  </Text>
+                </Text>
+                {scannedPayment.merchantCity && (
+                  <Text>
+                    in <Text>{scannedPayment.merchantCity}</Text>
+                  </Text>
+                )}
+              </Box>
 
-            {isPix && <StaticPix pix={scannedPayment as PixPayment} />}
-            {!isPix && <StellarPay pay={scannedPayment} />}
+              {scannedPayment.infoAdicional && (
+                <Center>
+                  <Card variant="filled" bg="$backgroundLight100">
+                    <Text textAlign="center">{scannedPayment.infoAdicional}</Text>
+                  </Card>
+                </Center>
+              )}
+
+              {isPix && <StaticPix pix={scannedPayment as PixPayment} />}
+              {!isPix && <StellarPay pay={scannedPayment} />}
+            </VStack>
+
+            <Divider />
+
+            <Text>Select the account</Text>
+            <Card variant="filled" pb="$2">
+              <HStack>
+                <Box w="$1/4">
+                  <Dropdown
+                    selectedTextStyle={{ fontWeight: '500' }}
+                    data={data}
+                    value={selectedAsset}
+                    labelField="label"
+                    valueField="value"
+                    onChange={(selectedItem) => setSelectedAsset(selectedItem.value)}
+                    disable={isProcesing}
+                  />
+                </Box>
+                <Box w="$3/4">
+                  <Text textAlign="right" py="$1">
+                    {paymentQuote && symbolFor(selectedAsset, paymentQuote)}
+                  </Text>
+                </Box>
+              </HStack>
+              <HStack justifyContent="space-between">
+                <Text size="xs" color={`${hasBalance ? '$gray' : '$red'}`}>
+                  Balance: {symbolFor(selectedAsset, balance)}
+                </Text>
+                {!hasBalance && (
+                  <Text color="$red" size="xs">
+                    exceeds balance
+                  </Text>
+                )}
+              </HStack>
+            </Card>
+
+            <Text size="xs">
+              The seller will receive the exact value he set. The quantity that will be sent is computed automatically.
+            </Text>
+            <Button size="lg" onPress={handlePressPay} isDisabled={isPayDisabled}>
+              {isProcesing && <ButtonSpinner mr="$1" />}
+              <ButtonText>{step === TransactionStep.PROCESSING ? 'Processing...' : 'Pay'} </ButtonText>
+            </Button>
           </VStack>
-
-          <Divider />
-
-          <Text>Select the account</Text>
-          <Card variant="filled" pb="$2">
-            <HStack>
-              <Box w="$1/4">
-                <Dropdown
-                  selectedTextStyle={{ fontWeight: '500' }}
-                  data={data}
-                  value={selectedAsset}
-                  labelField="label"
-                  valueField="value"
-                  onChange={(selectedItem) => setSelectedAsset(selectedItem.value)}
-                  disable={isProcesing}
-                />
-              </Box>
-              <Box w="$3/4">
-                <Text textAlign="right" py="$1">
-                  {paymentQuote && symbolFor(selectedAsset, paymentQuote)}
-                </Text>
-              </Box>
-            </HStack>
-            <HStack justifyContent="space-between">
-              <Text size="xs" color={`${hasBalance ? '$gray' : '$red'}`}>
-                Balance: {symbolFor(selectedAsset, balance)}
-              </Text>
-              {!hasBalance && (
-                <Text color="$red" size="xs">
-                  exceeds balance
-                </Text>
-              )}
-            </HStack>
-          </Card>
-
-          <Text size="xs">
-            The seller will receive the exact value he set. The quantity that will be sent is computed automatically.
-          </Text>
-          <Button size="lg" onPress={handlePressPay} isDisabled={isPayDisabled}>
-            {isProcesing && <ButtonSpinner mr="$1" />}
-            <ButtonText>{step === TransactionStep.PROCESSING ? 'Processing...' : 'Pay'} </ButtonText>
-          </Button>
-        </VStack>
-      </Box>
+        </Box>
+      </ScrollView>
     </>
   );
 };
@@ -302,19 +305,21 @@ interface StaticPixProps {
 const StaticPix = ({ pix }: StaticPixProps) => (
   <VStack space="md">
     <HStack justifyContent="space-between">
-      <Text bold>CPF/CNPJ:</Text>
+      <Text bold>CPF/CNPJ: </Text>
       <Text>{pix.taxId}</Text>
     </HStack>
     <HStack justifyContent="space-between">
-      <Text bold>Institution:</Text>
-      <Text maxWidth="$2/3">{pix.bankName}</Text>
+      <Text bold>Institution: </Text>
+      <Text numberOfLines={2} ellipsizeMode="tail" maxWidth="$2/3">
+        {pix.bankName}
+      </Text>
     </HStack>
     <HStack justifyContent="space-between">
-      <Text bold>Pix Key:</Text>
+      <Text bold>Pix Key: </Text>
       <Text>{pix.pixKey}</Text>
     </HStack>
     <HStack justifyContent="space-between">
-      <Text bold>Identifier:</Text>
+      <Text bold>Identifier: </Text>
       <Text>{pix.txid}</Text>
     </HStack>
   </VStack>
