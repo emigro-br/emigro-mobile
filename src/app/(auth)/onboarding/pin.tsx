@@ -18,7 +18,7 @@ export const PinOnboarding = () => {
         </VStack>
 
         <Button
-          size="lg"
+          size="xl"
           onPress={() =>
             router.navigate({
               pathname: '/settings/configure-pin',
