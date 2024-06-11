@@ -7,7 +7,7 @@ import { Tabs, usePathname } from 'expo-router';
 const getTabBarStyle = (path: string): ViewStyle => {
   // https://github.com/expo/router/issues/518
   // https://stackoverflow.com/questions/51352081/react-navigation-how-to-hide-tabbar-from-inside-stack-navigation#comment121635652_64789273
-  const tabHiddenRoutes = ['/payments/scan', '/payments/request/show-qr-code'];
+  const tabHiddenRoutes = ['/payments/scan', '/payments/confirm', '/payments/request/show-qr-code'];
   if (tabHiddenRoutes.includes(path)) {
     return { display: 'none' };
   }
