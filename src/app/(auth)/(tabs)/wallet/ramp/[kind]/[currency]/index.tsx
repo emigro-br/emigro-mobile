@@ -28,7 +28,7 @@ const OperationRouter = () => {
   if (kind === 'deposit') {
     return <Deposit currency={currency} />;
   } else if (kind === 'withdraw') {
-    return <Withdrawal currency={currency} />;
+    return <Withdraw currency={currency} />;
   } else {
     throw new Error('Invalid kind operation: ' + kind);
   }
@@ -38,12 +38,12 @@ type KindProps = {
   currency: FiatCurrency;
 };
 
-const Deposit = ({ currency }: KindProps) => {
+export const Deposit = ({ currency }: KindProps) => {
   return <OperationHome title="Deposit" kind={OperationKind.DEPOSIT} currency={currency} />;
 };
 
-const Withdrawal = ({ currency }: KindProps) => {
-  return <OperationHome title="Withdrawl" kind={OperationKind.WITHDRAW} currency={currency} />;
+export const Withdraw = ({ currency }: KindProps) => {
+  return <OperationHome title="Withdraw" kind={OperationKind.WITHDRAW} currency={currency} />;
 };
 
 type LayoutProps = {

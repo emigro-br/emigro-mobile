@@ -5,12 +5,28 @@ import { fireEvent, render, waitFor } from 'test-utils';
 import { OperationKind } from '@/services/emigro/anchors';
 import { FiatCurrency } from '@/types/assets';
 
-import { OperationHome } from '..';
+import { Deposit, OperationHome, Withdraw } from '..';
 
 jest.mock('@/services/emigro/anchors', () => ({
   ...jest.requireActual('@/services/emigro/anchors'),
   listTransactions: jest.fn(() => Promise.resolve([])),
 }));
+
+describe('Deposit', () => {
+  it('should render correctly', () => {
+    const currency = FiatCurrency.USD;
+    const { getByText } = render(<Deposit currency={currency} />);
+    expect(getByText('Deposit in US Dollar')).toBeOnTheScreen();
+  });
+});
+
+describe('Withdraw', () => {
+  it('should render correctly', () => {
+    const currency = FiatCurrency.USD;
+    const { getByText } = render(<Withdraw currency={currency} />);
+    expect(getByText('Withdraw in US Dollar')).toBeOnTheScreen();
+  });
+});
 
 describe('OperationHome', () => {
   it('should render correctly', () => {
