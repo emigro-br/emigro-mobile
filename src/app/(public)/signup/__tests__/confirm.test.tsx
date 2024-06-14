@@ -17,7 +17,7 @@ jest.mock('@sentry/react-native', () => ({
 describe('ConfirmAccount component', () => {
   const params = {
     email: 'example@example.com',
-    username: 'example_username',
+    externalId: 'example_external_id',
   };
 
   beforeEach(() => {
@@ -45,7 +45,7 @@ describe('ConfirmAccount component', () => {
   it('Should handle confirmation with success', async () => {
     const mockResponse: User = {
       id: 1,
-      username: 'example_username',
+      externalId: 'example_external_id',
       publicKey: 'public_key_value',
       secretKey: 'secret_key_value',
       role: Role.CUSTOMER,
@@ -66,11 +66,11 @@ describe('ConfirmAccount component', () => {
     const confirmButton = getByTestId('confirm-button');
     fireEvent.press(confirmButton);
 
-    const { email, username } = params;
+    const { email, externalId } = params;
     await waitFor(() => {
       expect(confirmAccount).toHaveBeenCalledWith({
         email,
-        username,
+        externalId,
         code,
       });
       const { children } = getByTestId('confirm-account-error');

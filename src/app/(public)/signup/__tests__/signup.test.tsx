@@ -46,11 +46,11 @@ describe('CreateAccount component', () => {
   test('Should call signUp with correct information', async () => {
     const router = useRouter();
     const email = 'test@example.com';
-    const username = 'example_username';
+    const externalId = 'example_external_id';
     const signUpMock = jest.spyOn(auth, 'signUp');
     const mockResponse: User = {
       id: 1,
-      username,
+      externalId,
       publicKey: 'public_key_value',
       secretKey: 'secret_key_value',
       role: Role.CUSTOMER,
@@ -89,7 +89,7 @@ describe('CreateAccount component', () => {
 
     await waitFor(() => {
       expect(signUpMock).toHaveBeenCalledWith(expectedCall);
-      expect(router.push).toHaveBeenCalledWith({ pathname: '/signup/confirm', params: { email, username } });
+      expect(router.push).toHaveBeenCalledWith({ pathname: '/signup/confirm', params: { email, externalId } });
     });
   });
 

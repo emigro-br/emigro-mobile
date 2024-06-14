@@ -75,7 +75,7 @@ describe('auth service', () => {
   describe('confirmAccount', () => {
     const mockConfirmUser: ConfirmUserRequest = {
       email: 'test@example.com',
-      username: 'test',
+      externalId: 'external_id',
       code: '123456',
     };
     const mockResponse = { success: true };

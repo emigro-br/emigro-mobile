@@ -56,11 +56,11 @@ export const CreateAccount = () => {
     const defaultErrorMesssage = 'An error occurred while creating your account. Please try again.';
     try {
       const registerData: RegisterUserRequest = { ...data };
-      const { username } = await signUp(registerData);
-      if (!username) {
+      const { externalId } = await signUp(registerData);
+      if (!externalId) {
         throw new Error(defaultErrorMesssage);
       }
-      router.push({ pathname: '/signup/confirm', params: { email: data.email, username } });
+      router.push({ pathname: '/signup/confirm', params: { email: data.email, externalId } });
     } catch (error) {
       if (error instanceof BadRequestException) {
         console.warn('Error', error);

@@ -30,13 +30,13 @@ import { confirmAccount } from '@/services/emigro/auth';
 
 const ConfirmAccount = () => {
   const router = useRouter();
-  const { email, username } = useLocalSearchParams<{ email: string; username: string }>();
+  const { email, externalId } = useLocalSearchParams<{ email: string; externalId: string }>();
   const [code, setCode] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [isSuccessModalVisible, setIsSuccessModalVisible] = useState<boolean>(false);
   const [isConfirming, setIsConfirming] = useState(false);
 
-  if (!email || !username) {
+  if (!email || !externalId) {
     return (
       <Box flex={1} justifyContent="center">
         <Center>
@@ -50,7 +50,7 @@ const ConfirmAccount = () => {
     try {
       setIsConfirming(true);
       setError('');
-      const response = await confirmAccount({ email, username, code });
+      const response = await confirmAccount({ email, code, externalId });
       if (response?.status) {
         setIsSuccessModalVisible(true);
       } else {

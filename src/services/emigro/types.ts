@@ -17,8 +17,8 @@ export type AuthSession = {
 };
 
 export type ConfirmUserRequest = {
+  externalId: string;
   email: string;
-  username: string;
   code: string;
 };
 
@@ -35,7 +35,7 @@ export type RegisterUserRequest = {
 
 export type User = {
   id: number;
-  username: string;
+  externalId: string;
   publicKey: string;
   secretKey: string;
   role: Role;
