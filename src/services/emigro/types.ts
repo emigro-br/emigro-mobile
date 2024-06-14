@@ -34,7 +34,7 @@ export type RegisterUserRequest = {
 //-- Users
 
 export type User = {
-  id: number;
+  id: string;
   externalId: string;
   publicKey: string;
   secretKey: string;

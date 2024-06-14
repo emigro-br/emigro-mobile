@@ -44,7 +44,7 @@ describe('ConfirmAccount component', () => {
 
   it('Should handle confirmation with success', async () => {
     const mockResponse: User = {
-      id: 1,
+      id: 'uid',
       externalId: 'example_external_id',
       publicKey: 'public_key_value',
       secretKey: 'secret_key_value',

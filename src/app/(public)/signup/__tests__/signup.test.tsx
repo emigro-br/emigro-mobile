@@ -49,7 +49,7 @@ describe('CreateAccount component', () => {
     const externalId = 'example_external_id';
     const signUpMock = jest.spyOn(auth, 'signUp');
     const mockResponse: User = {
-      id: 1,
+      id: 'uid',
       externalId,
       publicKey: 'public_key_value',
       secretKey: 'secret_key_value',

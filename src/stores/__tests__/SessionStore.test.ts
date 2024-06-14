@@ -24,8 +24,8 @@ jest.mock('@/services/emigro/users', () => ({
 describe('SessionStore', () => {
   let sessionStore: SessionStore;
   const userMock: User = {
-    id: 1,
-    externalId: 'test-id',
+    id: 'uid',
+    externalId: 'test-subid',
     publicKey: 'test-public_key',
     secretKey: 'test-secret_key',
     role: Role.CUSTOMER,
@@ -106,8 +106,8 @@ describe('SessionStore', () => {
     };
 
     const user = {
-      id: 1,
-      externalId: 'test-id',
+      id: 'uid',
+      externalId: 'test-subid',
       publicKey: 'test-public_key',
       preferences: {},
     } as User;
