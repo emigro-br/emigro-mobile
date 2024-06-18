@@ -3,7 +3,7 @@ import {
   BrcodePaymentRequest,
   BrcodePaymentResponse,
   CreateTransactionRequest,
-  PaymentPreview,
+  PixPaymentPreview,
   Transaction,
 } from './types';
 
@@ -36,7 +36,7 @@ export const getTransaction = async (transactionId: string): Promise<Transaction
 // };
 
 // PIX
-export const brcodePaymentPreview = async (brcode: string): Promise<PaymentPreview> => {
+export const brcodePaymentPreview = async (brcode: string): Promise<PixPaymentPreview> => {
   const res = await api().post('/pix/payment-preview', {
     brcode,
   });

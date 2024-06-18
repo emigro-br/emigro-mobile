@@ -129,18 +129,18 @@ export class PaymentStore {
 
     const res = await brcodePaymentPreview(brCode);
 
-    const assetCode = isoToCrypto[res.payment.currency as keyof typeof isoToCrypto] ?? CryptoAsset.BRL; // Pix is aways in BRL
+    const assetCode = isoToCrypto[res.currency as keyof typeof isoToCrypto] ?? CryptoAsset.BRL; // Pix is aways in BRL
 
     const pixPayment: PixPayment = {
       brCode,
-      merchantName: res.payment.name,
+      merchantName: res.name,
       merchantCity: pix.merchantCity,
-      transactionAmount: res.payment.amount,
-      pixKey: res.payment.pixKey,
+      transactionAmount: res.amount,
+      pixKey: res.pixKey,
       assetCode,
-      taxId: res.payment.taxId,
-      bankName: res.payment.bankName,
-      txid: res.payment.txId,
+      taxId: res.taxId,
+      bankName: res.bankName,
+      txid: res.txId,
     };
     return pixPayment;
   }

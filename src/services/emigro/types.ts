@@ -157,12 +157,8 @@ export type DictKey = {
   bankName: string;
 };
 
-export type PaymentPreview = {
+export type PixPaymentPreview = {
   brcode: string;
-  payment: Payment;
-};
-
-export type Payment = {
   pixKey: string;
   amount: number;
   currency?: string;

@@ -8,7 +8,7 @@ import {
   getBrcodePayment, // getTransactions,
   sendTransaction,
 } from '../transactions';
-import { BrcodePaymentResponse, CreateTransactionRequest, PaymentPreview } from '../types';
+import { BrcodePaymentRequest, BrcodePaymentResponse, CreateTransactionRequest, PixPaymentPreview } from '../types';
 
 jest.mock('../api', () => ({
   api: jest.fn(),
@@ -69,16 +69,14 @@ describe('transaction service', () => {
   describe('brcodePaymentPreview', () => {
     it('should make a POST request to /pix/payment-preview with the provided brcode', async () => {
       const mockAxiosPost = jest.spyOn(instance, 'post');
-      const mockApiResponse: PaymentPreview = {
-        type: 'brcode-payment',
-        payment: {
-          pixKey: 'testPixKey',
-          amount: 100,
-          bankName: 'Test Bank',
-          name: 'Test Name',
-          taxId: '123456789',
-          txId: 'testTxId',
-        },
+      const mockApiResponse: PixPaymentPreview = {
+        brcode: 'testBrcode',
+        pixKey: 'testPixKey',
+        amount: 100,
+        bankName: 'Test Bank',
+        name: 'Test Name',
+        taxId: '123456789',
+        txId: 'testTxId',
       };
 
       mock.onPost('/pix/payment-preview', { brcode: 'testBrcode' }).reply(200, mockApiResponse);
@@ -101,9 +99,9 @@ describe('transaction service', () => {
 
       mock.onPost('/pix/brcode-payment').reply(200, mockApiResponse);
 
-      const data = {
+      const data: BrcodePaymentRequest = {
         brcode: 'testBrcode',
-        sourceAsset: 'testAsset',
+        exchangeAsset: 'testAsset',
         amount: 100,
         taxId: '123456789',
         description: 'Test payment',
