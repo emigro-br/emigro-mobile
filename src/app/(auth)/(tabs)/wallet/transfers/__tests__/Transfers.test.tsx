@@ -16,12 +16,12 @@ jest.mock('@/stores/BalanceStore', () => ({
   },
 }));
 
-describe('Transfers component', () => {
+describe('Transfers', () => {
   beforeEach(() => {
     (balanceStore.currentAssets as jest.Mock).mockReturnValue([CryptoAsset.XLM]);
   });
 
-  test('Should render the component correctly', () => {
+  test('Should render the screen correctly', () => {
     const { getByText } = render(<Transfers />);
 
     expect(getByText('Send money')).toBeOnTheScreen();
@@ -37,7 +37,7 @@ describe('Transfers component', () => {
     fireEvent.press(assetButton);
 
     expect(router.push).toHaveBeenCalledWith({
-      pathname: '/wallet/transfers/send',
+      pathname: '/<path>/send',
       params: { asset: CryptoAsset.XLM },
     });
   });
