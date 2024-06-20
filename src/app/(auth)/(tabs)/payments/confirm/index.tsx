@@ -21,7 +21,7 @@ import { usePathname, useRouter } from 'expo-router';
 
 import { InputAmountActionSheet } from '@/components/InputAmountActionSheet';
 import { LoadingScreen } from '@/components/Loading';
-import { PinScreen } from '@/components/PinScreen';
+import { PinScreen } from '@/components/screens/PinScreen';
 import { TRANSACTION_ERROR_MESSAGE } from '@/constants/errorMessages';
 import { IQuoteRequest, handleQuote } from '@/services/emigro/quotes';
 import { balanceStore } from '@/stores/BalanceStore';

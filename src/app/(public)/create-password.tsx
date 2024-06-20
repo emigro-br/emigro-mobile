@@ -19,8 +19,8 @@ import {
 } from '@gluestack-ui/themed';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
-import { PinScreen } from '@/components/PinScreen';
 import { Toast } from '@/components/Toast';
+import { PinScreen } from '@/components/screens/PinScreen';
 import { confirmResetPassword } from '@/services/emigro/auth';
 import { CustomError } from '@/types/errors';
 

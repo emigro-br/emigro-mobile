@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { Box, Button, ButtonText, Card, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 
-import { PinScreen } from '@/components/PinScreen';
 import { ErrorModal } from '@/components/modals/ErrorModal';
+import { PinScreen } from '@/components/screens/PinScreen';
 import { paymentStore as bloc } from '@/stores/PaymentStore';
 import { securityStore } from '@/stores/SecurityStore';
 
