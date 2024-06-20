@@ -14,7 +14,7 @@ const getTabBarStyle = (path: string): ViewStyle => {
     /\/payments\/confirm\/?.*/, // inludes pin, success and error
     /\/wallet\/transfers\/(review|confirm)\/?.*/,
   ];
-  if (tabHiddenRoutes.some(pattern => pattern.test(path))) {
+  if (tabHiddenRoutes.some((pattern) => pattern.test(path))) {
     return { display: 'none' };
   }
   return { display: 'flex' };
