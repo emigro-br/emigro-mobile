@@ -8,7 +8,15 @@ export default function Layout() {
     <Stack screenOptions={{ ...defaultScreenOptions, headerShown: true }}>
       <Stack.Screen name="index" options={{ title: 'Payments', header: () => <Header />, headerShown: true }} />
       <Stack.Screen name="scan" options={{ title: 'Scan a Payment', headerShown: false }} />
-      <Stack.Screen name="confirm" options={{ title: 'Confirm Payment', headerBackTitle: 'Back' }} />
+      <Stack.Screen
+        name="confirm"
+        options={{
+          title: 'Confirm Payment',
+          headerBackTitle: 'Back',
+          presentation: 'modal',
+          headerShown: false,
+        }}
+      />
       <Stack.Screen name="request/index" options={{ title: 'Request Payment' }} />
       <Stack.Screen
         name="request/show-qr-code"

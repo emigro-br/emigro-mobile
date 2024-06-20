@@ -1,16 +1,16 @@
 import React from 'react';
 
 import { fireEvent, waitFor } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 
 import { inputPIN, render } from 'test-utils';
 
 import * as quotesService from '@/services/emigro/quotes';
-import { PaymentResponse } from '@/services/emigro/types';
 import { paymentStore } from '@/stores/PaymentStore';
 import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
-import { ConfirmPayment } from '../confirm';
+import { ConfirmPayment } from '..';
 
 jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
@@ -170,13 +170,12 @@ describe('ConfirmPayment component', () => {
     });
   });
 
-  it('calls the handleConfirmPayment function when the PIN is successfully verified', async () => {
+  it('goes to success screen when the PIN is verified and payment was successfully', async () => {
+    const router = useRouter();
     jest
       .spyOn(quotesService, 'handleQuote')
       .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
-    const payMock = jest
-      .spyOn(paymentStore, 'pay')
-      .mockResolvedValue({ transactionHash: 'mockHash' } as PaymentResponse);
+    const payMock = jest.spyOn(paymentStore, 'pay').mockResolvedValue({ status: 'paid' } as Transaction);
     const { getByText, getByTestId } = render(<ConfirmPayment />);
 
     // wait the quote is fetched and displayed
@@ -194,13 +193,41 @@ describe('ConfirmPayment component', () => {
     inputPIN('1234');
 
     await waitFor(() => {
-      // expect(getByText('Processing...')).toBeOnTheScreen(); // FIXME: changed to success, too fast to see it
-      expect(getByTestId('success-modal')).toBeOnTheScreen(); // FIXME: it's always present
+      expect(router.replace).toHaveBeenCalledWith('/<path>/success');
       expect(payMock).toHaveBeenCalled();
     });
   });
 
-  it('displays an error message when the payment fails', async () => {
+  it('goes to waiting screen when the payment is processing', async () => {
+    const router = useRouter();
+    jest
+      .spyOn(quotesService, 'handleQuote')
+      .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
+    const payMock = jest.spyOn(paymentStore, 'pay').mockResolvedValue({ status: 'pending' } as Transaction);
+    const { getByText, getByTestId } = render(<ConfirmPayment />);
+
+    // wait the quote is fetched and displayed
+    await waitFor(() => {
+      expect(getByText('$ 10.00')).toBeOnTheScreen();
+    });
+
+    const payButton = getByText('Pay');
+    fireEvent.press(payButton);
+
+    await waitFor(() => {
+      expect(getByTestId('pin-screen')).toBeOnTheScreen();
+    });
+
+    inputPIN('1234');
+
+    await waitFor(() => {
+      expect(router.replace).toHaveBeenCalledWith('/<path>/waiting');
+      expect(payMock).toHaveBeenCalled();
+    });
+  });
+
+  it('goes to error screen when the payment fails', async () => {
+    const router = useRouter();
     jest
       .spyOn(quotesService, 'handleQuote')
       .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
@@ -222,7 +249,10 @@ describe('ConfirmPayment component', () => {
     inputPIN('1234');
 
     await waitFor(() => {
-      expect(getByTestId('error-modal')).toBeOnTheScreen(); // FIXME: it's always present
+      expect(router.replace).toHaveBeenCalledWith({
+        pathname: '/<path>/error',
+        params: { error: 'Payment failed' },
+      });
       expect(payMock).toHaveBeenCalled();
     });
   });
