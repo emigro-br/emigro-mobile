@@ -2,6 +2,7 @@ import React from 'react';
 
 import { fireEvent, waitFor } from '@testing-library/react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import mockConsole from 'jest-mock-console';
 
 import { render } from 'test-utils';
 
@@ -53,6 +54,7 @@ describe('WithdrawlConfirmScreen', () => {
   });
 
   it('should navigate to error screen on confirmWithdraw error', async () => {
+    const restoreConsole = mockConsole();
     (anchors.confirmWithdraw as jest.Mock).mockRejectedValueOnce(new Error('Error'));
     const { findByTestId } = render(<WithdrawlConfirmScreen />);
     const confirmButton = await findByTestId('confirm-button');
@@ -64,6 +66,7 @@ describe('WithdrawlConfirmScreen', () => {
       assetCode: CryptoAsset.USDC,
     });
     await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/<path>/error'));
+    restoreConsole();
   });
 
   it('should navigate to previous screen on close button press', async () => {
