@@ -10,13 +10,6 @@ import * as auth from '@/services/emigro/auth';
 
 import { PasswordRecovery } from '../password-recovery';
 
-jest.mock('@gluestack-ui/themed', () => ({
-  ...jest.requireActual('@gluestack-ui/themed'),
-  useToast: jest.fn().mockReturnValue({ show: jest.fn() }),
-}));
-
-jest.spyOn(Keyboard, 'dismiss');
-
 describe('PasswordRecovery', () => {
   let router: any;
 

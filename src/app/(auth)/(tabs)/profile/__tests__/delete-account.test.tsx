@@ -8,11 +8,6 @@ import { sessionStore } from '@/stores/SessionStore';
 
 import DeleteAccount from '../delete-account';
 
-jest.mock('@gluestack-ui/themed', () => ({
-  ...jest.requireActual('@gluestack-ui/themed'),
-  useToast: jest.fn().mockReturnValue({ show: jest.fn() }),
-}));
-
 jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     session: null,
