@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Box } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 
-import { PinScreen } from '@/components/PinScreen';
+import { PinScreen } from '@/components/screens/PinScreen';
 import { securityStore } from '@/stores/SecurityStore';
 import { sessionStore } from '@/stores/SessionStore';
 

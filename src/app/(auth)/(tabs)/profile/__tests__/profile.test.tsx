@@ -13,11 +13,6 @@ import Profile from '..';
 
 jest.mock('expo-clipboard');
 
-jest.mock('@gluestack-ui/themed', () => ({
-  ...jest.requireActual('@gluestack-ui/themed'),
-  useToast: jest.fn(),
-}));
-
 jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     clear: jest.fn(),

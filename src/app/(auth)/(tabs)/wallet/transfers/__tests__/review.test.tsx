@@ -1,12 +1,9 @@
 import React from 'react';
 
 import { fireEvent, waitFor } from '@testing-library/react-native';
+import { useRouter } from 'expo-router';
 
-import { inputPIN, render } from 'test-utils';
-
-import { PaymentResponse } from '@/services/emigro/types';
-import { paymentStore } from '@/stores/PaymentStore';
-import { securityStore } from '@/stores/SecurityStore';
+import { render } from 'test-utils';
 
 import { ReviewTransfer } from '../review';
 
@@ -28,7 +25,6 @@ jest.mock('@/stores/PaymentStore', () => ({
         asset: 'XLM',
       },
     },
-    pay: jest.fn(),
   },
 }));
 
@@ -44,38 +40,16 @@ describe('ReviewTransfer', () => {
     expect(getByText('Send')).toBeOnTheScreen();
   });
 
-  test('Should call handlePress when Send button is pressed', async () => {
-    const verifyPinSpy = jest.spyOn(securityStore, 'verifyPin').mockResolvedValueOnce(true);
-    // mock pay function
-    jest.spyOn(paymentStore, 'pay').mockResolvedValue({ transactionHash: 'hash' } as PaymentResponse);
+  test('Should goes to confirm with PIN when Send button is pressed', async () => {
+    const router = useRouter();
 
     const { getByText } = render(<ReviewTransfer />);
     const sendButton = getByText('Send');
 
     fireEvent.press(sendButton);
 
-    inputPIN('1234');
-
     await waitFor(() => {
-      expect(verifyPinSpy).toHaveBeenCalledWith('1234');
-      expect(paymentStore.pay).toHaveBeenCalled();
-      // expect(getByText('Sending...')).toBeDefined();
+      expect(router.push).toHaveBeenCalledWith('./confirm');
     });
   });
-
-  // test('Should show error dialog when transaction fails', async () => {
-  //   // mock pay function
-  //   (paymentStore.pay as jest.Mock).mockRejectedValue(new Error('Error'));
-
-  //   const { getByText } = render(
-  //       <ReviewTransfer />
-  //   );
-  //   const sendButton = getByText('Send');
-
-  //   fireEvent.press(sendButton);
-
-  //   await waitFor(() => {
-  //     expect(getByText('Failed on execute transfer. Please try again.')).toBeDefined();
-  //   });
-  // });
 });

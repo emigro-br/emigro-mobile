@@ -10,13 +10,6 @@ import * as auth from '@/services/emigro/auth';
 
 import { CreateNewPassword } from '../create-password';
 
-jest.mock('@gluestack-ui/themed', () => ({
-  ...jest.requireActual('@gluestack-ui/themed'),
-  useToast: jest.fn().mockReturnValue({ show: jest.fn() }),
-}));
-
-jest.spyOn(Keyboard, 'dismiss');
-
 describe('CreateNewPassword', () => {
   let router: any;
 

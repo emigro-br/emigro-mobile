@@ -17,13 +17,11 @@ import {
   VStack,
 } from '@gluestack-ui/themed';
 import * as Sentry from '@sentry/react-native';
-import { useRouter } from 'expo-router';
+import { usePathname, useRouter } from 'expo-router';
 
 import { InputAmountActionSheet } from '@/components/InputAmountActionSheet';
 import { LoadingScreen } from '@/components/Loading';
-import { PinScreen } from '@/components/PinScreen';
-import { ErrorModal } from '@/components/modals/ErrorModal';
-import { SuccessModal } from '@/components/modals/SuccessModal';
+import { PinScreen } from '@/components/screens/PinScreen';
 import { TRANSACTION_ERROR_MESSAGE } from '@/constants/errorMessages';
 import { IQuoteRequest, handleQuote } from '@/services/emigro/quotes';
 import { balanceStore } from '@/stores/BalanceStore';
@@ -35,25 +33,17 @@ import { CryptoAsset, FiatCurrency } from '@/types/assets';
 import { AssetToCurrency, symbolFor } from '@/utils/assets';
 import { maskWallet } from '@/utils/masks';
 
-enum TransactionStep {
-  NONE = 'none',
-  // CONFIRM_PAYMENT = 'confirm_payment',
-  PROCESSING = 'processing',
-  SUCCESS = 'success',
-  ERROR = 'error',
-}
-
 export const ConfirmPayment = () => {
   const router = useRouter();
+  const path = usePathname();
   const { scannedPayment } = paymentStore;
 
-  const [step, setStep] = useState<TransactionStep>(TransactionStep.NONE);
+  const [isProcesing, setIsProcessing] = useState(false);
   const [showPinScreen, setShowPinScreen] = useState(false);
   const [showEditAmount, setShowEditAmount] = useState(false);
   const [requestedAmount, setRequestedAmount] = useState<number>(scannedPayment?.transactionAmount ?? 0);
   const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(scannedPayment?.assetCode ?? CryptoAsset.USDC);
   const [paymentQuote, setPaymentQuote] = useState<number | null>(scannedPayment?.transactionAmount ?? null);
-  const [transactionError, setTransactionError] = useState<Error | unknown>(null);
 
   const isPix = scannedPayment && 'pixKey' in scannedPayment;
 
@@ -113,7 +103,7 @@ export const ConfirmPayment = () => {
   };
 
   const handleConfirmPayment = async () => {
-    setStep(TransactionStep.PROCESSING);
+    setIsProcessing(true);
     try {
       let result: any; // FIXME: try to define the type
 
@@ -125,27 +115,27 @@ export const ConfirmPayment = () => {
       }
 
       if (result.status === 'paid' || result.transactionHash) {
-        setStep(TransactionStep.SUCCESS);
+        router.replace(`${path}/success`);
       } else if (['created', 'pending'].includes(result.status)) {
-        setStep(TransactionStep.ERROR);
-        setTransactionError(
-          'The payment processing is taking longer than expected. Please verify your balance and try again.',
-        );
+        router.replace(`${path}/waiting`);
       } else {
-        setStep(TransactionStep.ERROR);
-        setTransactionError(TRANSACTION_ERROR_MESSAGE);
+        throw new Error(TRANSACTION_ERROR_MESSAGE);
       }
     } catch (error) {
+      let message;
+      if (error instanceof Error) {
+        message = error.message;
+      } else {
+        message = TRANSACTION_ERROR_MESSAGE;
+      }
       Sentry.captureException(error);
-      setStep(TransactionStep.ERROR);
-      setTransactionError(TRANSACTION_ERROR_MESSAGE);
+      router.replace({
+        pathname: `${path}/error`,
+        params: { error: message },
+      });
+    } finally {
+      setIsProcessing(false);
     }
-  };
-
-  const handleCloseFinishedModal = () => {
-    setStep(TransactionStep.NONE);
-    router.dismissAll(); // clear the stack
-    router.push('/');
   };
 
   if (showPinScreen) {
@@ -175,27 +165,11 @@ export const ConfirmPayment = () => {
   const balance = balanceStore.get(selectedAsset);
   const hasBalance = paymentQuote ? paymentQuote < balance : true;
 
-  const isProcesing = step === TransactionStep.PROCESSING;
-  const isPayDisabled = !paymentQuote || !hasBalance || step !== TransactionStep.NONE; // processing, success, error
+  const isPayDisabled = !paymentQuote || !hasBalance || isProcesing;
   const isAmountEditable = scannedPayment.transactionAmount === 0;
 
   return (
     <>
-      <SuccessModal
-        isOpen={step === TransactionStep.SUCCESS}
-        title="Transaction completed"
-        onClose={handleCloseFinishedModal}
-      >
-        <Text>Your payment was successfully completed. </Text>
-      </SuccessModal>
-
-      <ErrorModal
-        isOpen={step === TransactionStep.ERROR}
-        title="Transaction error"
-        errorMessage={`Failed to complete your payment:\n ${transactionError}`}
-        onClose={() => setStep(TransactionStep.NONE)}
-      />
-
       <InputAmountActionSheet
         isOpen={showEditAmount}
         onClose={() => setShowEditAmount(false)}
@@ -289,7 +263,7 @@ export const ConfirmPayment = () => {
             </Text>
             <Button size="lg" onPress={handlePressPay} isDisabled={isPayDisabled}>
               {isProcesing && <ButtonSpinner mr="$1" />}
-              <ButtonText>{step === TransactionStep.PROCESSING ? 'Processing...' : 'Pay'} </ButtonText>
+              <ButtonText>{isProcesing ? 'Processing...' : 'Pay'} </ButtonText>
             </Button>
           </VStack>
         </Box>

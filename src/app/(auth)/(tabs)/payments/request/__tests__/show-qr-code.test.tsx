@@ -17,11 +17,6 @@ jest.mock('expo-clipboard', () => ({
   setString: jest.fn(),
 }));
 
-jest.mock('@gluestack-ui/themed', () => ({
-  ...jest.requireActual('@gluestack-ui/themed'),
-  useToast: jest.fn().mockReturnValue({ show: jest.fn() }),
-}));
-
 jest.mock('@/stores/SessionStore', () => ({
   sessionStore: {
     profile: {

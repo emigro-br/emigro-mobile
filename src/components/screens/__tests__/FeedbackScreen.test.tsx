@@ -37,6 +37,24 @@ describe('FeedbackScreen component', () => {
     expect(errorIcon).toBeOnTheScreen();
   });
 
+  test('Should render warning icon when action is waring', () => {
+    const { getByTestId } = render(
+      <FeedbackScreen title="Warning" message="Be careful" action="warning" onContinue={mockOnContinue} />,
+    );
+
+    const warningIcon = getByTestId('warning-icon');
+    expect(warningIcon).toBeOnTheScreen();
+  });
+
+  test('Should render waiting icon when action is waiting', () => {
+    const { getByTestId } = render(
+      <FeedbackScreen title="Waiting" message="Please wait" action="waiting" onContinue={mockOnContinue} />,
+    );
+
+    const waitingIcon = getByTestId('waiting-icon');
+    expect(waitingIcon).toBeOnTheScreen();
+  });
+
   test('Should call onContinue when Continue button is pressed', () => {
     const { getByTestId } = render(
       <FeedbackScreen title="Success" message="Congratulations!" onContinue={mockOnContinue} />,

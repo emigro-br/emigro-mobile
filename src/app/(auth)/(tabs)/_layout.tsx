@@ -7,8 +7,14 @@ import { Tabs, usePathname } from 'expo-router';
 const getTabBarStyle = (path: string): ViewStyle => {
   // https://github.com/expo/router/issues/518
   // https://stackoverflow.com/questions/51352081/react-navigation-how-to-hide-tabbar-from-inside-stack-navigation#comment121635652_64789273
-  const tabHiddenRoutes = ['/payments/scan', '/payments/confirm', '/payments/request/show-qr-code'];
-  if (tabHiddenRoutes.includes(path)) {
+  const tabHiddenRoutes = [
+    /\/payments\/scan/,
+    /\/payments\/request\/show-qr-code/,
+    // FIXME: Android doesn't support modal routes, so we need to hide the tab bar
+    /\/payments\/confirm\/?.*/, // inludes pin, success and error
+    /\/wallet\/transfers\/(review|confirm)\/?.*/,
+  ];
+  if (tabHiddenRoutes.some((pattern) => pattern.test(path))) {
     return { display: 'none' };
   }
   return { display: 'flex' };
@@ -33,6 +39,7 @@ export default function TabLayout() {
         options={{
           title: 'Wallet',
           tabBarIcon: ({ color, size }) => <IconsSolid.WalletIcon size={size} color={color} />,
+          tabBarStyle: getTabBarStyle(path),
         }}
       />
 

@@ -1,13 +1,14 @@
 import React from 'react';
 
 import { Box, ChevronRightIcon, Heading, Icon, Text, VStack } from '@gluestack-ui/themed';
-import { useRouter } from 'expo-router';
+import { usePathname, useRouter } from 'expo-router';
 
 import { CardAssetList } from '@/components/AssetList';
 import { balanceStore } from '@/stores/BalanceStore';
 
 export const Transfers = () => {
   const router = useRouter();
+  const path = usePathname();
   const assets = balanceStore.currentAssets();
 
   return (
@@ -20,7 +21,7 @@ export const Transfers = () => {
           trailing={<Icon as={ChevronRightIcon} size="md" />}
           onPress={(item) =>
             router.push({
-              pathname: '/wallet/transfers/send',
+              pathname: `${path}/send`,
               params: { asset: item },
             })
           }
