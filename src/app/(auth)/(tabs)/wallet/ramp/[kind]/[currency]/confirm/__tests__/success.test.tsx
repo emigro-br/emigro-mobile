@@ -1,5 +1,4 @@
 import React from 'react';
-import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 
 import { fireEvent } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
@@ -7,8 +6,6 @@ import { useRouter } from 'expo-router';
 import { render } from 'test-utils';
 
 import WithdrawalSuccess from '../success';
-
-jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
 describe('WithdrawalSuccess', () => {
   it('should render the success message correctly', () => {

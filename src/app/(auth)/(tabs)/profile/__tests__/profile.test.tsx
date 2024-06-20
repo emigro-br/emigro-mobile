@@ -1,5 +1,4 @@
 import React from 'react';
-import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 
 import { NavigationContext } from '@react-navigation/native';
 
@@ -13,7 +12,6 @@ import { sessionStore } from '@/stores/SessionStore';
 import Profile from '..';
 
 jest.mock('expo-clipboard');
-jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
 jest.mock('@gluestack-ui/themed', () => ({
   ...jest.requireActual('@gluestack-ui/themed'),

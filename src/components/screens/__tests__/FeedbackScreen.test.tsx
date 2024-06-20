@@ -1,13 +1,10 @@
 import React from 'react';
-import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 
 import { fireEvent } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
 import { FeedbackScreen } from '../FeedbackScreen';
-
-jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
 describe('FeedbackScreen component', () => {
   const mockOnContinue = jest.fn();

@@ -1,12 +1,9 @@
 import React from 'react';
-import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 
 import { fireEvent, render } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 
 import Header from '../Header';
-
-jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
 describe('Header', () => {
   beforeEach(() => {

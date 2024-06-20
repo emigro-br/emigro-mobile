@@ -1,5 +1,4 @@
 import React from 'react';
-import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 
 import { fireEvent } from '@testing-library/react-native';
 import * as Clipboard from 'expo-clipboard';
@@ -12,8 +11,6 @@ import { UserProfile } from '@/services/emigro/types';
 import { sessionStore } from '@/stores/SessionStore';
 
 import { RequestWithQRCode } from '../show-qr-code';
-
-jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
 jest.mock('expo-clipboard', () => ({
   setStringAsync: jest.fn(),

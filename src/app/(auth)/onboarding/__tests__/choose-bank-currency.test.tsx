@@ -1,5 +1,4 @@
 import React from 'react';
-import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 
 import { fireEvent } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
@@ -11,8 +10,6 @@ import { FiatCurrency } from '@/types/assets';
 import { labelForFiat } from '@/utils/assets';
 
 import { ChooseBankCurrency, ChooseBankCurrencyScreen } from '../choose-bank-currency';
-
-jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
 describe('ChooseBankCurrencyScreen component', () => {
   test('Should navigate to PinOnboarding screen when Continue button is pressed', () => {

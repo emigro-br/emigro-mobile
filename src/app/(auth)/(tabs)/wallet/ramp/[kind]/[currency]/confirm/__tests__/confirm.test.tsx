@@ -1,5 +1,4 @@
 import React from 'react';
-import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
 
 import { fireEvent, waitFor } from '@testing-library/react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -11,8 +10,6 @@ import { Sep24Transaction, Sep24TransactionStatus } from '@/services/emigro/type
 import { CryptoAsset } from '@/types/assets';
 
 import { WithdrawlConfirm, WithdrawlConfirmScreen } from '..';
-
-jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
 jest.mock('@/services/emigro/anchors', () => ({
   getTransaction: jest.fn(() => Promise.resolve({ id: 'transactionId', status: 'pending_user_transfer_start' })),

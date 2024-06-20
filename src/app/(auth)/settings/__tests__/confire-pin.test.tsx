@@ -1,5 +1,3 @@
-import mockSafeAreaContext from 'react-native-safe-area-context/jest/mock';
-
 import { fireEvent, screen, waitFor } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 
@@ -8,8 +6,6 @@ import { render } from 'test-utils';
 import { securityStore } from '@/stores/SecurityStore';
 
 import { ConfigurePIN } from '../configure-pin';
-
-jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
 jest.mock('@/stores/SecurityStore', () => ({
   securityStore: {
