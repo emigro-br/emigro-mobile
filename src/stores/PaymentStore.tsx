@@ -5,11 +5,11 @@ import { PixElementType, hasError, parsePix } from 'pix-utils';
 import {
   brcodePaymentPreview,
   createBrcodePayment,
-  createTransaction,
   getBrcodePayment,
   getTransaction,
+  payment as paymentTransaction,
 } from '@/services/emigro/transactions';
-import { BrcodePaymentRequest, CreateTransactionRequest, TransactionType } from '@/services/emigro/types';
+import { BrcodePaymentRequest, CreatePaymentTransaction } from '@/services/emigro/types';
 import { Payment, PixPayment, emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 import { isoToCrypto } from '@/utils/assets';
@@ -23,8 +23,10 @@ type TransactionParty = {
 };
 
 type PayTransaction = {
-  type: TransactionType;
-  from: TransactionParty;
+  from: {
+    asset: CryptoAsset;
+    value: number;
+  };
   to: TransactionParty;
   rate: number;
   fees: number;
@@ -100,18 +102,18 @@ export class PaymentStore {
   }
 
   async pay() {
-    const { type, from, to, idempotencyKey } = this.transaction!;
-    const transactionRequest: CreateTransactionRequest = {
-      type,
-      maxAmountToSend: from.value.toString(), // cry
-      sourceAssetCode: from.asset,
-      destination: to.wallet,
-      destinationAmount: to.value.toString(),
-      destinationAssetCode: to.asset,
+    const { from, to, idempotencyKey } = this.transaction!;
+    // map to dto
+    const data: CreatePaymentTransaction = {
+      destinationAddress: to.wallet,
+      sendAssetCode: from.asset,
+      destAssetCode: to.asset,
+      destAmount: to.value,
+      sendMax: from.value,
       idempotencyKey,
     };
 
-    let result = await createTransaction(transactionRequest);
+    let result = await paymentTransaction(data);
     result = await waitTransaction(result.id, getTransaction);
 
     if (result.status === 'failed') {

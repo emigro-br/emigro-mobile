@@ -2,6 +2,7 @@ import { api } from './api';
 import {
   BrcodePaymentRequest,
   BrcodePaymentResponse,
+  CreatePaymentTransaction,
   CreateSwapTransaction,
   CreateTransactionRequest,
   CreateTransferTransaction,
@@ -26,6 +27,11 @@ export const swap = async (data: CreateSwapTransaction): Promise<Transaction> =>
 
 export const transfer = async (data: CreateTransferTransaction): Promise<Transaction> => {
   const res = await api().post('/transaction/transfer', data);
+  return res.data;
+};
+
+export const payment = async (data: CreatePaymentTransaction): Promise<Transaction> => {
+  const res = await api().post('/transaction/payment', data);
   return res.data;
 };
 

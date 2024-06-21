@@ -118,6 +118,15 @@ export type CreateTransferTransaction = {
   idempotencyKey?: string;
 };
 
+export type CreatePaymentTransaction = {
+  destinationAddress: string;
+  sendAssetCode: string;
+  destAssetCode: string;
+  destAmount: number;
+  sendMax: number;
+  idempotencyKey?: string;
+};
+
 export type Transaction = {
   id: string;
   type: string;
