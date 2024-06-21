@@ -17,8 +17,8 @@ import { useRouter } from 'expo-router';
 
 import { IQuoteRequest, handleQuote } from '@/services/emigro/quotes';
 import { balanceStore } from '@/stores/BalanceStore';
-import { SwapTransaction, paymentStore as bloc } from '@/stores/PaymentStore';
 import { sessionStore } from '@/stores/SessionStore';
+import { swapStore as bloc } from '@/stores/SwapStore';
 import { CryptoAsset } from '@/types/assets';
 import { CurrencyToAsset } from '@/utils/assets';
 
@@ -153,15 +153,7 @@ export const Swap = () => {
   };
 
   const handlePress = () => {
-    const transaction: SwapTransaction = {
-      from: sellAsset,
-      fromValue: sellValue,
-      to: buyAsset,
-      toValue: buyValue,
-      rate: rate!,
-      fees: 0, // TODO: add fees
-    };
-    bloc.setSwap(transaction);
+    bloc.setSwap({ fromAsset: sellAsset, toAsset: buyAsset, fromValue: sellValue, toValue: buyValue, rate: rate! });
     router.push('/wallet/swap/review');
   };
 

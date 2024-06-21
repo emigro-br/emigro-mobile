@@ -4,6 +4,7 @@ import {
   BrcodePaymentResponse,
   CreateTransactionRequest,
   PixPaymentPreview,
+  SwapTransaction,
   Transaction,
 } from './types';
 
@@ -27,6 +28,11 @@ export const createTransaction = async (data: CreateTransactionRequest): Promise
 
 export const getTransaction = async (transactionId: string): Promise<Transaction> => {
   const res = await api().get(`/transaction/${transactionId}`);
+  return res.data;
+};
+
+export const swap = async (data: SwapTransaction): Promise<Transaction> => {
+  const res = await api().post('/transaction/swap', data);
   return res.data;
 };
 

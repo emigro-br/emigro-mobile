@@ -104,9 +104,9 @@ describe('PaymentStore', () => {
     const waitSpy = jest.spyOn(paymentStore, 'waitTransaction').mockResolvedValueOnce(mockTransaction('paid'));
 
     const transaction: SwapTransaction = {
-      from: CryptoAsset.EURC,
+      fromAsset: CryptoAsset.EURC,
       fromValue: 100,
-      to: CryptoAsset.BRL,
+      toAsset: CryptoAsset.BRL,
       toValue: 120,
       rate: 1.2,
       fees: 0,

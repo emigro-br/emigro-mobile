@@ -15,15 +15,6 @@ import { Payment, PixPayment, emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 import { isoToCrypto } from '@/utils/assets';
 
-export type SwapTransaction = {
-  from: CryptoAsset;
-  fromValue: number;
-  to: CryptoAsset;
-  toValue: number;
-  rate: number;
-  fees: number;
-};
-
 type TransactionParty = {
   wallet: string;
   asset: CryptoAsset;
@@ -86,25 +77,6 @@ export class PaymentStore {
       fees: 0,
     };
     this.setTransaction(transfer);
-  }
-
-  setSwap(swap: SwapTransaction) {
-    const swapTransaction: PayTransaction = {
-      type: 'swap',
-      from: {
-        wallet: sessionStore.publicKey!,
-        asset: swap.from,
-        value: swap.fromValue,
-      },
-      to: {
-        wallet: sessionStore.publicKey!,
-        asset: swap.to,
-        value: swap.toValue,
-      },
-      rate: swap.rate,
-      fees: swap.fees,
-    };
-    this.setTransaction(swapTransaction);
   }
 
   async preview(brCode: string): Promise<Payment | PixPayment> {
