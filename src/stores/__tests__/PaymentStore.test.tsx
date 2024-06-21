@@ -31,7 +31,6 @@ const mockTransaction = (status: string): Transaction => ({
   from: 'from-wallet',
   to: 'to-wallet',
   amount: 100,
-  successful: true, // TODO: created is successful?
   createdAt: new Date(),
 });
 

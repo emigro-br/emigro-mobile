@@ -118,7 +118,6 @@ export type Transaction = {
   to: string;
   amount: number;
   status: string;
-  successful: boolean;
   createdAt: Date;
 };
 
