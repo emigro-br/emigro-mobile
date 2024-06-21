@@ -3,6 +3,8 @@ import * as Crypto from 'expo-crypto';
 import { getTransaction, swap as swapTransaction } from '@/services/emigro/transactions';
 import { CryptoAsset } from '@/types/assets';
 
+import { waitTransaction } from './utils';
+
 export type SwapTransaction = {
   fromAsset: CryptoAsset;
   fromValue: number;
@@ -37,32 +39,12 @@ export class SwapStore {
     };
 
     let result = await swapTransaction(data);
-    result = await this.waitTransaction(result.id, getTransaction);
+    result = await waitTransaction(result.id, getTransaction);
 
     if (result.status === 'failed') {
       throw new Error('Transaction failed');
     }
 
-    return result;
-  }
-
-  // TODO: externalize this function
-  async waitTransaction(transactionId: string, fetchFn: (id: string) => Promise<any>) {
-    // Wait for payment to be processed
-    let attempts = 0;
-    const interval = 2000;
-    const maxAttempts = 20; // 40 seconds
-    let result;
-    let status = 'created';
-
-    const waitStatus = ['created', 'pending'];
-    while (waitStatus.includes(status) && attempts < maxAttempts) {
-      await new Promise((resolve) => setTimeout(resolve, interval));
-      result = await fetchFn(transactionId);
-      console.debug('Payment status:', result.status);
-      status = result.status;
-      attempts++;
-    }
     return result;
   }
 }

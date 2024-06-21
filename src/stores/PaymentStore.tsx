@@ -15,6 +15,8 @@ import { Payment, PixPayment, emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 import { isoToCrypto } from '@/utils/assets';
 
+import { waitTransaction } from './utils';
+
 type TransactionParty = {
   wallet: string;
   asset: CryptoAsset;
@@ -130,7 +132,7 @@ export class PaymentStore {
     };
 
     let result = await createTransaction(transactionRequest);
-    result = await this.waitTransaction(result.id, getTransaction);
+    result = await waitTransaction(result.id, getTransaction);
 
     if (result.status === 'failed') {
       throw new Error('Transaction failed');
@@ -159,31 +161,12 @@ export class PaymentStore {
     let result = await createBrcodePayment(paymentRequest);
     console.debug('Payment request sent:', result.id, result.status);
 
-    result = await this.waitTransaction(result.id, getBrcodePayment);
+    result = await waitTransaction(result.id, getBrcodePayment);
 
     if (result.status === 'failed') {
       throw new Error('Pix Payment failed');
     }
 
-    return result;
-  }
-
-  async waitTransaction(transactionId: string, fetchFn: (id: string) => Promise<any>) {
-    // Wait for payment to be processed
-    let attempts = 0;
-    const interval = 2000;
-    const maxAttempts = 20; // 40 seconds
-    let result;
-    let status = 'created';
-
-    const waitStatus = ['created', 'pending'];
-    while (waitStatus.includes(status) && attempts < maxAttempts) {
-      await new Promise((resolve) => setTimeout(resolve, interval));
-      result = await fetchFn(transactionId);
-      console.debug('Payment status:', result.status);
-      status = result.status;
-      attempts++;
-    }
     return result;
   }
 }
