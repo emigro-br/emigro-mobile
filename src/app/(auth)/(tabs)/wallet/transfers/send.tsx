@@ -24,7 +24,7 @@ import { ClipboardPasteIcon } from 'lucide-react-native';
 
 import { AssetInput } from '@/components/AssetInput';
 import { balanceStore } from '@/stores/BalanceStore';
-import { paymentStore as bloc } from '@/stores/PaymentStore';
+import { transferStore } from '@/stores/TransferStore';
 import { CryptoAsset } from '@/types/assets';
 
 export const SendAsset = () => {
@@ -44,7 +44,11 @@ export const SendAsset = () => {
   const isButtonDisabled = !isValidAddress || isBalanceExceeded || !amount || amount <= 0;
 
   const handlePressContinue = () => {
-    bloc.setTransfer(amount!, asset, address);
+    transferStore.setTransfer({
+      destinationAddress: address,
+      asset,
+      amount: amount!,
+    });
     router.push('./review');
   };
 

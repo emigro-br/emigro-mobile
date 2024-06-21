@@ -6,8 +6,8 @@ import { useRouter } from 'expo-router';
 import { LoadingScreen } from '@/components/Loading';
 import { Toast } from '@/components/Toast';
 import { PinScreen } from '@/components/screens/PinScreen';
-import { paymentStore as bloc } from '@/stores/PaymentStore';
 import { securityStore } from '@/stores/SecurityStore';
+import { transferStore } from '@/stores/TransferStore';
 
 export const ConfirmPin = () => {
   const toast = useToast();
@@ -19,8 +19,8 @@ export const ConfirmPin = () => {
     const defaultError = 'Failed on execute transfer. Please try again.';
     try {
       // Send the transaction
-      const result = await bloc.pay();
-      if (result.status === 'paid' || result.transactionHash) {
+      const result = await transferStore.transfer();
+      if (result.status === 'paid') {
         router.replace('./success');
       } else {
         throw new Error(defaultError);

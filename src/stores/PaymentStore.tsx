@@ -10,7 +10,6 @@ import {
   getTransaction,
 } from '@/services/emigro/transactions';
 import { BrcodePaymentRequest, CreateTransactionRequest, TransactionType } from '@/services/emigro/types';
-import { sessionStore } from '@/stores/SessionStore';
 import { Payment, PixPayment, emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 import { isoToCrypto } from '@/utils/assets';
@@ -60,25 +59,6 @@ export class PaymentStore {
   reset() {
     this.setTransaction(undefined);
     this.setScannedPayment(undefined);
-  }
-
-  setTransfer(amount: number, asset: CryptoAsset, destinationWallet: string) {
-    const transfer: PayTransaction = {
-      type: 'transfer',
-      from: {
-        wallet: sessionStore.publicKey!,
-        asset,
-        value: amount,
-      },
-      to: {
-        wallet: destinationWallet,
-        asset,
-        value: amount,
-      },
-      rate: 1,
-      fees: 0,
-    };
-    this.setTransaction(transfer);
   }
 
   async preview(brCode: string): Promise<Payment | PixPayment> {
