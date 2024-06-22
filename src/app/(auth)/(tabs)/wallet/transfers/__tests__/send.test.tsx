@@ -3,7 +3,8 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
-import { paymentStore } from '@/stores/PaymentStore';
+import { TransferTransaction, transferStore } from '@/stores/TransferStore';
+import { CryptoAsset } from '@/types/assets';
 
 import { SendAsset } from '../send';
 
@@ -12,12 +13,6 @@ jest.mock('expo-clipboard');
 jest.mock('@/stores/BalanceStore', () => ({
   balanceStore: {
     get: jest.fn().mockReturnValue(100),
-  },
-}));
-
-jest.mock('@/stores/PaymentStore', () => ({
-  paymentStore: {
-    setTransfer: jest.fn(),
   },
 }));
 
@@ -77,6 +72,7 @@ describe('SendAsset component', () => {
 
   test('Should enable and call handler when Continue button is pressed', () => {
     const router = useRouter();
+    const spy = jest.spyOn(transferStore, 'setTransfer');
     const { getByText, getByPlaceholderText } = render(<SendAsset />);
 
     const addressInput = getByPlaceholderText('Enter the wallet address here');
@@ -87,7 +83,13 @@ describe('SendAsset component', () => {
     fireEvent.changeText(amountInput, '50.00');
     fireEvent.press(continueButton);
 
-    expect(paymentStore.setTransfer).toHaveBeenCalledWith(50, 'XLM', validAddress);
+    const transfer: TransferTransaction = {
+      destinationAddress: validAddress,
+      asset: CryptoAsset.XLM,
+      amount: 50,
+    };
+
+    expect(spy).toHaveBeenCalledWith(transfer);
     expect(router.push).toHaveBeenCalledWith('./review');
   });
 });

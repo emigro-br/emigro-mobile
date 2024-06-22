@@ -1,9 +1,10 @@
 import * as transactionApi from '@/services/emigro/transactions';
-import { BrcodePaymentResponse, Transaction } from '@/services/emigro/types';
+import { BrcodePaymentResponse, CreatePaymentTransaction, Transaction } from '@/services/emigro/types';
 import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 
-import { PaymentStore, SwapTransaction } from '../PaymentStore';
+import { PaymentStore } from '../PaymentStore';
+import * as utils from '../utils';
 
 jest.mock('expo-crypto', () => ({
   randomUUID: jest.fn().mockReturnValue('mocked-uuid'),
@@ -16,7 +17,7 @@ jest.mock('@/stores/SessionStore', () => ({
 }));
 
 jest.mock('@/services/emigro/transactions', () => ({
-  sendTransaction: jest.fn(),
+  payment: jest.fn(),
   createTransaction: jest.fn(),
   getTransaction: jest.fn(),
   brcodePaymentPreview: jest.fn(),
@@ -38,19 +39,18 @@ describe('PaymentStore', () => {
   let paymentStore: PaymentStore;
 
   beforeEach(() => {
+    jest.clearAllMocks();
     paymentStore = new PaymentStore();
   });
 
   it('should pay with correct parameters', async () => {
-    const createSpy = jest.spyOn(transactionApi, 'createTransaction').mockResolvedValueOnce(mockTransaction('created'));
-    const waitSpy = jest.spyOn(paymentStore, 'waitTransaction').mockResolvedValueOnce(mockTransaction('paid'));
+    const paymentSpy = jest.spyOn(transactionApi, 'payment').mockResolvedValueOnce(mockTransaction('created'));
+    const waitSpy = jest.spyOn(utils, 'waitTransaction').mockResolvedValueOnce(mockTransaction('paid'));
 
     const sourceAsset = CryptoAsset.XLM;
     const destAsset = CryptoAsset.USDC;
     paymentStore.setTransaction({
-      type: 'payment',
       from: {
-        wallet: 'user-public',
         asset: sourceAsset,
         value: 100,
       },
@@ -65,66 +65,16 @@ describe('PaymentStore', () => {
 
     await paymentStore.pay();
 
-    expect(createSpy).toHaveBeenCalledWith({
-      type: 'payment',
-      maxAmountToSend: '100',
-      destinationAmount: '10',
-      destination: 'merchant-public',
-      sourceAssetCode: sourceAsset,
-      destinationAssetCode: destAsset,
+    const expectedTransaction: CreatePaymentTransaction = {
+      destinationAddress: 'merchant-public',
+      sendAssetCode: sourceAsset,
+      destAssetCode: destAsset,
+      destAmount: 10,
+      sendMax: 100,
       idempotencyKey: expect.any(String),
-    });
-    expect(waitSpy).toHaveBeenCalledWith('test-id', transactionApi.getTransaction);
-  });
-
-  it('should call transfer with correct parameters', async () => {
-    const createSpy = jest.spyOn(transactionApi, 'createTransaction').mockResolvedValueOnce(mockTransaction('created'));
-    const waitSpy = jest.spyOn(paymentStore, 'waitTransaction').mockResolvedValueOnce(mockTransaction('paid'));
-
-    const asset = CryptoAsset.BRL;
-    paymentStore.setTransfer(100, asset, 'mockedPublicKey');
-
-    await paymentStore.pay();
-
-    expect(createSpy).toHaveBeenCalledWith({
-      type: 'transfer',
-      maxAmountToSend: '100',
-      destinationAmount: '100',
-      destination: 'mockedPublicKey',
-      sourceAssetCode: asset,
-      destinationAssetCode: asset,
-      idempotencyKey: expect.any(String),
-    });
-    expect(waitSpy).toHaveBeenCalledWith('test-id', transactionApi.getTransaction);
-  });
-
-  it('should call swap with correct parameters', async () => {
-    const createSpy = jest.spyOn(transactionApi, 'createTransaction').mockResolvedValueOnce(mockTransaction('created'));
-    const waitSpy = jest.spyOn(paymentStore, 'waitTransaction').mockResolvedValueOnce(mockTransaction('paid'));
-
-    const transaction: SwapTransaction = {
-      fromAsset: CryptoAsset.EURC,
-      fromValue: 100,
-      toAsset: CryptoAsset.BRL,
-      toValue: 120,
-      rate: 1.2,
-      fees: 0,
     };
 
-    paymentStore.setSwap(transaction);
-
-    await paymentStore.pay();
-
-    // check sendTransaction is called with correct parameters
-    expect(createSpy).toHaveBeenCalledWith({
-      type: 'swap',
-      maxAmountToSend: '100', // cry
-      destinationAmount: '120',
-      destination: 'mockedPublicKey',
-      sourceAssetCode: CryptoAsset.EURC,
-      destinationAssetCode: CryptoAsset.BRL,
-      idempotencyKey: expect.any(String),
-    });
+    expect(paymentSpy).toHaveBeenCalledWith(expectedTransaction);
     expect(waitSpy).toHaveBeenCalledWith('test-id', transactionApi.getTransaction);
   });
 
@@ -193,8 +143,7 @@ describe('PaymentStore', () => {
     const createdResponse = { id: 'test-id', status: 'created' } as BrcodePaymentResponse;
     const paidResponse = { id: 'test-id', status: 'paid' } as BrcodePaymentResponse;
     const createSpy = jest.spyOn(transactionApi, 'createBrcodePayment').mockResolvedValueOnce(createdResponse);
-
-    const getSpy = jest.spyOn(transactionApi, 'getBrcodePayment').mockResolvedValueOnce(paidResponse);
+    const waitSpy = jest.spyOn(utils, 'waitTransaction').mockResolvedValueOnce(paidResponse);
 
     const pixPayment: PixPayment = {
       assetCode: CryptoAsset.BRL,
@@ -240,6 +189,6 @@ describe('PaymentStore', () => {
       description: 'test-infoAdicional',
     });
 
-    expect(getSpy).toHaveBeenCalledWith(createdResponse.id);
+    expect(waitSpy).toHaveBeenCalledWith(createdResponse.id, transactionApi.getBrcodePayment);
   });
 });

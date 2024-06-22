@@ -8,8 +8,8 @@ import mockConsole from 'jest-mock-console';
 import { inputPIN, render } from 'test-utils';
 
 import { Transaction } from '@/services/emigro/types';
-import { paymentStore } from '@/stores/PaymentStore';
 import { securityStore } from '@/stores/SecurityStore';
+import { transferStore } from '@/stores/TransferStore';
 
 import { ConfirmPin } from '../pin';
 
@@ -35,7 +35,7 @@ describe('ConfirmPin', () => {
   test('Should call handlePress when Send button is pressed', async () => {
     const verifyPinSpy = jest.spyOn(securityStore, 'verifyPin').mockResolvedValueOnce(true);
     // mock pay function
-    jest.spyOn(paymentStore, 'pay').mockResolvedValue({ status: 'paid' } as Transaction);
+    jest.spyOn(transferStore, 'transfer').mockResolvedValue({ status: 'paid' } as Transaction);
 
     render(<ConfirmPin />);
 
@@ -43,7 +43,7 @@ describe('ConfirmPin', () => {
 
     await waitFor(() => {
       expect(verifyPinSpy).toHaveBeenCalledWith('1234');
-      expect(paymentStore.pay).toHaveBeenCalled();
+      expect(transferStore.transfer).toHaveBeenCalled();
       expect(router.replace).toHaveBeenCalledWith('./success');
     });
   });
@@ -53,7 +53,7 @@ describe('ConfirmPin', () => {
     const verifyPinSpy = jest.spyOn(securityStore, 'verifyPin').mockResolvedValueOnce(true);
 
     // mock pay function
-    (paymentStore.pay as jest.Mock).mockRejectedValue(new Error('Boom'));
+    (transferStore.transfer as jest.Mock).mockRejectedValue(new Error('Boom'));
 
     render(<ConfirmPin />);
 
@@ -61,7 +61,7 @@ describe('ConfirmPin', () => {
 
     await waitFor(() => {
       expect(verifyPinSpy).toHaveBeenCalledWith('1234');
-      expect(paymentStore.pay).toHaveBeenCalled();
+      expect(transferStore.transfer).toHaveBeenCalled();
       expect(router.replace).toHaveBeenCalledWith({
         pathname: './error',
         params: { error: 'Boom' },

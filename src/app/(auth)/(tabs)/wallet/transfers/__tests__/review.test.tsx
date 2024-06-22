@@ -5,6 +5,9 @@ import { useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
+import { TransferTransaction, transferStore } from '@/stores/TransferStore';
+import { CryptoAsset } from '@/types/assets';
+
 import { ReviewTransfer } from '../review';
 
 jest.mock('@/stores/SecurityStore', () => ({
@@ -13,22 +16,17 @@ jest.mock('@/stores/SecurityStore', () => ({
   },
 }));
 
-jest.mock('@/stores/PaymentStore', () => ({
-  paymentStore: {
-    transaction: {
-      from: {
-        wallet: 'F'.repeat(56),
-      },
-      to: {
-        wallet: 'D'.repeat(56),
-        value: 100,
-        asset: 'XLM',
-      },
-    },
-  },
-}));
-
 describe('ReviewTransfer', () => {
+  const transaction: TransferTransaction = {
+    destinationAddress: 'D'.repeat(56),
+    amount: 100,
+    asset: CryptoAsset.XLM,
+  };
+
+  beforeEach(() => {
+    transferStore.setTransfer(transaction);
+  });
+
   test('Should render review transfer details', () => {
     const { getByText } = render(<ReviewTransfer />);
 
