@@ -1,8 +1,8 @@
-import { TransferStore, TransferTransaction } from '@/stores/TransferStore';
 import * as transactions from '@/services/emigro/transactions';
-import { CryptoAsset } from '@/types/assets';
-import * as utils from '@/stores/utils';
 import { Transaction } from '@/services/emigro/types';
+import { TransferStore, TransferTransaction } from '@/stores/TransferStore';
+import * as utils from '@/stores/utils';
+import { CryptoAsset } from '@/types/assets';
 
 jest.mock('expo-crypto', () => ({
   randomUUID: jest.fn().mockReturnValue('mocked-uuid'),

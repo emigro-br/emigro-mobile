@@ -2,13 +2,15 @@ import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
 import { api } from '../api';
+import { brcodePaymentPreview, createBrcodePayment, getBrcodePayment, payment, swap, transfer } from '../transactions';
 import {
-  brcodePaymentPreview,
-  createBrcodePayment,
-  getBrcodePayment, // getTransactions,
-  sendTransaction,
-} from '../transactions';
-import { BrcodePaymentRequest, BrcodePaymentResponse, CreateTransactionRequest, PixPaymentPreview } from '../types';
+  BrcodePaymentRequest,
+  BrcodePaymentResponse,
+  CreatePaymentTransaction,
+  CreateSwapTransaction,
+  CreateTransferTransaction,
+  PixPaymentPreview,
+} from '../types';
 
 jest.mock('../api', () => ({
   api: jest.fn(),
@@ -23,47 +25,6 @@ describe('transaction service', () => {
     instance = axios.create();
     mock = new MockAdapter(instance, { onNoMatch: 'throwException' });
     (api as jest.Mock).mockReturnValue(instance);
-  });
-
-  // TODO: this list transactions is invalid
-  describe.skip('getTransactions', () => {
-    const mockResponse = {
-      transactions: [
-        { id: 1, amount: 10 },
-        { id: 2, amount: 20 },
-      ],
-    };
-
-    it('should make a GET request to fetch transactions and return the transaction data', async () => {
-      // const mockAxiosGet = jest.spyOn(instance, 'get');
-      mock.onGet('/transaction/all').reply(200, mockResponse);
-      const result = await getTransactions();
-
-      // expect(mockAxiosGet).toHaveBeenCalledWith('/transaction/all');
-      expect(result).toEqual(mockResponse.transactions);
-    });
-  });
-
-  // TODO: change to /transaction/run
-  describe.skip('sendTransaction', () => {
-    const mockRequest: CreateTransactionRequest = {
-      type: 'payment',
-      maxAmountToSend: '100',
-      destinationAmount: '50',
-      destination: 'you',
-      sourceAssetCode: 'XLM',
-      destinationAssetCode: 'XLM',
-    };
-    const mockResponse = { success: true };
-
-    it('should make a POST request to send transaction and return the payment response', async () => {
-      const mockAxiosPost = jest.spyOn(instance, 'post');
-      mock.onPost('/transaction').reply(200, mockResponse);
-      const result = await sendTransaction(mockRequest);
-
-      expect(mockAxiosPost).toHaveBeenCalledWith('/transaction', mockRequest);
-      expect(result).toEqual(mockResponse);
-    });
   });
 
   describe('brcodePaymentPreview', () => {
@@ -132,6 +93,69 @@ describe('transaction service', () => {
 
       expect(mockAxiosGet).toHaveBeenCalledWith(`/pix/brcode-payment/${transactionId}`);
       expect(result).toEqual(mockResponse);
+    });
+  });
+  describe('swap', () => {
+    it('should make a POST request to /transaction/swap with the provided data', async () => {
+      const mockAxiosPost = jest.spyOn(instance, 'post');
+      const mockApiResponse = {
+        id: 'testId',
+        type: 'swap',
+        amount: 100,
+        status: 'completed',
+      };
+      const data: CreateSwapTransaction = {
+        fromAsset: 'testAsset1',
+        toAsset: 'testAsset2',
+        amount: 100,
+        estimated: 200,
+      };
+      mock.onPost('/transaction/swap').reply(200, mockApiResponse);
+      const result = await swap(data);
+      expect(mockAxiosPost).toHaveBeenCalledWith('/transaction/swap', data);
+      expect(result).toEqual(mockApiResponse);
+    });
+  });
+  describe('transfer', () => {
+    it('should make a POST request to /transaction/transfer with the provided data', async () => {
+      const mockAxiosPost = jest.spyOn(instance, 'post');
+      const mockApiResponse = {
+        id: 'testId',
+        type: 'transfer',
+        amount: 100,
+        status: 'completed',
+      };
+      const data: CreateTransferTransaction = {
+        destinationAddress: 'testAddress',
+        assetCode: 'testAsset',
+        amount: 100,
+      };
+      mock.onPost('/transaction/transfer').reply(200, mockApiResponse);
+      const result = await transfer(data);
+      expect(mockAxiosPost).toHaveBeenCalledWith('/transaction/transfer', data);
+      expect(result).toEqual(mockApiResponse);
+    });
+  });
+  describe('payment', () => {
+    it('should make a POST request to /transaction/payment with the provided data', async () => {
+      const mockAxiosPost = jest.spyOn(instance, 'post');
+      const mockApiResponse = {
+        id: 'testId',
+        type: 'payment',
+        amount: 100,
+        status: 'completed',
+      };
+      const data: CreatePaymentTransaction = {
+        destinationAddress: 'testAddress',
+        sendAssetCode: 'testAsset',
+        destAssetCode: 'testAsset2',
+        destAmount: 100,
+        sendMax: 100,
+      };
+      mock.onPost('/transaction/payment').reply(200, mockApiResponse);
+      const result = await payment(data);
+      expect(mockAxiosPost).toHaveBeenCalledWith('/transaction/payment', data);
+      expect(result).toEqual(mockApiResponse);
     });
   });
 });

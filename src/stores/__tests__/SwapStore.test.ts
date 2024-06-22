@@ -1,8 +1,9 @@
-import { SwapStore } from '@/stores/SwapStore';
 import * as transactions from '@/services/emigro/transactions';
+import { Transaction } from '@/services/emigro/types';
+import { SwapStore } from '@/stores/SwapStore';
 import { waitTransaction } from '@/stores/utils';
 import { CryptoAsset } from '@/types/assets';
-import { Transaction } from '@/services/emigro/types';
+
 import * as utils from '../utils';
 
 jest.mock('expo-crypto', () => ({
