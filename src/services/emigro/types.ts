@@ -103,6 +103,30 @@ export type CreateTransactionRequest = {
   idempotencyKey?: string;
 };
 
+export type CreateSwapTransaction = {
+  fromAsset: string;
+  toAsset: string;
+  amount: number;
+  estimated: number;
+  idempotencyKey?: string;
+};
+
+export type CreateTransferTransaction = {
+  destinationAddress: string;
+  assetCode: string;
+  amount: number;
+  idempotencyKey?: string;
+};
+
+export type CreatePaymentTransaction = {
+  destinationAddress: string;
+  sendAssetCode: string;
+  destAssetCode: string;
+  destAmount: number;
+  sendMax: number;
+  idempotencyKey?: string;
+};
+
 export type Transaction = {
   id: string;
   type: string;
@@ -110,7 +134,6 @@ export type Transaction = {
   to: string;
   amount: number;
   status: string;
-  successful: boolean;
   createdAt: Date;
 };
 

@@ -5,8 +5,8 @@ import { useRouter } from 'expo-router';
 
 import { ErrorModal } from '@/components/modals/ErrorModal';
 import { PinScreen } from '@/components/screens/PinScreen';
-import { paymentStore as bloc } from '@/stores/PaymentStore';
 import { securityStore } from '@/stores/SecurityStore';
+import { swapStore as bloc } from '@/stores/SwapStore';
 
 export const DetailsSwap = () => {
   const router = useRouter();
@@ -14,15 +14,20 @@ export const DetailsSwap = () => {
   const [showPinScreen, setShowPinScreen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const { from, to, rate, fees } = bloc.transaction!;
-  const estimated = to.value - fees;
+  if (!bloc.transaction) {
+    router.replace('/');
+    return null;
+  }
+
+  const { fromAsset, toAsset, fromValue, toValue, rate } = bloc.transaction;
+  const estimated = toValue;
 
   const handleConfirmTransaction = async () => {
     setIsLoading(true);
 
     try {
-      const result = await bloc.pay();
-      if (result.status === 'paid' || result.transactionHash) {
+      const result = await bloc.swap();
+      if (result.status === 'paid') {
         router.replace('/');
       }
     } catch (error) {
@@ -68,16 +73,15 @@ export const DetailsSwap = () => {
           <Heading>Confirm Swap</Heading>
           <Card size="md" variant="elevated" bg="$white">
             <VStack space="md">
-              <Row label="Amount" value={`${from.value.toFixed(2)} ${from.asset}`} />
-              <Row label="Exchanged" value={`${to.value.toFixed(2)} ${to.asset}`} />
-              <Row label="Rate" value={`1 ${to.asset} ≈ ${rate.toFixed(6)} ${from.asset}`} />
-              <Row label="Fees" value={fees} />
-              <Row label="Final receive" value={`${estimated.toFixed(2)} ${to.asset}`} />
+              <Row label="Amount" value={`${fromValue.toFixed(2)} ${fromAsset}`} />
+              <Row label="Exchanged" value={`${toValue.toFixed(2)} ${toAsset}`} />
+              <Row label="Rate" value={`1 ${toAsset} ≈ ${rate.toFixed(6)} ${fromAsset}`} />
+              <Row label="Final receive" value={`${estimated.toFixed(2)} ${toAsset}`} />
             </VStack>
           </Card>
           <Text size="xs">The final amount is estimated and may change.</Text>
           <Button onPress={() => setShowPinScreen(true)} isDisabled={isLoading}>
-            <ButtonText>{isLoading ? 'Processing...' : `Swap ${from.asset} for ${to.asset}`}</ButtonText>
+            <ButtonText>{isLoading ? 'Processing...' : `Swap ${fromAsset} for ${toAsset}`}</ButtonText>
           </Button>
         </VStack>
       </Box>

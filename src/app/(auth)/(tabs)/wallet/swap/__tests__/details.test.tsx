@@ -2,9 +2,9 @@ import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { inputPIN, render } from 'test-utils';
 
-import { PaymentResponse } from '@/services/emigro/types';
-import { paymentStore } from '@/stores/PaymentStore';
+import { Transaction } from '@/services/emigro/types';
 import { securityStore } from '@/stores/SecurityStore';
+import { SwapTransaction, swapStore } from '@/stores/SwapStore';
 import { CryptoAsset } from '@/types/assets';
 
 import { DetailsSwap } from '../review';
@@ -20,13 +20,12 @@ jest.mock('@/stores/SecurityStore', () => ({
 }));
 
 describe('DetailsSwap', () => {
-  const transaction = {
-    from: CryptoAsset.EURC,
+  const transaction: SwapTransaction = {
+    fromAsset: CryptoAsset.EURC,
     fromValue: 100,
-    to: CryptoAsset.BRL,
+    toAsset: CryptoAsset.BRL,
     toValue: 120,
     rate: 1.2,
-    fees: 0.01,
   };
 
   // Create a separate component
@@ -34,17 +33,16 @@ describe('DetailsSwap', () => {
 
   beforeAll(() => {
     jest.useFakeTimers();
-    paymentStore.setSwap(transaction);
-    jest.spyOn(paymentStore, 'pay').mockResolvedValue({ transactionHash: 'hash' } as PaymentResponse);
+    swapStore.setSwap(transaction);
+    jest.spyOn(swapStore, 'swap').mockResolvedValue({ status: 'paid' } as Transaction);
   });
 
   afterAll(() => {
     jest.restoreAllMocks();
-    paymentStore.reset();
   });
 
   it('renders correctly', () => {
-    const { getByText } = render(<DetailsSwapScreen />);
+    const { getByText, getAllByText } = render(<DetailsSwapScreen />);
 
     expect(getByText('Confirm Swap')).toBeOnTheScreen();
 
@@ -58,21 +56,21 @@ describe('DetailsSwap', () => {
 
     // to: rate is 1.2, so 100 EURC = 120 BRL
     expect(getByText('Exchanged')).toBeOnTheScreen();
-    expect(getByText('120.00 BRL')).toBeOnTheScreen();
+    expect(getAllByText('120.00 BRL')).toHaveLength(2); // 2 because we have the rate and the final value (no fees)
 
     // fees
-    expect(getByText('Fees')).toBeOnTheScreen();
-    expect(getByText('0.01')).toBeOnTheScreen();
+    // expect(getByText('Fees')).toBeOnTheScreen();
+    // expect(getByText('0.01')).toBeOnTheScreen();
 
     // fees is 0.01, so 100 EURC = 120 BRL - 0.01 = 119.99 BRL
     expect(getByText('Final receive')).toBeOnTheScreen();
-    expect(getByText('119.99 BRL')).toBeOnTheScreen();
+    // expect(getByText('119.99 BRL')).toBeOnTheScreen();
 
     expect(getByText('The final amount is estimated and may change.')).toBeOnTheScreen();
     expect(getByText('Swap EURC for BRL')).toBeOnTheScreen();
   });
 
-  it('show PIN on button press and pay when confirm', async () => {
+  it('show PIN on button press and swap when confirm', async () => {
     const verifyPinSpy = jest.spyOn(securityStore, 'verifyPin').mockResolvedValueOnce(true);
     const { getByText } = render(<DetailsSwapScreen />);
 
@@ -84,13 +82,13 @@ describe('DetailsSwap', () => {
 
     await waitFor(() => {
       // expect(getByText('Processing...')).toBeOnTheScreen();
-      expect(paymentStore.pay).toHaveBeenCalled();
+      expect(swapStore.swap).toHaveBeenCalled();
     });
   });
 
   it('shows error message', async () => {
     jest.spyOn(securityStore, 'verifyPin').mockResolvedValueOnce(true);
-    jest.spyOn(paymentStore, 'pay').mockRejectedValueOnce(new Error('error message'));
+    jest.spyOn(swapStore, 'swap').mockRejectedValueOnce(new Error('error message'));
 
     const { getByText, getByTestId } = render(<DetailsSwapScreen />);
 

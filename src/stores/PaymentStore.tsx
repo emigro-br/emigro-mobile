@@ -5,24 +5,16 @@ import { PixElementType, hasError, parsePix } from 'pix-utils';
 import {
   brcodePaymentPreview,
   createBrcodePayment,
-  createTransaction,
   getBrcodePayment,
   getTransaction,
+  payment as paymentTransaction,
 } from '@/services/emigro/transactions';
-import { BrcodePaymentRequest, CreateTransactionRequest, TransactionType } from '@/services/emigro/types';
-import { sessionStore } from '@/stores/SessionStore';
+import { BrcodePaymentRequest, CreatePaymentTransaction } from '@/services/emigro/types';
 import { Payment, PixPayment, emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
 import { isoToCrypto } from '@/utils/assets';
 
-export type SwapTransaction = {
-  from: CryptoAsset;
-  fromValue: number;
-  to: CryptoAsset;
-  toValue: number;
-  rate: number;
-  fees: number;
-};
+import { waitTransaction } from './utils';
 
 type TransactionParty = {
   wallet: string;
@@ -31,8 +23,10 @@ type TransactionParty = {
 };
 
 type PayTransaction = {
-  type: TransactionType;
-  from: TransactionParty;
+  from: {
+    asset: CryptoAsset;
+    value: number;
+  };
   to: TransactionParty;
   rate: number;
   fees: number;
@@ -67,44 +61,6 @@ export class PaymentStore {
   reset() {
     this.setTransaction(undefined);
     this.setScannedPayment(undefined);
-  }
-
-  setTransfer(amount: number, asset: CryptoAsset, destinationWallet: string) {
-    const transfer: PayTransaction = {
-      type: 'transfer',
-      from: {
-        wallet: sessionStore.publicKey!,
-        asset,
-        value: amount,
-      },
-      to: {
-        wallet: destinationWallet,
-        asset,
-        value: amount,
-      },
-      rate: 1,
-      fees: 0,
-    };
-    this.setTransaction(transfer);
-  }
-
-  setSwap(swap: SwapTransaction) {
-    const swapTransaction: PayTransaction = {
-      type: 'swap',
-      from: {
-        wallet: sessionStore.publicKey!,
-        asset: swap.from,
-        value: swap.fromValue,
-      },
-      to: {
-        wallet: sessionStore.publicKey!,
-        asset: swap.to,
-        value: swap.toValue,
-      },
-      rate: swap.rate,
-      fees: swap.fees,
-    };
-    this.setTransaction(swapTransaction);
   }
 
   async preview(brCode: string): Promise<Payment | PixPayment> {
@@ -146,19 +102,19 @@ export class PaymentStore {
   }
 
   async pay() {
-    const { type, from, to, idempotencyKey } = this.transaction!;
-    const transactionRequest: CreateTransactionRequest = {
-      type,
-      maxAmountToSend: from.value.toString(), // cry
-      sourceAssetCode: from.asset,
-      destination: to.wallet,
-      destinationAmount: to.value.toString(),
-      destinationAssetCode: to.asset,
+    const { from, to, idempotencyKey } = this.transaction!;
+    // map to dto
+    const data: CreatePaymentTransaction = {
+      destinationAddress: to.wallet,
+      sendAssetCode: from.asset,
+      destAssetCode: to.asset,
+      destAmount: to.value,
+      sendMax: from.value,
       idempotencyKey,
     };
 
-    let result = await createTransaction(transactionRequest);
-    result = await this.waitTransaction(result.id, getTransaction);
+    let result = await paymentTransaction(data);
+    result = await waitTransaction(result.id, getTransaction);
 
     if (result.status === 'failed') {
       throw new Error('Transaction failed');
@@ -187,31 +143,12 @@ export class PaymentStore {
     let result = await createBrcodePayment(paymentRequest);
     console.debug('Payment request sent:', result.id, result.status);
 
-    result = await this.waitTransaction(result.id, getBrcodePayment);
+    result = await waitTransaction(result.id, getBrcodePayment);
 
     if (result.status === 'failed') {
       throw new Error('Pix Payment failed');
     }
 
-    return result;
-  }
-
-  async waitTransaction(transactionId: string, fetchFn: (id: string) => Promise<any>) {
-    // Wait for payment to be processed
-    let attempts = 0;
-    const interval = 2000;
-    const maxAttempts = 20; // 40 seconds
-    let result;
-    let status = 'created';
-
-    const waitStatus = ['created', 'pending'];
-    while (waitStatus.includes(status) && attempts < maxAttempts) {
-      await new Promise((resolve) => setTimeout(resolve, interval));
-      result = await fetchFn(transactionId);
-      console.debug('Payment status:', result.status);
-      status = result.status;
-      attempts++;
-    }
     return result;
   }
 }

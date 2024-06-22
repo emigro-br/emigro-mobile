@@ -7,7 +7,7 @@ import { render } from 'test-utils';
 
 import * as quotesService from '@/services/emigro/quotes';
 import { balanceStore } from '@/stores/BalanceStore';
-import { paymentStore } from '@/stores/PaymentStore';
+import { SwapTransaction, swapStore } from '@/stores/SwapStore';
 import { CryptoAsset } from '@/types/assets';
 
 import { Swap } from '..';
@@ -90,7 +90,7 @@ describe('Swap component', () => {
       .spyOn(quotesService, 'handleQuote')
       .mockResolvedValueOnce({ destination_amount: 10.829 } as quotesService.IQuoteResponse);
 
-    const spy = jest.spyOn(paymentStore, 'setSwap');
+    const spy = jest.spyOn(swapStore, 'setSwap');
     jest.spyOn(balanceStore, 'get').mockReturnValue(100); // enough balance
 
     const { getByText, getByLabelText, findByTestId } = render(<Swap />);
@@ -108,13 +108,12 @@ describe('Swap component', () => {
     const button = getByText('Review order');
     fireEvent.press(button);
 
-    const transaction = {
-      from: fromAsset,
+    const transaction: SwapTransaction = {
+      fromAsset,
       fromValue: 10,
-      to: toAsset,
+      toAsset,
       toValue: 10.829,
       rate: 10 / 10.829, // normalized rate
-      fees: 0,
     };
 
     await waitFor(() => {

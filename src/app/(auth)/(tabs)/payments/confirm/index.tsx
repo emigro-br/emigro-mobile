@@ -25,9 +25,8 @@ import { PinScreen } from '@/components/screens/PinScreen';
 import { TRANSACTION_ERROR_MESSAGE } from '@/constants/errorMessages';
 import { IQuoteRequest, handleQuote } from '@/services/emigro/quotes';
 import { balanceStore } from '@/stores/BalanceStore';
-import { paymentStore as bloc, paymentStore } from '@/stores/PaymentStore';
+import { paymentStore } from '@/stores/PaymentStore';
 import { securityStore } from '@/stores/SecurityStore';
-import { sessionStore } from '@/stores/SessionStore';
 import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset, FiatCurrency } from '@/types/assets';
 import { AssetToCurrency, symbolFor } from '@/utils/assets';
@@ -83,14 +82,12 @@ export const ConfirmPayment = () => {
     }
 
     const transaction = {
-      type: 'payment',
       from: {
-        wallet: sessionStore.publicKey!,
         asset: selectedAsset,
-        value: paymentQuote,
+        value: Number(paymentQuote), // FIXME: check where is  string
       },
       to: {
-        wallet: scannedPayment.walletKey, // TODO: for pix is the Emigro wallet in the server side
+        wallet: scannedPayment.walletKey!, // TODO: for pix is the Emigro wallet in the server side
         asset: scannedPayment.assetCode,
         value: requestedAmount,
       },
@@ -98,7 +95,7 @@ export const ConfirmPayment = () => {
       fees: 0,
     };
 
-    bloc.setTransaction(transaction);
+    paymentStore.setTransaction(transaction);
     setShowPinScreen(true);
   };
 
@@ -109,9 +106,9 @@ export const ConfirmPayment = () => {
 
       // TODO: move to paymentStore
       if (isPix) {
-        result = await bloc.payPix();
+        result = await paymentStore.payPix();
       } else {
-        result = await bloc.pay();
+        result = await paymentStore.pay();
       }
 
       if (result.status === 'paid' || result.transactionHash) {
