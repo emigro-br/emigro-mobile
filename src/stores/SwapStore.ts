@@ -17,7 +17,7 @@ export type SwapTransaction = {
 export class SwapStore {
   transaction?: SwapTransaction;
 
-  setSwap(transaction: SwapTransaction) {
+  setSwap(transaction?: SwapTransaction) {
     if (transaction) {
       transaction.idempotencyKey = Crypto.randomUUID();
     }

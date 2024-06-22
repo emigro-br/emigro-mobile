@@ -16,7 +16,7 @@ export type TransferTransaction = {
 export class TransferStore {
   transaction?: TransferTransaction;
 
-  setTransfer(transaction: TransferTransaction) {
+  setTransfer(transaction?: TransferTransaction) {
     if (transaction) {
       transaction.idempotencyKey = Crypto.randomUUID();
     }
