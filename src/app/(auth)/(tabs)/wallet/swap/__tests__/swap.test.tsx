@@ -35,19 +35,25 @@ describe('Swap component', () => {
   });
 
   test('Should render Swap component correctly', async () => {
+    jest
+      .spyOn(quotesService, 'handleQuote')
+      .mockResolvedValueOnce({ destination_amount: 1 } as quotesService.IQuoteResponse);
+
     const { getByText, getByTestId } = render(<Swap />);
 
     // check title
     const sellText = getByText(`Sell ${fromAsset}`);
-    expect(sellText).toBeDefined();
+    expect(sellText).toBeOnTheScreen();
+
+    const sellBox = getByTestId('buy-box');
+    expect(sellBox).toBeOnTheScreen();
 
     // check arrow icon
     const arrowIcon = getByTestId('arrowIcon');
-    expect(arrowIcon).toBeDefined();
+    expect(arrowIcon).toBeOnTheScreen();
 
-    // check rate
-    const buyText = getByText(`1 ${fromAsset} ≈ 1.000000 ${fromAsset}`); // initial state
-    expect(buyText).toBeDefined();
+    const buyBox = getByTestId('buy-box');
+    expect(buyBox).toBeOnTheScreen();
   });
 
   test('Should update sellValue and buyValue when onChangeValue is called', async () => {
@@ -55,7 +61,7 @@ describe('Swap component', () => {
       .spyOn(quotesService, 'handleQuote')
       .mockResolvedValueOnce({ destination_amount: 10.829 } as quotesService.IQuoteResponse);
 
-    const { getByLabelText, findByTestId, getByTestId } = render(<Swap />);
+    const { getByText, getByLabelText, findByTestId, getByTestId } = render(<Swap />);
 
     const buyBox = await findByTestId('buy-box');
     fireEvent(buyBox, 'onChangeAsset', toAsset, 'buy');
@@ -75,6 +81,12 @@ describe('Swap component', () => {
 
     await waitFor(() => {
       expect(buyInput).toHaveAccessibilityValue('10.83');
+    });
+
+    // check rate
+    await waitFor(() => {
+      const rateText = getByText(`1 ${toAsset} ≈ 10.000000 ${fromAsset}`); // initial state
+      expect(rateText).toBeOnTheScreen();
     });
 
     expect(quotesService.handleQuote).toHaveBeenCalledWith({

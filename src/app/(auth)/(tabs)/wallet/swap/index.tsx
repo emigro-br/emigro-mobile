@@ -30,7 +30,7 @@ export const Swap = () => {
   const myAssetss = balanceStore.currentAssets();
   const [active, setActive] = useState<SwapType>(SwapType.SELL);
   const [sellAsset, setSellAsset] = useState<CryptoAsset>(myAssetss[0]);
-  const [buyAsset, setBuyAsset] = useState<CryptoAsset>(myAssetss[0]); // just a protection for empty wallet
+  const [buyAsset, setBuyAsset] = useState<CryptoAsset>(myAssetss.length > 1 ? myAssetss[1] : myAssetss[0]); // just a protection for empty wallet
   const [sellValue, setSellValue] = useState(0);
   const [buyValue, setBuyValue] = useState(0);
   const [rate, setRate] = useState<number | null>(null);
@@ -157,8 +157,12 @@ export const Swap = () => {
     router.push('/wallet/swap/review');
   };
 
-  const isButtonEnabled = () =>
-    !fetchingRate && sellValue > 0 && sellValue <= balanceStore.get(sellAsset) && buyValue > 0;
+  const isButtonDisabled =
+    fetchingRate ||
+    sellAsset === buyAsset ||
+    sellValue <= 0 ||
+    buyValue <= 0 ||
+    sellValue > balanceStore.get(sellAsset);
 
   return (
     <Box flex={1} bg="$white">
@@ -202,7 +206,7 @@ export const Swap = () => {
               </Text>
             </HStack>
           )}
-          {sellAsset && buyAsset && !fetchingRate && rate === null && (
+          {sellAsset && buyAsset && sellValue > 0 && !fetchingRate && rate === null && (
             <Text size="xs" color="$error500">
               Failed to fetch the rate
             </Text>
@@ -213,7 +217,7 @@ export const Swap = () => {
             </Text>
           )}
         </Box>
-        <Button onPress={handlePress} isDisabled={!isButtonEnabled()} size="lg">
+        <Button onPress={handlePress} isDisabled={isButtonDisabled} size="lg">
           <ButtonText>Review order</ButtonText>
         </Button>
       </VStack>
