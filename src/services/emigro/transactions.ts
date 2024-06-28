@@ -4,16 +4,10 @@ import {
   BrcodePaymentResponse,
   CreatePaymentTransaction,
   CreateSwapTransaction,
-  CreateTransactionRequest,
   CreateTransferTransaction,
   PixPaymentPreview,
   Transaction,
 } from './types';
-
-export const createTransaction = async (data: CreateTransactionRequest): Promise<Transaction> => {
-  const res = await api().post('/transaction/create', data);
-  return res.data;
-};
 
 export const getTransaction = async (transactionId: string): Promise<Transaction> => {
   const res = await api().get(`/transaction/${transactionId}`);

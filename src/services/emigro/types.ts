@@ -93,16 +93,6 @@ export type TransactionType =
   | 'refund'
   | 'other';
 
-export type CreateTransactionRequest = {
-  type: TransactionType;
-  maxAmountToSend: string | undefined;
-  destinationAmount: string;
-  destination: string;
-  sourceAssetCode: string;
-  destinationAssetCode: string;
-  idempotencyKey?: string;
-};
-
 export type CreateSwapTransaction = {
   fromAsset: string;
   toAsset: string;
@@ -135,24 +125,6 @@ export type Transaction = {
   amount: number;
   status: string;
   createdAt: Date;
-};
-
-// DERECATED: old transaction response
-export type PaymentResponse = {
-  transactionHash: string;
-  sourceAccount: string;
-  type: string;
-  assetType: string;
-  assetCode: string;
-  assetIssuer: string;
-  from: string;
-  to: string;
-  amount: string;
-  path: string[];
-  sourceAmount: string;
-  sourceAssetType: string;
-  sourceAssetCode: string;
-  sourceAssetIssuer: string;
 };
 
 // PIX
