@@ -2,13 +2,8 @@ import * as Crypto from 'expo-crypto';
 import { action, makeAutoObservable, observable } from 'mobx';
 import { PixElementType, hasError, parsePix } from 'pix-utils';
 
-import {
-  brcodePaymentPreview,
-  createBrcodePayment,
-  getBrcodePayment,
-  getTransaction,
-  payment as paymentTransaction,
-} from '@/services/emigro/transactions';
+import * as pixApi from '@/services/emigro/pix';
+import { getTransaction, payment as paymentTransaction } from '@/services/emigro/transactions';
 import { BrcodePaymentRequest, CreatePaymentTransaction } from '@/services/emigro/types';
 import { Payment, PixPayment, emigroCategoryCode } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
@@ -83,7 +78,7 @@ export class PaymentStore {
       } as Payment;
     }
 
-    const res = await brcodePaymentPreview(brCode);
+    const res = await pixApi.brcodePaymentPreview(brCode);
 
     const assetCode = isoToCrypto[res.currency as keyof typeof isoToCrypto] ?? CryptoAsset.BRL; // Pix is aways in BRL
 
@@ -141,9 +136,9 @@ export class PaymentStore {
       taxId: pixPayment.taxId,
       description: pixPayment.infoAdicional || 'Payment via Emigro Wallet',
     };
-    let result = await createBrcodePayment(paymentRequest);
+    let result = await pixApi.createBrcodePayment(paymentRequest);
 
-    result = await waitTransaction(result.id, getBrcodePayment);
+    result = await waitTransaction(result.id, pixApi.getBrcodePayment);
 
     if (result.status === 'failed') {
       throw new Error('Pix Payment failed');

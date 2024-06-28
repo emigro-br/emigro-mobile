@@ -1,3 +1,4 @@
+import * as pixApi from '@/services/emigro/pix';
 import * as transactionApi from '@/services/emigro/transactions';
 import { BrcodePaymentResponse, CreatePaymentTransaction, Transaction } from '@/services/emigro/types';
 import { Payment, PixPayment } from '@/types/PixPayment';
@@ -18,8 +19,10 @@ jest.mock('@/stores/SessionStore', () => ({
 
 jest.mock('@/services/emigro/transactions', () => ({
   payment: jest.fn(),
-  createTransaction: jest.fn(),
   getTransaction: jest.fn(),
+}));
+
+jest.mock('@/services/emigro/pix', () => ({
   brcodePaymentPreview: jest.fn(),
   createBrcodePayment: jest.fn(),
   getBrcodePayment: jest.fn(),
@@ -79,7 +82,7 @@ describe('PaymentStore', () => {
   });
 
   it('should call preview pix payment correctly', async () => {
-    const brcodePaymentPreview = jest.spyOn(transactionApi, 'brcodePaymentPreview').mockResolvedValueOnce({
+    const brcodePaymentPreview = jest.spyOn(pixApi, 'brcodePaymentPreview').mockResolvedValueOnce({
       brcode: 'test-brcode',
       pixKey: 'test-pixKey',
       amount: 100,
@@ -142,7 +145,7 @@ describe('PaymentStore', () => {
   it('should call pay with pix payment correctly', async () => {
     const createdResponse = { id: 'test-id', status: 'created' } as BrcodePaymentResponse;
     const paidResponse = { id: 'test-id', status: 'paid' } as BrcodePaymentResponse;
-    const createSpy = jest.spyOn(transactionApi, 'createBrcodePayment').mockResolvedValueOnce(createdResponse);
+    const createSpy = jest.spyOn(pixApi, 'createBrcodePayment').mockResolvedValueOnce(createdResponse);
     const waitSpy = jest.spyOn(utils, 'waitTransaction').mockResolvedValueOnce(paidResponse);
 
     const pixPayment: PixPayment = {
@@ -190,6 +193,6 @@ describe('PaymentStore', () => {
       description: 'test-infoAdicional',
     });
 
-    expect(waitSpy).toHaveBeenCalledWith(createdResponse.id, transactionApi.getBrcodePayment);
+    expect(waitSpy).toHaveBeenCalledWith(createdResponse.id, pixApi.getBrcodePayment);
   });
 });
