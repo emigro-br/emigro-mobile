@@ -185,6 +185,7 @@ describe('PaymentStore', () => {
       brcode: pixPayment.brCode,
       exchangeAsset: transaction.from.asset,
       amount: transaction.to.value,
+      name: pixPayment.merchantName,
       taxId: pixPayment.taxId,
       description: 'test-infoAdicional',
     });

@@ -64,6 +64,7 @@ describe('transaction service', () => {
         brcode: 'testBrcode',
         exchangeAsset: 'testAsset',
         amount: 100,
+        name: 'Test Name',
         taxId: '123456789',
         description: 'Test payment',
       };
@@ -81,6 +82,7 @@ describe('transaction service', () => {
       brcode: 'testBrcode',
       status: 'paid',
       amount: 100,
+      name: 'Test Name',
       taxId: '123456789',
       description: 'Test payment',
     };

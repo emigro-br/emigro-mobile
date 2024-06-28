@@ -137,11 +137,11 @@ export class PaymentStore {
       brcode: pixPayment.brCode,
       amount: this.transaction.to.value, // BRL value
       exchangeAsset: this.transaction.from.asset, // selected Asset
+      name: pixPayment.merchantName,
       taxId: pixPayment.taxId,
       description: pixPayment.infoAdicional || 'Payment via Emigro Wallet',
     };
     let result = await createBrcodePayment(paymentRequest);
-    console.debug('Payment request sent:', result.id, result.status);
 
     result = await waitTransaction(result.id, getBrcodePayment);
 

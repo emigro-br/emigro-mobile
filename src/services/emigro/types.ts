@@ -161,6 +161,7 @@ export type BrcodePaymentRequest = {
   brcode: string;
   exchangeAsset: string;
   amount: number;
+  name: string;
   taxId: string;
   description: string;
 };
@@ -168,6 +169,7 @@ export type BrcodePaymentRequest = {
 export type BrcodePaymentResponse = {
   id: string;
   brcode: string;
+  name: string;
   taxId: string;
   description: string;
   amount: number;
