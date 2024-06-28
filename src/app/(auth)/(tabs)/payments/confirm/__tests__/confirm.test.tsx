@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { inputPIN, render } from 'test-utils';
 
 import * as quotesService from '@/services/emigro/quotes';
+import { Transaction } from '@/services/emigro/types';
 import { paymentStore } from '@/stores/PaymentStore';
 import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
@@ -63,7 +64,7 @@ describe('ConfirmPayment component', () => {
   it('renders correctly for stellar payment', async () => {
     paymentStore.setScannedPayment(mockScannedPayment); // for full test coverage
     jest
-      .spyOn(quotesService, 'handleQuote')
+      .spyOn(quotesService, 'fetchQuote')
       .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const { getByText, queryByText } = render(<ConfirmPayment />);
 
@@ -97,7 +98,7 @@ describe('ConfirmPayment component', () => {
   it('renders correctly for pix payment', async () => {
     paymentStore.setScannedPayment(mockPixPayment); // for full test coverage
     jest
-      .spyOn(quotesService, 'handleQuote')
+      .spyOn(quotesService, 'fetchQuote')
       .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const { getByText, queryByText } = render(<ConfirmPayment />);
 
@@ -133,7 +134,7 @@ describe('ConfirmPayment component', () => {
 
   it('should open the edit amount when the "edit" is pressed', async () => {
     jest
-      .spyOn(quotesService, 'handleQuote')
+      .spyOn(quotesService, 'fetchQuote')
       .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const mockPixZeroAmount = { ...mockPixPayment, transactionAmount: 0 };
     paymentStore.setScannedPayment(mockPixZeroAmount); // for full test coverage
@@ -151,7 +152,7 @@ describe('ConfirmPayment component', () => {
 
   it('calls the handlePressPay function when the "Pay" button is pressed', async () => {
     jest
-      .spyOn(quotesService, 'handleQuote')
+      .spyOn(quotesService, 'fetchQuote')
       .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const setTransactionMock = jest.spyOn(paymentStore, 'setTransaction');
     const { getByText, getByTestId } = render(<ConfirmPayment />);
@@ -173,7 +174,7 @@ describe('ConfirmPayment component', () => {
   it('goes to success screen when the PIN is verified and payment was successfully', async () => {
     const router = useRouter();
     jest
-      .spyOn(quotesService, 'handleQuote')
+      .spyOn(quotesService, 'fetchQuote')
       .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const payMock = jest.spyOn(paymentStore, 'pay').mockResolvedValue({ status: 'paid' } as Transaction);
     const { getByText, getByTestId } = render(<ConfirmPayment />);
@@ -201,7 +202,7 @@ describe('ConfirmPayment component', () => {
   it('goes to waiting screen when the payment is processing', async () => {
     const router = useRouter();
     jest
-      .spyOn(quotesService, 'handleQuote')
+      .spyOn(quotesService, 'fetchQuote')
       .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const payMock = jest.spyOn(paymentStore, 'pay').mockResolvedValue({ status: 'pending' } as Transaction);
     const { getByText, getByTestId } = render(<ConfirmPayment />);
@@ -229,7 +230,7 @@ describe('ConfirmPayment component', () => {
   it('goes to error screen when the payment fails', async () => {
     const router = useRouter();
     jest
-      .spyOn(quotesService, 'handleQuote')
+      .spyOn(quotesService, 'fetchQuote')
       .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const payMock = jest.spyOn(paymentStore, 'pay').mockRejectedValue(new Error('Payment failed'));
     const { getByText, getByTestId } = render(<ConfirmPayment />);

@@ -13,7 +13,7 @@ import { CryptoAsset } from '@/types/assets';
 import { Swap } from '..';
 
 jest.mock('@/services/emigro/quotes', () => ({
-  handleQuote: jest.fn(),
+  fetchQuote: jest.fn(),
 }));
 
 jest.mock('@/stores/BalanceStore', () => ({
@@ -36,7 +36,7 @@ describe('Swap component', () => {
 
   test('Should render Swap component correctly', async () => {
     jest
-      .spyOn(quotesService, 'handleQuote')
+      .spyOn(quotesService, 'fetchQuote')
       .mockResolvedValueOnce({ destination_amount: 1 } as quotesService.IQuoteResponse);
 
     const { getByText, getByTestId } = render(<Swap />);
@@ -58,7 +58,7 @@ describe('Swap component', () => {
 
   test('Should update sellValue and buyValue when onChangeValue is called', async () => {
     jest
-      .spyOn(quotesService, 'handleQuote')
+      .spyOn(quotesService, 'fetchQuote')
       .mockResolvedValueOnce({ destination_amount: 10.829 } as quotesService.IQuoteResponse);
 
     const { getByText, getByLabelText, findByTestId, getByTestId } = render(<Swap />);
@@ -89,7 +89,7 @@ describe('Swap component', () => {
       expect(rateText).toBeOnTheScreen();
     });
 
-    expect(quotesService.handleQuote).toHaveBeenCalledWith({
+    expect(quotesService.fetchQuote).toHaveBeenCalledWith({
       from: fromAsset,
       to: toAsset,
       amount: '10.00',
@@ -99,7 +99,7 @@ describe('Swap component', () => {
 
   test('Should update bloc and navigate to DetailsSwap when button is pressed', async () => {
     jest
-      .spyOn(quotesService, 'handleQuote')
+      .spyOn(quotesService, 'fetchQuote')
       .mockResolvedValueOnce({ destination_amount: 10.829 } as quotesService.IQuoteResponse);
 
     const spy = jest.spyOn(swapStore, 'setSwap');

@@ -10,14 +10,15 @@ export interface IQuoteRequest {
 }
 
 export interface IQuoteResponse {
+  quote_type: QuoteType;
   source_asset_code: string;
   source_amount: number;
   destination_asset_code: string;
   destination_amount: number;
-  quote_type: QuoteType;
+  price: number;
 }
 
-export const handleQuote = async (data: IQuoteRequest): Promise<IQuoteResponse | null> => {
+export const fetchQuote = async (data: IQuoteRequest): Promise<IQuoteResponse | null> => {
   const res = await api().post('/quote', data);
   return res.data;
 };

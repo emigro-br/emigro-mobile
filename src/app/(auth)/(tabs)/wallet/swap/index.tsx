@@ -15,7 +15,7 @@ import {
 } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 
-import { IQuoteRequest, handleQuote } from '@/services/emigro/quotes';
+import { IQuoteRequest, fetchQuote } from '@/services/emigro/quotes';
 import { balanceStore } from '@/stores/BalanceStore';
 import { sessionStore } from '@/stores/SessionStore';
 import { swapStore as bloc } from '@/stores/SwapStore';
@@ -59,7 +59,7 @@ export const Swap = () => {
       amount: `${sourceAmount.toFixed(2)}`,
       type: 'strict_send',
     };
-    const quote = await handleQuote(data);
+    const quote = await fetchQuote(data);
     if (!quote) {
       return;
     }

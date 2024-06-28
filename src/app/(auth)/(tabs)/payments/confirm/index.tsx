@@ -23,7 +23,7 @@ import { InputAmountActionSheet } from '@/components/InputAmountActionSheet';
 import { LoadingScreen } from '@/components/Loading';
 import { PinScreen } from '@/components/screens/PinScreen';
 import { TRANSACTION_ERROR_MESSAGE } from '@/constants/errorMessages';
-import { IQuoteRequest, handleQuote } from '@/services/emigro/quotes';
+import { IQuoteRequest, fetchQuote } from '@/services/emigro/quotes';
 import { balanceStore } from '@/stores/BalanceStore';
 import { paymentStore } from '@/stores/PaymentStore';
 import { securityStore } from '@/stores/SecurityStore';
@@ -46,7 +46,7 @@ export const ConfirmPayment = () => {
 
   const isPix = scannedPayment && 'pixKey' in scannedPayment;
 
-  const fetchQuote = async () => {
+  const handleFetchQuote = async () => {
     if (!selectedAsset || !scannedPayment || !requestedAmount) {
       return;
     }
@@ -57,7 +57,7 @@ export const ConfirmPayment = () => {
       amount: `${requestedAmount}`,
       type: 'strict_receive',
     };
-    const quote = await handleQuote(data);
+    const quote = await fetchQuote(data);
 
     // no quotes found
     if (quote === null) {
@@ -68,7 +68,7 @@ export const ConfirmPayment = () => {
   };
 
   useEffect(() => {
-    fetchQuote().catch(console.warn);
+    handleFetchQuote().catch(console.warn);
   }, [selectedAsset, requestedAmount]);
 
   if (!scannedPayment) {
