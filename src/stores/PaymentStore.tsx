@@ -80,7 +80,7 @@ export class PaymentStore {
 
     const res = await pixApi.brcodePaymentPreview(brCode);
 
-    const assetCode = isoToCrypto[res.currency as keyof typeof isoToCrypto] ?? CryptoAsset.BRL; // Pix is aways in BRL
+    const assetCode = isoToCrypto[res.currency as keyof typeof isoToCrypto] ?? CryptoAsset.BRZ; // Pix is aways in BRL/BRZ
 
     const pixPayment: PixPayment = {
       brCode,

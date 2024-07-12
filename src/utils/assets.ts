@@ -99,11 +99,19 @@ export const fiatToIso = {
   [FiatCurrency.ARS]: '032',
 };
 
+export const isoToFiat = {
+  '000': null,
+  '978': FiatCurrency.EUR,
+  '840': FiatCurrency.USD,
+  '986': FiatCurrency.BRL,
+  '032': FiatCurrency.ARS,
+};
+
 export const isoToCrypto = {
   '000': CryptoAsset.XLM,
   '978': CryptoAsset.EURC,
   '840': CryptoAsset.USDC,
-  '986': CryptoAsset.BRL,
+  '986': CryptoAsset.BRZ,
   '032': CryptoAsset.ARS,
 };
 

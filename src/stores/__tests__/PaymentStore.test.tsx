@@ -103,7 +103,7 @@ describe('PaymentStore', () => {
 
     const expectedPixPayment: PixPayment = {
       brCode: validBrCode,
-      assetCode: CryptoAsset.BRL,
+      assetCode: CryptoAsset.BRZ,
       transactionAmount: 100,
       taxId: 'test-taxId',
       pixKey: 'test-pixKey',
