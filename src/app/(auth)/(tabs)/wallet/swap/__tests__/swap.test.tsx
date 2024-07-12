@@ -64,7 +64,7 @@ describe('Swap component', () => {
     const { getByText, getByLabelText, findByTestId, getByTestId } = render(<Swap />);
 
     const buyBox = await findByTestId('buy-box');
-    fireEvent(buyBox, 'onChangeAsset', toAsset, 'buy');
+    fireEvent(buyBox, 'onChangeAsset', toAsset);
 
     const sellInput = getByLabelText('sell-input');
     const buyInput = getByLabelText('buy-input');
@@ -108,7 +108,7 @@ describe('Swap component', () => {
     const { getByText, getByLabelText, findByTestId } = render(<Swap />);
 
     const buyBox = await findByTestId('buy-box');
-    fireEvent(buyBox, 'onChangeAsset', toAsset, 'buy');
+    fireEvent(buyBox, 'onChangeAsset', toAsset);
 
     const sellInput = getByLabelText('sell-input');
     fireEvent.changeText(sellInput, '10');

@@ -7,6 +7,7 @@ import { inputPIN, render } from 'test-utils';
 
 import * as quotesService from '@/services/emigro/quotes';
 import { Transaction } from '@/services/emigro/types';
+import { balanceStore } from '@/stores/BalanceStore';
 import { paymentStore } from '@/stores/PaymentStore';
 import { Payment, PixPayment } from '@/types/PixPayment';
 import { CryptoAsset } from '@/types/assets';
@@ -63,14 +64,12 @@ describe('ConfirmPayment component', () => {
 
   it('renders correctly for stellar payment', async () => {
     paymentStore.setScannedPayment(mockScannedPayment); // for full test coverage
-    jest
-      .spyOn(quotesService, 'fetchQuote')
-      .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
-    const { getByText, queryByText } = render(<ConfirmPayment />);
+    jest.spyOn(quotesService, 'fetchQuote');
+    const { getByText, queryByText, queryAllByText } = render(<ConfirmPayment />);
 
     // receiver info
     expect(getByText('Review the payment')).toBeOnTheScreen();
-    expect(getByText('$ 10.00')).toBeOnTheScreen();
+    expect(queryAllByText('$ 10.00')).toHaveLength(2); // the amount is displayed twice
     expect(getByText('for John Doe')).toBeOnTheScreen();
     expect(getByText('in 123 Main St')).toBeOnTheScreen();
 
@@ -89,22 +88,17 @@ describe('ConfirmPayment component', () => {
     expect(getByText('Balance: $ 100.00')).toBeOnTheScreen();
     expect(getByText('Pay')).toBeOnTheScreen();
 
-    await waitFor(() => {
-      // the quote is fetched and displayed
-      expect(getByText('$ 10.00')).toBeOnTheScreen();
-    });
+    expect(quotesService.fetchQuote).not.toHaveBeenCalled();
   });
 
   it('renders correctly for pix payment', async () => {
     paymentStore.setScannedPayment(mockPixPayment); // for full test coverage
-    jest
-      .spyOn(quotesService, 'fetchQuote')
-      .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
-    const { getByText, queryByText } = render(<ConfirmPayment />);
+    jest.spyOn(quotesService, 'fetchQuote');
+    const { getByText, queryByText, queryAllByText } = render(<ConfirmPayment />);
 
     // receiver info
     expect(getByText('Review the payment')).toBeOnTheScreen();
-    expect(getByText('$ 10.00')).toBeOnTheScreen();
+    expect(queryAllByText('$ 10.00')).toHaveLength(2); // the amount is displayed twice
     expect(getByText('for John Doe')).toBeOnTheScreen();
     expect(getByText('in 123 Main St')).toBeOnTheScreen();
 
@@ -126,16 +120,35 @@ describe('ConfirmPayment component', () => {
     expect(getByText('Balance: $ 100.00')).toBeOnTheScreen();
     expect(getByText('Pay')).toBeOnTheScreen();
 
+    expect(quotesService.fetchQuote).not.toHaveBeenCalled();
+  });
+
+  it('should quote when change the asset', async () => {
+    jest
+      .spyOn(quotesService, 'fetchQuote')
+      .mockResolvedValueOnce({ source_amount: 99 } as quotesService.IQuoteResponse);
+    jest.spyOn(balanceStore, 'get').mockReturnValue(50); // enough balance
+
+    const { getByText, getByTestId } = render(<ConfirmPayment />);
+    const select = getByTestId('select-account');
+    fireEvent(select, 'onChange', { value: 'BRZ' });
+
     await waitFor(() => {
-      // the quote is fetched and displayed
-      expect(getByText('$ 10.00')).toBeOnTheScreen();
+      expect(getByText('Balance: R$ 50.00')).toBeOnTheScreen();
     });
+
+    await waitFor(() => {
+      expect(quotesService.fetchQuote).toHaveBeenCalledWith({
+        from: CryptoAsset.BRZ,
+        to: CryptoAsset.USDC,
+        amount: mockPixPayment.transactionAmount.toString(),
+        type: 'strict_receive',
+      });
+    });
+    expect(getByText('R$ 99.00')).toBeOnTheScreen();
   });
 
   it('should open the edit amount when the "edit" is pressed', async () => {
-    jest
-      .spyOn(quotesService, 'fetchQuote')
-      .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const mockPixZeroAmount = { ...mockPixPayment, transactionAmount: 0 };
     paymentStore.setScannedPayment(mockPixZeroAmount); // for full test coverage
     const { getByText, getByTestId } = render(<ConfirmPayment />);
@@ -151,16 +164,8 @@ describe('ConfirmPayment component', () => {
   });
 
   it('calls the handlePressPay function when the "Pay" button is pressed', async () => {
-    jest
-      .spyOn(quotesService, 'fetchQuote')
-      .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const setTransactionMock = jest.spyOn(paymentStore, 'setTransaction');
     const { getByText, getByTestId } = render(<ConfirmPayment />);
-
-    // wait the quote is fetched and displayed
-    await waitFor(() => {
-      expect(getByText('$ 10.00')).toBeOnTheScreen();
-    });
 
     const payButton = getByText('Pay');
     fireEvent.press(payButton);
@@ -173,16 +178,8 @@ describe('ConfirmPayment component', () => {
 
   it('goes to success screen when the PIN is verified and payment was successfully', async () => {
     const router = useRouter();
-    jest
-      .spyOn(quotesService, 'fetchQuote')
-      .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const payMock = jest.spyOn(paymentStore, 'pay').mockResolvedValue({ status: 'paid' } as Transaction);
     const { getByText, getByTestId } = render(<ConfirmPayment />);
-
-    // wait the quote is fetched and displayed
-    await waitFor(() => {
-      expect(getByText('$ 10.00')).toBeOnTheScreen();
-    });
 
     const payButton = getByText('Pay');
     fireEvent.press(payButton);
@@ -201,16 +198,8 @@ describe('ConfirmPayment component', () => {
 
   it('goes to waiting screen when the payment is processing', async () => {
     const router = useRouter();
-    jest
-      .spyOn(quotesService, 'fetchQuote')
-      .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const payMock = jest.spyOn(paymentStore, 'pay').mockResolvedValue({ status: 'pending' } as Transaction);
     const { getByText, getByTestId } = render(<ConfirmPayment />);
-
-    // wait the quote is fetched and displayed
-    await waitFor(() => {
-      expect(getByText('$ 10.00')).toBeOnTheScreen();
-    });
 
     const payButton = getByText('Pay');
     fireEvent.press(payButton);
@@ -229,16 +218,8 @@ describe('ConfirmPayment component', () => {
 
   it('goes to error screen when the payment fails', async () => {
     const router = useRouter();
-    jest
-      .spyOn(quotesService, 'fetchQuote')
-      .mockResolvedValueOnce({ source_amount: 10 } as quotesService.IQuoteResponse);
     const payMock = jest.spyOn(paymentStore, 'pay').mockRejectedValue(new Error('Payment failed'));
     const { getByText, getByTestId } = render(<ConfirmPayment />);
-
-    // wait the quote is fetched and displayed
-    await waitFor(() => {
-      expect(getByText('$ 10.00')).toBeOnTheScreen();
-    });
 
     const payButton = getByText('Pay');
     fireEvent.press(payButton);

@@ -50,6 +50,11 @@ export const ConfirmPayment = () => {
     if (!selectedAsset || !scannedPayment || !requestedAmount) {
       return;
     }
+    if (scannedPayment.assetCode === selectedAsset) {
+      setPaymentQuote(requestedAmount);
+      return;
+    }
+
     setPaymentQuote(null);
     const data: IQuoteRequest = {
       from: selectedAsset,
@@ -235,6 +240,7 @@ export const ConfirmPayment = () => {
                     valueField="value"
                     onChange={(selectedItem) => setSelectedAsset(selectedItem.value)}
                     disable={isProcesing}
+                    testID="select-account"
                   />
                 </Box>
                 <Box w="$3/4">
