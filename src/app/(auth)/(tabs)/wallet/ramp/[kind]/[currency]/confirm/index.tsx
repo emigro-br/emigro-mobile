@@ -17,7 +17,7 @@ import { useLocalSearchParams, usePathname, useRouter } from 'expo-router';
 
 import { AssetImage } from '@/components/AssetImage';
 import { DetailsTable } from '@/components/DetailsTable';
-import { LoadingScreen } from '@/components/Loading';
+import { LoadingScreen } from '@/components/screens/Loading';
 import { ConfirmWithdrawDto, confirmWithdraw, getTransaction } from '@/services/emigro/anchors';
 import { Sep24Transaction, Sep24TransactionStatus } from '@/services/emigro/types';
 import { CryptoAsset, FiatCurrency } from '@/types/assets';

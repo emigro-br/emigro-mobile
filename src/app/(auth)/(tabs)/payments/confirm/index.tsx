@@ -20,7 +20,7 @@ import * as Sentry from '@sentry/react-native';
 import { usePathname, useRouter } from 'expo-router';
 
 import { InputAmountActionSheet } from '@/components/InputAmountActionSheet';
-import { LoadingScreen } from '@/components/Loading';
+import { LoadingScreen } from '@/components/screens/Loading';
 import { PinScreen } from '@/components/screens/PinScreen';
 import { TRANSACTION_ERROR_MESSAGE } from '@/constants/errorMessages';
 import { IQuoteRequest, fetchQuote } from '@/services/emigro/quotes';

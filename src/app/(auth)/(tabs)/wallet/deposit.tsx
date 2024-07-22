@@ -19,9 +19,9 @@ import { useRouter } from 'expo-router';
 import { observer } from 'mobx-react-lite';
 
 import { AssetListTile } from '@/components/AssetListTile';
-import { LoadingScreen } from '@/components/Loading';
 import { LoadingModal } from '@/components/modals/LoadingModal';
 import { OpenURLModal } from '@/components/modals/OpenURLModal';
+import { LoadingScreen } from '@/components/screens/Loading';
 import { CallbackType, depositUrl } from '@/services/emigro/anchors';
 import { sessionStore } from '@/stores/SessionStore';
 import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';

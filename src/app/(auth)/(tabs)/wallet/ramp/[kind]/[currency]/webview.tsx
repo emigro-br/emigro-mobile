@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { CustomWebView } from '@/components/CustomWebView';
-import { LoadingScreen } from '@/components/Loading';
+import { LoadingScreen } from '@/components/screens/Loading';
 import { CallbackType, OperationKind, depositUrl, withdrawUrl } from '@/services/emigro/anchors';
 import { CryptoAsset } from '@/types/assets';
 
