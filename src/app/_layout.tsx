@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import { GluestackUIProvider } from '@gluestack-ui/themed';
+import "@/global.css";
+import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import * as Sentry from '@sentry/react-native';
 // import { useColorScheme } from 'react-native';
 import { isRunningInExpoGo } from 'expo';
@@ -100,7 +101,7 @@ function RootLayoutNav() {
   // const colorScheme = useColorScheme();
 
   return (
-    <GluestackUIProvider config={config}>
+    <GluestackUIProvider mode="light">
       <Slot />
     </GluestackUIProvider>
   );

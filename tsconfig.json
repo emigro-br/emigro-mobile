@@ -9,7 +9,7 @@
   "include": [
     "./config/**/*",
     "./src/**/*",
-    "./App.tsx"
+    "./global.css"
   ],
   "experimentalDecorators": true,
   "emitDecoratorMetadata": true,
@@ -34,6 +34,7 @@
         "config/*"
       ],
       "@/mocks/*": ["src/__mocks__/*"],
+      "@/global.css": ["global.css"],
       "@/*": ["src/*"]
     }
   }
