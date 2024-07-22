@@ -42,7 +42,6 @@ export default function TabLayout() {
           tabBarStyle: getTabBarStyle(path),
         }}
       />
-
       <Tabs.Screen
         name="payments"
         options={{
@@ -51,7 +50,6 @@ export default function TabLayout() {
           tabBarStyle: getTabBarStyle(path),
         }}
       />
-
       <Tabs.Screen
         name="profile"
         options={{

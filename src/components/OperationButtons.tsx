@@ -1,6 +1,7 @@
+import { ButtonGroup } from "@/components/ui/button";
+import { AddIcon, ArrowRightIcon, ArrowUpIcon, RepeatIcon } from "@/components/ui/icon";
 import React from 'react';
 
-import { AddIcon, ArrowRightIcon, ArrowUpIcon, ButtonGroup, RepeatIcon } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 
 import { CircularButton } from './CircularButton';
@@ -9,7 +10,7 @@ const OperationButtons = () => {
   const router = useRouter();
   const w = 80; // set with to keep the buttons spaced equally
   return (
-    <ButtonGroup justifyContent="space-around" py="$2">
+    <ButtonGroup className="justify-around py-2">
       <CircularButton
         label="Deposit"
         bg="$white"

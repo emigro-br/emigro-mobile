@@ -1,7 +1,8 @@
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { Button, ButtonIcon } from "@/components/ui/button";
 import React from 'react';
 import { DimensionValue } from 'react-native';
-
-import { Button, ButtonIcon, Text, VStack } from '@gluestack-ui/themed';
 
 type Props = {
   label?: string;
@@ -24,20 +25,15 @@ export const CircularButton = ({ label, icon, onPress, bg = '$primary500', size 
   const iconColor = bg === '$white' ? '$primary500' : '$white';
 
   return (
-    <VStack alignItems="center" w={w}>
+    <VStack className={` w-${w} items-center `}>
       <Button
-        bg={bg}
-        borderRadius="$full"
         size={size}
-        marginBottom="$1"
-        height={radius}
-        width={radius}
         onPress={onPress}
-      >
-        <ButtonIcon as={icon} size="xl" color={iconColor} />
+        className={` width-${radius} height-${radius} bg-${bg} rounded-full mb-1 `}>
+        <ButtonIcon as={icon} size="xl" className={` color-${iconColor} `} />
       </Button>
       {label && (
-        <Text color={bg} size={textSize ?? size}>
+        <Text size={textSize ?? size} className={` color-${bg} `}>
           {label}
         </Text>
       )}

@@ -1,6 +1,8 @@
+import { Text } from "@/components/ui/text";
+import { Heading } from "@/components/ui/heading";
+import { Card } from "@/components/ui/card";
+import { Button, ButtonText } from "@/components/ui/button";
 import React, { useState } from 'react';
-
-import { Button, ButtonText, Card, Heading, Text } from '@gluestack-ui/themed';
 
 import { createWallet } from '@/services/emigro/users';
 import { balanceStore } from '@/stores/BalanceStore';
@@ -50,7 +52,7 @@ export const CreateWallet = () => {
   return (
     <Card variant="flat">
       <Heading>Welcome to Emigro</Heading>
-      <Text mb="$4">Now, let's create a wallet to use the app</Text>
+      <Text className="mb-4">Now, let's create a wallet to use the app</Text>
       <Button onPress={() => handleCreateWallet()} isDisabled={isCreating}>
         <ButtonText>{isCreating ? 'Creating...' : 'Create your wallet'}</ButtonText>
       </Button>

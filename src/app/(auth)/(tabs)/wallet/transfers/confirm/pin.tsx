@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useToast } from "@/components/ui/toast";
 
-import { useToast } from '@gluestack-ui/themed';
+import { useState } from 'react';
 import { useRouter } from 'expo-router';
 
 import { LoadingScreen } from '@/components/screens/Loading';

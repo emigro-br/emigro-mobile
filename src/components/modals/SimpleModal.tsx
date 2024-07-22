@@ -1,12 +1,6 @@
-import React from 'react';
+import { View } from "@/components/ui/view";
 
 import {
-  Button,
-  ButtonGroup,
-  ButtonText,
-  CloseIcon,
-  Heading,
-  Icon,
   Modal,
   ModalBackdrop,
   ModalBody,
@@ -14,8 +8,12 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  View,
-} from '@gluestack-ui/themed';
+} from "@/components/ui/modal";
+
+import { Heading } from "@/components/ui/heading";
+import { CloseIcon, Icon } from "@/components/ui/icon";
+import { Button, ButtonGroup, ButtonText } from "@/components/ui/button";
+import React from 'react';
 
 type Props = {
   isOpen: boolean;
@@ -35,7 +33,7 @@ export const SimpleModal = ({ isOpen, title, children, onClose, onAction, testID
         <ModalBackdrop />
         <ModalContent>
           <ModalHeader>
-            <Heading size="lg" w="$5/6">
+            <Heading size="lg" className="w-5/6">
               {title}
             </Heading>
             <ModalCloseButton onPress={onClose}>

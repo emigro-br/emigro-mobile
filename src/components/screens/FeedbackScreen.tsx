@@ -1,19 +1,11 @@
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { Heading } from "@/components/ui/heading";
+import { Divider } from "@/components/ui/divider";
+import { Button, ButtonText } from "@/components/ui/button";
+import { Box } from "@/components/ui/box";
+import { AlertCircleIcon, CheckCircleIcon, ClockIcon, CloseCircleIcon, Icon } from "@/components/ui/icon";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-import {
-  AlertCircleIcon,
-  Box,
-  Button,
-  ButtonText,
-  CheckCircleIcon,
-  ClockIcon,
-  CloseCircleIcon,
-  Divider,
-  Heading,
-  Icon,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
 
 type Props = {
   title: string;
@@ -38,8 +30,9 @@ export const FeedbackScreen = ({ title, message, action = 'success', btnLabel = 
   };
 
   return (
-    <Box flex={1} bg="$white" justifyContent="space-between" pt={insets.top} pb={insets.bottom}>
-      <VStack px="$4" space="lg">
+    <Box
+      className={` pb-${insets.bottom} pt-${insets.top} flex-1 bg-white justify-between `}>
+      <VStack space="lg" className="px-4">
         {renderIcon()}
         {title && (
           <Heading size="2xl" testID="feedback-title">
@@ -52,10 +45,9 @@ export const FeedbackScreen = ({ title, message, action = 'success', btnLabel = 
           </Text>
         )}
       </VStack>
-
       <Box>
         <Divider />
-        <Button size="lg" onPress={onContinue} m="$4" testID="action-button">
+        <Button size="lg" onPress={onContinue} testID="action-button" className="m-4">
           <ButtonText>{btnLabel}</ButtonText>
         </Button>
       </Box>

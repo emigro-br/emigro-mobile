@@ -1,22 +1,13 @@
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { Heading } from "@/components/ui/heading";
+import { Divider } from "@/components/ui/divider";
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
+import { Box } from "@/components/ui/box";
+import { Badge, BadgeText } from "@/components/ui/badge";
+import { ArrowRightIcon, ArrowUpIcon, ClockIcon, Icon, SlashIcon } from "@/components/ui/icon";
 import React from 'react';
 
-import {
-  ArrowRightIcon,
-  ArrowUpIcon,
-  Badge,
-  BadgeText,
-  Box,
-  Button,
-  ButtonIcon,
-  ButtonText,
-  ClockIcon,
-  Divider,
-  Heading,
-  Icon,
-  SlashIcon,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
 import { usePathname, useRouter } from 'expo-router';
 
 import { ListTile } from '@/components/ListTile';
@@ -36,12 +27,12 @@ export const Sep24TransactionHistory = ({ asset, transactions }: Props) => {
 
   return (
     <Box>
-      <Heading mb="$4">History</Heading>
+      <Heading className="mb-4">History</Heading>
       <VStack space="lg">
         {transactions.map((transaction, index) => (
           <React.Fragment key={transaction.id}>
             <TransactionItem transaction={transaction} asset={asset} />
-            {index < transactions.length - 1 && <Divider my="$4" />}
+            {index < transactions.length - 1 && <Divider className="my-4" />}
           </React.Fragment>
         ))}
       </VStack>
@@ -123,7 +114,7 @@ const TransactionDate = ({ date }: { date: string }) => {
   }
 
   return (
-    <Text size="sm" color="$coolGray500">
+    <Text size="sm" className="text-coolGray-500">
       {dateStr}
     </Text>
   );
@@ -135,48 +126,45 @@ const TransactionItem = ({ transaction, asset }: { transaction: Sep24Transaction
   const { status } = transaction;
 
   const title = (
-    <Text strikeThrough={status === Sep24TransactionStatus.INCOMPLETE} color="$textLight950" fontWeight="$medium">
+    <Text
+      strikeThrough={status === Sep24TransactionStatus.INCOMPLETE}
+      className="text-textLight-950 font-medium">
       {labelFor(asset) as string}
     </Text>
   );
 
   const trailing = (date: string, amount: string) => {
     return (
-      <VStack space="xs" height="$full" alignItems="flex-end" testID="transaction-item">
+      <VStack space="xs" testID="transaction-item" className="h-full items-end">
         <TransactionDate date={date} />
-        {amount && <Text fontWeight="$medium">{symbolFor(asset, Number(amount))}</Text>}
+        {amount && <Text className="font-medium">{symbolFor(asset, Number(amount))}</Text>}
       </VStack>
     );
   };
 
-  return (
-    <>
-      <ListTile
-        title={title}
-        leading={statusIcon(status)}
-        subtitle={statusBadge(status)}
-        trailing={trailing(transaction.started_at, transaction.amount_in)}
-      />
-      {transaction.kind === 'withdrawal' && status === Sep24TransactionStatus.PENDING_USER_TRANSFER_START && (
-        <Button
-          variant="link"
-          onPress={() =>
-            router.push({
-              pathname: `${path}/confirm`,
-              params: {
-                asset,
-                id: transaction.id,
-              },
-            })
-          }
-          ml="$8"
-          my="-$4"
-          alignSelf="flex-start"
-        >
-          <ButtonText>Confirm payment</ButtonText>
-          <ButtonIcon as={ArrowRightIcon} size="2xs" ml="$1" />
-        </Button>
-      )}
-    </>
-  );
+  return (<>
+    <ListTile
+      title={title}
+      leading={statusIcon(status)}
+      subtitle={statusBadge(status)}
+      trailing={trailing(transaction.started_at, transaction.amount_in)}
+    />
+    {transaction.kind === 'withdrawal' && status === Sep24TransactionStatus.PENDING_USER_TRANSFER_START && (
+      <Button
+        variant="link"
+        onPress={() =>
+          router.push({
+            pathname: `${path}/confirm`,
+            params: {
+              asset,
+              id: transaction.id,
+            },
+          })
+        }
+        className="ml-8 my--4 self-start">
+        <ButtonText>Confirm payment</ButtonText>
+        <ButtonIcon as={ArrowRightIcon} size="2xs" className="ml-1" />
+      </Button>
+    )}
+  </>);
 };

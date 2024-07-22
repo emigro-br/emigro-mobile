@@ -1,8 +1,15 @@
+import { useToast } from "@/components/ui/toast";
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { LockIcon } from "@/components/ui/icon";
+import { Heading } from "@/components/ui/heading";
+import { HStack } from "@/components/ui/hstack";
+import { Button, ButtonText } from "@/components/ui/button";
+import { Box } from "@/components/ui/box";
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Keyboard } from 'react-native';
 
-import { Box, Button, ButtonText, HStack, Heading, LockIcon, Text, VStack, useToast } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 
 import { Toast } from '@/components/Toast';
@@ -52,10 +59,10 @@ export const PasswordRecovery = () => {
   };
 
   return (
-    <Box flex={1} bg="$white">
-      <VStack p="$4" space="4xl">
-        <HStack alignItems="center">
-          <LockIcon size="xl" color="red" mr="$2" />
+    <Box className="flex-1 bg-white">
+      <VStack space="4xl" className="p-4">
+        <HStack className="items-center">
+          <LockIcon size="xl" className="text-[red] mr-2" />
           <Heading>Password Recovery</Heading>
         </HStack>
         <Text>Enter your email address and we will send you a instructions to reset your password.</Text>

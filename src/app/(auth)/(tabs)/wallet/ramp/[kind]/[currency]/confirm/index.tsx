@@ -1,18 +1,15 @@
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { ModalCloseButton } from "@/components/ui/modal";
+import { Heading } from "@/components/ui/heading";
+import { HStack } from "@/components/ui/hstack";
+import { Divider } from "@/components/ui/divider";
+import { CloseIcon } from "@/components/ui/icon";
+import { Button, ButtonText } from "@/components/ui/button";
+import { Box } from "@/components/ui/box";
 import { useEffect, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  CloseIcon,
-  Divider,
-  HStack,
-  Heading,
-  ModalCloseButton,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
 import { useLocalSearchParams, usePathname, useRouter } from 'expo-router';
 
 import { AssetImage } from '@/components/AssetImage';
@@ -101,33 +98,33 @@ export const WithdrawlConfirm = ({ asset, transaction, onConfirm, onClose }: Pro
   };
 
   return (
-    <Box flex={1} pb={insets.bottom}>
-      <HStack justifyContent="space-between">
-        <ModalCloseButton onPress={onClose} testID="close-button" mt="$4">
+    <Box className={` pb-${insets.bottom} flex-1 `}>
+      <HStack className="justify-between">
+        <ModalCloseButton onPress={onClose} testID="close-button" className="mt-4">
           <CloseIcon size="xl" />
         </ModalCloseButton>
       </HStack>
-      <VStack p="$4">
-        <HStack justifyContent="space-between">
+      <VStack className="p-4">
+        <HStack className="justify-between">
           <Heading size="xl">Withdrawing</Heading>
           <AssetImage asset={asset} size="md" />
         </HStack>
         <Heading size="3xl">{symbolFor(currency, amount_out)}</Heading>
-        <Box h="$12" />
-        <Text color="$textLight600" bold mb="$2">
+        <Box className="h-12" />
+        <Text bold className="text-textLight-600 mb-2">
           Transaction details
         </Text>
         <DetailsTable rows={rows} />
-        <Text color="$textLight400" mt="$4" mb="$2">
+        <Text className="text-textLight-400 mt-4 mb-2">
           Transaction ID
         </Text>
         <Text>{transaction.id}</Text>
       </VStack>
-      <Box flex={1} />
+      <Box className="flex-1" />
       <Divider />
       {/* test status to avoid pay twice */}
       {transaction.status === Sep24TransactionStatus.PENDING_USER_TRANSFER_START && (
-        <Button m="$4" onPress={() => handleConfirm()} size="lg" isDisabled={isProcessing} testID="confirm-button">
+        <Button onPress={() => handleConfirm()} size="lg" isDisabled={isProcessing} testID="confirm-button" className="m-4">
           <ButtonText>{isProcessing ? 'Processing...' : 'Confirm withdraw'}</ButtonText>
         </Button>
       )}

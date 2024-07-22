@@ -1,6 +1,6 @@
-import { ImageProps } from 'react-native';
+import { Image } from "@/components/ui/image";
 
-import { Image } from '@gluestack-ui/themed';
+import { ImageProps } from 'react-native';
 
 import { Asset, CryptoOrFiat } from '@/types/assets';
 import { iconFor, labelFor } from '@/utils/assets';

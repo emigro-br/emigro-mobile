@@ -1,17 +1,11 @@
+import { VStack } from "@/components/ui/vstack";
+import { Textarea, TextareaInput } from "@/components/ui/textarea";
+import { Heading } from "@/components/ui/heading";
+import { FormControl, FormControlError, FormControlErrorText } from "@/components/ui/form-control";
+import { Button, ButtonText } from "@/components/ui/button";
+import { Box } from "@/components/ui/box";
 import { useEffect, useState } from 'react';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  FormControl,
-  FormControlError,
-  FormControlErrorText,
-  Heading,
-  Textarea,
-  TextareaInput,
-  VStack,
-} from '@gluestack-ui/themed';
 import * as Clipboard from 'expo-clipboard';
 import { useRouter } from 'expo-router';
 import { hasError, parsePix } from 'pix-utils';
@@ -56,8 +50,8 @@ export const PastePixCode = () => {
   };
 
   return (
-    <Box flex={1} bg="$white">
-      <VStack p="$4" space="lg">
+    <Box className="flex-1 bg-white">
+      <VStack space="lg" className="p-4">
         <Heading>Insert your Pix Copia & Cola code</Heading>
         <FormControl isInvalid={!!error}>
           <Textarea>

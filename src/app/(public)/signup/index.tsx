@@ -1,23 +1,17 @@
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { ScrollView } from "@/components/ui/scroll-view";
+import { Link } from "@/components/ui/link";
+import { Heading } from "@/components/ui/heading";
+import { HStack } from "@/components/ui/hstack";
+import { FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText } from "@/components/ui/form-control";
+import { Button, ButtonText } from "@/components/ui/button";
+import { Box } from "@/components/ui/box";
+import { AlertCircleIcon } from "@/components/ui/icon";
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import {
-  AlertCircleIcon,
-  Box,
-  Button,
-  ButtonText,
-  FormControl,
-  FormControlError,
-  FormControlErrorIcon,
-  FormControlErrorText,
-  HStack,
-  Heading,
-  Link,
-  ScrollView,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 
 import { EmailInputControl } from '@/components/inputs/controls/EmailInputControl';
@@ -77,9 +71,9 @@ export const CreateAccount = () => {
 
   return (
     <KeyboardAwareScrollView contentContainerStyle={{ flex: 1 }}>
-      <ScrollView bg="$white" flex={1}>
-        <Box flex={1}>
-          <VStack p="$4" space="lg">
+      <ScrollView className="bg-white flex-1">
+        <Box className="flex-1">
+          <VStack space="lg" className="p-4">
             <Heading size="xl">Sign up to Emigro</Heading>
             <VStack space="xl">
               <TextInputControl control={control} name="firstName" label="First Name" placeholder="e.g. John" />
@@ -99,10 +93,10 @@ export const CreateAccount = () => {
               <Button onPress={handleSubmit(onSubmit)} isDisabled={isLoading} size="xl" testID="create-button">
                 <ButtonText>{isLoading ? 'Creating account...' : 'Create Account'}</ButtonText>
               </Button>
-              <HStack justifyContent="center">
+              <HStack className="justify-center">
                 <Text size="lg">Already have an account?</Text>
                 <Link onPress={() => router.replace('/login')}>
-                  <Text size="lg" color="$primary500" ml="$2" bold>
+                  <Text size="lg" bold className="text-primary-500 ml-2">
                     Sign in
                   </Text>
                 </Link>

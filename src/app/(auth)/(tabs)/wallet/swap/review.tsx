@@ -1,6 +1,12 @@
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { Heading } from "@/components/ui/heading";
+import { HStack } from "@/components/ui/hstack";
+import { Card } from "@/components/ui/card";
+import { Button, ButtonText } from "@/components/ui/button";
+import { Box } from "@/components/ui/box";
 import React, { useState } from 'react';
 
-import { Box, Button, ButtonText, Card, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 
 import { ErrorModal } from '@/components/modals/ErrorModal';
@@ -60,33 +66,31 @@ export const DetailsSwap = () => {
     );
   }
 
-  return (
-    <>
-      <ErrorModal
-        title="Swap failed"
-        errorMessage={errorMessage}
-        isOpen={!!errorMessage}
-        onClose={() => router.back()}
-      />
-      <Box flex={1}>
-        <VStack p="$4" space="lg">
-          <Heading>Confirm Swap</Heading>
-          <Card size="md" variant="elevated" bg="$white">
-            <VStack space="md">
-              <Row label="Amount" value={`${fromValue.toFixed(2)} ${fromAsset}`} />
-              <Row label="Exchanged" value={`${toValue.toFixed(2)} ${toAsset}`} />
-              <Row label="Rate" value={`1 ${toAsset} ≈ ${rate.toFixed(6)} ${fromAsset}`} />
-              <Row label="Final receive" value={`${estimated.toFixed(2)} ${toAsset}`} />
-            </VStack>
-          </Card>
-          <Text size="xs">The final amount is estimated and may change.</Text>
-          <Button onPress={() => setShowPinScreen(true)} isDisabled={isLoading}>
-            <ButtonText>{isLoading ? 'Processing...' : `Swap ${fromAsset} for ${toAsset}`}</ButtonText>
-          </Button>
-        </VStack>
-      </Box>
-    </>
-  );
+  return (<>
+    <ErrorModal
+      title="Swap failed"
+      errorMessage={errorMessage}
+      isOpen={!!errorMessage}
+      onClose={() => router.back()}
+    />
+    <Box className="flex-1">
+      <VStack space="lg" className="p-4">
+        <Heading>Confirm Swap</Heading>
+        <Card size="md" variant="elevated" className="bg-white">
+          <VStack space="md">
+            <Row label="Amount" value={`${fromValue.toFixed(2)} ${fromAsset}`} />
+            <Row label="Exchanged" value={`${toValue.toFixed(2)} ${toAsset}`} />
+            <Row label="Rate" value={`1 ${toAsset} ≈ ${rate.toFixed(6)} ${fromAsset}`} />
+            <Row label="Final receive" value={`${estimated.toFixed(2)} ${toAsset}`} />
+          </VStack>
+        </Card>
+        <Text size="xs">The final amount is estimated and may change.</Text>
+        <Button onPress={() => setShowPinScreen(true)} isDisabled={isLoading}>
+          <ButtonText>{isLoading ? 'Processing...' : `Swap ${fromAsset} for ${toAsset}`}</ButtonText>
+        </Button>
+      </VStack>
+    </Box>
+  </>);
 };
 
 interface RowProps {
@@ -95,11 +99,11 @@ interface RowProps {
 }
 
 const Row: React.FC<RowProps> = ({ label, value }) => (
-  <HStack justifyContent="space-between">
-    <Text size="sm" color="gray">
+  <HStack className="justify-between">
+    <Text size="sm" className="text-[gray]">
       {label}
     </Text>
-    <Text color="$textLight900">{value}</Text>
+    <Text className="text-textLight-900">{value}</Text>
   </HStack>
 );
 

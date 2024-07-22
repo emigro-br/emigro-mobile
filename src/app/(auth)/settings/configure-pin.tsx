@@ -1,7 +1,7 @@
+import { Box } from "@/components/ui/box";
 import { useRef, useState } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Box } from '@gluestack-ui/themed';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { PinScreen } from '@/components/screens/PinScreen';
@@ -54,7 +54,7 @@ export const ConfigurePIN = () => {
   };
 
   return (
-    <Box flex={1} pt={insets.top}>
+    <Box className={` pt-${insets.top} flex-1 `}>
       <PinScreen
         ref={pinRef}
         tagline={isReEnter ? 'Re-enter your PIN code' : 'Enter your new PIN code'}

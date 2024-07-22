@@ -1,21 +1,17 @@
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { Spinner } from "@/components/ui/spinner";
+import { Pressable } from "@/components/ui/pressable";
+import { Heading } from "@/components/ui/heading";
+import { HStack } from "@/components/ui/hstack";
+import { FormControlErrorText } from "@/components/ui/form-control";
+import { ChevronRightIcon } from "@/components/ui/icon";
+import { Card } from "@/components/ui/card";
+import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
+import { Box } from "@/components/ui/box";
 import React, { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 
-import {
-  Box,
-  Button,
-  ButtonIcon,
-  ButtonText,
-  Card,
-  ChevronRightIcon,
-  FormControlErrorText,
-  HStack,
-  Heading,
-  Pressable,
-  Spinner,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
 import * as Sentry from '@sentry/react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { observer } from 'mobx-react-lite';
@@ -219,113 +215,106 @@ const Withdraw = observer(() => {
     return <LoadingScreen />;
   }
 
-  return (
-    <>
-      <OpenURLModal
-        isOpen={step === TransactionStep.NONE && !!selectedAsset}
-        onClose={() => setSelectedAsset(null)}
-        onConfirm={() => handleOpenUrlPressed(selectedAsset!)}
-      />
-
-      <LoadingModal
-        isOpen={step === TransactionStep.STARTED && !currentAction}
-        text="Connecting to anchor..."
-        testID="loading-url-modal"
-      />
-
-      {transaction && currentAction && (
-        <ConfirmationModal
-          title="Confirm the transaction"
-          isOpen={step === TransactionStep.CONFIRM_TRANSFER}
-          onPress={() => handleConfirmTransaction(currentAction.transactionId!, currentAction.assetCode!)}
-          onClose={() => setStep(TransactionStep.NONE)}
-        >
-          <Text size="lg" mb="$4">
-            Are you sure you want to withdraw?
-          </Text>
-          <VStack space="xs">
-            <Text>
-              Requested: {transaction.amount_in} {currentAction.assetCode}
-            </Text>
-            <Text>
-              Fee: {transaction.amount_fee} {currentAction.assetCode}
-            </Text>
-            <Text bold>
-              You will receive: {transaction.amount_out} {currentAction.assetCode}
-            </Text>
-          </VStack>
-        </ConfirmationModal>
-      )}
-
-      <SuccessModal
-        isOpen={step === TransactionStep.SUCCESS}
-        title="Transaction successful!"
-        onClose={() => router.navigate('/wallet')}
-      >
-        <Text>
-          Your withdrawal request has been successfully processed. The funds will be transferred to your account
-          shortly.
-        </Text>
-      </SuccessModal>
-
-      <ErrorModal
-        isOpen={step === TransactionStep.ERROR}
-        title="Transaction Failed"
-        errorMessage={errorMessage || defaultErrorMessage}
+  return (<>
+    <OpenURLModal
+      isOpen={step === TransactionStep.NONE && !!selectedAsset}
+      onClose={() => setSelectedAsset(null)}
+      onConfirm={() => handleOpenUrlPressed(selectedAsset!)}
+    />
+    <LoadingModal
+      isOpen={step === TransactionStep.STARTED && !currentAction}
+      text="Connecting to anchor..."
+      testID="loading-url-modal"
+    />
+    {transaction && currentAction && (
+      <ConfirmationModal
+        title="Confirm the transaction"
+        isOpen={step === TransactionStep.CONFIRM_TRANSFER}
+        onPress={() => handleConfirmTransaction(currentAction.transactionId!, currentAction.assetCode!)}
         onClose={() => setStep(TransactionStep.NONE)}
-      />
-
-      <Box flex={1}>
-        <VStack p="$4" space="md">
-          <Heading size="xl">Choose your currency</Heading>
-          {fiatsWithBank.length === 0 && (
-            <>
-              <Text testID="no-currencies-msg">Please navigate to your profile and select your bank's currency.</Text>
-              <HStack>
-                <Button variant="link" onPress={() => router.replace('/profile')}>
-                  <ButtonText>Go to Profile</ButtonText>
-                  <ButtonIcon as={ChevronRightIcon} />
-                </Button>
-              </HStack>
-            </>
-          )}
-          {fiatsWithBank.length > 0 && (
-            <>
-              <Card variant="flat">
-                {fiatsWithBank.map((currency) => {
-                  const asset = CurrencyToAsset[currency];
-                  const balance = balanceStore.get(asset);
-                  return (
-                    <Pressable key={currency} onPress={() => handleSelectAsset(currency)}>
-                      <AssetListTile
-                        asset={currency}
-                        assetType="fiat"
-                        subtitle={asset}
-                        trailing={<Text>{symbolFor(asset, balance)}</Text>}
-                      />
-                    </Pressable>
-                  );
-                })}
-              </Card>
-            </>
-          )}
-
-          {currentAction && (
-            <VStack space="lg">
-              <Heading size="lg">In progress</Heading>
-              <TransactionInprogress
-                assetCode={currentAction.assetCode}
-                // amount={5}
-                status={currentAction?.status ?? Sep24TransactionStatus.INCOMPLETE}
-                onUserAction={() => waitWithdrawOnAnchorComplete(currentAction)}
-              />
-            </VStack>
-          )}
-          {errorMessage && <FormControlErrorText>{errorMessage}</FormControlErrorText>}
+      >
+        <Text size="lg" className="mb-4">
+          Are you sure you want to withdraw?
+        </Text>
+        <VStack space="xs">
+          <Text>
+            Requested: {transaction.amount_in} {currentAction.assetCode}
+          </Text>
+          <Text>
+            Fee: {transaction.amount_fee} {currentAction.assetCode}
+          </Text>
+          <Text bold>
+            You will receive: {transaction.amount_out} {currentAction.assetCode}
+          </Text>
         </VStack>
-      </Box>
-    </>
-  );
+      </ConfirmationModal>
+    )}
+    <SuccessModal
+      isOpen={step === TransactionStep.SUCCESS}
+      title="Transaction successful!"
+      onClose={() => router.navigate('/wallet')}
+    >
+      <Text>
+        Your withdrawal request has been successfully processed. The funds will be transferred to your account
+        shortly.
+      </Text>
+    </SuccessModal>
+    <ErrorModal
+      isOpen={step === TransactionStep.ERROR}
+      title="Transaction Failed"
+      errorMessage={errorMessage || defaultErrorMessage}
+      onClose={() => setStep(TransactionStep.NONE)}
+    />
+    <Box className="flex-1">
+      <VStack space="md" className="p-4">
+        <Heading size="xl">Choose your currency</Heading>
+        {fiatsWithBank.length === 0 && (
+          <>
+            <Text testID="no-currencies-msg">Please navigate to your profile and select your bank's currency.</Text>
+            <HStack>
+              <Button variant="link" onPress={() => router.replace('/profile')}>
+                <ButtonText>Go to Profile</ButtonText>
+                <ButtonIcon as={ChevronRightIcon} />
+              </Button>
+            </HStack>
+          </>
+        )}
+        {fiatsWithBank.length > 0 && (
+          <>
+            <Card variant="flat">
+              {fiatsWithBank.map((currency) => {
+                const asset = CurrencyToAsset[currency];
+                const balance = balanceStore.get(asset);
+                return (
+                  <Pressable key={currency} onPress={() => handleSelectAsset(currency)}>
+                    <AssetListTile
+                      asset={currency}
+                      assetType="fiat"
+                      subtitle={asset}
+                      trailing={<Text>{symbolFor(asset, balance)}</Text>}
+                    />
+                  </Pressable>
+                );
+              })}
+            </Card>
+          </>
+        )}
+
+        {currentAction && (
+          <VStack space="lg">
+            <Heading size="lg">In progress</Heading>
+            <TransactionInprogress
+              assetCode={currentAction.assetCode}
+              // amount={5}
+              status={currentAction?.status ?? Sep24TransactionStatus.INCOMPLETE}
+              onUserAction={() => waitWithdrawOnAnchorComplete(currentAction)}
+            />
+          </VStack>
+        )}
+        {errorMessage && <FormControlErrorText>{errorMessage}</FormControlErrorText>}
+      </VStack>
+    </Box>
+  </>);
 });
 
 type TransactionInprogressProps = {
@@ -346,16 +335,16 @@ const TransactionInprogress = ({ assetCode, amount, status, onUserAction }: Tran
 
   return (
     <Pressable onPress={handlePress}>
-      <Card variant="flat" bg="$amber50" borderColor="$amber500" borderWidth={1}>
+      <Card variant="flat" className="bg-amber-50 border-amber-500 border">
         <AssetListTile
           asset={currency}
           assetType="fiat"
           subtitle={assetCode}
           trailing={amount ? <Text bold>{symbolFor(assetCode, -amount)}</Text> : null}
         />
-        <HStack ml="$12" mt="$4">
-          <Spinner size="small" color="$amber500" pl="$2" />
-          <Text size="sm" color="$amber500" ml="$3">
+        <HStack className="ml-12 mt-4">
+          <Spinner size="small" className="text-amber-500 pl-2" />
+          <Text size="sm" className="text-amber-500 ml-3">
             {statusText(status)}
           </Text>
         </HStack>

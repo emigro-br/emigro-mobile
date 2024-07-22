@@ -1,6 +1,11 @@
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { ScrollView } from "@/components/ui/scroll-view";
+import { Heading } from "@/components/ui/heading";
+import { Button, ButtonText } from "@/components/ui/button";
+import { Box } from "@/components/ui/box";
 import React, { useState } from 'react';
 
-import { Box, Button, ButtonText, Heading, ScrollView, Text, VStack } from '@gluestack-ui/themed';
 import {
   Stack,
   useFocusEffect,
@@ -79,40 +84,36 @@ export const OperationHome = ({ title, kind, currency }: LayoutProps) => {
     setIsOpenUrlModal(false);
   };
 
-  return (
-    <>
-      <Stack.Screen
-        options={{
-          title,
-        }}
-      />
-
-      <OpenURLModal
-        isOpen={isOpenUrlModal}
-        onClose={() => setIsOpenUrlModal(false)}
-        onConfirm={() => handleOpenConfimed()}
-        testID="open-url-modal"
-      />
-
-      <ScrollView flex={1} bg="$white">
-        <Box flex={1}>
-          <VStack p="$4" space="md">
-            <Heading size="xl">
-              {title} in {fiat.name}
-            </Heading>
-            <Text bold mb="$2">
-              Balance: {symbolFor(asset, balance)}
-            </Text>
-            <Button variant="outline" onPress={() => handleNewTransaction(kind)}>
-              <ButtonText>New transaction</ButtonText>
-            </Button>
-            <Box mb="$4" />
-            <Sep24TransactionHistoryContainer asset={asset} kind={kind} refreshedAt={refreshedAt} />
-          </VStack>
-        </Box>
-      </ScrollView>
-    </>
-  );
+  return (<>
+    <Stack.Screen
+      options={{
+        title,
+      }}
+    />
+    <OpenURLModal
+      isOpen={isOpenUrlModal}
+      onClose={() => setIsOpenUrlModal(false)}
+      onConfirm={() => handleOpenConfimed()}
+      testID="open-url-modal"
+    />
+    <ScrollView className="flex-1 bg-white">
+      <Box className="flex-1">
+        <VStack space="md" className="p-4">
+          <Heading size="xl">
+            {title} in {fiat.name}
+          </Heading>
+          <Text bold className="mb-2">
+            Balance: {symbolFor(asset, balance)}
+          </Text>
+          <Button variant="outline" onPress={() => handleNewTransaction(kind)}>
+            <ButtonText>New transaction</ButtonText>
+          </Button>
+          <Box className="mb-4" />
+          <Sep24TransactionHistoryContainer asset={asset} kind={kind} refreshedAt={refreshedAt} />
+        </VStack>
+      </Box>
+    </ScrollView>
+  </>);
 };
 
 export default OperationRouter;

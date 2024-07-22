@@ -1,4 +1,10 @@
-import { AddIcon, Button, ButtonIcon, Card, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { Heading } from "@/components/ui/heading";
+import { HStack } from "@/components/ui/hstack";
+import { Card } from "@/components/ui/card";
+import { Button, ButtonIcon } from "@/components/ui/button";
+import { AddIcon } from "@/components/ui/icon";
 import { useRouter } from 'expo-router';
 
 import { Balance } from '@/services/emigro/types';
@@ -15,10 +21,10 @@ export const WalletBalances: React.FC<Props> = ({ userBalance }) => {
   const router = useRouter();
   return (
     <VStack space="sm">
-      <HStack justifyContent="space-between">
+      <HStack className="justify-between">
         <Heading>Accounts</Heading>
-        <Button variant="link" px="$2" onPress={() => router.push('/wallet/manage')} testID="add-button">
-          <ButtonIcon as={AddIcon} color="$primary500" />
+        <Button variant="link" onPress={() => router.push('/wallet/manage')} testID="add-button" className="px-2">
+          <ButtonIcon as={AddIcon} className="text-primary-500" />
         </Button>
       </HStack>
       <Card variant="flat">

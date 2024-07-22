@@ -1,21 +1,14 @@
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { Heading } from "@/components/ui/heading";
+import { Checkbox, CheckboxGroup, CheckboxIcon, CheckboxIndicator, CheckboxLabel } from "@/components/ui/checkbox";
+import { CheckIcon } from "@/components/ui/icon";
+import { Card } from "@/components/ui/card";
+import { Button, ButtonText } from "@/components/ui/button";
+import { Box } from "@/components/ui/box";
 import { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  Card,
-  CheckIcon,
-  Checkbox,
-  CheckboxGroup,
-  CheckboxIcon,
-  CheckboxIndicator,
-  CheckboxLabel,
-  Heading,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 
 import { AssetListTile } from '@/components/AssetListTile';
@@ -45,17 +38,17 @@ export const ChooseBankCurrency = ({ currencies, onContinue }: PageProps) => {
   const [selected, setSelected] = useState<FiatCurrency | null>(null);
 
   return (
-    <Box flex={1} bg="$white" style={{ paddingTop: insets.top }}>
-      <VStack p="$4" space="lg">
+    <Box style={{ paddingTop: insets.top }} className="flex-1 bg-white">
+      <VStack space="lg" className="p-4">
         <Heading>Choose your main currency</Heading>
         <Text>You should choose the currency that you hold in a bank account.</Text>
 
-        <CheckboxGroup value={[selected ?? '']} my="$4">
+        <CheckboxGroup value={[selected ?? '']} className="my-4">
           <VStack space="sm">
             {currencies.map((currency) => (
               <Card key={currency} variant={currency === selected ? 'filled' : 'ghost'}>
                 <Checkbox value={currency} size="md" onChange={() => setSelected(currency)} aria-label={currency}>
-                  <CheckboxIndicator mr="$4">
+                  <CheckboxIndicator className="mr-4">
                     <CheckboxIcon as={CheckIcon} />
                   </CheckboxIndicator>
                   <CheckboxLabel>

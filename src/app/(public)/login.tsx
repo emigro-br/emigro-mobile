@@ -1,22 +1,15 @@
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { Link, LinkText } from "@/components/ui/link";
+import { Heading } from "@/components/ui/heading";
+import { HStack } from "@/components/ui/hstack";
+import { FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText } from "@/components/ui/form-control";
+import { Button, ButtonText } from "@/components/ui/button";
+import { Box } from "@/components/ui/box";
+import { AlertCircleIcon } from "@/components/ui/icon";
 import React, { useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import {
-  AlertCircleIcon,
-  Box,
-  Button,
-  ButtonText,
-  FormControl,
-  FormControlError,
-  FormControlErrorIcon,
-  FormControlErrorText,
-  HStack,
-  Heading,
-  Link,
-  LinkText,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 
 import { EmailInputControl } from '@/components/inputs/controls/EmailInputControl';
@@ -66,8 +59,8 @@ const Login = () => {
   };
 
   return (
-    <Box flex={1} bg="$white">
-      <VStack p="$4" space="lg">
+    <Box className="flex-1 bg-white">
+      <VStack space="lg" className="p-4">
         <Heading size="xl">Sign in to Emigro</Heading>
         <VStack space="2xl">
           <EmailInputControl
@@ -84,7 +77,7 @@ const Login = () => {
           />
 
           <Link onPress={() => router.push('/password-recovery')} testID="forgot-password-link">
-            <LinkText color="$primary500" textDecorationLine="none" textAlign="right">
+            <LinkText className="text-primary-500 none text-[right]">
               Forgot your password?
             </LinkText>
           </Link>
@@ -100,10 +93,10 @@ const Login = () => {
           <Button onPress={handleSubmit(onSubmit)} isDisabled={isLoggingIn} size="xl" testID="signin-button">
             <ButtonText>{isLoggingIn ? 'Signing in...' : 'Sign in'}</ButtonText>
           </Button>
-          <HStack justifyContent="center">
+          <HStack className="justify-center">
             <Text size="lg">Don't have an account?</Text>
             <Link onPress={() => router.replace('/signup')}>
-              <Text size="lg" color="$primary500" ml="$2" bold>
+              <Text size="lg" bold className="text-primary-500 ml-2">
                 Sign up
               </Text>
             </Link>

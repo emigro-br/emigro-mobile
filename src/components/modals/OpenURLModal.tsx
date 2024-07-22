@@ -1,12 +1,7 @@
-import React from 'react';
+import { View } from "@/components/ui/view";
+import { Text } from "@/components/ui/text";
 
 import {
-  Button,
-  ButtonGroup,
-  ButtonText,
-  CloseIcon,
-  Heading,
-  Icon,
   Modal,
   ModalBackdrop,
   ModalBody,
@@ -14,9 +9,12 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-  Text,
-  View,
-} from '@gluestack-ui/themed';
+} from "@/components/ui/modal";
+
+import { Heading } from "@/components/ui/heading";
+import { CloseIcon, Icon } from "@/components/ui/icon";
+import { Button, ButtonGroup, ButtonText } from "@/components/ui/button";
+import React from 'react';
 
 type Props = {
   isOpen: boolean;
@@ -41,7 +39,7 @@ export const OpenURLModal: React.FC<Props> = ({
         <ModalBackdrop />
         <ModalContent>
           <ModalHeader>
-            <Heading size="lg" w="$5/6">
+            <Heading size="lg" className="w-5/6">
               Finish this transaction alongside our partner
             </Heading>
             <ModalCloseButton onPress={onClose}>

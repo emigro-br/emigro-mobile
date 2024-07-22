@@ -1,6 +1,10 @@
+import { VStack } from "@/components/ui/vstack";
+import { Heading } from "@/components/ui/heading";
+import { CopyIcon } from "@/components/ui/icon";
+import { ButtonGroup } from "@/components/ui/button";
+import { Box } from "@/components/ui/box";
 import React, { useState } from 'react';
 
-import { Box, ButtonGroup, CopyIcon, Heading, VStack } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import { HandCoinsIcon, QrCodeIcon } from 'lucide-react-native';
 
@@ -20,10 +24,10 @@ export const Payments = () => {
 
   const w = 120;
   return (
-    <Box flex={1} bg="$white">
-      <VStack p="$4" space="lg">
+    <Box className="flex-1 bg-white">
+      <VStack space="lg" className="p-4">
         <Heading>Pick Your Payment Method</Heading>
-        <ButtonGroup space="4xl" mt="$8">
+        <ButtonGroup space="4xl" className="mt-8">
           <CircularButton
             icon={QrCodeIcon}
             label="Scan to Pay"
@@ -41,7 +45,7 @@ export const Payments = () => {
             onPress={() => setAssetListOpen(true)}
           />
         </ButtonGroup>
-        <ButtonGroup space="4xl" mt="$8">
+        <ButtonGroup space="4xl" className="mt-8">
           {enablePix ? (
             <CircularButton
               icon={CopyIcon}
@@ -56,7 +60,6 @@ export const Payments = () => {
           )}
         </ButtonGroup>
       </VStack>
-
       <AssetListActionSheet
         assets={availableAssets}
         isOpen={assetListOpen}

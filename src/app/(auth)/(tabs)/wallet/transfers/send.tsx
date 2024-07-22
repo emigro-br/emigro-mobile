@@ -1,23 +1,21 @@
-import React, { useState } from 'react';
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
+import { Heading } from "@/components/ui/heading";
 
 import {
-  Box,
-  Button,
-  ButtonText,
-  Center,
   FormControl,
   FormControlError,
   FormControlErrorText,
   FormControlLabel,
   FormControlLabelText,
-  Heading,
-  Input,
-  InputField,
-  InputIcon,
-  InputSlot,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
+} from "@/components/ui/form-control";
+
+import { Center } from "@/components/ui/center";
+import { Button, ButtonText } from "@/components/ui/button";
+import { Box } from "@/components/ui/box";
+import React, { useState } from 'react';
+
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ClipboardPasteIcon } from 'lucide-react-native';
@@ -60,18 +58,11 @@ export const SendAsset = () => {
   };
 
   return (
-    <Box
-      flex={1}
-      sx={{
-        _light: { bg: 'white' },
-        _dark: { bg: '$backgroundDark950' },
-      }}
-    >
-      <Heading mt="$4" mx="$4" size="xl">
+    <Box className="flex-1 bg-white  dark:bg-backgroundDark-950">
+      <Heading size="xl" className="mt-4 mx-4">
         Send {asset}
       </Heading>
-
-      <Box m="$4">
+      <Box className="m-4">
         <VStack space="md">
           <FormControl size="md" isInvalid={isBalanceExceeded}>
             <Text size="xs">
@@ -93,12 +84,12 @@ export const SendAsset = () => {
           </FormControl>
 
           <FormControl size="md" isInvalid={!isValidAddress}>
-            <FormControlLabel mb="$1">
+            <FormControlLabel className="mb-1">
               <FormControlLabelText>Recipient Wallet</FormControlLabelText>
             </FormControlLabel>
             <Input variant="outline" isRequired>
               <InputField placeholder="Enter the wallet address here" value={address} onChangeText={setAddress} />
-              <InputSlot pr="$3" onPress={handlePaste}>
+              <InputSlot onPress={handlePaste} className="pr-3">
                 <InputIcon as={ClipboardPasteIcon} />
               </InputSlot>
             </Input>

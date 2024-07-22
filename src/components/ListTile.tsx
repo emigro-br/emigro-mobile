@@ -1,6 +1,7 @@
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { HStack } from "@/components/ui/hstack";
 import React from 'react';
-
-import { HStack, Text, VStack } from '@gluestack-ui/themed';
 
 type Props = {
   title: string | React.ReactNode;
@@ -14,7 +15,7 @@ export const ListTile = ({ title, subtitle, leading, trailing, testID }: Props) 
   const renderTitle = () => {
     if (typeof title === 'string') {
       return (
-        <Text color="$coolGray800" fontWeight="500" $dark-color="$warmGray100">
+        <Text className="text-coolGray-800 font-[500]  dark:text-warmGray-100">
           {title}
         </Text>
       );
@@ -28,7 +29,7 @@ export const ListTile = ({ title, subtitle, leading, trailing, testID }: Props) 
     }
     if (typeof subtitle === 'string') {
       return (
-        <Text size="sm" color="$coolGray500" $dark-color="$warmGray200">
+        <Text size="sm" className="text-coolGray-500  dark:text-warmGray-200">
           {subtitle}
         </Text>
       );
@@ -37,9 +38,9 @@ export const ListTile = ({ title, subtitle, leading, trailing, testID }: Props) 
   };
 
   return (
-    <HStack space="md" alignItems="center" testID={testID}>
+    <HStack space="md" testID={testID} className="items-center">
       {leading}
-      <VStack flex={1} space="xs">
+      <VStack space="xs" className="flex-1">
         {renderTitle()}
         {renderSubtitle()}
       </VStack>

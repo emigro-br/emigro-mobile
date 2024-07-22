@@ -1,6 +1,10 @@
+import { useToast } from "@/components/ui/toast";
+import { VStack } from "@/components/ui/vstack";
+import { Heading } from "@/components/ui/heading";
+import { Card } from "@/components/ui/card";
+import { Button, ButtonSpinner, ButtonText } from "@/components/ui/button";
+import { Box } from "@/components/ui/box";
 import { useState } from 'react';
-
-import { Box, Button, ButtonSpinner, ButtonText, Card, Heading, VStack, useToast } from '@gluestack-ui/themed';
 
 import { AssetListTile } from '@/components/AssetListTile';
 import { Toast } from '@/components/Toast';
@@ -65,7 +69,7 @@ export const ManageAccounts = ({ accounts, onAdd, onHide }: Props) => {
 
   return (
     <Box>
-      <VStack p="$4" space="lg">
+      <VStack space="lg" className="p-4">
         <Heading size="xl">Accounts</Heading>
         <Card variant="flat">
           <VStack space="2xl">

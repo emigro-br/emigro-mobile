@@ -1,6 +1,8 @@
+import { Pressable } from "@/components/ui/pressable";
+import { FlatList } from "@/components/ui/flat-list";
+import { Card } from "@/components/ui/card";
+import { Box } from "@/components/ui/box";
 import React from 'react';
-
-import { Box, Card, FlatList, Pressable } from '@gluestack-ui/themed';
 
 import { CryptoOrFiat } from '@/types/assets';
 
@@ -29,7 +31,7 @@ export const AssetList = ({ data, trailing, onPress, renderSubtitle }: Props) =>
       data={data}
       renderItem={renderItem}
       keyExtractor={(item) => item as string}
-      ItemSeparatorComponent={() => <Box h="$4" />}
+      ItemSeparatorComponent={() => <Box className="h-4" />}
     />
   );
 };

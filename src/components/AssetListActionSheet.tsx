@@ -1,3 +1,5 @@
+import { View } from "@/components/ui/view";
+
 import {
   Actionsheet,
   ActionsheetBackdrop,
@@ -6,8 +8,7 @@ import {
   ActionsheetDragIndicatorWrapper,
   ActionsheetItem,
   ActionsheetItemText,
-  View,
-} from '@gluestack-ui/themed';
+} from "@/components/ui/actionsheet";
 
 import { Asset, CryptoOrFiat } from '@/types/assets';
 
@@ -23,9 +24,9 @@ type Props = {
 export const AssetListActionSheet = ({ assets, isOpen, onClose, onItemPress }: Props) => {
   return (
     <View testID="asset-list-action-sheet">
-      <Actionsheet isOpen={isOpen} onClose={onClose} zIndex={999}>
+      <Actionsheet isOpen={isOpen} onClose={onClose} className="z-999">
         <ActionsheetBackdrop />
-        <ActionsheetContent h="$72" zIndex={999}>
+        <ActionsheetContent className="h-72 z-999">
           <ActionsheetDragIndicatorWrapper>
             <ActionsheetDragIndicator />
           </ActionsheetDragIndicatorWrapper>

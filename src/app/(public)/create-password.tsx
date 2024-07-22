@@ -1,22 +1,15 @@
+import { useToast } from "@/components/ui/toast";
+import { VStack } from "@/components/ui/vstack";
+import { Text } from "@/components/ui/text";
+import { Input, InputField } from "@/components/ui/input";
+import { Heading } from "@/components/ui/heading";
+import { FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText } from "@/components/ui/form-control";
+import { Button, ButtonText } from "@/components/ui/button";
+import { Box } from "@/components/ui/box";
+import { AlertCircleIcon } from "@/components/ui/icon";
 import { useState } from 'react';
 import { Keyboard } from 'react-native';
 
-import {
-  AlertCircleIcon,
-  Box,
-  Button,
-  ButtonText,
-  FormControl,
-  FormControlError,
-  FormControlErrorIcon,
-  FormControlErrorText,
-  Heading,
-  Input,
-  InputField,
-  Text,
-  VStack,
-  useToast,
-} from '@gluestack-ui/themed';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { Toast } from '@/components/Toast';
@@ -125,8 +118,8 @@ export const CreateNewPassword = () => {
   const isValidForm = formError === '';
 
   return (
-    <Box flex={1} bg="$white">
-      <VStack p="$4" space="2xl">
+    <Box className="flex-1 bg-white">
+      <VStack space="2xl" className="p-4">
         <Heading>Create New Password</Heading>
         <Text>Enter your new password and confirm it.</Text>
         <FormControl>

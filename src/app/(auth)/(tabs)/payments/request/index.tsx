@@ -1,6 +1,10 @@
+import { VStack } from "@/components/ui/vstack";
+import { Heading } from "@/components/ui/heading";
+import { HStack } from "@/components/ui/hstack";
+import { Button, ButtonText } from "@/components/ui/button";
+import { Box } from "@/components/ui/box";
 import { useState } from 'react';
 
-import { Box, Button, ButtonText, HStack, Heading, VStack } from '@gluestack-ui/themed';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { AssetInput } from '@/components/AssetInput';
@@ -23,8 +27,8 @@ export const RequestPayment = () => {
   };
 
   return (
-    <Box flex={1} bg="$white">
-      <VStack p="$4" space="lg">
+    <Box className="flex-1 bg-white">
+      <VStack space="lg" className="p-4">
         <Heading>How much will you request?</Heading>
         <Box>
           <AssetInput asset={asset} value={value} onChangeValue={setValue} fontSize={36} testID="asset-input" />
