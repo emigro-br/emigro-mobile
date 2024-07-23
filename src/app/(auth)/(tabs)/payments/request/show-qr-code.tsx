@@ -139,7 +139,7 @@ export const RequestWithQRCode = () => {
 
         <Box>
           <Text bold>Requested value</Text>
-          <Text size="4xl" bold className="text-textLight-800">
+          <Text size="4xl" bold className="text-typography-800">
             {symbolFor(asset as CryptoAsset, value)}
           </Text>
           <Text>For {buildMerchantName(profile)}</Text>

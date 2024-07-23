@@ -103,7 +103,7 @@ const Row: React.FC<RowProps> = ({ label, value }) => (
     <Text size="sm" className="text-[gray]">
       {label}
     </Text>
-    <Text className="text-textLight-900">{value}</Text>
+    <Text className="text-typography-900">{value}</Text>
   </HStack>
 );
 

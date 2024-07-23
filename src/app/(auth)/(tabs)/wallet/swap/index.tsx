@@ -200,8 +200,8 @@ export const Swap = () => {
         <Box className="my-1.5 ml-1">
           {fetchingRate && (
             <HStack space="md" testID="fetching">
-              <Spinner size="small" className="text-textLight-500" />
-              <Text size="xs" className="text-textLight-500">
+              <Spinner size="small" className="text-typography-500" />
+              <Text size="xs" className="text-typography-500">
                 Fetching best price...
               </Text>
             </HStack>

@@ -84,7 +84,7 @@ const Profile = observer(() => {
 
           <VStack space="xl">
             <View>
-              <Text size="sm" className="text-textLight-500">
+              <Text size="sm" className="text-typography-500">
                 Full Name
               </Text>
               <Text>{fullName}</Text>
@@ -93,7 +93,7 @@ const Profile = observer(() => {
             <Divider />
 
             <View>
-              <Text size="sm" className="text-textLight-500">
+              <Text size="sm" className="text-typography-500">
                 Email address
               </Text>
               <Text>{profileInfo.email}</Text>
@@ -104,7 +104,7 @@ const Profile = observer(() => {
             {profileInfo.address && (
               <>
                 <View>
-                  <Text size="sm" className="text-textLight-500">
+                  <Text size="sm" className="text-typography-500">
                     Address
                   </Text>
                   <Text>{profileInfo.address}</Text>
@@ -118,7 +118,7 @@ const Profile = observer(() => {
               <Button onPress={() => setAssetListOpen(true)} variant="link" action="secondary" className="self-start">
                 <ButtonText>Bank account currency: {bankCurrency.length > 0 ? bankCurrency[0] : 'not set'} </ButtonText>
               </Button>
-              <Text size="sm" className="text-textLight-500">
+              <Text size="sm" className="text-typography-500">
                 Used for deposit and withdraw
               </Text>
             </Box>

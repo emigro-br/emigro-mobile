@@ -111,11 +111,11 @@ export const WithdrawlConfirm = ({ asset, transaction, onConfirm, onClose }: Pro
         </HStack>
         <Heading size="3xl">{symbolFor(currency, amount_out)}</Heading>
         <Box className="h-12" />
-        <Text bold className="text-textLight-600 mb-2">
+        <Text bold className="text-typography-600 mb-2">
           Transaction details
         </Text>
         <DetailsTable rows={rows} />
-        <Text className="text-textLight-400 mt-4 mb-2">
+        <Text className="text-typography-400 mt-4 mb-2">
           Transaction ID
         </Text>
         <Text>{transaction.id}</Text>

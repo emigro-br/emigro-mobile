@@ -128,7 +128,7 @@ const TransactionItem = ({ transaction, asset }: { transaction: Sep24Transaction
   const title = (
     <Text
       strikeThrough={status === Sep24TransactionStatus.INCOMPLETE}
-      className="text-textLight-950 font-medium">
+      className="text-typography-950 font-medium">
       {labelFor(asset) as string}
     </Text>
   );

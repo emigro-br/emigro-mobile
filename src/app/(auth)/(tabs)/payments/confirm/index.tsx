@@ -182,7 +182,7 @@ export const ConfirmPayment = () => {
 
           <HStack className="items-center">
             <Pressable onPress={() => isAmountEditable && setShowEditAmount(true)}>
-              <Text size="4xl" bold className="text-textLight-800">
+              <Text size="4xl" bold className="text-typography-800">
                 {symbolFor(scannedPayment.assetCode, requestedAmount)}
               </Text>
             </Pressable>

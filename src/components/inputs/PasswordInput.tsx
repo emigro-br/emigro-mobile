@@ -47,7 +47,7 @@ export const PasswordInput = (props: Props) => {
           <InputSlot onPress={toggleShowPassword} aria-label={showPassword ? 'Hide password' : 'Show password'} className="pr-3">
             <InputIcon
               as={showPassword ? EyeIcon : EyeOffIcon}
-              className={` ${showPassword ? "text-primary-500" : "text-textLight-500"} `}
+              className={` ${showPassword ? "text-primary-500" : "text-typography-500"} `}
             />
           </InputSlot>
         )}
