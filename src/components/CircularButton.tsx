@@ -2,7 +2,6 @@ import { VStack } from "@/components/ui/vstack";
 import { Text } from "@/components/ui/text";
 import { Button, ButtonIcon } from "@/components/ui/button";
 import React from 'react';
-import { DimensionValue } from 'react-native';
 
 type Props = {
   label?: string;
@@ -10,16 +9,16 @@ type Props = {
   bg?: any;
   size?: 'sm' | 'md' | 'lg';
   textSize?: 'sm' | 'md' | 'lg';
-  w?: DimensionValue;
+  w?: any;
   onPress: () => void;
 };
 
 export const CircularButton = ({ label, icon, onPress, bg = 'primary-500', size = 'md', textSize, w }: Props) => {
-  let radius: any = '10';
+  let radius: any = '12';
   if (size === 'sm') {
-    radius = '8';
+    radius = '10';
   } else if (size === 'lg') {
-    radius = '12';
+    radius = '16';
   }
 
   const iconColor = bg === 'white' ? 'primary-500' : 'white';
@@ -29,8 +28,8 @@ export const CircularButton = ({ label, icon, onPress, bg = 'primary-500', size 
       <Button
         size={size}
         onPress={onPress}
-        className={` w-${radius} h-${radius} bg-${bg} rounded-full mb-1 `}>
-        <ButtonIcon as={icon} size="xl" className={` color-${iconColor} `} />
+        className={` w-${radius} h-${radius} bg-${bg} p-0 rounded-full mb-1 `}>
+        <ButtonIcon as={icon} size="2xl" className={` color-${iconColor} `} />
       </Button>
       {label && (
         <Text size={textSize ?? size} className={` color-${bg} `}>

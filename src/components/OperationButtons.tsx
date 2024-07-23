@@ -8,7 +8,7 @@ import { CircularButton } from './CircularButton';
 
 const OperationButtons = () => {
   const router = useRouter();
-  const w = 80; // set with to keep the buttons spaced equally
+  const w = '1/5'; // set with to keep the buttons spaced equally
   return (
     <ButtonGroup className="justify-around py-2">
       <CircularButton
