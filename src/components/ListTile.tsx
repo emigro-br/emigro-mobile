@@ -15,7 +15,7 @@ export const ListTile = ({ title, subtitle, leading, trailing, testID }: Props) 
   const renderTitle = () => {
     if (typeof title === 'string') {
       return (
-        <Text className="text-coolGray-800 font-[500]  dark:text-warmGray-100">
+        <Text className="text-typography-800 font-[500] dark:text-typography-100">
           {title}
         </Text>
       );
@@ -29,7 +29,7 @@ export const ListTile = ({ title, subtitle, leading, trailing, testID }: Props) 
     }
     if (typeof subtitle === 'string') {
       return (
-        <Text size="sm" className="text-coolGray-500  dark:text-warmGray-200">
+        <Text size="sm" className="text-typography-500 dark:text-typography-200">
           {subtitle}
         </Text>
       );
