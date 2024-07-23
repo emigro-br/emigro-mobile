@@ -163,7 +163,7 @@ export const Swap = () => {
   return (
     <Box className="flex-1 bg-white">
       <VStack space="sm" className="p-4">
-        <Heading size="xl">Sell {sellAsset}</Heading>
+        <Heading size="2xl">Sell {sellAsset}</Heading>
         <AssetSwap
           sellOrBuy={SwapType.SELL}
           asset={sellAsset}
@@ -207,12 +207,12 @@ export const Swap = () => {
             </HStack>
           )}
           {sellAsset && buyAsset && sellValue > 0 && !fetchingRate && rate === null && (
-            <Text size="xs" className="text-error-500">
+            <Text size="sm" className="text-error-500">
               Failed to fetch the rate
             </Text>
           )}
           {!fetchingRate && rate && (
-            <Text size="xs" className="text-black">
+            <Text size="sm" className="text-black">
               1 {buyAsset} ≈ {rate.toFixed(6)} {sellAsset}
             </Text>
           )}

@@ -106,21 +106,20 @@ export const AssetSwap = ({
 
   const hasBalance = sellOrBuy === SwapType.SELL && Number(value) > balance;
 
-  const activeProps = isActive
-    ? { borderColor: '$borderLight200', borderWidth: 1, bg: '$backgroundLight50' }
-    : { bg: '$backgroundLight100' };
+  const dynamicStyles = isActive
+    ? 'border border-outline-200 bg-background-50'
+    : 'bg-background-100';
 
   return (
     <Pressable onPress={handlePress} testID={testID}>
-      <Card variant="filled" {...activeProps} className="py-2">
+      <Card variant="filled" className={`py-2 ${dynamicStyles}` }>
         <VStack space="sm">
-          <Text size="sm">{sellOrBuy === SwapType.SELL ? 'You sell' : 'You get'}</Text>
+          <Text size="md">{sellOrBuy === SwapType.SELL ? 'You sell' : 'You get'}</Text>
           <HStack className="items-center">
             <HStack className="items-center justify-start w-4/6">
-              <Input variant="underlined" isFocused={isActive} className="border-b-0 w-full">
+              <Input variant="underlined" isFocused={isActive} size="2xl" className="border-b-0 w-full">
                 <InputField
                   aria-label={`${sellOrBuy === SwapType.SELL ? 'sell' : 'buy'}-input`}
-                  size="2xl"
                   autoFocus={sellOrBuy === SwapType.SELL}
                   placeholder="0"
                   value={value}
@@ -128,7 +127,7 @@ export const AssetSwap = ({
                   keyboardType="numeric"
                   onFocus={handlePress}
                   editable={sellOrBuy === SwapType.SELL}
-                  className="font-[bold] text-[left]" />
+                  className="font-bold text-left" />
               </Input>
             </HStack>
             <Box className="w-2/6">
@@ -140,11 +139,11 @@ export const AssetSwap = ({
             </Box>
           </HStack>
           <HStack className="justify-between">
-            <Text size="xs" className={` color-${`${hasBalance ? '$red' : '$gray'}`} `}>
+            <Text size="sm" className={hasBalance ? 'text-indicator-error' : 'text-typography-500'}>
               Balance: {symbolFor(asset, balance)}
             </Text>
             {hasBalance && (
-              <Text size="xs" className="text-red">
+              <Text size="sm" className="text-indicator-error">
                 exceeds balance
               </Text>
             )}
