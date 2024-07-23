@@ -33,7 +33,7 @@ export const AssetListActionSheet = ({ assets, isOpen, onClose, onItemPress }: P
           {assets.map((asset) => (
             <ActionsheetItem key={asset.code} onPress={() => onItemPress(asset.code as CryptoOrFiat)}>
               <AssetImage asset={asset} size="xs" />
-              <ActionsheetItemText>{asset.name}</ActionsheetItemText>
+              <ActionsheetItemText size="lg" className="ml-2">{asset.name}</ActionsheetItemText>
             </ActionsheetItem>
           ))}
         </ActionsheetContent>
