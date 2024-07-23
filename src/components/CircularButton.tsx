@@ -14,22 +14,22 @@ type Props = {
   onPress: () => void;
 };
 
-export const CircularButton = ({ label, icon, onPress, bg = '$primary500', size = 'md', textSize, w }: Props) => {
-  let radius: any = '$10';
+export const CircularButton = ({ label, icon, onPress, bg = 'primary-500', size = 'md', textSize, w }: Props) => {
+  let radius: any = '10';
   if (size === 'sm') {
-    radius = '$8';
+    radius = '8';
   } else if (size === 'lg') {
-    radius = '$12';
+    radius = '12';
   }
 
-  const iconColor = bg === '$white' ? '$primary500' : '$white';
+  const iconColor = bg === 'white' ? 'primary-500' : 'white';
 
   return (
     <VStack className={` w-${w} items-center `}>
       <Button
         size={size}
         onPress={onPress}
-        className={` width-${radius} height-${radius} bg-${bg} rounded-full mb-1 `}>
+        className={` w-${radius} h-${radius} bg-${bg} rounded-full mb-1 `}>
         <ButtonIcon as={icon} size="xl" className={` color-${iconColor} `} />
       </Button>
       {label && (
