@@ -26,11 +26,11 @@ export const Welcome = () => {
           </Text>
         </Center>
       </Box>
-      <ButtonGroup space="md" size="xl" className="flex-column mx-4 mt-8">
-        <Button onPress={() => router.push('/login')} variant="solid">
+      <ButtonGroup space="md" flexDirection="column" className="mx-4 mt-8">
+        <Button onPress={() => router.push('/login')} variant="solid" size="xl">
           <ButtonText>Login</ButtonText>
         </Button>
-        <Button onPress={() => router.push('/signup')} variant="outline">
+        <Button onPress={() => router.push('/signup')} variant="outline" size="xl">
           <ButtonText>Create an Account</ButtonText>
         </Button>
       </ButtonGroup>

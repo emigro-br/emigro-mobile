@@ -84,7 +84,7 @@ const DeleteAccount = () => {
               </CheckboxLabel>
             </Checkbox>
           </VStack>
-          <ButtonGroup className="flex-column">
+          <ButtonGroup flexDirection="column">
             <Button variant="solid" onPress={() => handleDeleteAccount()} isDisabled={!isChecked || isDeleting}>
               <ButtonText>Yes, delete my account permanently</ButtonText>
             </Button>

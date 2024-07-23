@@ -145,7 +145,7 @@ export const RequestWithQRCode = () => {
           <Text>For {buildMerchantName(profile)}</Text>
         </Box>
         {enableCopy && (
-          <ButtonGroup className="flex-column">
+          <ButtonGroup flexDirection="column">
             <Button onPress={copyToClipboard}>
               <ButtonText>Copy the code</ButtonText>
             </Button>
