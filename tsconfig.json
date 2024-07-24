@@ -9,7 +9,8 @@
   "include": [
     "./config/**/*",
     "./src/**/*",
-    "./global.css"
+    "./global.css",
+    "./nativewind-env.d.ts"
   ],
   "experimentalDecorators": true,
   "emitDecoratorMetadata": true,
