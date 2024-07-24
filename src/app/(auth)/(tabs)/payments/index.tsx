@@ -32,7 +32,7 @@ export const Payments = () => {
             icon={QrCodeIcon}
             label="Scan to Pay"
             size="lg"
-            textSize="md"
+            textSize="lg"
             w={w}
             onPress={() => router.push('/payments/scan')}
           />
@@ -40,7 +40,7 @@ export const Payments = () => {
             icon={HandCoinsIcon}
             label="Request Payment"
             size="lg"
-            textSize="md"
+            textSize="lg"
             w={w}
             onPress={() => setAssetListOpen(true)}
           />
@@ -51,7 +51,7 @@ export const Payments = () => {
               icon={CopyIcon}
               label="Pix Copia & Cola"
               size="lg"
-              textSize="md"
+              textSize="lg"
               w={w}
               onPress={() => router.push('/payments/pix/copia-e-cola')}
             />

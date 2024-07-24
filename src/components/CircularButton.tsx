@@ -27,10 +27,10 @@ export const CircularButton = ({ label, icon, onPress, bg = 'primary-500', size 
   return (
     <VStack className={` w-${w} items-center `}>
       <Button size={size} onPress={onPress} className={` w-${radius} h-${radius} bg-${bg} p-0 rounded-full mb-1 `}>
-        <ButtonIcon as={icon} size="2xl" className={` color-${iconColor} `} />
+        <ButtonIcon as={icon} size="2xl" className={` text-${iconColor} `} />
       </Button>
       {label && (
-        <Text size={textSize ?? size} className={` color-${bg} `}>
+        <Text size={textSize ?? size} className={`text-${bg} `}>
           {label}
         </Text>
       )}
