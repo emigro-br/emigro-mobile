@@ -1,10 +1,10 @@
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { Heading } from "@/components/ui/heading";
-import { Box } from "@/components/ui/box";
 import { Link } from 'expo-router';
 
 import { Sep24TransactionHistory } from '@/components/Sep24TransactionHistory';
+import { Box } from '@/components/ui/box';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { transactions as transactionsMock } from '@/mocks/api/transactions.json';
 import { Sep24Transaction } from '@/services/emigro/types';
 import { CryptoAsset } from '@/types/assets';

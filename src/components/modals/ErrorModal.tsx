@@ -1,11 +1,12 @@
-import { View } from "@/components/ui/view";
-import { Text } from "@/components/ui/text";
-import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@/components/ui/modal";
-import { Heading } from "@/components/ui/heading";
-import { HStack } from "@/components/ui/hstack";
-import { CloseCircleIcon, Icon } from "@/components/ui/icon";
-import { Button, ButtonText } from "@/components/ui/button";
 import React from 'react';
+
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { CloseCircleIcon, Icon } from '@/components/ui/icon';
+import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@/components/ui/modal';
+import { Text } from '@/components/ui/text';
+import { View } from '@/components/ui/view';
 
 type Props = {
   isOpen: boolean;

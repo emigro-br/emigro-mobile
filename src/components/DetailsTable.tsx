@@ -1,7 +1,7 @@
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { HStack } from "@/components/ui/hstack";
-import { Card } from "@/components/ui/card";
+import { Card } from '@/components/ui/card';
+import { HStack } from '@/components/ui/hstack';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 
 export type RowItem = {
   label: string;

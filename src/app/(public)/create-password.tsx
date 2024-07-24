@@ -1,12 +1,3 @@
-import { useToast } from "@/components/ui/toast";
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { Input, InputField } from "@/components/ui/input";
-import { Heading } from "@/components/ui/heading";
-import { FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText } from "@/components/ui/form-control";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
-import { AlertCircleIcon } from "@/components/ui/icon";
 import { useState } from 'react';
 import { Keyboard } from 'react-native';
 
@@ -14,6 +5,20 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { Toast } from '@/components/Toast';
 import { PinScreen } from '@/components/screens/PinScreen';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import {
+  FormControl,
+  FormControlError,
+  FormControlErrorIcon,
+  FormControlErrorText,
+} from '@/components/ui/form-control';
+import { Heading } from '@/components/ui/heading';
+import { AlertCircleIcon } from '@/components/ui/icon';
+import { Input, InputField } from '@/components/ui/input';
+import { Text } from '@/components/ui/text';
+import { useToast } from '@/components/ui/toast';
+import { VStack } from '@/components/ui/vstack';
 import { confirmResetPassword } from '@/services/emigro/auth';
 import { CustomError } from '@/types/errors';
 

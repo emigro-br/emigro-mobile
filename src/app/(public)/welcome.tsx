@@ -1,13 +1,13 @@
-import { Text } from "@/components/ui/text";
-import { Image } from "@/components/ui/image";
-import { Center } from "@/components/ui/center";
-import { Button, ButtonGroup, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
 import React from 'react';
 
 import { useRouter } from 'expo-router';
 
 import emigroLogo from '@/assets/images/emigro-logo.png';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonGroup, ButtonText } from '@/components/ui/button';
+import { Center } from '@/components/ui/center';
+import { Image } from '@/components/ui/image';
+import { Text } from '@/components/ui/text';
 
 export const Welcome = () => {
   const router = useRouter();

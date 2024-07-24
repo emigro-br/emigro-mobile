@@ -1,4 +1,6 @@
-import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
+import { TextInputProps } from 'react-native';
+
+import { EyeIcon, EyeOffIcon } from 'lucide-react-native';
 
 import {
   FormControl,
@@ -6,11 +8,8 @@ import {
   FormControlErrorText,
   FormControlLabel,
   FormControlLabelText,
-} from "@/components/ui/form-control";
-
-import { TextInputProps } from 'react-native';
-
-import { EyeIcon, EyeOffIcon } from 'lucide-react-native';
+} from '@/components/ui/form-control';
+import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
 
 import { FieldError } from './TextInput';
 
@@ -44,10 +43,14 @@ export const PasswordInput = (props: Props) => {
           blurOnSubmit
         />
         {toggleShowPassword && (
-          <InputSlot onPress={toggleShowPassword} aria-label={showPassword ? 'Hide password' : 'Show password'} className="pr-3">
+          <InputSlot
+            onPress={toggleShowPassword}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            className="pr-3"
+          >
             <InputIcon
               as={showPassword ? EyeIcon : EyeOffIcon}
-              className={` ${showPassword ? "text-primary-500" : "text-typography-500"} `}
+              className={` ${showPassword ? 'text-primary-500' : 'text-typography-500'} `}
             />
           </InputSlot>
         )}

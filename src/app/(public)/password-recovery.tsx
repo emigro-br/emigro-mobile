@@ -1,11 +1,3 @@
-import { useToast } from "@/components/ui/toast";
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { LockIcon } from "@/components/ui/icon";
-import { Heading } from "@/components/ui/heading";
-import { HStack } from "@/components/ui/hstack";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Keyboard } from 'react-native';
@@ -14,6 +6,14 @@ import { useRouter } from 'expo-router';
 
 import { Toast } from '@/components/Toast';
 import { EmailInputControl } from '@/components/inputs/controls/EmailInputControl';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { LockIcon } from '@/components/ui/icon';
+import { Text } from '@/components/ui/text';
+import { useToast } from '@/components/ui/toast';
+import { VStack } from '@/components/ui/vstack';
 import { resetPassword } from '@/services/emigro/auth';
 
 // for react-hook-form

@@ -1,19 +1,3 @@
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
-import { Heading } from "@/components/ui/heading";
-
-import {
-  FormControl,
-  FormControlError,
-  FormControlErrorText,
-  FormControlLabel,
-  FormControlLabelText,
-} from "@/components/ui/form-control";
-
-import { Center } from "@/components/ui/center";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
 import React, { useState } from 'react';
 
 import * as Clipboard from 'expo-clipboard';
@@ -21,6 +5,20 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ClipboardPasteIcon } from 'lucide-react-native';
 
 import { AssetInput } from '@/components/AssetInput';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Center } from '@/components/ui/center';
+import {
+  FormControl,
+  FormControlError,
+  FormControlErrorText,
+  FormControlLabel,
+  FormControlLabelText,
+} from '@/components/ui/form-control';
+import { Heading } from '@/components/ui/heading';
+import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { balanceStore } from '@/stores/BalanceStore';
 import { transferStore } from '@/stores/TransferStore';
 import { CryptoAsset } from '@/types/assets';

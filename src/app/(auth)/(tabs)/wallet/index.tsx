@@ -1,6 +1,3 @@
-import { VStack } from "@/components/ui/vstack";
-import { ScrollView } from "@/components/ui/scroll-view";
-import { Box } from "@/components/ui/box";
 import React, { useState } from 'react';
 import { RefreshControl } from 'react-native';
 
@@ -12,6 +9,9 @@ import { observer } from 'mobx-react-lite';
 import { CreateWallet } from '@/components/CreateWallet';
 import OperationButtons from '@/components/OperationButtons';
 import { WalletBalances } from '@/components/WalletBalances';
+import { Box } from '@/components/ui/box';
+import { ScrollView } from '@/components/ui/scroll-view';
+import { VStack } from '@/components/ui/vstack';
 import { balanceStore } from '@/stores/BalanceStore';
 import { sessionStore } from '@/stores/SessionStore';
 
@@ -47,19 +47,21 @@ const Wallet = observer(() => {
     }
   }, [balanceStore.fetchUserBalance, publicKey]);
 
-  return (<>
-    <Box className="bg-primary-500 py-2">
-      <OperationButtons />
-    </Box>
-    <ScrollView
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} title="Refreshing..." />}
-    >
-      <VStack space="lg" className="p-4">
-        {balanceStore.userBalance.length > 0 && <WalletBalances userBalance={balanceStore.userBalance} />}
-        {!publicKey && <CreateWallet />}
-      </VStack>
-    </ScrollView>
-  </>);
+  return (
+    <>
+      <Box className="bg-primary-500 py-2">
+        <OperationButtons />
+      </Box>
+      <ScrollView
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} title="Refreshing..." />}
+      >
+        <VStack space="lg" className="p-4">
+          {balanceStore.userBalance.length > 0 && <WalletBalances userBalance={balanceStore.userBalance} />}
+          {!publicKey && <CreateWallet />}
+        </VStack>
+      </ScrollView>
+    </>
+  );
 });
 
 export default Wallet;

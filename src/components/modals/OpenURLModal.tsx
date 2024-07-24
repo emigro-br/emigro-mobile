@@ -1,6 +1,8 @@
-import { View } from "@/components/ui/view";
-import { Text } from "@/components/ui/text";
+import React from 'react';
 
+import { Button, ButtonGroup, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { CloseIcon, Icon } from '@/components/ui/icon';
 import {
   Modal,
   ModalBackdrop,
@@ -9,12 +11,9 @@ import {
   ModalContent,
   ModalFooter,
   ModalHeader,
-} from "@/components/ui/modal";
-
-import { Heading } from "@/components/ui/heading";
-import { CloseIcon, Icon } from "@/components/ui/icon";
-import { Button, ButtonGroup, ButtonText } from "@/components/ui/button";
-import React from 'react';
+} from '@/components/ui/modal';
+import { Text } from '@/components/ui/text';
+import { View } from '@/components/ui/view';
 
 type Props = {
   isOpen: boolean;

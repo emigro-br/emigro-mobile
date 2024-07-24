@@ -1,9 +1,3 @@
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { ScrollView } from "@/components/ui/scroll-view";
-import { Heading } from "@/components/ui/heading";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
 import React, { useState } from 'react';
 
 import {
@@ -17,6 +11,12 @@ import {
 
 import { Sep24TransactionHistoryContainer } from '@/components/Sep24TransactionHistory';
 import { OpenURLModal } from '@/components/modals/OpenURLModal';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { ScrollView } from '@/components/ui/scroll-view';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { OperationKind } from '@/services/emigro/anchors';
 import { balanceStore } from '@/stores/BalanceStore';
 import { FiatCurrency } from '@/types/assets';
@@ -84,36 +84,38 @@ export const OperationHome = ({ title, kind, currency }: LayoutProps) => {
     setIsOpenUrlModal(false);
   };
 
-  return (<>
-    <Stack.Screen
-      options={{
-        title,
-      }}
-    />
-    <OpenURLModal
-      isOpen={isOpenUrlModal}
-      onClose={() => setIsOpenUrlModal(false)}
-      onConfirm={() => handleOpenConfimed()}
-      testID="open-url-modal"
-    />
-    <ScrollView className="flex-1 bg-white">
-      <Box className="flex-1">
-        <VStack space="md" className="p-4">
-          <Heading size="xl">
-            {title} in {fiat.name}
-          </Heading>
-          <Text bold className="mb-2">
-            Balance: {symbolFor(asset, balance)}
-          </Text>
-          <Button variant="outline" onPress={() => handleNewTransaction(kind)}>
-            <ButtonText>New transaction</ButtonText>
-          </Button>
-          <Box className="mb-4" />
-          <Sep24TransactionHistoryContainer asset={asset} kind={kind} refreshedAt={refreshedAt} />
-        </VStack>
-      </Box>
-    </ScrollView>
-  </>);
+  return (
+    <>
+      <Stack.Screen
+        options={{
+          title,
+        }}
+      />
+      <OpenURLModal
+        isOpen={isOpenUrlModal}
+        onClose={() => setIsOpenUrlModal(false)}
+        onConfirm={() => handleOpenConfimed()}
+        testID="open-url-modal"
+      />
+      <ScrollView className="flex-1 bg-white">
+        <Box className="flex-1">
+          <VStack space="md" className="p-4">
+            <Heading size="xl">
+              {title} in {fiat.name}
+            </Heading>
+            <Text bold className="mb-2">
+              Balance: {symbolFor(asset, balance)}
+            </Text>
+            <Button variant="outline" onPress={() => handleNewTransaction(kind)}>
+              <ButtonText>New transaction</ButtonText>
+            </Button>
+            <Box className="mb-4" />
+            <Sep24TransactionHistoryContainer asset={asset} kind={kind} refreshedAt={refreshedAt} />
+          </VStack>
+        </Box>
+      </ScrollView>
+    </>
+  );
 };
 
 export default OperationRouter;

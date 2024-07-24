@@ -1,4 +1,4 @@
-import { Input, InputField } from "@/components/ui/input";
+import { TextInputProps } from 'react-native';
 
 import {
   FormControl,
@@ -6,9 +6,8 @@ import {
   FormControlErrorText,
   FormControlLabel,
   FormControlLabelText,
-} from "@/components/ui/form-control";
-
-import { TextInputProps } from 'react-native';
+} from '@/components/ui/form-control';
+import { Input, InputField } from '@/components/ui/input';
 
 // only to avoid react-hook-form import
 export type FieldError = {

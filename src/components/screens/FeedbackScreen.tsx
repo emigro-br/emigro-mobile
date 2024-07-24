@@ -1,11 +1,12 @@
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { Heading } from "@/components/ui/heading";
-import { Divider } from "@/components/ui/divider";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
-import { AlertCircleIcon, CheckCircleIcon, ClockIcon, CloseCircleIcon, Icon } from "@/components/ui/icon";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Divider } from '@/components/ui/divider';
+import { Heading } from '@/components/ui/heading';
+import { AlertCircleIcon, CheckCircleIcon, ClockIcon, CloseCircleIcon, Icon } from '@/components/ui/icon';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 
 type Props = {
   title: string;
@@ -30,8 +31,7 @@ export const FeedbackScreen = ({ title, message, action = 'success', btnLabel = 
   };
 
   return (
-    <Box
-      className={` pb-${insets.bottom} pt-${insets.top} flex-1 bg-white justify-between `}>
+    <Box className={` pb-${insets.bottom} pt-${insets.top} flex-1 bg-white justify-between `}>
       <VStack space="lg" className="px-4">
         {renderIcon()}
         {title && (

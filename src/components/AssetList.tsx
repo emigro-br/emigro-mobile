@@ -1,9 +1,9 @@
-import { Pressable } from "@/components/ui/pressable";
-import { FlatList } from "@/components/ui/flat-list";
-import { Card } from "@/components/ui/card";
-import { Box } from "@/components/ui/box";
 import React from 'react';
 
+import { Box } from '@/components/ui/box';
+import { Card } from '@/components/ui/card';
+import { FlatList } from '@/components/ui/flat-list';
+import { Pressable } from '@/components/ui/pressable';
 import { CryptoOrFiat } from '@/types/assets';
 
 import { AssetListTile } from './AssetListTile';

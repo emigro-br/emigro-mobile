@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 
-import "@/global.css";
-import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import * as Sentry from '@sentry/react-native';
 // import { useColorScheme } from 'react-native';
 import { isRunningInExpoGo } from 'expo';
 import { Slot, SplashScreen, useNavigationContainerRef } from 'expo-router';
 import * as Updates from 'expo-updates';
 
-import { config } from '@/config/gluestack-ui.config';
+import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
+import '@/global.css';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

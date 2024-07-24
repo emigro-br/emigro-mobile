@@ -1,20 +1,20 @@
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@/components/ui/modal";
-import { Input, InputField } from "@/components/ui/input";
-import { Heading } from "@/components/ui/heading";
-import { HStack } from "@/components/ui/hstack";
-import { FormControlErrorText } from "@/components/ui/form-control";
-import { CheckCircleIcon, Icon } from "@/components/ui/icon";
-import { Center } from "@/components/ui/center";
-import { Card } from "@/components/ui/card";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
 import React, { useState } from 'react';
 
 import * as Sentry from '@sentry/react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Center } from '@/components/ui/center';
+import { FormControlErrorText } from '@/components/ui/form-control';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { CheckCircleIcon, Icon } from '@/components/ui/icon';
+import { Input, InputField } from '@/components/ui/input';
+import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@/components/ui/modal';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { CONFIRM_ACCOUNT_ERROR, WRONG_CODE_ERROR } from '@/constants/errorMessages';
 import { confirmAccount } from '@/services/emigro/auth';
 

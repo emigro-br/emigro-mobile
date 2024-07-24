@@ -1,6 +1,6 @@
-import { Spinner } from "@/components/ui/spinner";
-import { Center } from "@/components/ui/center";
-import { Box } from "@/components/ui/box";
+import { Box } from '@/components/ui/box';
+import { Center } from '@/components/ui/center';
+import { Spinner } from '@/components/ui/spinner';
 
 export const LoadingScreen = () => {
   return (

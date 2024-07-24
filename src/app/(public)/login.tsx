@@ -1,12 +1,3 @@
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { Link, LinkText } from "@/components/ui/link";
-import { Heading } from "@/components/ui/heading";
-import { HStack } from "@/components/ui/hstack";
-import { FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText } from "@/components/ui/form-control";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
-import { AlertCircleIcon } from "@/components/ui/icon";
 import React, { useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
@@ -14,6 +5,20 @@ import { useRouter } from 'expo-router';
 
 import { EmailInputControl } from '@/components/inputs/controls/EmailInputControl';
 import { PasswordInputControl } from '@/components/inputs/controls/PasswordInputControl';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import {
+  FormControl,
+  FormControlError,
+  FormControlErrorIcon,
+  FormControlErrorText,
+} from '@/components/ui/form-control';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { AlertCircleIcon } from '@/components/ui/icon';
+import { Link, LinkText } from '@/components/ui/link';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { sessionStore } from '@/stores/SessionStore';
 import { BadRequestException } from '@/types/errors';
 
@@ -77,9 +82,7 @@ const Login = () => {
           />
 
           <Link onPress={() => router.push('/password-recovery')} testID="forgot-password-link">
-            <LinkText className="text-primary-500 none text-[right]">
-              Forgot your password?
-            </LinkText>
+            <LinkText className="text-primary-500 none text-[right]">Forgot your password?</LinkText>
           </Link>
 
           {apiError && (

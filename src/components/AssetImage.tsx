@@ -1,7 +1,6 @@
-import { Image } from "@/components/ui/image";
-
 import { ImageProps } from 'react-native';
 
+import { Image } from '@/components/ui/image';
 import { Asset, CryptoOrFiat } from '@/types/assets';
 import { iconFor, labelFor } from '@/utils/assets';
 

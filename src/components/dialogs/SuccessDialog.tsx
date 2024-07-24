@@ -1,8 +1,3 @@
-import { View } from "@/components/ui/view";
-import { Heading } from "@/components/ui/heading";
-import { CloseIcon, Icon } from "@/components/ui/icon";
-import { Button, ButtonText } from "@/components/ui/button";
-
 import {
   AlertDialog,
   AlertDialogBackdrop,
@@ -11,7 +6,11 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { CloseIcon, Icon } from '@/components/ui/icon';
+import { View } from '@/components/ui/view';
 
 type Props = {
   isOpen: boolean;

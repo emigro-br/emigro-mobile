@@ -1,13 +1,13 @@
-import { Pressable } from "@/components/ui/pressable";
-import { Image } from "@/components/ui/image";
-import { Center } from "@/components/ui/center";
-import { Box } from "@/components/ui/box";
 import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useRouter } from 'expo-router';
 
 import emigroLogo from '@/assets/images/emigro-logo.png';
+import { Box } from '@/components/ui/box';
+import { Center } from '@/components/ui/center';
+import { Image } from '@/components/ui/image';
+import { Pressable } from '@/components/ui/pressable';
 
 const Header: React.FC = () => {
   // https://reactnavigation.org/docs/handling-safe-area/

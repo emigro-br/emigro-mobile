@@ -1,5 +1,3 @@
-import { View } from "@/components/ui/view";
-
 import {
   Actionsheet,
   ActionsheetBackdrop,
@@ -8,8 +6,8 @@ import {
   ActionsheetDragIndicatorWrapper,
   ActionsheetItem,
   ActionsheetItemText,
-} from "@/components/ui/actionsheet";
-
+} from '@/components/ui/actionsheet';
+import { View } from '@/components/ui/view';
 import { Asset, CryptoOrFiat } from '@/types/assets';
 
 import { AssetImage } from './AssetImage';
@@ -33,7 +31,9 @@ export const AssetListActionSheet = ({ assets, isOpen, onClose, onItemPress }: P
           {assets.map((asset) => (
             <ActionsheetItem key={asset.code} onPress={() => onItemPress(asset.code as CryptoOrFiat)}>
               <AssetImage asset={asset} size="xs" />
-              <ActionsheetItemText size="lg" className="ml-2">{asset.name}</ActionsheetItemText>
+              <ActionsheetItemText size="lg" className="ml-2">
+                {asset.name}
+              </ActionsheetItemText>
             </ActionsheetItem>
           ))}
         </ActionsheetContent>

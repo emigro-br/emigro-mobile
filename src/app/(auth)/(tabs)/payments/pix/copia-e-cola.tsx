@@ -1,15 +1,15 @@
-import { VStack } from "@/components/ui/vstack";
-import { Textarea, TextareaInput } from "@/components/ui/textarea";
-import { Heading } from "@/components/ui/heading";
-import { FormControl, FormControlError, FormControlErrorText } from "@/components/ui/form-control";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
 import { useEffect, useState } from 'react';
 
 import * as Clipboard from 'expo-clipboard';
 import { useRouter } from 'expo-router';
 import { hasError, parsePix } from 'pix-utils';
 
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { FormControl, FormControlError, FormControlErrorText } from '@/components/ui/form-control';
+import { Heading } from '@/components/ui/heading';
+import { Textarea, TextareaInput } from '@/components/ui/textarea';
+import { VStack } from '@/components/ui/vstack';
 import { paymentStore } from '@/stores/PaymentStore';
 
 export const PastePixCode = () => {

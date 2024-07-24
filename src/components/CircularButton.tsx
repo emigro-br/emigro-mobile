@@ -1,7 +1,8 @@
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { Button, ButtonIcon } from "@/components/ui/button";
 import React from 'react';
+
+import { Button, ButtonIcon } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 
 type Props = {
   label?: string;
@@ -25,10 +26,7 @@ export const CircularButton = ({ label, icon, onPress, bg = 'primary-500', size 
 
   return (
     <VStack className={` w-${w} items-center `}>
-      <Button
-        size={size}
-        onPress={onPress}
-        className={` w-${radius} h-${radius} bg-${bg} p-0 rounded-full mb-1 `}>
+      <Button size={size} onPress={onPress} className={` w-${radius} h-${radius} bg-${bg} p-0 rounded-full mb-1 `}>
         <ButtonIcon as={icon} size="2xl" className={` color-${iconColor} `} />
       </Button>
       {label && (

@@ -1,12 +1,13 @@
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { Input, InputField } from "@/components/ui/input";
-import { Heading } from "@/components/ui/heading";
-import { HStack } from "@/components/ui/hstack";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { TextInput } from 'react-native';
+
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { Input, InputField } from '@/components/ui/input';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 
 class InvalidPinError extends Error {
   constructor() {
@@ -144,7 +145,8 @@ export const PinScreen = forwardRef(
                   keyboardType="number-pad"
                   secureTextEntry={secureTextEntry}
                   autoComplete="off"
-                  className="text-4xl font-[bold] text-center" />
+                  className="text-4xl font-[bold] text-center"
+                />
               </Input>
             ))}
           </HStack>

@@ -1,7 +1,7 @@
-import { useToast } from "@/components/ui/toast";
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 
+import { useToast } from '@/components/ui/toast';
 import { deleteAccount } from '@/services/emigro/auth';
 import { AuthSession } from '@/services/emigro/types';
 import { sessionStore } from '@/stores/SessionStore';

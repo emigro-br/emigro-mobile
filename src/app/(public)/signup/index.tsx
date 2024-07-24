@@ -1,13 +1,3 @@
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { ScrollView } from "@/components/ui/scroll-view";
-import { Link } from "@/components/ui/link";
-import { Heading } from "@/components/ui/heading";
-import { HStack } from "@/components/ui/hstack";
-import { FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText } from "@/components/ui/form-control";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
-import { AlertCircleIcon } from "@/components/ui/icon";
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -17,6 +7,21 @@ import { useRouter } from 'expo-router';
 import { EmailInputControl } from '@/components/inputs/controls/EmailInputControl';
 import { PasswordInputControl } from '@/components/inputs/controls/PasswordInputControl';
 import { TextInputControl } from '@/components/inputs/controls/TextInputControl';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import {
+  FormControl,
+  FormControlError,
+  FormControlErrorIcon,
+  FormControlErrorText,
+} from '@/components/ui/form-control';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { AlertCircleIcon } from '@/components/ui/icon';
+import { Link } from '@/components/ui/link';
+import { ScrollView } from '@/components/ui/scroll-view';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { signUp } from '@/services/emigro/auth';
 import { RegisterUserRequest, Role } from '@/services/emigro/types';
 import { BadRequestException } from '@/types/errors';

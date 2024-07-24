@@ -1,9 +1,9 @@
-import { Text } from "@/components/ui/text";
-import { Heading } from "@/components/ui/heading";
-import { Card } from "@/components/ui/card";
-import { Button, ButtonText } from "@/components/ui/button";
 import React, { useState } from 'react';
 
+import { Button, ButtonText } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
 import { createWallet } from '@/services/emigro/users';
 import { balanceStore } from '@/stores/BalanceStore';
 import { sessionStore } from '@/stores/SessionStore';

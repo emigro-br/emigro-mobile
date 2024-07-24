@@ -1,14 +1,3 @@
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { ScrollView } from "@/components/ui/scroll-view";
-import { Pressable } from "@/components/ui/pressable";
-import { Heading } from "@/components/ui/heading";
-import { HStack } from "@/components/ui/hstack";
-import { Divider } from "@/components/ui/divider";
-import { Center } from "@/components/ui/center";
-import { Card } from "@/components/ui/card";
-import { Button, ButtonSpinner, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
 import { useEffect, useState } from 'react';
 import { Dropdown } from 'react-native-element-dropdown';
 
@@ -18,6 +7,17 @@ import { usePathname, useRouter } from 'expo-router';
 import { InputAmountActionSheet } from '@/components/InputAmountActionSheet';
 import { LoadingScreen } from '@/components/screens/Loading';
 import { PinScreen } from '@/components/screens/PinScreen';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Center } from '@/components/ui/center';
+import { Divider } from '@/components/ui/divider';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { Pressable } from '@/components/ui/pressable';
+import { ScrollView } from '@/components/ui/scroll-view';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { TRANSACTION_ERROR_MESSAGE } from '@/constants/errorMessages';
 import { IQuoteRequest, fetchQuote } from '@/services/emigro/quotes';
 import { balanceStore } from '@/stores/BalanceStore';
@@ -166,106 +166,106 @@ export const ConfirmPayment = () => {
   const isPayDisabled = !paymentQuote || !hasBalance || isProcesing;
   const isAmountEditable = scannedPayment.transactionAmount === 0;
 
-  return (<>
-    <InputAmountActionSheet
-      isOpen={showEditAmount}
-      onClose={() => setShowEditAmount(false)}
-      tagline="Enter the amount you want to pay"
-      initialAmount={requestedAmount}
-      asset={AssetToCurrency[scannedPayment.assetCode] as FiatCurrency} //TODO: improve this
-      onSave={(amount) => setRequestedAmount(amount)}
-    />
-    <ScrollView className="flex-1 bg-white">
-      <Box className="flex-1">
-        <VStack space="lg" className="p-4">
-          <Heading size="xl">Review the payment</Heading>
+  return (
+    <>
+      <InputAmountActionSheet
+        isOpen={showEditAmount}
+        onClose={() => setShowEditAmount(false)}
+        tagline="Enter the amount you want to pay"
+        initialAmount={requestedAmount}
+        asset={AssetToCurrency[scannedPayment.assetCode] as FiatCurrency} //TODO: improve this
+        onSave={(amount) => setRequestedAmount(amount)}
+      />
+      <ScrollView className="flex-1 bg-white">
+        <Box className="flex-1">
+          <VStack space="lg" className="p-4">
+            <Heading size="xl">Review the payment</Heading>
 
-          <HStack className="items-center">
-            <Pressable onPress={() => isAmountEditable && setShowEditAmount(true)}>
-              <Text size="4xl" bold className="text-typography-800">
-                {symbolFor(scannedPayment.assetCode, requestedAmount)}
-              </Text>
-            </Pressable>
-            {isAmountEditable && (
-              <Button variant="link" onPress={() => setShowEditAmount(true)} className="ml-2">
-                <ButtonText>Edit</ButtonText>
-              </Button>
-            )}
-          </HStack>
-
-          <VStack space="3xl">
-            <Box>
-              <Text size="lg" numberOfLines={1} ellipsizeMode="tail">
-                for{' '}
-                <Text bold size="lg">
-                  {scannedPayment.merchantName}
+            <HStack className="items-center">
+              <Pressable onPress={() => isAmountEditable && setShowEditAmount(true)}>
+                <Text size="4xl" bold className="text-typography-800">
+                  {symbolFor(scannedPayment.assetCode, requestedAmount)}
                 </Text>
-              </Text>
-              {scannedPayment.merchantCity && (
-                <Text>
-                  in <Text>{scannedPayment.merchantCity}</Text>
-                </Text>
+              </Pressable>
+              {isAmountEditable && (
+                <Button variant="link" onPress={() => setShowEditAmount(true)} className="ml-2">
+                  <ButtonText>Edit</ButtonText>
+                </Button>
               )}
-            </Box>
+            </HStack>
 
-            {scannedPayment.infoAdicional && (
-              <Center>
-                <Card variant="filled" className="bg-backgroundLight-100">
-                  <Text className="text-center">{scannedPayment.infoAdicional}</Text>
-                </Card>
-              </Center>
-            )}
+            <VStack space="3xl">
+              <Box>
+                <Text size="lg" numberOfLines={1} ellipsizeMode="tail">
+                  for{' '}
+                  <Text bold size="lg">
+                    {scannedPayment.merchantName}
+                  </Text>
+                </Text>
+                {scannedPayment.merchantCity && (
+                  <Text>
+                    in <Text>{scannedPayment.merchantCity}</Text>
+                  </Text>
+                )}
+              </Box>
 
-            {isPix && <StaticPix pix={scannedPayment as PixPayment} />}
-            {!isPix && <StellarPay pay={scannedPayment} />}
+              {scannedPayment.infoAdicional && (
+                <Center>
+                  <Card variant="filled" className="bg-backgroundLight-100">
+                    <Text className="text-center">{scannedPayment.infoAdicional}</Text>
+                  </Card>
+                </Center>
+              )}
+
+              {isPix && <StaticPix pix={scannedPayment as PixPayment} />}
+              {!isPix && <StellarPay pay={scannedPayment} />}
+            </VStack>
+
+            <Divider />
+
+            <Text>Select the account</Text>
+            <Card variant="filled" className="pb-2">
+              <HStack>
+                <Box className="w-1/4">
+                  <Dropdown
+                    selectedTextStyle={{ fontWeight: '500' }}
+                    data={data}
+                    value={selectedAsset}
+                    labelField="label"
+                    valueField="value"
+                    onChange={(selectedItem) => setSelectedAsset(selectedItem.value)}
+                    disable={isProcesing}
+                    testID="select-account"
+                  />
+                </Box>
+                <Box className="w-3/4">
+                  <Text className="text-[right] py-1">{paymentQuote && symbolFor(selectedAsset, paymentQuote)}</Text>
+                </Box>
+              </HStack>
+              <HStack className="justify-between">
+                <Text size="xs" className={` color-${`${hasBalance ? '$gray' : '$red'}`} `}>
+                  Balance: {symbolFor(selectedAsset, balance)}
+                </Text>
+                {!hasBalance && (
+                  <Text size="xs" className="text-red">
+                    exceeds balance
+                  </Text>
+                )}
+              </HStack>
+            </Card>
+
+            <Text size="xs">
+              The seller will receive the exact value he set. The quantity that will be sent is computed automatically.
+            </Text>
+            <Button size="lg" onPress={handlePressPay} isDisabled={isPayDisabled}>
+              {isProcesing && <ButtonSpinner className="mr-1" />}
+              <ButtonText>{isProcesing ? 'Processing...' : 'Pay'} </ButtonText>
+            </Button>
           </VStack>
-
-          <Divider />
-
-          <Text>Select the account</Text>
-          <Card variant="filled" className="pb-2">
-            <HStack>
-              <Box className="w-1/4">
-                <Dropdown
-                  selectedTextStyle={{ fontWeight: '500' }}
-                  data={data}
-                  value={selectedAsset}
-                  labelField="label"
-                  valueField="value"
-                  onChange={(selectedItem) => setSelectedAsset(selectedItem.value)}
-                  disable={isProcesing}
-                  testID="select-account"
-                />
-              </Box>
-              <Box className="w-3/4">
-                <Text className="text-[right] py-1">
-                  {paymentQuote && symbolFor(selectedAsset, paymentQuote)}
-                </Text>
-              </Box>
-            </HStack>
-            <HStack className="justify-between">
-              <Text size="xs" className={` color-${`${hasBalance ? '$gray' : '$red'}`} `}>
-                Balance: {symbolFor(selectedAsset, balance)}
-              </Text>
-              {!hasBalance && (
-                <Text size="xs" className="text-red">
-                  exceeds balance
-                </Text>
-              )}
-            </HStack>
-          </Card>
-
-          <Text size="xs">
-            The seller will receive the exact value he set. The quantity that will be sent is computed automatically.
-          </Text>
-          <Button size="lg" onPress={handlePressPay} isDisabled={isPayDisabled}>
-            {isProcesing && <ButtonSpinner className="mr-1" />}
-            <ButtonText>{isProcesing ? 'Processing...' : 'Pay'} </ButtonText>
-          </Button>
-        </VStack>
-      </Box>
-    </ScrollView>
-  </>);
+        </Box>
+      </ScrollView>
+    </>
+  );
 };
 
 interface StaticPixProps {

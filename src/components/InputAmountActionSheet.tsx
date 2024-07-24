@@ -1,20 +1,18 @@
-import { View } from "@/components/ui/view";
-import { VStack } from "@/components/ui/vstack";
-import { Heading } from "@/components/ui/heading";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
+import { useState } from 'react';
 
+import { AssetInput } from '@/components/AssetInput';
 import {
   Actionsheet,
   ActionsheetBackdrop,
   ActionsheetContent,
   ActionsheetDragIndicator,
   ActionsheetDragIndicatorWrapper,
-} from "@/components/ui/actionsheet";
-
-import { useState } from 'react';
-
-import { AssetInput } from '@/components/AssetInput';
+} from '@/components/ui/actionsheet';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { View } from '@/components/ui/view';
+import { VStack } from '@/components/ui/vstack';
 import { CryptoOrFiat } from '@/types/assets';
 
 type Props = {

@@ -1,17 +1,17 @@
-import { useToast } from "@/components/ui/toast";
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { ScrollView } from "@/components/ui/scroll-view";
-import { Heading } from "@/components/ui/heading";
-import { Checkbox, CheckboxIcon, CheckboxIndicator, CheckboxLabel } from "@/components/ui/checkbox";
-import { CheckIcon } from "@/components/ui/icon";
-import { Button, ButtonGroup, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
 import React, { useState } from 'react';
 
 import { useRouter } from 'expo-router';
 
 import { Toast } from '@/components/Toast';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonGroup, ButtonText } from '@/components/ui/button';
+import { Checkbox, CheckboxIcon, CheckboxIndicator, CheckboxLabel } from '@/components/ui/checkbox';
+import { Heading } from '@/components/ui/heading';
+import { CheckIcon } from '@/components/ui/icon';
+import { ScrollView } from '@/components/ui/scroll-view';
+import { Text } from '@/components/ui/text';
+import { useToast } from '@/components/ui/toast';
+import { VStack } from '@/components/ui/vstack';
 import { deleteAccount } from '@/services/emigro/auth';
 import { sessionStore } from '@/stores/SessionStore';
 

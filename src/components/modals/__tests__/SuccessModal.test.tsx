@@ -1,7 +1,8 @@
-import { Text } from "@/components/ui/text";
-
 import React from 'react';
+
 import { fireEvent, render } from '@testing-library/react-native';
+
+import { Text } from '@/components/ui/text';
 
 import { SuccessModal } from '../SuccessModal';
 

@@ -1,16 +1,16 @@
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { Spinner } from "@/components/ui/spinner";
-import { RepeatIcon } from "@/components/ui/icon";
-import { Heading } from "@/components/ui/heading";
-import { HStack } from "@/components/ui/hstack";
-import { Center } from "@/components/ui/center";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
 import React, { useEffect, useState } from 'react';
 
 import { useRouter } from 'expo-router';
 
+import { Box } from '@/components/ui/box';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { Center } from '@/components/ui/center';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { RepeatIcon } from '@/components/ui/icon';
+import { Spinner } from '@/components/ui/spinner';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { IQuoteRequest, fetchQuote } from '@/services/emigro/quotes';
 import { balanceStore } from '@/stores/BalanceStore';
 import { sessionStore } from '@/stores/SessionStore';
@@ -177,11 +177,7 @@ export const Swap = () => {
           testID="sell-box"
         />
         <Center className="my-0.5">
-          <Button
-            onPress={handleSwitch}
-            testID="arrowIcon"
-            variant="outline"
-            className="rounded-full h-10 w-10">
+          <Button onPress={handleSwitch} testID="arrowIcon" variant="outline" className="rounded-full h-10 w-10">
             <ButtonIcon as={RepeatIcon} className="text-primary-500" />
           </Button>
         </Center>

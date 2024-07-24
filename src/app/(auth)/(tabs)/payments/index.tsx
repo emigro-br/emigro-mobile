@@ -1,8 +1,3 @@
-import { VStack } from "@/components/ui/vstack";
-import { Heading } from "@/components/ui/heading";
-import { CopyIcon } from "@/components/ui/icon";
-import { ButtonGroup } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
 import React, { useState } from 'react';
 
 import { useRouter } from 'expo-router';
@@ -10,6 +5,11 @@ import { HandCoinsIcon, QrCodeIcon } from 'lucide-react-native';
 
 import { AssetListActionSheet } from '@/components/AssetListActionSheet';
 import { CircularButton } from '@/components/CircularButton';
+import { Box } from '@/components/ui/box';
+import { ButtonGroup } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { CopyIcon } from '@/components/ui/icon';
+import { VStack } from '@/components/ui/vstack';
 import { useFeatureFlags } from '@/hooks/feature-flags';
 import { balanceStore } from '@/stores/BalanceStore';
 import { allCryptoCodesToObjs } from '@/utils/assets';

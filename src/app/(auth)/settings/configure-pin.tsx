@@ -1,10 +1,10 @@
-import { Box } from "@/components/ui/box";
 import { useRef, useState } from 'react';
-
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { PinScreen } from '@/components/screens/PinScreen';
+import { Box } from '@/components/ui/box';
 import { securityStore } from '@/stores/SecurityStore';
 
 type PinRefType = {

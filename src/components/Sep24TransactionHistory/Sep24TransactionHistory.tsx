@@ -1,16 +1,16 @@
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { Heading } from "@/components/ui/heading";
-import { Divider } from "@/components/ui/divider";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
-import { Badge, BadgeText } from "@/components/ui/badge";
-import { ArrowRightIcon, ArrowUpIcon, ClockIcon, Icon, SlashIcon } from "@/components/ui/icon";
 import React from 'react';
 
 import { usePathname, useRouter } from 'expo-router';
 
 import { ListTile } from '@/components/ListTile';
+import { Badge, BadgeText } from '@/components/ui/badge';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { Divider } from '@/components/ui/divider';
+import { Heading } from '@/components/ui/heading';
+import { ArrowRightIcon, ArrowUpIcon, ClockIcon, Icon, SlashIcon } from '@/components/ui/icon';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { Sep24Transaction, Sep24TransactionStatus } from '@/services/emigro/types';
 import { CryptoAsset } from '@/types/assets';
 import { labelFor, symbolFor } from '@/utils/assets';
@@ -126,9 +126,7 @@ const TransactionItem = ({ transaction, asset }: { transaction: Sep24Transaction
   const { status } = transaction;
 
   const title = (
-    <Text
-      strikeThrough={status === Sep24TransactionStatus.INCOMPLETE}
-      className="text-typography-950 font-medium">
+    <Text strikeThrough={status === Sep24TransactionStatus.INCOMPLETE} className="text-typography-950 font-medium">
       {labelFor(asset) as string}
     </Text>
   );
@@ -142,29 +140,32 @@ const TransactionItem = ({ transaction, asset }: { transaction: Sep24Transaction
     );
   };
 
-  return (<>
-    <ListTile
-      title={title}
-      leading={statusIcon(status)}
-      subtitle={statusBadge(status)}
-      trailing={trailing(transaction.started_at, transaction.amount_in)}
-    />
-    {transaction.kind === 'withdrawal' && status === Sep24TransactionStatus.PENDING_USER_TRANSFER_START && (
-      <Button
-        variant="link"
-        onPress={() =>
-          router.push({
-            pathname: `${path}/confirm`,
-            params: {
-              asset,
-              id: transaction.id,
-            },
-          })
-        }
-        className="ml-8 my--4 self-start">
-        <ButtonText>Confirm payment</ButtonText>
-        <ButtonIcon as={ArrowRightIcon} size="2xs" className="ml-1" />
-      </Button>
-    )}
-  </>);
+  return (
+    <>
+      <ListTile
+        title={title}
+        leading={statusIcon(status)}
+        subtitle={statusBadge(status)}
+        trailing={trailing(transaction.started_at, transaction.amount_in)}
+      />
+      {transaction.kind === 'withdrawal' && status === Sep24TransactionStatus.PENDING_USER_TRANSFER_START && (
+        <Button
+          variant="link"
+          onPress={() =>
+            router.push({
+              pathname: `${path}/confirm`,
+              params: {
+                asset,
+                id: transaction.id,
+              },
+            })
+          }
+          className="ml-8 my--4 self-start"
+        >
+          <ButtonText>Confirm payment</ButtonText>
+          <ButtonIcon as={ArrowRightIcon} size="2xs" className="ml-1" />
+        </Button>
+      )}
+    </>
+  );
 };

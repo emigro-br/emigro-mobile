@@ -1,14 +1,14 @@
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { Pressable } from "@/components/ui/pressable";
-import { Input, InputField } from "@/components/ui/input";
-import { HStack } from "@/components/ui/hstack";
-import { Card } from "@/components/ui/card";
-import { Box } from "@/components/ui/box";
 import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { SelectCountry } from 'react-native-element-dropdown';
 
+import { Box } from '@/components/ui/box';
+import { Card } from '@/components/ui/card';
+import { HStack } from '@/components/ui/hstack';
+import { Input, InputField } from '@/components/ui/input';
+import { Pressable } from '@/components/ui/pressable';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { CryptoAsset } from '@/types/assets';
 import { iconFor, symbolFor } from '@/utils/assets';
 
@@ -106,13 +106,11 @@ export const AssetSwap = ({
 
   const hasBalance = sellOrBuy === SwapType.SELL && Number(value) > balance;
 
-  const dynamicStyles = isActive
-    ? 'border border-outline-200 bg-background-50'
-    : 'bg-background-100';
+  const dynamicStyles = isActive ? 'border border-outline-200 bg-background-50' : 'bg-background-100';
 
   return (
     <Pressable onPress={handlePress} testID={testID}>
-      <Card variant="filled" className={`py-2 ${dynamicStyles}` }>
+      <Card variant="filled" className={`py-2 ${dynamicStyles}`}>
         <VStack space="sm">
           <Text size="md">{sellOrBuy === SwapType.SELL ? 'You sell' : 'You get'}</Text>
           <HStack className="items-center">
@@ -127,7 +125,8 @@ export const AssetSwap = ({
                   keyboardType="numeric"
                   onFocus={handlePress}
                   editable={sellOrBuy === SwapType.SELL}
-                  className="font-bold text-left" />
+                  className="font-bold text-left"
+                />
               </Input>
             </HStack>
             <Box className="w-2/6">

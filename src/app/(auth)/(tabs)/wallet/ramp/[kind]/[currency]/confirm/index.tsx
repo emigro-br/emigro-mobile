@@ -1,12 +1,3 @@
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { ModalCloseButton } from "@/components/ui/modal";
-import { Heading } from "@/components/ui/heading";
-import { HStack } from "@/components/ui/hstack";
-import { Divider } from "@/components/ui/divider";
-import { CloseIcon } from "@/components/ui/icon";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
 import { useEffect, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -15,6 +6,15 @@ import { useLocalSearchParams, usePathname, useRouter } from 'expo-router';
 import { AssetImage } from '@/components/AssetImage';
 import { DetailsTable } from '@/components/DetailsTable';
 import { LoadingScreen } from '@/components/screens/Loading';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Divider } from '@/components/ui/divider';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { CloseIcon } from '@/components/ui/icon';
+import { ModalCloseButton } from '@/components/ui/modal';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { ConfirmWithdrawDto, confirmWithdraw, getTransaction } from '@/services/emigro/anchors';
 import { Sep24Transaction, Sep24TransactionStatus } from '@/services/emigro/types';
 import { CryptoAsset, FiatCurrency } from '@/types/assets';
@@ -115,16 +115,20 @@ export const WithdrawlConfirm = ({ asset, transaction, onConfirm, onClose }: Pro
           Transaction details
         </Text>
         <DetailsTable rows={rows} />
-        <Text className="text-typography-400 mt-4 mb-2">
-          Transaction ID
-        </Text>
+        <Text className="text-typography-400 mt-4 mb-2">Transaction ID</Text>
         <Text>{transaction.id}</Text>
       </VStack>
       <Box className="flex-1" />
       <Divider />
       {/* test status to avoid pay twice */}
       {transaction.status === Sep24TransactionStatus.PENDING_USER_TRANSFER_START && (
-        <Button onPress={() => handleConfirm()} size="lg" isDisabled={isProcessing} testID="confirm-button" className="m-4">
+        <Button
+          onPress={() => handleConfirm()}
+          size="lg"
+          isDisabled={isProcessing}
+          testID="confirm-button"
+          className="m-4"
+        >
           <ButtonText>{isProcessing ? 'Processing...' : 'Confirm withdraw'}</ButtonText>
         </Button>
       )}

@@ -1,13 +1,13 @@
-import { useToast } from "@/components/ui/toast";
-import { VStack } from "@/components/ui/vstack";
-import { Heading } from "@/components/ui/heading";
-import { Card } from "@/components/ui/card";
-import { Button, ButtonSpinner, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
 import { useState } from 'react';
 
 import { AssetListTile } from '@/components/AssetListTile';
 import { Toast } from '@/components/Toast';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Heading } from '@/components/ui/heading';
+import { useToast } from '@/components/ui/toast';
+import { VStack } from '@/components/ui/vstack';
 import { addAssetToWallet } from '@/services/emigro/users';
 import { balanceStore } from '@/stores/BalanceStore';
 import { CryptoAsset, cryptoAssets } from '@/types/assets';

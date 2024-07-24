@@ -1,8 +1,3 @@
-import { View } from "@/components/ui/view";
-import { Text } from "@/components/ui/text";
-import { Pressable } from "@/components/ui/pressable";
-import { Center } from "@/components/ui/center";
-import { Box } from "@/components/ui/box";
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -21,6 +16,11 @@ import { useRouter } from 'expo-router';
 import { PixElementType, hasError, parsePix } from 'pix-utils';
 
 import { Spacer } from '@/components/Spacer';
+import { Box } from '@/components/ui/box';
+import { Center } from '@/components/ui/center';
+import { Pressable } from '@/components/ui/pressable';
+import { Text } from '@/components/ui/text';
+import { View } from '@/components/ui/view';
 import { INVALID_QR_CODE } from '@/constants/errorMessages';
 import { useFeatureFlags } from '@/hooks/feature-flags';
 import { paymentStore } from '@/stores/PaymentStore';

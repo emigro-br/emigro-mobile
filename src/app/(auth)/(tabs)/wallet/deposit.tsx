@@ -1,13 +1,3 @@
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
-import { Pressable } from "@/components/ui/pressable";
-import { Heading } from "@/components/ui/heading";
-import { HStack } from "@/components/ui/hstack";
-import { FormControlErrorText } from "@/components/ui/form-control";
-import { ChevronRightIcon } from "@/components/ui/icon";
-import { Card } from "@/components/ui/card";
-import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
-import { Box } from "@/components/ui/box";
 import React, { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
 
@@ -18,6 +8,16 @@ import { AssetListTile } from '@/components/AssetListTile';
 import { LoadingModal } from '@/components/modals/LoadingModal';
 import { OpenURLModal } from '@/components/modals/OpenURLModal';
 import { LoadingScreen } from '@/components/screens/Loading';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { FormControlErrorText } from '@/components/ui/form-control';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { ChevronRightIcon } from '@/components/ui/icon';
+import { Pressable } from '@/components/ui/pressable';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { CallbackType, depositUrl } from '@/services/emigro/anchors';
 import { sessionStore } from '@/stores/SessionStore';
 import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
@@ -87,49 +87,51 @@ const Deposit = observer(() => {
     return <LoadingScreen />;
   }
 
-  return (<>
-    <LoadingModal isOpen={isLoading} text="Connecting to anchor..." />
-    <OpenURLModal
-      isOpen={!!selectedAsset && !isLoading}
-      onClose={() => setSelectedAsset(null)}
-      onConfirm={() => handleOpenConfimed(selectedAsset!)}
-      testID="open-url-modal"
-    />
-    <Box className="flex-1">
-      <VStack space="md" className="p-4">
-        <Heading size="xl">Add money</Heading>
-        {fiatsWithBank.length === 0 && (
-          <>
-            <Text testID="no-currencies-msg">Please navigate to your profile and select your bank's currency.</Text>
-            <HStack>
-              <Button variant="link" onPress={() => router.replace('/profile')}>
-                <ButtonText>Go to Profile</ButtonText>
-                <ButtonIcon as={ChevronRightIcon} />
-              </Button>
-            </HStack>
-          </>
-        )}
+  return (
+    <>
+      <LoadingModal isOpen={isLoading} text="Connecting to anchor..." />
+      <OpenURLModal
+        isOpen={!!selectedAsset && !isLoading}
+        onClose={() => setSelectedAsset(null)}
+        onConfirm={() => handleOpenConfimed(selectedAsset!)}
+        testID="open-url-modal"
+      />
+      <Box className="flex-1">
+        <VStack space="md" className="p-4">
+          <Heading size="xl">Add money</Heading>
+          {fiatsWithBank.length === 0 && (
+            <>
+              <Text testID="no-currencies-msg">Please navigate to your profile and select your bank's currency.</Text>
+              <HStack>
+                <Button variant="link" onPress={() => router.replace('/profile')}>
+                  <ButtonText>Go to Profile</ButtonText>
+                  <ButtonIcon as={ChevronRightIcon} />
+                </Button>
+              </HStack>
+            </>
+          )}
 
-        {fiatsWithBank.length > 0 && (
-          <>
-            <Text>Choose the currency you want to withdraw</Text>
-            <Card variant="flat">
-              {fiatsWithBank.map((currency) => {
-                const asset = CurrencyToAsset[currency];
-                return (
-                  <Pressable key={currency} onPress={() => setSelectedAsset(currency)}>
-                    <AssetListTile asset={currency} subtitle={asset} assetType="fiat" />
-                  </Pressable>
-                );
-              })}
-            </Card>
-          </>
-        )}
+          {fiatsWithBank.length > 0 && (
+            <>
+              <Text>Choose the currency you want to withdraw</Text>
+              <Card variant="flat">
+                {fiatsWithBank.map((currency) => {
+                  const asset = CurrencyToAsset[currency];
+                  return (
+                    <Pressable key={currency} onPress={() => setSelectedAsset(currency)}>
+                      <AssetListTile asset={currency} subtitle={asset} assetType="fiat" />
+                    </Pressable>
+                  );
+                })}
+              </Card>
+            </>
+          )}
 
-        {errorMessage && <FormControlErrorText>{errorMessage}</FormControlErrorText>}
-      </VStack>
-    </Box>
-  </>);
+          {errorMessage && <FormControlErrorText>{errorMessage}</FormControlErrorText>}
+        </VStack>
+      </Box>
+    </>
+  );
 });
 
 export default Deposit;

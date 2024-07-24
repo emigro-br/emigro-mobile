@@ -1,7 +1,6 @@
-import { Input, InputField } from "@/components/ui/input";
-
 import CurrencyInput from 'react-native-currency-input';
 
+import { Input, InputField } from '@/components/ui/input';
 import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
 import { AssetToSymbol } from '@/utils/assets';
 

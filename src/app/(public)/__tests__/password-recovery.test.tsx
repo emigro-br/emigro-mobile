@@ -1,11 +1,11 @@
-import { useToast } from "@/components/ui/toast";
-
 import { Keyboard } from 'react-native';
+
 import { fireEvent, waitFor } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
+import { useToast } from '@/components/ui/toast';
 import * as auth from '@/services/emigro/auth';
 
 import { PasswordRecovery } from '../password-recovery';
