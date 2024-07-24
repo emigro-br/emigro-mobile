@@ -3,8 +3,8 @@ import { useState } from 'react';
 import { useToast } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 
-import { LoadingScreen } from '@/components/screens/Loading';
 import { Toast } from '@/components/Toast';
+import { LoadingScreen } from '@/components/screens/Loading';
 import { PinScreen } from '@/components/screens/PinScreen';
 import { securityStore } from '@/stores/SecurityStore';
 import { transferStore } from '@/stores/TransferStore';
