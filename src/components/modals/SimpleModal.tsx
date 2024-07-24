@@ -40,7 +40,7 @@ export const SimpleModal = ({ isOpen, title, children, onClose, onAction, testID
               <Icon as={CloseIcon} />
             </ModalCloseButton>
           </ModalHeader>
-          {children && <ModalBody>{children}</ModalBody>}
+          <ModalBody>{children}</ModalBody>
           <ModalFooter>
             <ButtonGroup>
               <Button variant="outline" action="secondary" onPress={onClose}>
