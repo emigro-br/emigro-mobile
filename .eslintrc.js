@@ -23,7 +23,12 @@ module.exports = {
     node: true,
     jest: true,
   },
-  ignorePatterns: ['.eslintrc.js', 'babel.config.js', 'jest.config.js'],
+  ignorePatterns: [
+    '.eslintrc.js',
+    'babel.config.js',
+    'jest.config.js',
+    'src/components/ui/**', // installed gluestack-ui components
+  ],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
