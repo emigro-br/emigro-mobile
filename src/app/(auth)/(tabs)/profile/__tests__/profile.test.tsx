@@ -2,7 +2,7 @@ import React from 'react';
 
 import { NavigationContext } from '@react-navigation/native';
 
-import { fireEvent, screen, waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
