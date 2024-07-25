@@ -5,7 +5,6 @@ jest.mock('react-native-safe-area-context', () => mockSafeAreaContext);
 
 jest.spyOn(Keyboard, 'dismiss');
 
-jest.mock('@gluestack-ui/themed', () => ({
-  ...jest.requireActual('@gluestack-ui/themed'),
+jest.mock('@/components/ui/toast', () => ({
   useToast: jest.fn().mockReturnValue({ show: jest.fn() }),
 }));
