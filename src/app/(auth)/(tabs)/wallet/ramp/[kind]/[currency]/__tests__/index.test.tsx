@@ -16,7 +16,6 @@ jest.mock('@/components/Sep24TransactionHistory'); // to skip set state setTrans
 
 describe('Deposit', () => {
   it('should render correctly', async () => {
-
     const currency = FiatCurrency.USD;
     const { getByText } = render(<Deposit currency={currency} />);
     expect(getByText('Deposit in US Dollar')).toBeOnTheScreen();
@@ -32,7 +31,6 @@ describe('Withdraw', () => {
 });
 
 describe('OperationHome', () => {
-
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
