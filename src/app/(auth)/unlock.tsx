@@ -25,7 +25,7 @@ export const UnlockScreen = () => {
   };
 
   return (
-    <Box className={` pt-${insets.top} flex-1 bg-white `}>
+    <Box className=" flex-1 bg-white " style={{ paddingTop: insets.top }}>
       <PinScreen
         tagline="Enter your PIN"
         btnLabel="Unlock"

@@ -31,7 +31,13 @@ export const FeedbackScreen = ({ title, message, action = 'success', btnLabel = 
   };
 
   return (
-    <Box className={` pb-${insets.bottom} pt-${insets.top} flex-1 bg-white justify-between `}>
+    <Box
+      className=" flex-1 bg-white justify-between "
+      style={{
+        paddingBottom: insets.bottom,
+        paddingTop: insets.top,
+      }}
+    >
       <VStack space="lg" className="px-4">
         {renderIcon()}
         {title && (

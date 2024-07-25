@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { BackHandler } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+// import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Sentry from '@sentry/react-native';
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -14,7 +14,7 @@ import { Button, ButtonGroup, ButtonText } from '@/components/ui/button';
 import { Center } from '@/components/ui/center';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
-import { CloseIcon } from '@/components/ui/icon';
+import { CloseIcon, Icon } from '@/components/ui/icon';
 import { ModalCloseButton } from '@/components/ui/modal';
 import { Text } from '@/components/ui/text';
 import { Toast, ToastDescription, useToast } from '@/components/ui/toast';
@@ -71,7 +71,7 @@ export const RequestWithQRCode = () => {
   const enableCopy = false;
   const router = useRouter();
   const params = useLocalSearchParams<{ asset: CryptoAsset; value: string }>();
-  const insets = useSafeAreaInsets();
+  // const insets = useSafeAreaInsets();
   const toast = useToast();
 
   // prevent back navigation
@@ -124,12 +124,15 @@ export const RequestWithQRCode = () => {
   };
 
   return (
-    <Box className={` pt-${insets.top} flex-1 bg-white `}>
+    <Box
+      className=" flex-1 bg-white "
+      // style={{ paddingTop: insets.top }} // FIXME: is not required on iOS, check if it's required on Android
+    >
       <VStack space="lg" className="p-4">
         <HStack className="justify-between">
-          <Heading>Request with QR Code</Heading>
+          <Heading size="xl">Request with QR Code</Heading>
           <ModalCloseButton onPress={() => router.replace('../')} testID="close-button" className="mt--4">
-            <CloseIcon size="xl" />
+            <Icon as={CloseIcon} size="xl" />
           </ModalCloseButton>
         </HStack>
         <Text>Show this QR code or copy and share with who will make this payment</Text>

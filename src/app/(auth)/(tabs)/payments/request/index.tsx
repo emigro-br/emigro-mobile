@@ -31,7 +31,7 @@ export const RequestPayment = () => {
       <VStack space="lg" className="p-4">
         <Heading>How much will you request?</Heading>
         <Box>
-          <AssetInput asset={asset} value={value} onChangeValue={setValue} fontSize={36} testID="asset-input" />
+          <AssetInput asset={asset} value={value} onChangeValue={setValue} size="4xl" testID="asset-input" />
           <HStack>
             <Button variant="link" size="sm" onPress={() => handleGenerateQRCode(0)}>
               <ButtonText>Request open amount</ButtonText>

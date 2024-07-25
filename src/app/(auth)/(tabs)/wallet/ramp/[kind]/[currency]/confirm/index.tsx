@@ -11,7 +11,7 @@ import { Button, ButtonText } from '@/components/ui/button';
 import { Divider } from '@/components/ui/divider';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
-import { CloseIcon } from '@/components/ui/icon';
+import { CloseIcon, Icon } from '@/components/ui/icon';
 import { ModalCloseButton } from '@/components/ui/modal';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
@@ -98,16 +98,14 @@ export const WithdrawlConfirm = ({ asset, transaction, onConfirm, onClose }: Pro
   };
 
   return (
-    <Box className={` pb-${insets.bottom} flex-1 `}>
-      <HStack className="justify-between">
-        <ModalCloseButton onPress={onClose} testID="close-button" className="mt-4">
-          <CloseIcon size="xl" />
-        </ModalCloseButton>
-      </HStack>
+    <Box className="flex-1" style={{ paddingBottom: insets.bottom }}>
+      <ModalCloseButton onPress={onClose} testID="close-button" className="mt-6 ml-2">
+        <Icon as={CloseIcon} size="xl" />
+      </ModalCloseButton>
       <VStack className="p-4">
         <HStack className="justify-between">
           <Heading size="xl">Withdrawing</Heading>
-          <AssetImage asset={asset} size="md" />
+          <AssetImage asset={asset} size="sm" />
         </HStack>
         <Heading size="3xl">{symbolFor(currency, amount_out)}</Heading>
         <Box className="h-12" />

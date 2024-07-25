@@ -32,7 +32,7 @@ export const InputAmount = ({ tagline, initialAmount, asset, onSave }: Props) =>
         <AssetInput
           asset={asset}
           size="4xl"
-          className='text-bold'
+          className="text-bold"
           value={value}
           onChangeValue={(newValue) => setValue(newValue)}
         />

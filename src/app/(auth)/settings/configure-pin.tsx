@@ -54,7 +54,7 @@ export const ConfigurePIN = () => {
   };
 
   return (
-    <Box className={` pt-${insets.top} flex-1 `}>
+    <Box className="flex-1" style={{ paddingTop: insets.top }}>
       <PinScreen
         ref={pinRef}
         tagline={isReEnter ? 'Re-enter your PIN code' : 'Enter your new PIN code'}
