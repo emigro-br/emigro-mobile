@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
-import { BackHandler } from 'react-native';
+import { BackHandler, Platform } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
-// import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Sentry from '@sentry/react-native';
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -71,7 +71,7 @@ export const RequestWithQRCode = () => {
   const enableCopy = false;
   const router = useRouter();
   const params = useLocalSearchParams<{ asset: CryptoAsset; value: string }>();
-  // const insets = useSafeAreaInsets();
+  const insets = useSafeAreaInsets();
   const toast = useToast();
 
   // prevent back navigation
@@ -126,7 +126,7 @@ export const RequestWithQRCode = () => {
   return (
     <Box
       className=" flex-1 bg-white "
-      // style={{ paddingTop: insets.top }} // FIXME: is not required on iOS, check if it's required on Android
+      style={{ paddingTop: Platform.OS === 'android' ? insets.top: 0 }}
     >
       <VStack space="lg" className="p-4">
         <HStack className="justify-between">

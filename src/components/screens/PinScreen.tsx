@@ -145,7 +145,7 @@ export const PinScreen = forwardRef(
                   keyboardType="number-pad"
                   secureTextEntry={secureTextEntry}
                   autoComplete="off"
-                  className="text-4xl font-[bold] text-center"
+                  className="text-4xl font-bold text-center"
                 />
               </Input>
             ))}
