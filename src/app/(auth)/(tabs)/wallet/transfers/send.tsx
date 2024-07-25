@@ -63,16 +63,16 @@ export const SendAsset = () => {
       <Box className="m-4">
         <VStack space="md">
           <FormControl size="md" isInvalid={isBalanceExceeded}>
-            <Text size="xs">
+            <Text size="sm">
               Balance: {balance} {asset}
             </Text>
             <AssetInput
               asset={asset}
               value={amount}
               onChangeValue={setAmount}
+              size="4xl"
               textAlign="center"
-              fontSize={36}
-              fontWeight="bold"
+              className="font-bold"
             />
             <Center>
               <FormControlError>
