@@ -73,7 +73,7 @@ const Profile = observer(() => {
             <Avatar size="xl" className="bg-primary-300 rounded-full">
               <AvatarFallbackText>{fullName}</AvatarFallbackText>
             </Avatar>
-            <Heading className="py-2">{fullName}</Heading>
+            <Heading size='xl' className="py-2">{fullName}</Heading>
             {publicKey && (
               <Button size="md" variant="link" action="primary" onPress={copyToClipboard}>
                 <ButtonText>{maskWallet(publicKey)}</ButtonText>
@@ -84,19 +84,19 @@ const Profile = observer(() => {
 
           <VStack space="xl">
             <View>
-              <Text size="sm" className="text-typography-500">
+              <Text className="text-typography-500">
                 Full Name
               </Text>
-              <Text>{fullName}</Text>
+              <Text size='lg'>{fullName}</Text>
             </View>
 
             <Divider />
 
             <View>
-              <Text size="sm" className="text-typography-500">
+              <Text className="text-typography-500">
                 Email address
               </Text>
-              <Text>{profileInfo.email}</Text>
+              <Text size='lg'>{profileInfo.email}</Text>
             </View>
 
             <Divider />
@@ -104,7 +104,7 @@ const Profile = observer(() => {
             {profileInfo.address && (
               <>
                 <View>
-                  <Text size="sm" className="text-typography-500">
+                  <Text className="text-typography-500">
                     Address
                   </Text>
                   <Text>{profileInfo.address}</Text>
@@ -115,10 +115,10 @@ const Profile = observer(() => {
             )}
 
             <Box>
-              <Button onPress={() => setAssetListOpen(true)} variant="link" action="secondary" className="self-start">
+              <Button onPress={() => setAssetListOpen(true)} variant="link" action="secondary" size='lg' className="self-start">
                 <ButtonText>Bank account currency: {bankCurrency.length > 0 ? bankCurrency[0] : 'not set'} </ButtonText>
               </Button>
-              <Text size="sm" className="text-typography-500">
+              <Text size='sm' className="text-typography-500">
                 Used for deposit and withdraw
               </Text>
             </Box>
@@ -127,6 +127,7 @@ const Profile = observer(() => {
               onPress={() => router.push('/settings/configure-pin')}
               variant="link"
               action="secondary"
+              size='lg'
               className="self-start"
             >
               <ButtonText>Configure your PIN</ButtonText>

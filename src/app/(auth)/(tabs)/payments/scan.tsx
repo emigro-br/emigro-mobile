@@ -143,7 +143,7 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
 
   const InfoText = () => (
     <Center className="mt-8">
-      <Text size="xl" bold className="text-white">
+      <Text size="2xl" bold className="text-white">
         Scan a QR code
       </Text>
       <Text size="xl" bold className="text-white mt-6">
