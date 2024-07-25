@@ -44,6 +44,7 @@ describe('Deposit screen', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
     router = useRouter();
 
     sessionStore.preferences = {

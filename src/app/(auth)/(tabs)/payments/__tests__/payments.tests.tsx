@@ -16,6 +16,7 @@ describe('Payments component', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
     router = useRouter();
     render(<Payments />);
   });

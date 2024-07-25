@@ -12,8 +12,11 @@ jest.mock('@/services/emigro/anchors', () => ({
   listTransactions: jest.fn(() => Promise.resolve([])),
 }));
 
+jest.mock('@/components/Sep24TransactionHistory'); // to skip set state setTransactions
+
 describe('Deposit', () => {
-  it('should render correctly', () => {
+  it('should render correctly', async () => {
+
     const currency = FiatCurrency.USD;
     const { getByText } = render(<Deposit currency={currency} />);
     expect(getByText('Deposit in US Dollar')).toBeOnTheScreen();
@@ -21,7 +24,7 @@ describe('Deposit', () => {
 });
 
 describe('Withdraw', () => {
-  it('should render correctly', () => {
+  it('should render correctly', async () => {
     const currency = FiatCurrency.USD;
     const { getByText } = render(<Withdraw currency={currency} />);
     expect(getByText('Withdraw in US Dollar')).toBeOnTheScreen();
@@ -29,6 +32,12 @@ describe('Withdraw', () => {
 });
 
 describe('OperationHome', () => {
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.useFakeTimers();
+  });
+
   it('should render correctly', () => {
     const currency = FiatCurrency.USD;
     const { getByText } = render(<OperationHome title="Deposit" kind={OperationKind.DEPOSIT} currency={currency} />);

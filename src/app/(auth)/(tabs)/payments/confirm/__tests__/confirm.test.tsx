@@ -59,6 +59,7 @@ describe('ConfirmPayment component', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
     paymentStore.setScannedPayment(mockScannedPayment);
   });
 
