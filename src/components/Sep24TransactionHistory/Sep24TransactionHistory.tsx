@@ -86,7 +86,7 @@ const statusBadge = (status: Sep24TransactionStatus) => {
 const statusIcon = (status: Sep24TransactionStatus) => {
   const props = {
     size: 'md',
-    color: '$backgroundLight800', // TODO: use theme
+    className: 'text-typography-800', // TODO: use theme
   };
   switch (status) {
     case 'error':
@@ -97,7 +97,7 @@ const statusIcon = (status: Sep24TransactionStatus) => {
     case 'pending_external':
     case 'pending_user_transfer_start':
     default:
-      props.color = '$warning500';
+      props.className = 'text-warning-500';
       return <Icon as={ClockIcon} testID="icon-pending" {...props} />;
   }
 };
@@ -114,7 +114,7 @@ const TransactionDate = ({ date }: { date: string }) => {
   }
 
   return (
-    <Text size="sm" className="text-coolGray-500">
+    <Text size="sm" className="text-typography-500">
       {dateStr}
     </Text>
   );
@@ -125,8 +125,9 @@ const TransactionItem = ({ transaction, asset }: { transaction: Sep24Transaction
   const path = usePathname(); // workaround for nested routes
   const { status } = transaction;
 
+  const strikeIt = status === Sep24TransactionStatus.INCOMPLETE || status === Sep24TransactionStatus.ERROR;
   const title = (
-    <Text strikeThrough={status === Sep24TransactionStatus.INCOMPLETE} className="text-typography-950 font-medium">
+    <Text strikeThrough={strikeIt} className="text-typography-950 font-medium">
       {labelFor(asset) as string}
     </Text>
   );
@@ -163,7 +164,7 @@ const TransactionItem = ({ transaction, asset }: { transaction: Sep24Transaction
           className="ml-8 my--4 self-start"
         >
           <ButtonText>Confirm payment</ButtonText>
-          <ButtonIcon as={ArrowRightIcon} size="2xs" className="ml-1" />
+          <ButtonIcon as={ArrowRightIcon} size="sm" className="ml-1" />
         </Button>
       )}
     </>
