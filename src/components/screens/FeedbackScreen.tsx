@@ -19,13 +19,13 @@ type Props = {
 export const FeedbackScreen = ({ title, message, action = 'success', btnLabel = 'Continue', onContinue }: Props) => {
   const insets = useSafeAreaInsets();
   const renderIcon = () => {
-    let iconProps = { as: CheckCircleIcon, color: '$success500' };
+    let iconProps = { as: CheckCircleIcon, className: 'text-success-500' };
     if (action === 'error') {
-      iconProps = { as: CloseCircleIcon, color: '$error500' };
+      iconProps = { as: CloseCircleIcon, className: 'text-error-500' };
     } else if (action === 'warning') {
-      iconProps = { as: AlertCircleIcon, color: '$warning500' };
+      iconProps = { as: AlertCircleIcon, className: 'text-warning-500' };
     } else if (action === 'waiting') {
-      iconProps = { as: ClockIcon, color: '$warning500' };
+      iconProps = { as: ClockIcon, className: 'text-warning-500' };
     }
     return <Icon {...iconProps} size="3xl" testID={`${action}-icon`} />;
   };

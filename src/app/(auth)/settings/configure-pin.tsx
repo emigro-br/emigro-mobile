@@ -64,7 +64,7 @@ export const ConfigurePIN = () => {
         onPinSuccess={handlePinSuccess}
         onPinFail={handlePinFail}
       />
-      {/* {error && <Text color="$error500">{error}</Text>} */}
+      {/* {error && <Text className="text-error-500">{error}</Text>} */}
     </Box>
   );
 };
