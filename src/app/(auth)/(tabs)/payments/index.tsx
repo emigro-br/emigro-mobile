@@ -22,7 +22,7 @@ export const Payments = () => {
 
   const availableAssets = allCryptoCodesToObjs(balanceStore.currentAssets());
 
-  const w = 120;
+  const w = '1/3';
   return (
     <Box className="flex-1 bg-white">
       <VStack space="lg" className="p-4">
