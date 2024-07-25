@@ -7,7 +7,6 @@ import { Box } from '@/components/ui/box';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Center } from '@/components/ui/center';
-import { FormControlErrorText } from '@/components/ui/form-control';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
 import { CheckCircleIcon, Icon } from '@/components/ui/icon';
@@ -84,7 +83,9 @@ const ConfirmAccount = () => {
           </Link>
         </Text> */}
 
-        <FormControlErrorText testID="confirm-account-error">{error}</FormControlErrorText>
+        <Text className="text-error-500" testID="confirm-account-error">
+          {error}
+        </Text>
       </VStack>
       <ConfirmModal isOpen={isSuccessModalVisible} onConfirm={handleCloseConfirmationModal} />
     </Box>

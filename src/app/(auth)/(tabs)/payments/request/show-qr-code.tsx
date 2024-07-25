@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { BackHandler, Platform } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
-
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import * as Sentry from '@sentry/react-native';
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -124,10 +124,7 @@ export const RequestWithQRCode = () => {
   };
 
   return (
-    <Box
-      className=" flex-1 bg-white "
-      style={{ paddingTop: Platform.OS === 'android' ? insets.top: 0 }}
-    >
+    <Box className=" flex-1 bg-white " style={{ paddingTop: Platform.OS === 'android' ? insets.top : 0 }}>
       <VStack space="lg" className="p-4">
         <HStack className="justify-between">
           <Heading size="xl">Request with QR Code</Heading>

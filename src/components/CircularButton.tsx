@@ -12,9 +12,19 @@ type Props = {
   textSize?: 'sm' | 'md' | 'lg';
   w?: any;
   onPress: () => void;
+  testID?: string;
 };
 
-export const CircularButton = ({ label, icon, onPress, bg = 'primary-500', size = 'md', textSize, w }: Props) => {
+export const CircularButton = ({
+  label,
+  icon,
+  onPress,
+  bg = 'primary-500',
+  size = 'md',
+  textSize,
+  w,
+  testID,
+}: Props) => {
   let radius: any = '12';
   if (size === 'sm') {
     radius = '10';
@@ -25,7 +35,7 @@ export const CircularButton = ({ label, icon, onPress, bg = 'primary-500', size 
   const iconColor = bg === 'white' ? 'primary-500' : 'white';
 
   return (
-    <VStack className={` w-${w} items-center `}>
+    <VStack className={` w-${w} items-center `} testID={testID}>
       <Button size={size} onPress={onPress} className={` w-${radius} h-${radius} bg-${bg} p-0 rounded-full mb-1 `}>
         <ButtonIcon as={icon} size="2xl" className={` text-${iconColor} `} />
       </Button>

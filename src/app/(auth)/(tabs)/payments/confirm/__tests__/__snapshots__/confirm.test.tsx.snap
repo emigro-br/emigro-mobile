@@ -1,0 +1,884 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ConfirmPayment component renders correctly for pix payment 1`] = `
+<View
+  style={
+    [
+      {},
+      {
+        "flex": 1,
+        "height": "100%",
+        "width": "100%",
+      },
+      undefined,
+    ]
+  }
+>
+  <RCTScrollView
+    alwaysBounceVertical={true}
+    onContentSizeChange={null}
+    onLayout={[Function]}
+    onMomentumScrollBegin={[Function]}
+    onMomentumScrollEnd={[Function]}
+    onResponderGrant={[Function]}
+    onResponderReject={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onScroll={[Function]}
+    onScrollBeginDrag={[Function]}
+    onScrollEndDrag={[Function]}
+    onScrollShouldSetResponder={[Function]}
+    onStartShouldSetResponder={[Function]}
+    onStartShouldSetResponderCapture={[Function]}
+    onTouchCancel={[Function]}
+    onTouchEnd={[Function]}
+    onTouchMove={[Function]}
+    onTouchStart={[Function]}
+    pagingEnabled={false}
+    scrollViewRef={null}
+    sendMomentumEvents={false}
+    snapToEnd={true}
+    snapToStart={true}
+    style={
+      {
+        "flexDirection": "column",
+        "flexGrow": 1,
+        "flexShrink": 1,
+        "overflow": "scroll",
+      }
+    }
+  >
+    <RCTScrollContentView
+      collapsable={false}
+      style={
+        [
+          false,
+          undefined,
+        ]
+      }
+    >
+      <View
+        className="flex-1"
+      >
+        <View
+          className="flex-col gap-4 p-4"
+        >
+          <RCTText
+            accessibilityRole="header"
+            accessible={true}
+            allowFontScaling={true}
+            ellipsizeMode="tail"
+            isHighlighted={false}
+            selectionColor={null}
+            style={
+              {
+                "fontSize": 37.44,
+                "fontWeight": "bold",
+                "marginVertical": 32,
+              }
+            }
+          >
+            Review the payment
+          </RCTText>
+          <View
+            className="flex-row items-center"
+          >
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              dataSet={
+                {
+                  "active": "false",
+                  "disabled": "false",
+                  "focus": "false",
+                  "focusVisible": "false",
+                  "hover": "false",
+                }
+              }
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+            >
+              <RCTText
+                accessible={true}
+                allowFontScaling={true}
+                ellipsizeMode="tail"
+                isHighlighted={false}
+                selectionColor={null}
+                testID="amount"
+              >
+                $ 10.00
+              </RCTText>
+            </View>
+          </View>
+          <View
+            className="flex-col gap-7"
+          >
+            <View>
+              <RCTText
+                accessible={true}
+                allowFontScaling={true}
+                ellipsizeMode="tail"
+                isHighlighted={false}
+                numberOfLines={1}
+                selectionColor={null}
+              >
+                for
+                 
+                <RCTText
+                  isHighlighted={false}
+                  isPressable={false}
+                  selectionColor={null}
+                >
+                  John Doe
+                </RCTText>
+              </RCTText>
+              <RCTText
+                accessible={true}
+                allowFontScaling={true}
+                ellipsizeMode="tail"
+                isHighlighted={false}
+                selectionColor={null}
+              >
+                in 
+                <RCTText
+                  isHighlighted={false}
+                  isPressable={false}
+                  selectionColor={null}
+                >
+                  123 Main St
+                </RCTText>
+              </RCTText>
+            </View>
+            <View
+              className="flex-col gap-3"
+            >
+              <View
+                className="flex-row justify-between"
+              >
+                <RCTText
+                  accessible={true}
+                  allowFontScaling={true}
+                  ellipsizeMode="tail"
+                  isHighlighted={false}
+                  selectionColor={null}
+                >
+                  CPF/CNPJ: 
+                </RCTText>
+                <RCTText
+                  accessible={true}
+                  allowFontScaling={true}
+                  ellipsizeMode="tail"
+                  isHighlighted={false}
+                  selectionColor={null}
+                >
+                  mocked-taxId
+                </RCTText>
+              </View>
+              <View
+                className="flex-row justify-between"
+              >
+                <RCTText
+                  accessible={true}
+                  allowFontScaling={true}
+                  ellipsizeMode="tail"
+                  isHighlighted={false}
+                  selectionColor={null}
+                >
+                  Institution: 
+                </RCTText>
+                <RCTText
+                  accessible={true}
+                  allowFontScaling={true}
+                  ellipsizeMode="tail"
+                  isHighlighted={false}
+                  numberOfLines={2}
+                  selectionColor={null}
+                >
+                  Mock Bank
+                </RCTText>
+              </View>
+              <View
+                className="flex-row justify-between"
+              >
+                <RCTText
+                  accessible={true}
+                  allowFontScaling={true}
+                  ellipsizeMode="tail"
+                  isHighlighted={false}
+                  selectionColor={null}
+                >
+                  Pix Key: 
+                </RCTText>
+                <RCTText
+                  accessible={true}
+                  allowFontScaling={true}
+                  ellipsizeMode="tail"
+                  isHighlighted={false}
+                  selectionColor={null}
+                >
+                  mocked-pixkey
+                </RCTText>
+              </View>
+              <View
+                className="flex-row justify-between"
+              >
+                <RCTText
+                  accessible={true}
+                  allowFontScaling={true}
+                  ellipsizeMode="tail"
+                  isHighlighted={false}
+                  selectionColor={null}
+                >
+                  Identifier: 
+                </RCTText>
+                <RCTText
+                  accessible={true}
+                  allowFontScaling={true}
+                  ellipsizeMode="tail"
+                  isHighlighted={false}
+                  selectionColor={null}
+                >
+                  mocked-identifier
+                </RCTText>
+              </View>
+            </View>
+          </View>
+          <View />
+          <RCTText
+            accessible={true}
+            allowFontScaling={true}
+            ellipsizeMode="tail"
+            isHighlighted={false}
+            selectionColor={null}
+          >
+            Select the account
+          </RCTText>
+          <View
+            className="p-4 rounded-xl bg-background-50 pb-2"
+          >
+            <View
+              className="flex-row"
+            >
+              <View
+                className="w-1/4"
+              >
+                <View
+                  onLayout={[Function]}
+                  style={
+                    {
+                      "justifyContent": "center",
+                    }
+                  }
+                >
+                  <View
+                    accessibilityState={
+                      {
+                        "busy": undefined,
+                        "checked": undefined,
+                        "disabled": undefined,
+                        "expanded": undefined,
+                        "selected": undefined,
+                      }
+                    }
+                    accessible={false}
+                    focusable={true}
+                    onClick={[Function]}
+                    onResponderGrant={[Function]}
+                    onResponderMove={[Function]}
+                    onResponderRelease={[Function]}
+                    onResponderTerminate={[Function]}
+                    onResponderTerminationRequest={[Function]}
+                    onStartShouldSetResponder={[Function]}
+                    style={
+                      {
+                        "alignItems": "center",
+                        "flexDirection": "row",
+                        "height": 35,
+                        "justifyContent": "space-between",
+                      }
+                    }
+                    testID="select-account"
+                  >
+                    <Text
+                      style={
+                        [
+                          {
+                            "flex": 1,
+                            "fontSize": 16,
+                            "writingDirection": "ltr",
+                          },
+                          undefined,
+                          {},
+                        ]
+                      }
+                    >
+                      Select item
+                    </Text>
+                    <Image
+                      source={1}
+                      style={
+                        {
+                          "height": 20,
+                          "tintColor": "gray",
+                          "width": 20,
+                        }
+                      }
+                    />
+                  </View>
+                </View>
+              </View>
+              <View
+                className="w-3/4"
+              >
+                <RCTText
+                  accessible={true}
+                  allowFontScaling={true}
+                  ellipsizeMode="tail"
+                  isHighlighted={false}
+                  selectionColor={null}
+                  testID="quote"
+                >
+                  $ 10.00
+                </RCTText>
+              </View>
+            </View>
+            <View
+              className="flex-row justify-between"
+            >
+              <RCTText
+                accessible={true}
+                allowFontScaling={true}
+                ellipsizeMode="tail"
+                isHighlighted={false}
+                selectionColor={null}
+                testID="balance"
+              >
+                Balance: 
+                $ 100.00
+              </RCTText>
+            </View>
+          </View>
+          <RCTText
+            accessible={true}
+            allowFontScaling={true}
+            ellipsizeMode="tail"
+            isHighlighted={false}
+            selectionColor={null}
+          >
+            The seller will receive the exact value he set. The quantity that will be sent is computed automatically.
+          </RCTText>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            dataSet={
+              {
+                "active": "false",
+                "disabled": "false",
+                "focus": "false",
+                "focusVisible": "false",
+                "hover": "false",
+              }
+            }
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            role="button"
+          >
+            <Text
+              dataSet={
+                {
+                  "active": false,
+                  "disabled": false,
+                  "focus": false,
+                  "focusVisible": false,
+                  "hover": false,
+                }
+              }
+              states={
+                {
+                  "active": false,
+                  "disabled": false,
+                  "focus": false,
+                  "focusVisible": false,
+                  "hover": false,
+                }
+              }
+            >
+              Pay
+               
+            </Text>
+          </View>
+        </View>
+      </View>
+    </RCTScrollContentView>
+  </RCTScrollView>
+</View>
+`;
+
+exports[`ConfirmPayment component renders correctly for stellar payment 1`] = `
+<View
+  style={
+    [
+      {},
+      {
+        "flex": 1,
+        "height": "100%",
+        "width": "100%",
+      },
+      undefined,
+    ]
+  }
+>
+  <RCTScrollView
+    alwaysBounceVertical={true}
+    onContentSizeChange={null}
+    onLayout={[Function]}
+    onMomentumScrollBegin={[Function]}
+    onMomentumScrollEnd={[Function]}
+    onResponderGrant={[Function]}
+    onResponderReject={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onScroll={[Function]}
+    onScrollBeginDrag={[Function]}
+    onScrollEndDrag={[Function]}
+    onScrollShouldSetResponder={[Function]}
+    onStartShouldSetResponder={[Function]}
+    onStartShouldSetResponderCapture={[Function]}
+    onTouchCancel={[Function]}
+    onTouchEnd={[Function]}
+    onTouchMove={[Function]}
+    onTouchStart={[Function]}
+    pagingEnabled={false}
+    scrollViewRef={null}
+    sendMomentumEvents={false}
+    snapToEnd={true}
+    snapToStart={true}
+    style={
+      {
+        "flexDirection": "column",
+        "flexGrow": 1,
+        "flexShrink": 1,
+        "overflow": "scroll",
+      }
+    }
+  >
+    <RCTScrollContentView
+      collapsable={false}
+      style={
+        [
+          false,
+          undefined,
+        ]
+      }
+    >
+      <View
+        className="flex-1"
+      >
+        <View
+          className="flex-col gap-4 p-4"
+        >
+          <RCTText
+            accessibilityRole="header"
+            accessible={true}
+            allowFontScaling={true}
+            ellipsizeMode="tail"
+            isHighlighted={false}
+            selectionColor={null}
+            style={
+              {
+                "fontSize": 37.44,
+                "fontWeight": "bold",
+                "marginVertical": 32,
+              }
+            }
+          >
+            Review the payment
+          </RCTText>
+          <View
+            className="flex-row items-center"
+          >
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              dataSet={
+                {
+                  "active": "false",
+                  "disabled": "false",
+                  "focus": "false",
+                  "focusVisible": "false",
+                  "hover": "false",
+                }
+              }
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+            >
+              <RCTText
+                accessible={true}
+                allowFontScaling={true}
+                ellipsizeMode="tail"
+                isHighlighted={false}
+                selectionColor={null}
+                testID="amount"
+              >
+                $ 10.00
+              </RCTText>
+            </View>
+          </View>
+          <View
+            className="flex-col gap-7"
+          >
+            <View>
+              <RCTText
+                accessible={true}
+                allowFontScaling={true}
+                ellipsizeMode="tail"
+                isHighlighted={false}
+                numberOfLines={1}
+                selectionColor={null}
+              >
+                for
+                 
+                <RCTText
+                  isHighlighted={false}
+                  isPressable={false}
+                  selectionColor={null}
+                >
+                  John Doe
+                </RCTText>
+              </RCTText>
+              <RCTText
+                accessible={true}
+                allowFontScaling={true}
+                ellipsizeMode="tail"
+                isHighlighted={false}
+                selectionColor={null}
+              >
+                in 
+                <RCTText
+                  isHighlighted={false}
+                  isPressable={false}
+                  selectionColor={null}
+                >
+                  123 Main St
+                </RCTText>
+              </RCTText>
+            </View>
+            <View
+              className="flex-col gap-3"
+            >
+              <View
+                className="flex-row justify-between"
+              >
+                <RCTText
+                  accessible={true}
+                  allowFontScaling={true}
+                  ellipsizeMode="tail"
+                  isHighlighted={false}
+                  selectionColor={null}
+                >
+                  Institution:
+                </RCTText>
+                <RCTText
+                  accessible={true}
+                  allowFontScaling={true}
+                  ellipsizeMode="tail"
+                  isHighlighted={false}
+                  selectionColor={null}
+                >
+                  Stellar Network
+                </RCTText>
+              </View>
+              <View
+                className="flex-row justify-between"
+              >
+                <RCTText
+                  accessible={true}
+                  allowFontScaling={true}
+                  ellipsizeMode="tail"
+                  isHighlighted={false}
+                  selectionColor={null}
+                >
+                  Wallet Key:
+                </RCTText>
+                <RCTText
+                  accessible={true}
+                  allowFontScaling={true}
+                  ellipsizeMode="tail"
+                  isHighlighted={false}
+                  selectionColor={null}
+                >
+                  mocke...etkey
+                </RCTText>
+              </View>
+            </View>
+          </View>
+          <View />
+          <RCTText
+            accessible={true}
+            allowFontScaling={true}
+            ellipsizeMode="tail"
+            isHighlighted={false}
+            selectionColor={null}
+          >
+            Select the account
+          </RCTText>
+          <View
+            className="p-4 rounded-xl bg-background-50 pb-2"
+          >
+            <View
+              className="flex-row"
+            >
+              <View
+                className="w-1/4"
+              >
+                <View
+                  onLayout={[Function]}
+                  style={
+                    {
+                      "justifyContent": "center",
+                    }
+                  }
+                >
+                  <View
+                    accessibilityState={
+                      {
+                        "busy": undefined,
+                        "checked": undefined,
+                        "disabled": undefined,
+                        "expanded": undefined,
+                        "selected": undefined,
+                      }
+                    }
+                    accessible={false}
+                    focusable={true}
+                    onClick={[Function]}
+                    onResponderGrant={[Function]}
+                    onResponderMove={[Function]}
+                    onResponderRelease={[Function]}
+                    onResponderTerminate={[Function]}
+                    onResponderTerminationRequest={[Function]}
+                    onStartShouldSetResponder={[Function]}
+                    style={
+                      {
+                        "alignItems": "center",
+                        "flexDirection": "row",
+                        "height": 35,
+                        "justifyContent": "space-between",
+                      }
+                    }
+                    testID="select-account"
+                  >
+                    <Text
+                      style={
+                        [
+                          {
+                            "flex": 1,
+                            "fontSize": 16,
+                            "writingDirection": "ltr",
+                          },
+                          undefined,
+                          {},
+                        ]
+                      }
+                    >
+                      Select item
+                    </Text>
+                    <Image
+                      source={1}
+                      style={
+                        {
+                          "height": 20,
+                          "tintColor": "gray",
+                          "width": 20,
+                        }
+                      }
+                    />
+                  </View>
+                </View>
+              </View>
+              <View
+                className="w-3/4"
+              >
+                <RCTText
+                  accessible={true}
+                  allowFontScaling={true}
+                  ellipsizeMode="tail"
+                  isHighlighted={false}
+                  selectionColor={null}
+                  testID="quote"
+                >
+                  $ 10.00
+                </RCTText>
+              </View>
+            </View>
+            <View
+              className="flex-row justify-between"
+            >
+              <RCTText
+                accessible={true}
+                allowFontScaling={true}
+                ellipsizeMode="tail"
+                isHighlighted={false}
+                selectionColor={null}
+                testID="balance"
+              >
+                Balance: 
+                $ 100.00
+              </RCTText>
+            </View>
+          </View>
+          <RCTText
+            accessible={true}
+            allowFontScaling={true}
+            ellipsizeMode="tail"
+            isHighlighted={false}
+            selectionColor={null}
+          >
+            The seller will receive the exact value he set. The quantity that will be sent is computed automatically.
+          </RCTText>
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            dataSet={
+              {
+                "active": "false",
+                "disabled": "false",
+                "focus": "false",
+                "focusVisible": "false",
+                "hover": "false",
+              }
+            }
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            role="button"
+          >
+            <Text
+              dataSet={
+                {
+                  "active": false,
+                  "disabled": false,
+                  "focus": false,
+                  "focusVisible": false,
+                  "hover": false,
+                }
+              }
+              states={
+                {
+                  "active": false,
+                  "disabled": false,
+                  "focus": false,
+                  "focusVisible": false,
+                  "hover": false,
+                }
+              }
+            >
+              Pay
+               
+            </Text>
+          </View>
+        </View>
+      </View>
+    </RCTScrollContentView>
+  </RCTScrollView>
+</View>
+`;

@@ -35,6 +35,7 @@ export const Payments = () => {
             textSize="lg"
             w={w}
             onPress={() => router.push('/payments/scan')}
+            testID="scan-to-pay"
           />
           <CircularButton
             icon={HandCoinsIcon}
@@ -43,6 +44,7 @@ export const Payments = () => {
             textSize="lg"
             w={w}
             onPress={() => setAssetListOpen(true)}
+            testID="request-payment"
           />
         </ButtonGroup>
         <ButtonGroup space="4xl" className="mt-8">
@@ -54,6 +56,7 @@ export const Payments = () => {
               textSize="lg"
               w={w}
               onPress={() => router.push('/payments/pix/copia-e-cola')}
+              testID="pix-copia-e-cola"
             />
           ) : (
             <></>

@@ -11,7 +11,6 @@ import { LoadingScreen } from '@/components/screens/Loading';
 import { Box } from '@/components/ui/box';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { FormControlErrorText } from '@/components/ui/form-control';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
 import { ChevronRightIcon } from '@/components/ui/icon';
@@ -127,7 +126,7 @@ const Deposit = observer(() => {
             </>
           )}
 
-          {errorMessage && <FormControlErrorText>{errorMessage}</FormControlErrorText>}
+          {errorMessage && <Text className="text-error-500">{errorMessage}</Text>}
         </VStack>
       </Box>
     </>

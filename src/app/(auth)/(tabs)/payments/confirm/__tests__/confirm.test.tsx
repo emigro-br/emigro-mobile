@@ -65,28 +65,31 @@ describe('ConfirmPayment component', () => {
   it('renders correctly for stellar payment', async () => {
     paymentStore.setScannedPayment(mockScannedPayment); // for full test coverage
     jest.spyOn(quotesService, 'fetchQuote');
-    const { getByText, queryByText, queryAllByText } = render(<ConfirmPayment />);
+    // const { getByText, queryByText, queryAllByText } = render(<ConfirmPayment />);
+    const screen = render(<ConfirmPayment />);
 
     // receiver info
-    expect(getByText('Review the payment')).toBeOnTheScreen();
-    expect(queryAllByText('$ 10.00')).toHaveLength(2); // the amount is displayed twice
-    expect(getByText('for John Doe')).toBeOnTheScreen();
-    expect(getByText('in 123 Main St')).toBeOnTheScreen();
+    // expect(getByText('Review the payment')).toBeOnTheScreen();
+    // expect(queryAllByText('$ 10.00')).toHaveLength(2); // the amount is displayed twice
+    // expect(getByText('for John Doe')).toBeOnTheScreen();
+    // expect(getByText('in 123 Main St')).toBeOnTheScreen();
 
-    // stellar info
-    expect(getByText('Institution:')).toBeOnTheScreen();
-    expect(getByText('Stellar Network')).toBeOnTheScreen();
-    expect(getByText('Wallet Key:')).toBeOnTheScreen();
-    expect(getByText('mocke...etkey')).toBeOnTheScreen(); // masked
-    // expect(getByText('Identifier:')).toBeOnTheScreen();
+    // // stellar info
+    // expect(getByText('Institution:')).toBeOnTheScreen();
+    // expect(getByText('Stellar Network')).toBeOnTheScreen();
+    // expect(getByText('Wallet Key:')).toBeOnTheScreen();
+    // expect(getByText('mocke...etkey')).toBeOnTheScreen(); // masked
+    // // expect(getByText('Identifier:')).toBeOnTheScreen();
 
-    // not pix info
-    expect(queryByText('CPF/CNPJ:')).toBeNull();
+    // // not pix info
+    // expect(queryByText('CPF/CNPJ:')).toBeNull();
 
-    // payment
-    expect(getByText('Select the account')).toBeOnTheScreen();
-    expect(getByText('Balance: $ 100.00')).toBeOnTheScreen();
-    expect(getByText('Pay')).toBeOnTheScreen();
+    // // payment
+    // expect(getByText('Select the account')).toBeOnTheScreen();
+    // expect(getByText('Balance: $ 100.00')).toBeOnTheScreen();
+    // expect(getByText('Pay')).toBeOnTheScreen();
+
+    expect(screen.toJSON()).toMatchSnapshot();
 
     expect(quotesService.fetchQuote).not.toHaveBeenCalled();
   });
@@ -94,32 +97,34 @@ describe('ConfirmPayment component', () => {
   it('renders correctly for pix payment', async () => {
     paymentStore.setScannedPayment(mockPixPayment); // for full test coverage
     jest.spyOn(quotesService, 'fetchQuote');
-    const { getByText, queryByText, queryAllByText } = render(<ConfirmPayment />);
+    // const { getByText, queryByText, queryAllByText } = render(<ConfirmPayment />);
+    const screen = render(<ConfirmPayment />);
 
     // receiver info
-    expect(getByText('Review the payment')).toBeOnTheScreen();
-    expect(queryAllByText('$ 10.00')).toHaveLength(2); // the amount is displayed twice
-    expect(getByText('for John Doe')).toBeOnTheScreen();
-    expect(getByText('in 123 Main St')).toBeOnTheScreen();
+    // expect(getByText('Review the payment')).toBeOnTheScreen();
+    // expect(queryAllByText('$ 10.00')).toHaveLength(2); // the amount is displayed twice
+    // expect(getByText('for John Doe')).toBeOnTheScreen();
+    // expect(getByText('in 123 Main St')).toBeOnTheScreen();
 
-    // pix info
-    expect(getByText('Pix Key:')).toBeOnTheScreen();
-    expect(getByText('mocked-pixkey')).toBeOnTheScreen();
-    expect(getByText('Identifier:')).toBeOnTheScreen();
-    expect(getByText('mocked-identifier')).toBeOnTheScreen();
-    expect(getByText('CPF/CNPJ:')).toBeOnTheScreen();
-    expect(getByText('mocked-taxId')).toBeOnTheScreen();
-    expect(getByText('Institution:')).toBeOnTheScreen();
-    expect(getByText('Mock Bank')).toBeOnTheScreen();
+    // // pix info
+    // expect(getByText('Pix Key:')).toBeOnTheScreen();
+    // expect(getByText('mocked-pixkey')).toBeOnTheScreen();
+    // expect(getByText('Identifier:')).toBeOnTheScreen();
+    // expect(getByText('mocked-identifier')).toBeOnTheScreen();
+    // expect(getByText('CPF/CNPJ:')).toBeOnTheScreen();
+    // expect(getByText('mocked-taxId')).toBeOnTheScreen();
+    // expect(getByText('Institution:')).toBeOnTheScreen();
+    // expect(getByText('Mock Bank')).toBeOnTheScreen();
 
-    // not stellar
-    expect(queryByText('Wallet Key:')).toBeNull();
+    // // not stellar
+    // expect(queryByText('Wallet Key:')).toBeNull();
 
-    // payment
-    expect(getByText('Select the account')).toBeOnTheScreen();
-    expect(getByText('Balance: $ 100.00')).toBeOnTheScreen();
-    expect(getByText('Pay')).toBeOnTheScreen();
+    // // payment
+    // expect(getByText('Select the account')).toBeOnTheScreen();
+    // expect(getByText('Balance: $ 100.00')).toBeOnTheScreen();
+    // expect(getByText('Pay')).toBeOnTheScreen();
 
+    expect(screen.toJSON()).toMatchSnapshot();
     expect(quotesService.fetchQuote).not.toHaveBeenCalled();
   });
 
@@ -129,12 +134,12 @@ describe('ConfirmPayment component', () => {
       .mockResolvedValueOnce({ source_amount: 99 } as quotesService.IQuoteResponse);
     jest.spyOn(balanceStore, 'get').mockReturnValue(50); // enough balance
 
-    const { getByText, getByTestId } = render(<ConfirmPayment />);
+    const { getByTestId } = render(<ConfirmPayment />);
     const select = getByTestId('select-account');
     fireEvent(select, 'onChange', { value: 'BRZ' });
 
     await waitFor(() => {
-      expect(getByText('Balance: R$ 50.00')).toBeOnTheScreen();
+      expect(getByTestId('balance')).toHaveTextContent('Balance: R$ 50.00');
     });
 
     await waitFor(() => {
@@ -145,14 +150,14 @@ describe('ConfirmPayment component', () => {
         type: 'strict_receive',
       });
     });
-    expect(getByText('R$ 99.00')).toBeOnTheScreen();
+    expect(getByTestId('quote')).toHaveTextContent('R$ 99.00');
   });
 
   it('should open the edit amount when the "edit" is pressed', async () => {
     const mockPixZeroAmount = { ...mockPixPayment, transactionAmount: 0 };
     paymentStore.setScannedPayment(mockPixZeroAmount); // for full test coverage
     const { getByText, getByTestId } = render(<ConfirmPayment />);
-    expect(getByText('$ 0.00')).toBeOnTheScreen();
+    expect(getByTestId('amount')).toHaveTextContent('$ 0.00');
     const edit = getByText('Edit');
     expect(edit).toBeOnTheScreen();
 

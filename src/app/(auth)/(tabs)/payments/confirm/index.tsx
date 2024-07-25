@@ -183,7 +183,7 @@ export const ConfirmPayment = () => {
 
             <HStack className="items-center">
               <Pressable onPress={() => isAmountEditable && setShowEditAmount(true)}>
-                <Text size="4xl" bold className="text-typography-800">
+                <Text size="4xl" bold className="text-typography-800" testID="amount">
                   {symbolFor(scannedPayment.assetCode, requestedAmount)}
                 </Text>
               </Pressable>
@@ -211,7 +211,7 @@ export const ConfirmPayment = () => {
 
               {scannedPayment.infoAdicional && (
                 <Center>
-                  <Card variant="filled" className="bg-backgroundLight-100">
+                  <Card variant="filled" className="bg-background-100">
                     <Text className="text-center">{scannedPayment.infoAdicional}</Text>
                   </Card>
                 </Center>
@@ -239,11 +239,13 @@ export const ConfirmPayment = () => {
                   />
                 </Box>
                 <Box className="w-3/4">
-                  <Text className="text-[right] py-1">{paymentQuote && symbolFor(selectedAsset, paymentQuote)}</Text>
+                  <Text className="text-right py-1" testID="quote">
+                    {paymentQuote && symbolFor(selectedAsset, paymentQuote)}
+                  </Text>
                 </Box>
               </HStack>
               <HStack className="justify-between">
-                <Text size="xs" className={` color-${`${hasBalance ? '$gray' : '$red'}`} `}>
+                <Text size="xs" className={hasBalance ? 'text-typography-500' : 'text-red-500'} testID="balance">
                   Balance: {symbolFor(selectedAsset, balance)}
                 </Text>
                 {!hasBalance && (
