@@ -22,8 +22,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        # --legacy-peer-deps https://github.com/gluestack/gluestack-ui/issues/2337
-        run: npm ci --legacy-peer-deps
+        run: npm ci
 
       - name: Lint
         run: npm run lint
