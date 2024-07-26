@@ -48,7 +48,7 @@ export const AssetForOperation = () => {
         onAction={() => {
           setCurrencyForDeposit(null);
           router.dismissAll();
-          router.push(`/wallet/ramp/deposit/${currencyForDeposit}`);
+          router.push(`/ramp/deposit/${currencyForDeposit}`);
         }}
       />
       <Box className="flex-1">

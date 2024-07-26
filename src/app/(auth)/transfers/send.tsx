@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import * as Clipboard from 'expo-clipboard';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { ClipboardPasteIcon } from 'lucide-react-native';
 
 import { AssetInput } from '@/components/AssetInput';
@@ -56,51 +56,54 @@ export const SendAsset = () => {
   };
 
   return (
-    <Box className="flex-1 bg-white  dark:bg-backgroundDark-950">
-      <Heading size="xl" className="mt-4 mx-4">
-        Send {asset}
-      </Heading>
-      <Box className="m-4">
-        <VStack space="md">
-          <FormControl size="md" isInvalid={isBalanceExceeded}>
-            <Text size="sm">
-              Balance: {balance} {asset}
-            </Text>
-            <AssetInput
-              asset={asset}
-              value={amount}
-              onChangeValue={setAmount}
-              size="4xl"
-              textAlign="center"
-              className="font-bold"
-            />
-            <Center>
-              <FormControlError>
-                <FormControlErrorText>Exceeds Balance</FormControlErrorText>
-              </FormControlError>
-            </Center>
-          </FormControl>
+    <>
+      <Stack.Screen options={{ title: 'Transfer Info' }} />
+      <Box className="flex-1 bg-white  dark:bg-backgroundDark-950">
+        <Heading size="xl" className="mt-4 mx-4">
+          Send {asset}
+        </Heading>
+        <Box className="m-4">
+          <VStack space="md">
+            <FormControl size="md" isInvalid={isBalanceExceeded}>
+              <Text size="sm">
+                Balance: {balance} {asset}
+              </Text>
+              <AssetInput
+                asset={asset}
+                value={amount}
+                onChangeValue={setAmount}
+                size="4xl"
+                textAlign="center"
+                className="font-bold"
+              />
+              <Center>
+                <FormControlError>
+                  <FormControlErrorText>Exceeds Balance</FormControlErrorText>
+                </FormControlError>
+              </Center>
+            </FormControl>
 
-          <FormControl size="md" isInvalid={!isValidAddress}>
-            <FormControlLabel className="mb-1">
-              <FormControlLabelText>Recipient Wallet</FormControlLabelText>
-            </FormControlLabel>
-            <Input variant="outline" isRequired>
-              <InputField placeholder="Enter the wallet address here" value={address} onChangeText={setAddress} />
-              <InputSlot onPress={handlePaste} className="pr-3">
-                <InputIcon as={ClipboardPasteIcon} />
-              </InputSlot>
-            </Input>
-            <FormControlError>
-              <FormControlErrorText>A valid wallet is required</FormControlErrorText>
-            </FormControlError>
-          </FormControl>
-          <Button disabled={isButtonDisabled} onPress={handlePressContinue}>
-            <ButtonText>Continue</ButtonText>
-          </Button>
-        </VStack>
+            <FormControl size="md" isInvalid={!isValidAddress}>
+              <FormControlLabel className="mb-1">
+                <FormControlLabelText>Recipient Wallet</FormControlLabelText>
+              </FormControlLabel>
+              <Input variant="outline" isRequired>
+                <InputField placeholder="Enter the wallet address here" value={address} onChangeText={setAddress} />
+                <InputSlot onPress={handlePaste} className="pr-3">
+                  <InputIcon as={ClipboardPasteIcon} />
+                </InputSlot>
+              </Input>
+              <FormControlError>
+                <FormControlErrorText>A valid wallet is required</FormControlErrorText>
+              </FormControlError>
+            </FormControl>
+            <Button disabled={isButtonDisabled} onPress={handlePressContinue}>
+              <ButtonText>Continue</ButtonText>
+            </Button>
+          </VStack>
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 };
 

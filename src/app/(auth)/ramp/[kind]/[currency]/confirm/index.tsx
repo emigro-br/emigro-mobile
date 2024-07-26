@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useLocalSearchParams, usePathname, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, usePathname, useRouter } from 'expo-router';
 
 import { AssetImage } from '@/components/AssetImage';
 import { DetailsTable } from '@/components/DetailsTable';
@@ -98,39 +98,42 @@ export const WithdrawlConfirm = ({ asset, transaction, onConfirm, onClose }: Pro
   };
 
   return (
-    <Box className="flex-1" style={{ paddingBottom: insets.bottom }}>
-      <ModalCloseButton onPress={onClose} testID="close-button" className="mt-6 ml-2">
-        <Icon as={CloseIcon} size="xl" />
-      </ModalCloseButton>
-      <VStack className="p-4">
-        <HStack className="justify-between">
-          <Heading size="xl">Withdrawing</Heading>
-          <AssetImage asset={asset} size="sm" />
-        </HStack>
-        <Heading size="3xl">{symbolFor(currency, amount_out)}</Heading>
-        <Box className="h-12" />
-        <Text bold className="text-typography-600 mb-2">
-          Transaction details
-        </Text>
-        <DetailsTable rows={rows} />
-        <Text className="text-typography-400 mt-4 mb-2">Transaction ID</Text>
-        <Text>{transaction.id}</Text>
-      </VStack>
-      <Box className="flex-1" />
-      <Divider />
-      {/* test status to avoid pay twice */}
-      {transaction.status === Sep24TransactionStatus.PENDING_USER_TRANSFER_START && (
-        <Button
-          onPress={() => handleConfirm()}
-          size="lg"
-          disabled={isProcessing}
-          testID="confirm-button"
-          className="m-4"
-        >
-          <ButtonText>{isProcessing ? 'Processing...' : 'Confirm withdraw'}</ButtonText>
-        </Button>
-      )}
-    </Box>
+    <>
+      <Stack.Screen options={{ title: 'Confirm Withdraw' }} />
+      <Box className="flex-1" style={{ paddingBottom: insets.bottom }}>
+        <ModalCloseButton onPress={onClose} testID="close-button" className="mt-6 ml-2">
+          <Icon as={CloseIcon} size="xl" />
+        </ModalCloseButton>
+        <VStack className="p-4">
+          <HStack className="justify-between">
+            <Heading size="xl">Withdrawing</Heading>
+            <AssetImage asset={asset} size="sm" />
+          </HStack>
+          <Heading size="3xl">{symbolFor(currency, amount_out)}</Heading>
+          <Box className="h-12" />
+          <Text bold className="text-typography-600 mb-2">
+            Transaction details
+          </Text>
+          <DetailsTable rows={rows} />
+          <Text className="text-typography-400 mt-4 mb-2">Transaction ID</Text>
+          <Text>{transaction.id}</Text>
+        </VStack>
+        <Box className="flex-1" />
+        <Divider />
+        {/* test status to avoid pay twice */}
+        {transaction.status === Sep24TransactionStatus.PENDING_USER_TRANSFER_START && (
+          <Button
+            onPress={() => handleConfirm()}
+            size="lg"
+            disabled={isProcessing}
+            testID="confirm-button"
+            className="m-4"
+          >
+            <ButtonText>{isProcessing ? 'Processing...' : 'Confirm withdraw'}</ButtonText>
+          </Button>
+        )}
+      </Box>
+    </>
   );
 };
 

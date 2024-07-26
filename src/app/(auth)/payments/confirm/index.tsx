@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Dropdown } from 'react-native-element-dropdown';
 
 import * as Sentry from '@sentry/react-native';
-import { usePathname, useRouter } from 'expo-router';
+import { Stack, usePathname, useRouter } from 'expo-router';
 
 import { InputAmountActionSheet } from '@/components/InputAmountActionSheet';
 import { LoadingScreen } from '@/components/screens/Loading';
@@ -168,6 +168,7 @@ export const ConfirmPayment = () => {
 
   return (
     <>
+      <Stack.Screen options={{ title: 'Confirm Payment', headerBackTitle: 'Back' }} />
       <InputAmountActionSheet
         isOpen={showEditAmount}
         onClose={() => setShowEditAmount(false)}

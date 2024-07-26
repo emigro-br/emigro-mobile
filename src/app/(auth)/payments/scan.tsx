@@ -12,7 +12,7 @@ import {
   PermissionStatus,
   useCameraPermissions,
 } from 'expo-camera';
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { PixElementType, hasError, parsePix } from 'pix-utils';
 
 import { Spacer } from '@/components/Spacer';
@@ -153,27 +153,30 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
   );
 
   return (
-    <Box className="flex-1">
-      <CameraView
-        style={[styles.camera]}
-        onCameraReady={() => setCameraReady(true)}
-        onBarcodeScanned={handleBarCodeScanned}
-        barcodeScannerSettings={{
-          barcodeTypes: ['qr'],
-        }}
-      >
-        <View style={{ ...styles.buttonContainer, paddingTop: insets.top }}>
-          <Spacer />
-          <CloseButton />
-        </View>
-        {cameraReady && (
-          <View style={styles.rectangleContainer}>
-            <QRRectangule />
-            <InfoText />
+    <>
+      <Stack.Screen options={{ title: 'Scan a Payment', headerShown: false }} />
+      <Box className="flex-1">
+        <CameraView
+          style={[styles.camera]}
+          onCameraReady={() => setCameraReady(true)}
+          onBarcodeScanned={handleBarCodeScanned}
+          barcodeScannerSettings={{
+            barcodeTypes: ['qr'],
+          }}
+        >
+          <View style={{ ...styles.buttonContainer, paddingTop: insets.top }}>
+            <Spacer />
+            <CloseButton />
           </View>
-        )}
-      </CameraView>
-    </Box>
+          {cameraReady && (
+            <View style={styles.rectangleContainer}>
+              <QRRectangule />
+              <InfoText />
+            </View>
+          )}
+        </CameraView>
+      </Box>
+    </>
   );
 };
 

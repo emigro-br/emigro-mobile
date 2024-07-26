@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
-import PaymentWaiting from '@/app/(auth)/(tabs)/payments/confirm/waiting';
+import PaymentWaiting from '@/app/(auth)/payments/confirm/waiting';
 
 describe('PaymentWaiting', () => {
   it('should render the component correctly', () => {

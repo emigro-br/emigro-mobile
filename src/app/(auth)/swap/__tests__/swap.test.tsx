@@ -130,7 +130,7 @@ describe('Swap component', () => {
 
     await waitFor(() => {
       expect(spy).toHaveBeenCalledWith(transaction);
-      expect(router.push).toHaveBeenCalledWith('/wallet/swap/review');
+      expect(router.push).toHaveBeenCalledWith('/swap/review');
     });
   });
 });

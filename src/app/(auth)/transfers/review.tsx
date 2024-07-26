@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 
 import { Box } from '@/components/ui/box';
 import { Button, ButtonText } from '@/components/ui/button';
@@ -16,6 +16,7 @@ export const ReviewTransfer = () => {
 
   return (
     <>
+      <Stack.Screen options={{ title: 'Review Transfer' }} />
       <Box className="flex-1">
         <VStack space="lg" className="p-4">
           <Heading size="xl">Review Transfer</Heading>

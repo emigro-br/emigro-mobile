@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 
 import { Box } from '@/components/ui/box';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
@@ -150,7 +150,7 @@ export const Swap = () => {
 
   const handlePress = () => {
     bloc.setSwap({ fromAsset: sellAsset, toAsset: buyAsset, fromValue: sellValue, toValue: buyValue, rate: rate! });
-    router.push('/wallet/swap/review');
+    router.push('/swap/review');
   };
 
   const isButtonDisabled =
@@ -161,63 +161,66 @@ export const Swap = () => {
     sellValue > balanceStore.get(sellAsset);
 
   return (
-    <Box className="flex-1 bg-white">
-      <VStack space="sm" className="p-4">
-        <Heading size="2xl">Sell {sellAsset}</Heading>
-        <AssetSwap
-          sellOrBuy={SwapType.SELL}
-          asset={sellAsset}
-          value={sellValue}
-          balance={balanceStore.get(sellAsset)}
-          assets={myAssetss}
-          onChangeAsset={(asset) => onChangeAsset(asset, SwapType.SELL)}
-          onChangeValue={(value) => setSellValue(value)}
-          isActive={active === SwapType.SELL}
-          onPress={() => setActive(SwapType.SELL)}
-          testID="sell-box"
-        />
-        <Center className="my-0.5">
-          <Button onPress={handleSwitch} testID="arrowIcon" variant="outline" className="rounded-full h-10 w-10">
-            <ButtonIcon as={RepeatIcon} className="text-primary-500" />
-          </Button>
-        </Center>
-        <AssetSwap
-          sellOrBuy={SwapType.BUY}
-          asset={buyAsset}
-          value={buyValue}
-          balance={balanceStore.get(buyAsset)}
-          assets={myAssetss}
-          onChangeAsset={(asset) => onChangeAsset(asset, SwapType.BUY)}
-          onChangeValue={(value) => setBuyValue(value)}
-          isActive={active === SwapType.BUY}
-          onPress={() => setActive(SwapType.BUY)}
-          testID="buy-box"
-        />
-        <Box className="my-1.5 ml-1">
-          {fetchingRate && (
-            <HStack space="md" testID="fetching">
-              <Spinner size="small" className="text-typography-500" />
-              <Text size="xs" className="text-typography-500">
-                Fetching best price...
+    <>
+      <Stack.Screen options={{ title: 'Swap' }} />
+      <Box className="flex-1 bg-white">
+        <VStack space="sm" className="p-4">
+          <Heading size="2xl">Sell {sellAsset}</Heading>
+          <AssetSwap
+            sellOrBuy={SwapType.SELL}
+            asset={sellAsset}
+            value={sellValue}
+            balance={balanceStore.get(sellAsset)}
+            assets={myAssetss}
+            onChangeAsset={(asset) => onChangeAsset(asset, SwapType.SELL)}
+            onChangeValue={(value) => setSellValue(value)}
+            isActive={active === SwapType.SELL}
+            onPress={() => setActive(SwapType.SELL)}
+            testID="sell-box"
+          />
+          <Center className="my-0.5">
+            <Button onPress={handleSwitch} testID="arrowIcon" variant="outline" className="rounded-full h-10 w-10">
+              <ButtonIcon as={RepeatIcon} className="text-primary-500" />
+            </Button>
+          </Center>
+          <AssetSwap
+            sellOrBuy={SwapType.BUY}
+            asset={buyAsset}
+            value={buyValue}
+            balance={balanceStore.get(buyAsset)}
+            assets={myAssetss}
+            onChangeAsset={(asset) => onChangeAsset(asset, SwapType.BUY)}
+            onChangeValue={(value) => setBuyValue(value)}
+            isActive={active === SwapType.BUY}
+            onPress={() => setActive(SwapType.BUY)}
+            testID="buy-box"
+          />
+          <Box className="my-1.5 ml-1">
+            {fetchingRate && (
+              <HStack space="md" testID="fetching">
+                <Spinner size="small" className="text-typography-500" />
+                <Text size="xs" className="text-typography-500">
+                  Fetching best price...
+                </Text>
+              </HStack>
+            )}
+            {sellAsset && buyAsset && sellValue > 0 && !fetchingRate && rate === null && (
+              <Text size="sm" className="text-error-500">
+                Failed to fetch the rate
               </Text>
-            </HStack>
-          )}
-          {sellAsset && buyAsset && sellValue > 0 && !fetchingRate && rate === null && (
-            <Text size="sm" className="text-error-500">
-              Failed to fetch the rate
-            </Text>
-          )}
-          {!fetchingRate && rate && (
-            <Text size="sm" className="text-black">
-              1 {buyAsset} ≈ {rate.toFixed(6)} {sellAsset}
-            </Text>
-          )}
-        </Box>
-        <Button onPress={handlePress} disabled={isButtonDisabled} size="lg">
-          <ButtonText>Review order</ButtonText>
-        </Button>
-      </VStack>
-    </Box>
+            )}
+            {!fetchingRate && rate && (
+              <Text size="sm" className="text-black">
+                1 {buyAsset} ≈ {rate.toFixed(6)} {sellAsset}
+              </Text>
+            )}
+          </Box>
+          <Button onPress={handlePress} disabled={isButtonDisabled} size="lg">
+            <ButtonText>Review order</ButtonText>
+          </Button>
+        </VStack>
+      </Box>
+    </>
   );
 };
 

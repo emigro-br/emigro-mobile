@@ -1,37 +1,21 @@
-import { ViewStyle } from 'react-native';
 import * as IconsOutline from 'react-native-heroicons/outline';
 import * as IconsSolid from 'react-native-heroicons/solid';
 
-import { Tabs, usePathname } from 'expo-router';
+import { Tabs } from 'expo-router';
 
-const getTabBarStyle = (path: string): ViewStyle => {
-  // https://github.com/expo/router/issues/518
-  // https://stackoverflow.com/questions/51352081/react-navigation-how-to-hide-tabbar-from-inside-stack-navigation#comment121635652_64789273
-  const tabHiddenRoutes = [
-    /\/payments\/scan/,
-    /\/payments\/request\/show-qr-code/,
-    // FIXME: Android doesn't support modal routes, so we need to hide the tab bar
-    /\/payments\/confirm\/?.*/, // inludes pin, success and error
-    /\/wallet\/transfers\/(review|confirm)\/?.*/,
-  ];
-  if (tabHiddenRoutes.some((pattern) => pattern.test(path))) {
-    return { display: 'none' };
-  }
-  return { display: 'flex' };
-};
+import Header from '@/components/Header';
 
 export const unstable_settings = {
   initialRouteName: 'wallet',
 };
 
 export default function TabLayout() {
-  const path = usePathname();
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
         tabBarActiveTintColor: '#FF033E',
         tabBarInactiveTintColor: 'grey',
+        header: () => <Header />,
       }}
     >
       <Tabs.Screen
@@ -39,7 +23,6 @@ export default function TabLayout() {
         options={{
           title: 'Wallet',
           tabBarIcon: ({ color, size }) => <IconsSolid.WalletIcon size={size} color={color} />,
-          tabBarStyle: getTabBarStyle(path),
         }}
       />
       <Tabs.Screen
@@ -47,7 +30,6 @@ export default function TabLayout() {
         options={{
           title: 'Payments',
           tabBarIcon: ({ color, size }) => <IconsOutline.QrCodeIcon size={size} color={color} />,
-          tabBarStyle: getTabBarStyle(path),
         }}
       />
       <Tabs.Screen

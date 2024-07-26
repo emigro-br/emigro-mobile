@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { useRouter } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 
 import { ErrorModal } from '@/components/modals/ErrorModal';
 import { PinScreen } from '@/components/screens/PinScreen';
@@ -34,7 +34,8 @@ export const DetailsSwap = () => {
     try {
       const result = await bloc.swap();
       if (result.status === 'paid') {
-        router.replace('/');
+        router.dismissAll();
+        // router.replace('/');
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -68,6 +69,7 @@ export const DetailsSwap = () => {
 
   return (
     <>
+      <Stack.Screen options={{ title: 'Review Swap' }} />
       <ErrorModal
         title="Swap failed"
         errorMessage={errorMessage}

@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
 
-import { Redirect, Slot, useRouter } from 'expo-router';
+import { Redirect, Stack, useRouter } from 'expo-router';
 import { observer } from 'mobx-react-lite';
 
 import { SplashScreen } from '@/components/Splash';
 import { useSession } from '@/hooks/useSession';
+import defaultScreenOptions from '@/navigation/screenOptions';
 import { securityStore } from '@/stores/SecurityStore';
 import { sessionStore } from '@/stores/SessionStore';
 
@@ -43,7 +44,22 @@ export function AppLayout() {
     return <Redirect href="/welcome" />;
   }
 
-  return <Slot />;
+  return (
+    <Stack initialRouteName="(tabs)" screenOptions={{ ...defaultScreenOptions }}>
+      <Stack.Screen name="(tabs)" options={{ title: 'Wallet', headerShown: false }} />
+      <Stack.Screen
+        name="ramp/[kind]/[currency]/confirm/index"
+        options={{ presentation: 'modal', headerShown: false }}
+      />
+      <Stack.Screen name="ramp/[kind]/[currency]/webview" options={{ presentation: 'modal', headerShown: false }} />
+      <Stack.Screen name="payments/confirm/index" options={{ presentation: 'modal', headerShown: false }} />
+      <Stack.Screen
+        name="payments/request/show-qr-code"
+        options={{ presentation: 'modal', headerShown: false, gestureEnabled: false }}
+      />
+      <Stack.Screen name="transfers/confirm" options={{ presentation: 'modal', headerShown: false }} />
+    </Stack>
+  );
 }
 
 export default observer(AppLayout);
