@@ -22,7 +22,6 @@ export const Payments = () => {
 
   const availableAssets = allCryptoCodesToObjs(balanceStore.currentAssets());
 
-  const w = '1/3';
   return (
     <Box className="flex-1 bg-white">
       <VStack space="lg" className="p-4">
@@ -33,7 +32,6 @@ export const Payments = () => {
             label="Scan to Pay"
             size="lg"
             textSize="lg"
-            w={w}
             onPress={() => router.push('/payments/scan')}
             testID="scan-to-pay"
           />
@@ -42,7 +40,6 @@ export const Payments = () => {
             label="Request Payment"
             size="lg"
             textSize="lg"
-            w={w}
             onPress={() => setAssetListOpen(true)}
             testID="request-payment"
           />
@@ -54,7 +51,6 @@ export const Payments = () => {
               label="Pix Copia & Cola"
               size="lg"
               textSize="lg"
-              w={w}
               onPress={() => router.push('/payments/pix/copia-e-cola')}
               testID="pix-copia-e-cola"
             />

@@ -41,7 +41,12 @@ exports[`Payments component Should render correctly 1`] = `
         flexDirection="row"
       >
         <View
-          className="flex-col w-1/3 items-center"
+          className="flex-col items-center px-1"
+          style={
+            {
+              "width": 96,
+            }
+          }
           testID="scan-to-pay"
         >
           <View
@@ -466,7 +471,12 @@ exports[`Payments component Should render correctly 1`] = `
           </RCTText>
         </View>
         <View
-          className="flex-col w-1/3 items-center"
+          className="flex-col items-center px-1"
+          style={
+            {
+              "width": 96,
+            }
+          }
           testID="request-payment"
         >
           <View
@@ -712,7 +722,12 @@ exports[`Payments component Should render correctly 1`] = `
         flexDirection="row"
       >
         <View
-          className="flex-col w-1/3 items-center"
+          className="flex-col items-center px-1"
+          style={
+            {
+              "width": 96,
+            }
+          }
           testID="pix-copia-e-cola"
         >
           <View

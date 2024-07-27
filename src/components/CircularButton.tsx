@@ -10,37 +10,27 @@ type Props = {
   bg?: any;
   size?: 'sm' | 'md' | 'lg';
   textSize?: 'sm' | 'md' | 'lg';
-  w?: any;
   onPress: () => void;
   testID?: string;
 };
 
-export const CircularButton = ({
-  label,
-  icon,
-  onPress,
-  bg = 'primary-500',
-  size = 'md',
-  textSize,
-  w,
-  testID,
-}: Props) => {
-  let radius: any = '12';
+export const CircularButton = ({ label, icon, onPress, bg = 'primary-500', size = 'md', textSize, testID }: Props) => {
+  let radius = 12;
   if (size === 'sm') {
-    radius = '10';
+    radius = 10;
   } else if (size === 'lg') {
-    radius = '16';
+    radius = 16;
   }
 
   const iconColor = bg === 'white' ? 'primary-500' : 'white';
 
   return (
-    <VStack className={` w-${w} items-center `} testID={testID}>
+    <VStack className="items-center px-1" style={{ width: radius * 2 * 3 }} testID={testID}>
       <Button size={size} onPress={onPress} className={` w-${radius} h-${radius} bg-${bg} p-0 rounded-full mb-1 `}>
         <ButtonIcon as={icon} size="2xl" className={` text-${iconColor} `} />
       </Button>
       {label && (
-        <Text size={textSize ?? size} className={`text-${bg} `}>
+        <Text size={textSize ?? size} className={`text-${bg} text-center`}>
           {label}
         </Text>
       )}
