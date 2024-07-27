@@ -104,7 +104,7 @@ type ButtonProps = {
 const ActionButton = ({ action = 'add', isLoading = false, onPress }: ButtonProps) => {
   if (action === 'hide') return null; // TODO: hide button not implemented yet
   return (
-    <Button variant="link" onPress={onPress} isDisabled={isLoading} action={action === 'add' ? 'primary' : 'secondary'}>
+    <Button variant="link" onPress={onPress} disabled={isLoading} action={action === 'add' ? 'primary' : 'secondary'}>
       {isLoading ? <ButtonSpinner /> : <ButtonText>{action === 'add' ? 'add' : 'hide'}</ButtonText>}
     </Button>
   );

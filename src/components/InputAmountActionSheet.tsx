@@ -36,7 +36,7 @@ export const InputAmount = ({ tagline, initialAmount, asset, onSave }: Props) =>
           value={value}
           onChangeValue={(newValue) => setValue(newValue)}
         />
-        <Button size="lg" onPress={() => onSave(value ?? 0)} isDisabled={!value}>
+        <Button size="lg" onPress={() => onSave(value ?? 0)} disabled={!value}>
           <ButtonText>Confirm</ButtonText>
         </Button>
       </VStack>

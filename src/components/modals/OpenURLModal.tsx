@@ -53,7 +53,7 @@ export const OpenURLModal: React.FC<Props> = ({
               <Button variant="outline" action="secondary" onPress={onClose}>
                 <ButtonText>Close</ButtonText>
               </Button>
-              <Button onPress={onConfirm} action="primary" isDisabled={isLoading}>
+              <Button onPress={onConfirm} action="primary" disabled={isLoading}>
                 <ButtonText>{isLoading ? 'Please wait...' : 'Continue'}</ButtonText>
               </Button>
             </ButtonGroup>

@@ -154,7 +154,7 @@ export const PinScreen = forwardRef(
           <Button
             size="xl"
             onPress={() => handleSubmitPin(pin)}
-            isDisabled={pin.length < pinSize || isSending}
+            disabled={pin.length < pinSize || isSending}
             testID="submit-button"
           >
             <ButtonText>{btnLabel ?? 'Submit'}</ButtonText>

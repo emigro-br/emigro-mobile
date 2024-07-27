@@ -213,7 +213,7 @@ export const Swap = () => {
             </Text>
           )}
         </Box>
-        <Button onPress={handlePress} isDisabled={isButtonDisabled} size="lg">
+        <Button onPress={handlePress} disabled={isButtonDisabled} size="lg">
           <ButtonText>Review order</ButtonText>
         </Button>
       </VStack>

@@ -123,7 +123,7 @@ export const WithdrawlConfirm = ({ asset, transaction, onConfirm, onClose }: Pro
         <Button
           onPress={() => handleConfirm()}
           size="lg"
-          isDisabled={isProcessing}
+          disabled={isProcessing}
           testID="confirm-button"
           className="m-4"
         >

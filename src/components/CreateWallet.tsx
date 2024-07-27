@@ -53,7 +53,7 @@ export const CreateWallet = () => {
     <Card variant="flat">
       <Heading>Welcome to Emigro</Heading>
       <Text className="mb-4">Now, let's create a wallet to use the app</Text>
-      <Button onPress={() => handleCreateWallet()} isDisabled={isCreating}>
+      <Button onPress={() => handleCreateWallet()} disabled={isCreating}>
         <ButtonText>{isCreating ? 'Creating...' : 'Create your wallet'}</ButtonText>
       </Button>
     </Card>

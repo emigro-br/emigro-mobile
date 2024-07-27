@@ -95,7 +95,7 @@ export const SendAsset = () => {
               <FormControlErrorText>A valid wallet is required</FormControlErrorText>
             </FormControlError>
           </FormControl>
-          <Button isDisabled={isButtonDisabled} onPress={handlePressContinue}>
+          <Button disabled={isButtonDisabled} onPress={handlePressContinue}>
             <ButtonText>Continue</ButtonText>
           </Button>
         </VStack>

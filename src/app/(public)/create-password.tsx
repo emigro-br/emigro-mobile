@@ -157,7 +157,7 @@ export const CreateNewPassword = () => {
             </FormControlError>
           </FormControl>
         )}
-        <Button size="xl" onPress={handleCreatePassword} isDisabled={!isValidForm || isSending}>
+        <Button size="xl" onPress={handleCreatePassword} disabled={!isValidForm || isSending}>
           <ButtonText>{isSending ? 'Validating...' : 'Create new password'}</ButtonText>
         </Button>
       </VStack>

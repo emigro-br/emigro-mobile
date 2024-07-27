@@ -85,10 +85,10 @@ const DeleteAccount = () => {
             </Checkbox>
           </VStack>
           <ButtonGroup flexDirection="column">
-            <Button variant="solid" onPress={() => handleDeleteAccount()} isDisabled={!isChecked || isDeleting}>
+            <Button variant="solid" onPress={() => handleDeleteAccount()} disabled={!isChecked || isDeleting}>
               <ButtonText>Yes, delete my account permanently</ButtonText>
             </Button>
-            <Button variant="link" onPress={() => router.back()} isDisabled={isDeleting}>
+            <Button variant="link" onPress={() => router.back()} disabled={isDeleting}>
               <ButtonText>No, keep my account</ButtonText>
             </Button>
           </ButtonGroup>

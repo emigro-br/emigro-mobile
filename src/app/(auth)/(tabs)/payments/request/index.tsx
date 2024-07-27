@@ -38,7 +38,7 @@ export const RequestPayment = () => {
             </Button>
           </HStack>
         </Box>
-        <Button onPress={() => handleGenerateQRCode(value!)} isDisabled={!value} testID="generate-qr-code-button">
+        <Button onPress={() => handleGenerateQRCode(value!)} disabled={!value} testID="generate-qr-code-button">
           <ButtonText>Generate QR Code</ButtonText>
         </Button>
       </VStack>

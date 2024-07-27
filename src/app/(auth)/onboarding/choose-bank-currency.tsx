@@ -60,7 +60,7 @@ export const ChooseBankCurrency = ({ currencies, onContinue }: PageProps) => {
           </VStack>
         </CheckboxGroup>
 
-        <Button onPress={() => selected && onContinue(selected)} isDisabled={!selected} testID="continue-button">
+        <Button onPress={() => selected && onContinue(selected)} disabled={!selected} testID="continue-button">
           <ButtonText>Continue</ButtonText>
         </Button>
       </VStack>

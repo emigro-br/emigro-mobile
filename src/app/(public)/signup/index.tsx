@@ -95,7 +95,7 @@ export const CreateAccount = () => {
                 </FormControl>
               )}
 
-              <Button onPress={handleSubmit(onSubmit)} isDisabled={isLoading} size="xl" testID="create-button">
+              <Button onPress={handleSubmit(onSubmit)} disabled={isLoading} size="xl" testID="create-button">
                 <ButtonText>{isLoading ? 'Creating account...' : 'Create Account'}</ButtonText>
               </Button>
               <HStack className="justify-center">

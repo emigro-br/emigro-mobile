@@ -259,7 +259,7 @@ export const ConfirmPayment = () => {
             <Text size="xs">
               The seller will receive the exact value he set. The quantity that will be sent is computed automatically.
             </Text>
-            <Button size="lg" onPress={handlePressPay} isDisabled={isPayDisabled}>
+            <Button size="lg" onPress={handlePressPay} disabled={isPayDisabled}>
               {isProcesing && <ButtonSpinner className="mr-1" />}
               <ButtonText>{isProcesing ? 'Processing...' : 'Pay'} </ButtonText>
             </Button>

@@ -68,10 +68,10 @@ const ConfirmAccount = () => {
             <Text size="lg">
               Enter the confirmation code we sent to <Text bold>{email}</Text>:
             </Text>
-            <Input size="xl" isDisabled={isConfirming}>
+            <Input size="xl" disabled={isConfirming}>
               <InputField placeholder="Confirmation code" value={code} onChangeText={(text) => setCode(text)} />
             </Input>
-            <Button onPress={handleConfirmation} isDisabled={!code || isConfirming} testID="confirm-button">
+            <Button onPress={handleConfirmation} disabled={!code || isConfirming} testID="confirm-button">
               <ButtonText>Verify</ButtonText>
             </Button>
           </VStack>
