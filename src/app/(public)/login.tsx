@@ -34,7 +34,7 @@ const Login = () => {
   const passwordRef = useRef<HTMLInputElement>(null);
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string | null>(null);
-  const { control, handleSubmit } = useForm<FormData>({
+  const { control, handleSubmit, formState } = useForm<FormData>({
     defaultValues: {
       email: '',
       password: '',
@@ -63,6 +63,8 @@ const Login = () => {
     }
   };
 
+  const { isDirty, isValid } = formState;
+  const isDisabled = !isDirty || !isValid || isLoggingIn;
   return (
     <Box className="flex-1 bg-white">
       <VStack space="lg" className="p-4">
@@ -93,7 +95,7 @@ const Login = () => {
               </FormControlError>
             </FormControl>
           )}
-          <Button onPress={handleSubmit(onSubmit)} isDisabled={isLoggingIn} size="xl" testID="signin-button">
+          <Button onPress={handleSubmit(onSubmit)} disabled={isDisabled} size="xl" testID="signin-button">
             <ButtonText>{isLoggingIn ? 'Signing in...' : 'Sign in'}</ButtonText>
           </Button>
           <HStack className="justify-center">

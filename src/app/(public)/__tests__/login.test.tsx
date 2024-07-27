@@ -50,11 +50,15 @@ describe('Login screen', () => {
 
     const email = 'test@example.com';
     const password = 'password123';
+    const signInButton = getByTestId('signin-button');
+    expect(signInButton).toHaveAccessibilityState({ disabled: true });
+
     fireEvent.changeText(emailInput, email);
     fireEvent.changeText(passwordInput, password);
 
-    const signInButton = getByTestId('signin-button');
-    expect(signInButton).toHaveAccessibilityState({ disabled: false });
+    await waitFor(() => {
+      expect(signInButton).toHaveAccessibilityState({ disabled: false });
+    });
 
     fireEvent.press(signInButton);
 
@@ -73,7 +77,13 @@ describe('Login screen', () => {
 
     fireEvent.changeText(getByTestId('email'), email);
     fireEvent.changeText(getByTestId('password'), password);
-    fireEvent.press(getByTestId('signin-button'));
+
+    const signInButton = getByTestId('signin-button');
+    await waitFor(() => {
+      expect(signInButton).toHaveAccessibilityState({ disabled: false });
+    });
+
+    fireEvent.press(signInButton);
 
     await waitFor(() => {
       expect(getByText('Custom API error')).toBeOnTheScreen();
@@ -94,7 +104,21 @@ describe('Login screen', () => {
 
   test('Should show form validation error messages', async () => {
     const { getByText, getByTestId } = render(<Login />);
-    fireEvent.press(getByTestId('signin-button'));
+
+    fireEvent.changeText(getByTestId('email'), 'invalid-email');
+    fireEvent.changeText(getByTestId('password'), 'invalid');
+
+    // submit form with ENTER
+    fireEvent(getByTestId('password'), 'onSubmitEditing');
+
+    await waitFor(() => {
+      expect(getByText('Invalid email address')).toBeOnTheScreen();
+      expect(getByText('Password must be at least 8 characters')).toBeOnTheScreen();
+    });
+
+    // clear inputs
+    fireEvent.changeText(getByTestId('email'), '');
+    fireEvent.changeText(getByTestId('password'), '');
 
     await waitFor(() => {
       expect(getByText('Email is required')).toBeOnTheScreen();
