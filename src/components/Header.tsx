@@ -18,7 +18,7 @@ const Header: React.FC = () => {
     <Box style={{ paddingTop: insets.top }} className="bg-primary-500 pb-2">
       <Center>
         <Pressable onPress={() => router.navigate('/')}>
-          <Box className="w-40 h-12">
+          <Box className="w-40 h-14">
             <Image source={emigroLogo} alt="Emigro" testID="logo" className="w-full h-full" />
           </Box>
         </Pressable>
