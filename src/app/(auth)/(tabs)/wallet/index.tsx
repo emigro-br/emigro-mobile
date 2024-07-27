@@ -4,9 +4,11 @@ import { RefreshControl } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 import * as Haptics from 'expo-haptics';
+import { Stack } from 'expo-router';
 import { observer } from 'mobx-react-lite';
 
 import { CreateWallet } from '@/components/CreateWallet';
+import Header from '@/components/Header';
 import OperationButtons from '@/components/OperationButtons';
 import { WalletBalances } from '@/components/WalletBalances';
 import { Box } from '@/components/ui/box';
@@ -49,6 +51,8 @@ const Wallet = observer(() => {
 
   return (
     <>
+      <Stack.Screen options={{ title: 'Wallet', header: () => <Header /> }} />
+
       <Box className="bg-primary-500 py-2">
         <OperationButtons />
       </Box>

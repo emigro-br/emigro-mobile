@@ -3,8 +3,6 @@ import * as IconsSolid from 'react-native-heroicons/solid';
 
 import { Tabs } from 'expo-router';
 
-import Header from '@/components/Header';
-
 export const unstable_settings = {
   initialRouteName: 'wallet',
 };
@@ -15,7 +13,6 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: '#FF033E',
         tabBarInactiveTintColor: 'grey',
-        header: () => <Header />,
       }}
     >
       <Tabs.Screen
@@ -23,6 +20,7 @@ export default function TabLayout() {
         options={{
           title: 'Wallet',
           tabBarIcon: ({ color, size }) => <IconsSolid.WalletIcon size={size} color={color} />,
+          headerShown: false,
         }}
       />
       <Tabs.Screen

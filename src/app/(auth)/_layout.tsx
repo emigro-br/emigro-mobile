@@ -46,7 +46,7 @@ export function AppLayout() {
 
   return (
     <Stack initialRouteName="(tabs)" screenOptions={{ ...defaultScreenOptions }}>
-      <Stack.Screen name="(tabs)" options={{ title: 'Wallet', headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ title: '', headerShown: false }} />
       <Stack.Screen
         name="ramp/[kind]/[currency]/confirm/index"
         options={{ presentation: 'modal', headerShown: false }}

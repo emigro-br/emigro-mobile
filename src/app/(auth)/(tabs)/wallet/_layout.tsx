@@ -8,15 +8,5 @@ export const unstable_settings = {
 };
 
 export default function WalletLayout() {
-  return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        ...screenOptions,
-      }}
-    >
-      <Stack.Screen name="index" options={{ title: 'Wallet' }} />
-      <Stack.Screen name="manage" options={{ title: 'Accounts' }} />
-    </Stack>
-  );
+  return <Stack screenOptions={{ ...screenOptions }} />;
 }
