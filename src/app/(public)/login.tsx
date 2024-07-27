@@ -82,7 +82,7 @@ const Login = () => {
           />
 
           <Link onPress={() => router.push('/password-recovery')} testID="forgot-password-link">
-            <LinkText className="text-primary-500 none text-[right]">Forgot your password?</LinkText>
+            <LinkText className="text-primary-500 no-underline text-right">Forgot your password?</LinkText>
           </Link>
 
           {apiError && (
