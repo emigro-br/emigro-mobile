@@ -318,7 +318,6 @@ exports[`ConfirmPayment component renders correctly for pix payment 1`] = `
                       {
                         "alignItems": "center",
                         "flexDirection": "row",
-                        "height": 35,
                         "justifyContent": "space-between",
                       }
                     }
@@ -437,7 +436,7 @@ exports[`ConfirmPayment component renders correctly for pix payment 1`] = `
               dataSet={
                 {
                   "active": false,
-                  "disabled": false,
+                  "disabled": undefined,
                   "focus": false,
                   "focusVisible": false,
                   "hover": false,
@@ -446,7 +445,7 @@ exports[`ConfirmPayment component renders correctly for pix payment 1`] = `
               states={
                 {
                   "active": false,
-                  "disabled": false,
+                  "disabled": undefined,
                   "focus": false,
                   "focusVisible": false,
                   "hover": false,
@@ -737,7 +736,6 @@ exports[`ConfirmPayment component renders correctly for stellar payment 1`] = `
                       {
                         "alignItems": "center",
                         "flexDirection": "row",
-                        "height": 35,
                         "justifyContent": "space-between",
                       }
                     }
@@ -856,7 +854,7 @@ exports[`ConfirmPayment component renders correctly for stellar payment 1`] = `
               dataSet={
                 {
                   "active": false,
-                  "disabled": false,
+                  "disabled": undefined,
                   "focus": false,
                   "focusVisible": false,
                   "hover": false,
@@ -865,7 +863,7 @@ exports[`ConfirmPayment component renders correctly for stellar payment 1`] = `
               states={
                 {
                   "active": false,
-                  "disabled": false,
+                  "disabled": undefined,
                   "focus": false,
                   "focusVisible": false,
                   "hover": false,

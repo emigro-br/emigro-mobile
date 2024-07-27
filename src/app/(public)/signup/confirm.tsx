@@ -68,7 +68,7 @@ const ConfirmAccount = () => {
             <Text size="lg">
               Enter the confirmation code we sent to <Text bold>{email}</Text>:
             </Text>
-            <Input size="xl" disabled={isConfirming}>
+            <Input size="xl" isDisabled={isConfirming}>
               <InputField placeholder="Confirmation code" value={code} onChangeText={(text) => setCode(text)} />
             </Input>
             <Button onPress={handleConfirmation} disabled={!code || isConfirming} testID="confirm-button">
