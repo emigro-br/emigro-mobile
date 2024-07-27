@@ -15,7 +15,11 @@ type Props = {
 export const ListTile = ({ title, subtitle, leading, trailing, testID }: Props) => {
   const renderTitle = () => {
     if (typeof title === 'string') {
-      return <Text className="text-typography-800 font-[500] dark:text-typography-100">{title}</Text>;
+      return (
+        <Text size="lg" className="text-typography-800 font-[500] dark:text-typography-100">
+          {title}
+        </Text>
+      );
     }
     return title;
   };
@@ -25,11 +29,7 @@ export const ListTile = ({ title, subtitle, leading, trailing, testID }: Props) 
       return null;
     }
     if (typeof subtitle === 'string') {
-      return (
-        <Text size="sm" className="text-typography-500 dark:text-typography-200">
-          {subtitle}
-        </Text>
-      );
+      return <Text className="text-typography-500 dark:text-typography-200">{subtitle}</Text>;
     }
     return <HStack>{subtitle}</HStack>; // HStack is workaround to avoid full width
   };

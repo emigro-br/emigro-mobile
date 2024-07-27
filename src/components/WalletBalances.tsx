@@ -36,7 +36,7 @@ export const WalletBalances: React.FC<Props> = ({ userBalance }) => {
                 key={index}
                 asset={asset}
                 subasset={asset}
-                trailing={<Text>{symbolFor(asset, Number(balance))}</Text>}
+                trailing={<Text size="lg">{symbolFor(asset, Number(balance))}</Text>}
               />
             );
           })}
