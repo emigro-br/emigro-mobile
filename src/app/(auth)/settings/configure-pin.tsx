@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
 import { PinScreen } from '@/components/screens/PinScreen';
 import { Box } from '@/components/ui/box';
@@ -54,18 +54,21 @@ export const ConfigurePIN = () => {
   };
 
   return (
-    <Box className="flex-1" style={{ paddingTop: insets.top }}>
-      <PinScreen
-        ref={pinRef}
-        tagline={isReEnter ? 'Re-enter your PIN code' : 'Enter your new PIN code'}
-        verifyPin={verifyPin}
-        btnLabel={isReEnter ? 'Confirm PIN' : 'Next'}
-        maxAttempts={1}
-        onPinSuccess={handlePinSuccess}
-        onPinFail={handlePinFail}
-      />
-      {/* {error && <Text className="text-error-500">{error}</Text>} */}
-    </Box>
+    <>
+      <Stack.Screen options={{ headerShown: false, animation: 'slide_from_bottom' }} />
+      <Box className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
+        <PinScreen
+          ref={pinRef}
+          tagline={isReEnter ? 'Re-enter your PIN code' : 'Enter your new PIN code'}
+          verifyPin={verifyPin}
+          btnLabel={isReEnter ? 'Confirm PIN' : 'Next'}
+          maxAttempts={1}
+          onPinSuccess={handlePinSuccess}
+          onPinFail={handlePinFail}
+        />
+        {/* {error && <Text className="text-error-500">{error}</Text>} */}
+      </Box>
+    </>
   );
 };
 
