@@ -154,7 +154,8 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Scan a Payment', headerShown: false }} />
+      <Stack.Screen options={{ title: 'Scan a Payment', headerShown: false, animation: 'slide_from_bottom' }} />
+
       <Box className="flex-1">
         <CameraView
           style={[styles.camera]}
