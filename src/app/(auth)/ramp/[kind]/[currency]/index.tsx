@@ -89,6 +89,7 @@ export const OperationHome = ({ title, kind, currency }: LayoutProps) => {
       <Stack.Screen
         options={{
           title,
+          headerBackTitleVisible: false,
         }}
       />
       <OpenURLModal

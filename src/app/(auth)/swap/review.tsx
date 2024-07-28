@@ -69,7 +69,7 @@ export const DetailsSwap = () => {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Review Swap' }} />
+      <Stack.Screen options={{ title: 'Confirm Swap', headerBackTitleVisible: false }} />
       <ErrorModal
         title="Swap failed"
         errorMessage={errorMessage}
@@ -78,7 +78,7 @@ export const DetailsSwap = () => {
       />
       <Box className="flex-1">
         <VStack space="lg" className="p-4">
-          <Heading>Confirm Swap</Heading>
+          <Heading>Review your swap</Heading>
           <Card size="md" variant="elevated" className="bg-white">
             <VStack space="md">
               <Row label="Amount" value={`${fromValue.toFixed(2)} ${fromAsset}`} />
@@ -88,7 +88,7 @@ export const DetailsSwap = () => {
             </VStack>
           </Card>
           <Text size="xs">The final amount is estimated and may change.</Text>
-          <Button onPress={() => setShowPinScreen(true)} disabled={isLoading}>
+          <Button onPress={() => setShowPinScreen(true)} disabled={isLoading} size="lg">
             <ButtonText>{isLoading ? 'Processing...' : `Swap ${fromAsset} for ${toAsset}`}</ButtonText>
           </Button>
         </VStack>

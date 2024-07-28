@@ -44,7 +44,7 @@ describe('DetailsSwap', () => {
   it('renders correctly', () => {
     const { getByText, getAllByText } = render(<DetailsSwapScreen />);
 
-    expect(getByText('Confirm Swap')).toBeOnTheScreen();
+    expect(getByText('Review your swap')).toBeOnTheScreen();
 
     // from
     expect(getByText('Amount')).toBeOnTheScreen();

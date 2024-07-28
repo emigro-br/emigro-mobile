@@ -17,7 +17,7 @@ export const Transfers = () => {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Transfers' }} />
+      <Stack.Screen options={{ title: 'Transfer' }} />
       <Box className="flex-1">
         <VStack space="md" className="p-4">
           <Heading size="xl">Send money</Heading>

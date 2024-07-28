@@ -165,7 +165,7 @@ export const Swap = () => {
       <Stack.Screen options={{ title: 'Swap' }} />
       <Box className="flex-1 bg-white">
         <VStack space="sm" className="p-4">
-          <Heading size="2xl">Sell {sellAsset}</Heading>
+          <Heading size="xl">Sell {sellAsset}</Heading>
           <AssetSwap
             sellOrBuy={SwapType.SELL}
             asset={sellAsset}

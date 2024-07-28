@@ -57,7 +57,7 @@ export const SendAsset = () => {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Transfer Info' }} />
+      <Stack.Screen options={{ title: 'Transfer', headerBackTitleVisible: false }} />
       <Box className="flex-1 bg-white  dark:bg-backgroundDark-950">
         <Heading size="xl" className="mt-4 mx-4">
           Send {asset}
