@@ -69,7 +69,7 @@ export const PastePixCode = () => {
               <FormControlErrorText>{error}</FormControlErrorText>
             </FormControlError>
           </FormControl>
-          <Button onPress={() => handleContinue()} disabled={!brCode || isChecking}>
+          <Button size="lg" onPress={() => handleContinue()} disabled={!brCode || isChecking}>
             <ButtonText>{isChecking ? 'Please wait...' : 'Continue'}</ButtonText>
           </Button>
         </VStack>
