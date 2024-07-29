@@ -44,3 +44,6 @@ jobs:
 
       - name: Publish update
         run: eas update --auto
+        env:
+          # FIXME: JavaScript heap out of memory
+          NODE_OPTIONS: "--max_old_space_size=4096"
