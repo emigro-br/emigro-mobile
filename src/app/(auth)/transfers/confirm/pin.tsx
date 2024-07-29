@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useRouter } from 'expo-router';
 
 import { Toast } from '@/components/Toast';
 import { LoadingScreen } from '@/components/screens/Loading';
 import { PinScreen } from '@/components/screens/PinScreen';
+import { Box } from '@/components/ui/box';
 import { useToast } from '@/components/ui/toast';
 import { securityStore } from '@/stores/SecurityStore';
 import { transferStore } from '@/stores/TransferStore';
@@ -13,6 +15,7 @@ export const ConfirmPin = () => {
   const toast = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const handleConfirmTransaction = async () => {
     setIsProcessing(true);
@@ -45,21 +48,23 @@ export const ConfirmPin = () => {
   }
 
   return (
-    <PinScreen
-      tagline="Enter your PIN code"
-      btnLabel="Confirm"
-      autoSubmit
-      verifyPin={async (pin) => await securityStore.verifyPin(pin)}
-      onPinSuccess={() => {
-        handleConfirmTransaction();
-      }}
-      onPinFail={(error) => {
-        toast.show({
-          render: ({ id }) => <Toast id={id} title="PIN failed" description={error.message} action="error" />,
-        });
-        router.dismiss();
-      }}
-    />
+    <Box className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
+      <PinScreen
+        tagline="Enter your PIN code"
+        btnLabel="Confirm"
+        autoSubmit
+        verifyPin={async (pin) => await securityStore.verifyPin(pin)}
+        onPinSuccess={() => {
+          handleConfirmTransaction();
+        }}
+        onPinFail={(error) => {
+          toast.show({
+            render: ({ id }) => <Toast id={id} title="PIN failed" description={error.message} action="error" />,
+          });
+          router.dismiss();
+        }}
+      />
+    </Box>
   );
 };
 

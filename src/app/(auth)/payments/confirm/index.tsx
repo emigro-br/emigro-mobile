@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Dropdown } from 'react-native-element-dropdown';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Sentry from '@sentry/react-native';
 import { Stack, usePathname, useRouter } from 'expo-router';
@@ -30,6 +31,7 @@ import { maskWallet } from '@/utils/masks';
 
 export const ConfirmPayment = () => {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const path = usePathname();
   const { scannedPayment } = paymentStore;
 
@@ -138,20 +140,22 @@ export const ConfirmPayment = () => {
 
   if (showPinScreen) {
     return (
-      <PinScreen
-        tagline="Enter your PIN code"
-        btnLabel="Confirm"
-        autoSubmit
-        verifyPin={async (pin) => await securityStore.verifyPin(pin)}
-        onPinSuccess={() => {
-          setShowPinScreen(false);
-          handleConfirmPayment();
-        }}
-        onPinFail={(error) => {
-          console.warn('Error on pay transfer', error); // FIXME:
-          setShowPinScreen(false);
-        }}
-      />
+      <Box className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
+        <PinScreen
+          tagline="Enter your PIN code"
+          btnLabel="Confirm"
+          autoSubmit
+          verifyPin={async (pin) => await securityStore.verifyPin(pin)}
+          onPinSuccess={() => {
+            setShowPinScreen(false);
+            handleConfirmPayment();
+          }}
+          onPinFail={(error) => {
+            console.warn('Error on pay transfer', error); // FIXME:
+            setShowPinScreen(false);
+          }}
+        />
+      </Box>
     );
   }
 
@@ -168,7 +172,8 @@ export const ConfirmPayment = () => {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Confirm Payment', headerBackTitle: 'Back' }} />
+      <Stack.Screen options={{ title: 'Confirm Payment', headerBackTitleVisible: false }} />
+
       <InputAmountActionSheet
         isOpen={showEditAmount}
         onClose={() => setShowEditAmount(false)}
@@ -177,8 +182,9 @@ export const ConfirmPayment = () => {
         asset={AssetToCurrency[scannedPayment.assetCode] as FiatCurrency} //TODO: improve this
         onSave={(amount) => setRequestedAmount(amount)}
       />
+
       <ScrollView className="flex-1 bg-white">
-        <Box className="flex-1">
+        <Box className="flex-1" style={{ paddingTop: insets.top }}>
           <VStack space="lg" className="p-4">
             <Heading size="xl">Review the payment</Heading>
 

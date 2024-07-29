@@ -47,17 +47,26 @@ export function AppLayout() {
   return (
     <Stack initialRouteName="(tabs)" screenOptions={{ ...defaultScreenOptions }}>
       <Stack.Screen name="(tabs)" options={{ title: '', headerShown: false }} />
+
+      {/* Stop using presentaion modal for while (Android safe area) */}
       <Stack.Screen
-        name="ramp/[kind]/[currency]/confirm/index"
-        options={{ presentation: 'modal', headerShown: false }}
+        name="ramp/[kind]/[currency]/confirm"
+        options={{ animation: 'slide_from_bottom', headerShown: false }}
       />
-      <Stack.Screen name="ramp/[kind]/[currency]/webview" options={{ presentation: 'modal', headerShown: false }} />
-      <Stack.Screen name="payments/confirm/index" options={{ presentation: 'modal', headerShown: false }} />
+      <Stack.Screen
+        name="ramp/[kind]/[currency]/webview"
+        options={{ animation: 'slide_from_bottom', headerShown: false }}
+      />
+      <Stack.Screen
+        name="payments/scan"
+        options={{ animation: 'slide_from_bottom', headerShown: false, animationDuration: 200 }}
+      />
       <Stack.Screen
         name="payments/request/show-qr-code"
-        options={{ presentation: 'modal', headerShown: false, gestureEnabled: false }}
+        options={{ animation: 'slide_from_bottom', headerShown: false, gestureEnabled: false }}
       />
-      <Stack.Screen name="transfers/confirm" options={{ presentation: 'modal', headerShown: false }} />
+      <Stack.Screen name="payments/confirm" options={{ animation: 'slide_from_bottom', headerShown: false }} />
+      <Stack.Screen name="transfers/confirm" options={{ animation: 'slide_from_bottom', headerShown: false }} />
     </Stack>
   );
 }

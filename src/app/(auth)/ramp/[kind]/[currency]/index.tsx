@@ -92,12 +92,14 @@ export const OperationHome = ({ title, kind, currency }: LayoutProps) => {
           headerBackTitleVisible: false,
         }}
       />
+
       <OpenURLModal
         isOpen={isOpenUrlModal}
         onClose={() => setIsOpenUrlModal(false)}
         onConfirm={() => handleOpenConfimed()}
         testID="open-url-modal"
       />
+
       <ScrollView className="flex-1 bg-white">
         <Box className="flex-1">
           <VStack space="md" className="p-4">

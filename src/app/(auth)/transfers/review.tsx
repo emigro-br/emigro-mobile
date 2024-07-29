@@ -16,7 +16,8 @@ export const ReviewTransfer = () => {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Review Transfer' }} />
+      <Stack.Screen options={{ title: 'Review Transfer', headerBackTitleVisible: false }} />
+
       <Box className="flex-1">
         <VStack space="lg" className="p-4">
           <Heading size="xl">Review Transfer</Heading>

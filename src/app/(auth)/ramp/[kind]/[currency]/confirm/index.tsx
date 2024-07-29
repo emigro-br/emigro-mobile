@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Stack, useLocalSearchParams, usePathname, useRouter } from 'expo-router';
+import { useLocalSearchParams, usePathname, useRouter } from 'expo-router';
 
 import { AssetImage } from '@/components/AssetImage';
 import { DetailsTable } from '@/components/DetailsTable';
@@ -99,8 +99,7 @@ export const WithdrawlConfirm = ({ asset, transaction, onConfirm, onClose }: Pro
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Confirm Withdraw' }} />
-      <Box className="flex-1" style={{ paddingBottom: insets.bottom }}>
+      <Box className="flex-1" style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
         <ModalCloseButton onPress={onClose} testID="close-button" className="mt-6 ml-2">
           <Icon as={CloseIcon} size="xl" />
         </ModalCloseButton>

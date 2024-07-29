@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BackHandler, Platform } from 'react-native';
+import { BackHandler } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -125,12 +125,20 @@ export const RequestWithQRCode = () => {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Request with QR Code', headerBackTitleVisible: false }} />
-      <Box className=" flex-1 bg-white " style={{ paddingTop: Platform.OS === 'android' ? insets.top : 0 }}>
+      <Stack.Screen
+        options={{
+          title: 'Request with QR Code',
+          headerBackTitleVisible: false,
+          animation: 'slide_from_bottom',
+          headerShown: false,
+        }}
+      />
+
+      <Box className=" flex-1 bg-white " style={{ paddingTop: insets.top }}>
         <VStack space="lg" className="p-4">
           <HStack className="justify-between">
             <Heading size="xl">Request with QR Code</Heading>
-            <ModalCloseButton onPress={() => router.replace('../')} testID="close-button" className="mt--4">
+            <ModalCloseButton onPress={() => router.dismiss()} testID="close-button" className="mt--4">
               <Icon as={CloseIcon} size="xl" />
             </ModalCloseButton>
           </HStack>

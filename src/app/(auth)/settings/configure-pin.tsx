@@ -56,6 +56,7 @@ export const ConfigurePIN = () => {
   return (
     <>
       <Stack.Screen options={{ headerShown: false, animation: 'slide_from_bottom' }} />
+
       <Box className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
         <PinScreen
           ref={pinRef}
