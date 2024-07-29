@@ -95,6 +95,6 @@ describe('RequestWithQRCode component', () => {
     fireEvent.press(closeButton);
 
     // dismiss modal is: ../
-    expect(router.replace).toHaveBeenCalledWith('../');
+    expect(router.dismiss).toHaveBeenCalled();
   });
 });
