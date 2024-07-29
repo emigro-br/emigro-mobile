@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
 
-import { Redirect, Slot, useRouter } from 'expo-router';
+import { Redirect, Stack, useRouter } from 'expo-router';
 import { observer } from 'mobx-react-lite';
 
 import { SplashScreen } from '@/components/Splash';
 import { useSession } from '@/hooks/useSession';
+import defaultScreenOptions from '@/navigation/screenOptions';
 import { securityStore } from '@/stores/SecurityStore';
 import { sessionStore } from '@/stores/SessionStore';
 
@@ -43,7 +44,31 @@ export function AppLayout() {
     return <Redirect href="/welcome" />;
   }
 
-  return <Slot />;
+  return (
+    <Stack initialRouteName="(tabs)" screenOptions={{ ...defaultScreenOptions }}>
+      <Stack.Screen name="(tabs)" options={{ title: '', headerShown: false }} />
+
+      {/* Stop using presentaion modal for while (Android safe area) */}
+      <Stack.Screen
+        name="ramp/[kind]/[currency]/confirm"
+        options={{ animation: 'slide_from_bottom', headerShown: false }}
+      />
+      <Stack.Screen
+        name="ramp/[kind]/[currency]/webview"
+        options={{ animation: 'slide_from_bottom', headerShown: false }}
+      />
+      <Stack.Screen
+        name="payments/scan"
+        options={{ animation: 'slide_from_bottom', headerShown: false, animationDuration: 200 }}
+      />
+      <Stack.Screen
+        name="payments/request/show-qr-code"
+        options={{ animation: 'slide_from_bottom', headerShown: false, gestureEnabled: false }}
+      />
+      <Stack.Screen name="payments/confirm" options={{ animation: 'slide_from_bottom', headerShown: false }} />
+      <Stack.Screen name="transfers/confirm" options={{ animation: 'slide_from_bottom', headerShown: false }} />
+    </Stack>
+  );
 }
 
 export default observer(AppLayout);

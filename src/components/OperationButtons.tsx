@@ -11,15 +11,10 @@ const OperationButtons = () => {
   const router = useRouter();
   return (
     <ButtonGroup className="justify-around py-2">
-      <CircularButton label="Deposit" bg="white" icon={AddIcon} onPress={() => router.push('/wallet/ramp/deposit')} />
-      <CircularButton
-        label="Withdraw"
-        bg="white"
-        icon={ArrowUpIcon}
-        onPress={() => router.push('/wallet/ramp/withdraw')}
-      />
-      <CircularButton label="Send" bg="white" icon={ArrowRightIcon} onPress={() => router.push('/wallet/transfers')} />
-      <CircularButton label="Swap" bg="white" icon={RepeatIcon} onPress={() => router.push('/wallet/swap')} />
+      <CircularButton label="Deposit" bg="white" icon={AddIcon} onPress={() => router.push('/ramp/deposit')} />
+      <CircularButton label="Withdraw" bg="white" icon={ArrowUpIcon} onPress={() => router.push('/ramp/withdraw')} />
+      <CircularButton label="Send" bg="white" icon={ArrowRightIcon} onPress={() => router.push('/transfers')} />
+      <CircularButton label="Swap" bg="white" icon={RepeatIcon} onPress={() => router.push('/swap')} />
     </ButtonGroup>
   );
 };

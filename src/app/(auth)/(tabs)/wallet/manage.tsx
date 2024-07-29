@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { Stack } from 'expo-router';
+
 import { AssetListTile } from '@/components/AssetListTile';
 import { Toast } from '@/components/Toast';
 import { Box } from '@/components/ui/box';
@@ -68,30 +70,34 @@ export const ManageAccounts = ({ accounts, onAdd, onHide }: Props) => {
   };
 
   return (
-    <Box>
-      <VStack space="lg" className="p-4">
-        <Heading size="xl">Accounts</Heading>
-        <Card variant="flat">
-          <VStack space="2xl">
-            {accounts.map((asset, index) => (
-              <AssetListTile
-                key={index}
-                testID="account-tile"
-                asset={asset}
-                subasset={asset}
-                trailing={
-                  <ActionButton
-                    action={balanceStore.find(asset) ? 'hide' : 'add'}
-                    onPress={() => handlePress(asset)}
-                    isLoading={processing === asset}
-                  />
-                }
-              />
-            ))}
-          </VStack>
-        </Card>
-      </VStack>
-    </Box>
+    <>
+      <Stack.Screen options={{ title: 'Accounts' }} />
+
+      <Box>
+        <VStack space="lg" className="p-4">
+          <Heading size="xl">Accounts</Heading>
+          <Card variant="flat">
+            <VStack space="2xl">
+              {accounts.map((asset, index) => (
+                <AssetListTile
+                  key={index}
+                  testID="account-tile"
+                  asset={asset}
+                  subasset={asset}
+                  trailing={
+                    <ActionButton
+                      action={balanceStore.find(asset) ? 'hide' : 'add'}
+                      onPress={() => handlePress(asset)}
+                      isLoading={processing === asset}
+                    />
+                  }
+                />
+              ))}
+            </VStack>
+          </Card>
+        </VStack>
+      </Box>
+    </>
   );
 };
 

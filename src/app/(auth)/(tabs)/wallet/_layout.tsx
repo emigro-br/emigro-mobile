@@ -1,6 +1,5 @@
 import { Stack } from 'expo-router';
 
-import Header from '@/components/Header';
 import screenOptions from '@/navigation/screenOptions';
 
 export const unstable_settings = {
@@ -9,17 +8,5 @@ export const unstable_settings = {
 };
 
 export default function WalletLayout() {
-  return (
-    <Stack
-      screenOptions={{
-        ...screenOptions,
-      }}
-    >
-      <Stack.Screen name="index" options={{ title: 'Wallet', header: () => <Header /> }} />
-      <Stack.Screen name="swap" options={{ title: 'Swap' }} />
-      <Stack.Screen name="transfers" options={{ title: 'Transfers' }} />
-      <Stack.Screen name="manage" options={{ title: 'Accounts' }} />
-      <Stack.Screen name="ramp/[kind]" options={{ title: '' }} />
-    </Stack>
-  );
+  return <Stack screenOptions={{ ...screenOptions }} />;
 }
