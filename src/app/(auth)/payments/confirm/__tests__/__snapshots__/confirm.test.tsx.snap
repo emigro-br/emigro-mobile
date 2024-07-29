@@ -59,6 +59,11 @@ exports[`ConfirmPayment component renders correctly for pix payment 1`] = `
     >
       <View
         className="flex-1"
+        style={
+          {
+            "paddingTop": 0,
+          }
+        }
       >
         <View
           className="flex-col gap-4 p-4"
@@ -522,6 +527,11 @@ exports[`ConfirmPayment component renders correctly for stellar payment 1`] = `
     >
       <View
         className="flex-1"
+        style={
+          {
+            "paddingTop": 0,
+          }
+        }
       >
         <View
           className="flex-col gap-4 p-4"
