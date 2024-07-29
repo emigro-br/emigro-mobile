@@ -6,9 +6,8 @@ import {
   FormControlErrorText,
   FormControlLabel,
   FormControlLabelText,
-  Input,
-  InputField,
-} from '@gluestack-ui/themed';
+} from '@/components/ui/form-control';
+import { Input, InputField } from '@/components/ui/input';
 
 // only to avoid react-hook-form import
 export type FieldError = {
@@ -30,7 +29,7 @@ export const TextInput = (props: Props) => {
   return (
     <FormControl isInvalid={!!error}>
       {label && (
-        <FormControlLabel mb="$1">
+        <FormControlLabel className="mb-1">
           <FormControlLabelText>{label}</FormControlLabelText>
         </FormControlLabel>
       )}

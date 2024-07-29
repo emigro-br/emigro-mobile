@@ -1,9 +1,13 @@
 import React from 'react';
 
-import { Box, ChevronRightIcon, Heading, Icon, Text, VStack } from '@gluestack-ui/themed';
 import { usePathname, useRouter } from 'expo-router';
 
 import { CardAssetList } from '@/components/AssetList';
+import { Box } from '@/components/ui/box';
+import { Heading } from '@/components/ui/heading';
+import { ChevronRightIcon, Icon } from '@/components/ui/icon';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { balanceStore } from '@/stores/BalanceStore';
 
 export const Transfers = () => {
@@ -12,8 +16,8 @@ export const Transfers = () => {
   const assets = balanceStore.currentAssets();
 
   return (
-    <Box flex={1}>
-      <VStack p="$4" space="md">
+    <Box className="flex-1">
+      <VStack space="md" className="p-4">
         <Heading size="xl">Send money</Heading>
         <Text>Choose the currency you want to send</Text>
         <CardAssetList

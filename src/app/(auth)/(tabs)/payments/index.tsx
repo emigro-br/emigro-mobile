@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 
-import { Box, ButtonGroup, CopyIcon, Heading, VStack } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 import { HandCoinsIcon, QrCodeIcon } from 'lucide-react-native';
 
 import { AssetListActionSheet } from '@/components/AssetListActionSheet';
 import { CircularButton } from '@/components/CircularButton';
+import { Box } from '@/components/ui/box';
+import { ButtonGroup } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { CopyIcon } from '@/components/ui/icon';
+import { VStack } from '@/components/ui/vstack';
 import { useFeatureFlags } from '@/hooks/feature-flags';
 import { balanceStore } from '@/stores/BalanceStore';
 import { allCryptoCodesToObjs } from '@/utils/assets';
@@ -18,45 +22,43 @@ export const Payments = () => {
 
   const availableAssets = allCryptoCodesToObjs(balanceStore.currentAssets());
 
-  const w = 120;
   return (
-    <Box flex={1} bg="$white">
-      <VStack p="$4" space="lg">
+    <Box className="flex-1 bg-white">
+      <VStack space="lg" className="p-4">
         <Heading>Pick Your Payment Method</Heading>
-        <ButtonGroup space="4xl" mt="$8">
+        <ButtonGroup space="4xl" className="mt-8">
           <CircularButton
             icon={QrCodeIcon}
             label="Scan to Pay"
             size="lg"
-            textSize="md"
-            w={w}
+            textSize="lg"
             onPress={() => router.push('/payments/scan')}
+            testID="scan-to-pay"
           />
           <CircularButton
             icon={HandCoinsIcon}
             label="Request Payment"
             size="lg"
-            textSize="md"
-            w={w}
+            textSize="lg"
             onPress={() => setAssetListOpen(true)}
+            testID="request-payment"
           />
         </ButtonGroup>
-        <ButtonGroup space="4xl" mt="$8">
+        <ButtonGroup space="4xl" className="mt-8">
           {enablePix ? (
             <CircularButton
               icon={CopyIcon}
               label="Pix Copia & Cola"
               size="lg"
-              textSize="md"
-              w={w}
+              textSize="lg"
               onPress={() => router.push('/payments/pix/copia-e-cola')}
+              testID="pix-copia-e-cola"
             />
           ) : (
             <></>
           )}
         </ButtonGroup>
       </VStack>
-
       <AssetListActionSheet
         assets={availableAssets}
         isOpen={assetListOpen}

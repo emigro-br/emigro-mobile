@@ -6,13 +6,11 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  Button,
-  ButtonText,
-  CloseIcon,
-  Heading,
-  Icon,
-  View,
-} from '@gluestack-ui/themed';
+} from '@/components/ui/alert-dialog';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { CloseIcon, Icon } from '@/components/ui/icon';
+import { View } from '@/components/ui/view';
 
 type Props = {
   isOpen: boolean;
@@ -35,7 +33,7 @@ export const SuccessDialog = ({ isOpen, title, children, onClose, testID = 'succ
           </AlertDialogHeader>
           <AlertDialogBody>{children}</AlertDialogBody>
           <AlertDialogFooter>
-            <Button variant="outline" size="sm" action="secondary" mr="$3" onPress={onClose}>
+            <Button variant="outline" size="sm" action="secondary" onPress={onClose} className="mr-3">
               <ButtonText>Okay</ButtonText>
             </Button>
           </AlertDialogFooter>

@@ -1,7 +1,13 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { TextInput } from 'react-native';
 
-import { Box, Button, ButtonText, HStack, Heading, Input, InputField, Text, VStack } from '@gluestack-ui/themed';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { Input, InputField } from '@/components/ui/input';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 
 class InvalidPinError extends Error {
   constructor() {
@@ -100,13 +106,13 @@ export const PinScreen = forwardRef(
     };
 
     return (
-      <Box flex={1} bg="$white" testID="pin-screen">
-        <VStack space="4xl" p="$4">
+      <Box testID="pin-screen" className="flex-1 bg-white">
+        <VStack space="4xl" className="p-4">
           <Heading size="xl">{tagline ?? 'Enter your PIN code'}</Heading>
           {description && <Text>{description}</Text>}
-          <HStack space="xl" justifyContent="center">
+          <HStack space="xl" className="justify-center">
             {[...Array(pinSize)].map((_, i) => (
-              <Input key={i} variant="underlined" size="xl" w="$10">
+              <Input key={i} variant="underlined" size="xl" className="w-10">
                 <InputField
                   ref={(ref: TextInput) => (inputRefs.current[i] = ref)}
                   value={pin[i]}
@@ -136,21 +142,19 @@ export const PinScreen = forwardRef(
                       handleSubmitPin(newPin);
                     }
                   }}
-                  fontSize="$4xl"
-                  fontWeight="bold"
-                  textAlign="center"
                   keyboardType="number-pad"
                   secureTextEntry={secureTextEntry}
                   autoComplete="off"
+                  className="text-4xl font-bold text-center"
                 />
               </Input>
             ))}
           </HStack>
-          {error && <Text color="$error500">{error}</Text>}
+          {error && <Text className="text-error-500">{error}</Text>}
           <Button
             size="xl"
             onPress={() => handleSubmitPin(pin)}
-            isDisabled={pin.length < pinSize || isSending}
+            disabled={pin.length < pinSize || isSending}
             testID="submit-button"
           >
             <ButtonText>{btnLabel ?? 'Submit'}</ButtonText>

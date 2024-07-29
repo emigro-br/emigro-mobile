@@ -1,0 +1,612 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Profile screen Should render the Profile screen correctly 1`] = `
+<View
+  style={
+    [
+      {},
+      {
+        "flex": 1,
+        "height": "100%",
+        "width": "100%",
+      },
+      undefined,
+    ]
+  }
+>
+  <RCTScrollView
+    alwaysBounceVertical={true}
+    onContentSizeChange={null}
+    onLayout={[Function]}
+    onMomentumScrollBegin={[Function]}
+    onMomentumScrollEnd={[Function]}
+    onResponderGrant={[Function]}
+    onResponderReject={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onScroll={[Function]}
+    onScrollBeginDrag={[Function]}
+    onScrollEndDrag={[Function]}
+    onScrollShouldSetResponder={[Function]}
+    onStartShouldSetResponder={[Function]}
+    onStartShouldSetResponderCapture={[Function]}
+    onTouchCancel={[Function]}
+    onTouchEnd={[Function]}
+    onTouchMove={[Function]}
+    onTouchStart={[Function]}
+    pagingEnabled={false}
+    scrollViewRef={null}
+    sendMomentumEvents={false}
+    snapToEnd={true}
+    snapToStart={true}
+    style={
+      [
+        {
+          "flexDirection": "column",
+          "flexGrow": 1,
+          "flexShrink": 1,
+          "overflow": "scroll",
+        },
+        {
+          "paddingTop": 0,
+        },
+      ]
+    }
+  >
+    <RCTScrollContentView
+      collapsable={false}
+      style={
+        [
+          false,
+          undefined,
+        ]
+      }
+    >
+      <View
+        className="flex-1 justify-between"
+      >
+        <View
+          className="flex-col gap-4 p-4"
+        >
+          <View
+            className="justify-center items-center"
+          >
+            <View>
+              <Text>
+                TN
+              </Text>
+            </View>
+            <RCTText
+              accessibilityRole="header"
+              accessible={true}
+              allowFontScaling={true}
+              ellipsizeMode="tail"
+              isHighlighted={false}
+              selectionColor={null}
+              style={
+                {
+                  "fontSize": 37.44,
+                  "fontWeight": "bold",
+                  "marginVertical": 32,
+                }
+              }
+            >
+              Test Name Test Last Name
+            </RCTText>
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              dataSet={
+                {
+                  "active": "false",
+                  "disabled": "false",
+                  "focus": "false",
+                  "focusVisible": "false",
+                  "hover": "false",
+                }
+              }
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              role="button"
+            >
+              <Text
+                dataSet={
+                  {
+                    "active": false,
+                    "disabled": undefined,
+                    "focus": false,
+                    "focusVisible": false,
+                    "hover": false,
+                  }
+                }
+                states={
+                  {
+                    "active": false,
+                    "disabled": undefined,
+                    "focus": false,
+                    "focusVisible": false,
+                    "hover": false,
+                  }
+                }
+              >
+                test-...ublic
+              </Text>
+              <RNSVGSvgView
+                align="xMidYMid"
+                bbHeight="100%"
+                bbWidth="100%"
+                focusable={false}
+                meetOrSlice={0}
+                minX={0}
+                minY={0}
+                role="img"
+                stroke="currentColor"
+                style={
+                  [
+                    {
+                      "backgroundColor": "transparent",
+                      "borderWidth": 0,
+                    },
+                    {
+                      "flex": 0,
+                      "height": "100%",
+                      "width": "100%",
+                    },
+                  ]
+                }
+                vbHeight={24}
+                vbWidth={24}
+              >
+                <RNSVGGroup
+                  fill={
+                    {
+                      "payload": 4278190080,
+                      "type": 0,
+                    }
+                  }
+                  propList={
+                    [
+                      "stroke",
+                    ]
+                  }
+                  stroke={
+                    {
+                      "type": 2,
+                    }
+                  }
+                >
+                  <RNSVGGroup
+                    fill={
+                      {
+                        "payload": 4278190080,
+                        "type": 0,
+                      }
+                    }
+                  >
+                    <RNSVGPath
+                      d="M20 9H11C9.89543 9 9 9.89543 9 11V20C9 21.1046 9.89543 22 11 22H20C21.1046 22 22 21.1046 22 20V11C22 9.89543 21.1046 9 20 9Z"
+                      fill={
+                        {
+                          "payload": 4278190080,
+                          "type": 0,
+                        }
+                      }
+                      propList={
+                        [
+                          "strokeWidth",
+                          "strokeLinecap",
+                          "strokeLinejoin",
+                        ]
+                      }
+                      strokeLinecap={1}
+                      strokeLinejoin={1}
+                      strokeWidth="2"
+                    />
+                    <RNSVGPath
+                      d="M5 15H4C3.46957 15 2.96086 14.7893 2.58579 14.4142C2.21071 14.0391 2 13.5304 2 13V4C2 3.46957 2.21071 2.96086 2.58579 2.58579C2.96086 2.21071 3.46957 2 4 2H13C13.5304 2 14.0391 2.21071 14.4142 2.58579C14.7893 2.96086 15 3.46957 15 4V5"
+                      fill={
+                        {
+                          "payload": 4278190080,
+                          "type": 0,
+                        }
+                      }
+                      propList={
+                        [
+                          "strokeWidth",
+                          "strokeLinecap",
+                          "strokeLinejoin",
+                        ]
+                      }
+                      strokeLinecap={1}
+                      strokeLinejoin={1}
+                      strokeWidth="2"
+                    />
+                  </RNSVGGroup>
+                </RNSVGGroup>
+              </RNSVGSvgView>
+            </View>
+          </View>
+          <View
+            className="flex-col gap-5"
+          >
+            <View>
+              <RCTText
+                accessible={true}
+                allowFontScaling={true}
+                ellipsizeMode="tail"
+                isHighlighted={false}
+                selectionColor={null}
+              >
+                Full Name
+              </RCTText>
+              <RCTText
+                accessible={true}
+                allowFontScaling={true}
+                ellipsizeMode="tail"
+                isHighlighted={false}
+                selectionColor={null}
+              >
+                Test Name Test Last Name
+              </RCTText>
+            </View>
+            <View />
+            <View>
+              <RCTText
+                accessible={true}
+                allowFontScaling={true}
+                ellipsizeMode="tail"
+                isHighlighted={false}
+                selectionColor={null}
+              >
+                Email address
+              </RCTText>
+              <RCTText
+                accessible={true}
+                allowFontScaling={true}
+                ellipsizeMode="tail"
+                isHighlighted={false}
+                selectionColor={null}
+              >
+                test@email.com
+              </RCTText>
+            </View>
+            <View />
+            <View>
+              <RCTText
+                accessible={true}
+                allowFontScaling={true}
+                ellipsizeMode="tail"
+                isHighlighted={false}
+                selectionColor={null}
+              >
+                Address
+              </RCTText>
+              <RCTText
+                accessible={true}
+                allowFontScaling={true}
+                ellipsizeMode="tail"
+                isHighlighted={false}
+                selectionColor={null}
+              >
+                Test Address
+              </RCTText>
+            </View>
+            <View />
+            <View>
+              <View
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": undefined,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
+                }
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                collapsable={false}
+                dataSet={
+                  {
+                    "active": "false",
+                    "disabled": "false",
+                    "focus": "false",
+                    "focusVisible": "false",
+                    "hover": "false",
+                  }
+                }
+                focusable={true}
+                onBlur={[Function]}
+                onClick={[Function]}
+                onFocus={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                role="button"
+              >
+                <Text
+                  dataSet={
+                    {
+                      "active": false,
+                      "disabled": undefined,
+                      "focus": false,
+                      "focusVisible": false,
+                      "hover": false,
+                    }
+                  }
+                  states={
+                    {
+                      "active": false,
+                      "disabled": undefined,
+                      "focus": false,
+                      "focusVisible": false,
+                      "hover": false,
+                    }
+                  }
+                >
+                  Bank account currency: 
+                  not set
+                   
+                </Text>
+              </View>
+              <RCTText
+                accessible={true}
+                allowFontScaling={true}
+                ellipsizeMode="tail"
+                isHighlighted={false}
+                selectionColor={null}
+              >
+                Used for deposit and withdraw
+              </RCTText>
+            </View>
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              dataSet={
+                {
+                  "active": "false",
+                  "disabled": "false",
+                  "focus": "false",
+                  "focusVisible": "false",
+                  "hover": "false",
+                }
+              }
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              role="button"
+            >
+              <Text
+                dataSet={
+                  {
+                    "active": false,
+                    "disabled": undefined,
+                    "focus": false,
+                    "focusVisible": false,
+                    "hover": false,
+                  }
+                }
+                states={
+                  {
+                    "active": false,
+                    "disabled": undefined,
+                    "focus": false,
+                    "focusVisible": false,
+                    "hover": false,
+                  }
+                }
+              >
+                Configure your PIN
+              </Text>
+            </View>
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              dataSet={
+                {
+                  "active": "false",
+                  "disabled": "false",
+                  "focus": "false",
+                  "focusVisible": "false",
+                  "hover": "false",
+                }
+              }
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              role="button"
+            >
+              <Text
+                dataSet={
+                  {
+                    "active": false,
+                    "disabled": undefined,
+                    "focus": false,
+                    "focusVisible": false,
+                    "hover": false,
+                  }
+                }
+                states={
+                  {
+                    "active": false,
+                    "disabled": undefined,
+                    "focus": false,
+                    "focusVisible": false,
+                    "hover": false,
+                  }
+                }
+              >
+                Delete account
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View
+          className="items-center mb-12"
+        >
+          <View
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            dataSet={
+              {
+                "active": "false",
+                "disabled": "false",
+                "focus": "false",
+                "focusVisible": "false",
+                "hover": "false",
+              }
+            }
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            role="button"
+          >
+            <Text
+              dataSet={
+                {
+                  "active": false,
+                  "disabled": undefined,
+                  "focus": false,
+                  "focusVisible": false,
+                  "hover": false,
+                }
+              }
+              states={
+                {
+                  "active": false,
+                  "disabled": undefined,
+                  "focus": false,
+                  "focusVisible": false,
+                  "hover": false,
+                }
+              }
+            >
+              Logout
+            </Text>
+          </View>
+          <RCTText
+            accessible={true}
+            allowFontScaling={true}
+            ellipsizeMode="tail"
+            isHighlighted={false}
+            selectionColor={null}
+          >
+            version 
+            mock
+             (
+            mock
+            )
+          </RCTText>
+        </View>
+      </View>
+    </RCTScrollContentView>
+  </RCTScrollView>
+</View>
+`;

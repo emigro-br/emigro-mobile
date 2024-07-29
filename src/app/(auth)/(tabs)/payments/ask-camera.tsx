@@ -1,7 +1,13 @@
 import { CameraIcon, QrCodeIcon } from 'react-native-heroicons/solid';
 
-import { Box, Button, ButtonText, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
 import { PermissionResponse, useCameraPermissions } from 'expo-camera';
+
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 
 type AskCameraProps = {
   onAnswer: (permission: PermissionResponse) => void;
@@ -16,9 +22,9 @@ const AskCamera = ({ onAnswer }: AskCameraProps) => {
   };
 
   return (
-    <Box flex={1}>
-      <VStack alignItems="center" space="xl">
-        <Box pt="$12" pb="$6" testID="camera-icon">
+    <Box className="flex-1">
+      <VStack space="xl" className="items-center">
+        <Box testID="camera-icon" className="pt-12 pb-6">
           <CameraIcon size={128} color="red" />
         </Box>
 
@@ -26,7 +32,7 @@ const AskCamera = ({ onAnswer }: AskCameraProps) => {
 
         <VStack space="md">
           <Text size="xl">Please grant us access to your camera, which is required to:</Text>
-          <HStack justifyContent="flex-start" alignItems="center">
+          <HStack className="justify-start items-center">
             <QrCodeIcon size={24} color="red" />
             <Text size="lg"> scan QR codes for payments</Text>
           </HStack>

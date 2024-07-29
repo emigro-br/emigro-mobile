@@ -2,11 +2,18 @@ import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Keyboard } from 'react-native';
 
-import { Box, Button, ButtonText, HStack, Heading, LockIcon, Text, VStack, useToast } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 
 import { Toast } from '@/components/Toast';
 import { EmailInputControl } from '@/components/inputs/controls/EmailInputControl';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { Icon, LockIcon } from '@/components/ui/icon';
+import { Text } from '@/components/ui/text';
+import { useToast } from '@/components/ui/toast';
+import { VStack } from '@/components/ui/vstack';
 import { resetPassword } from '@/services/emigro/auth';
 
 // for react-hook-form
@@ -18,7 +25,7 @@ export const PasswordRecovery = () => {
   const router = useRouter();
   const toast = useToast();
   const [isSending, setIsSending] = useState(false);
-  const { control, handleSubmit } = useForm<FormData>({
+  const { control, handleSubmit, formState } = useForm<FormData>({
     defaultValues: {
       email: '',
     },
@@ -51,17 +58,19 @@ export const PasswordRecovery = () => {
     }
   };
 
+  const { isDirty, isValid } = formState;
+  const isDisabled = !isDirty || !isValid || isSending;
   return (
-    <Box flex={1} bg="$white">
-      <VStack p="$4" space="4xl">
-        <HStack alignItems="center">
-          <LockIcon size="xl" color="red" mr="$2" />
+    <Box className="flex-1 bg-white">
+      <VStack space="4xl" className="p-4">
+        <HStack className="items-center">
+          <Icon as={LockIcon} size="xl" className="text-[red] mr-2" />
           <Heading>Password Recovery</Heading>
         </HStack>
-        <Text>Enter your email address and we will send you a instructions to reset your password.</Text>
+        <Text>{isDisabled} Enter your email address and we will send you a instructions to reset your password.</Text>
         <EmailInputControl control={control} name="email" />
-        <Button size="xl" onPress={handleSubmit(onSubmit)} isDisabled={isSending}>
-          <ButtonText>Send Email</ButtonText>
+        <Button size="xl" onPress={handleSubmit(onSubmit)} disabled={isDisabled} testID="send-button">
+          <ButtonText>{isSending ? 'Sending...' : 'Send Email'}</ButtonText>
         </Button>
       </VStack>
     </Box>

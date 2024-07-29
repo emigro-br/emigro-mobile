@@ -1,30 +1,19 @@
 import React, { useState } from 'react';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  Card,
-  Center,
-  CheckCircleIcon,
-  FormControlErrorText,
-  HStack,
-  Heading,
-  Icon,
-  Input,
-  InputField,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
 import * as Sentry from '@sentry/react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Center } from '@/components/ui/center';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { CheckCircleIcon, Icon } from '@/components/ui/icon';
+import { Input, InputField } from '@/components/ui/input';
+import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@/components/ui/modal';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { CONFIRM_ACCOUNT_ERROR, WRONG_CODE_ERROR } from '@/constants/errorMessages';
 import { confirmAccount } from '@/services/emigro/auth';
 
@@ -38,7 +27,7 @@ const ConfirmAccount = () => {
 
   if (!email || !externalId) {
     return (
-      <Box flex={1} justifyContent="center">
+      <Box className="flex-1 justify-center">
         <Center>
           <Text size="lg">Invalid confirmation link</Text>
         </Center>
@@ -70,8 +59,8 @@ const ConfirmAccount = () => {
   };
 
   return (
-    <Box flex={1}>
-      <VStack p="$4" space="lg">
+    <Box className="flex-1">
+      <VStack space="lg" className="p-4">
         <Heading>Enter Confirmation Code</Heading>
 
         <Card>
@@ -82,7 +71,7 @@ const ConfirmAccount = () => {
             <Input size="xl" isDisabled={isConfirming}>
               <InputField placeholder="Confirmation code" value={code} onChangeText={(text) => setCode(text)} />
             </Input>
-            <Button onPress={handleConfirmation} isDisabled={!code || isConfirming} testID="confirm-button">
+            <Button onPress={handleConfirmation} disabled={!code || isConfirming} testID="confirm-button">
               <ButtonText>Verify</ButtonText>
             </Button>
           </VStack>
@@ -94,9 +83,10 @@ const ConfirmAccount = () => {
           </Link>
         </Text> */}
 
-        <FormControlErrorText testID="confirm-account-error">{error}</FormControlErrorText>
+        <Text className="text-error-500" testID="confirm-account-error">
+          {error}
+        </Text>
       </VStack>
-
       <ConfirmModal isOpen={isSuccessModalVisible} onConfirm={handleCloseConfirmationModal} />
     </Box>
   );
@@ -113,8 +103,8 @@ const ConfirmModal = ({ isOpen, onConfirm }: ConfirmModalProps) => {
       <ModalBackdrop />
       <ModalContent>
         <ModalHeader>
-          <HStack space="sm" alignItems="center">
-            <Icon as={CheckCircleIcon} color="$success700" $dark-color="$success300" />
+          <HStack space="sm" className="items-center">
+            <Icon as={CheckCircleIcon} className="text-success-700  dark:text-success-300" />
             <Heading size="lg">Confirmation successful</Heading>
           </HStack>
         </ModalHeader>

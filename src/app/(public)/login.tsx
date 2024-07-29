@@ -1,26 +1,24 @@
 import React, { useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import {
-  AlertCircleIcon,
-  Box,
-  Button,
-  ButtonText,
-  FormControl,
-  FormControlError,
-  FormControlErrorIcon,
-  FormControlErrorText,
-  HStack,
-  Heading,
-  Link,
-  LinkText,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 
 import { EmailInputControl } from '@/components/inputs/controls/EmailInputControl';
 import { PasswordInputControl } from '@/components/inputs/controls/PasswordInputControl';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import {
+  FormControl,
+  FormControlError,
+  FormControlErrorIcon,
+  FormControlErrorText,
+} from '@/components/ui/form-control';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { AlertCircleIcon } from '@/components/ui/icon';
+import { Link, LinkText } from '@/components/ui/link';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { sessionStore } from '@/stores/SessionStore';
 import { BadRequestException } from '@/types/errors';
 
@@ -36,7 +34,7 @@ const Login = () => {
   const passwordRef = useRef<HTMLInputElement>(null);
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string | null>(null);
-  const { control, handleSubmit } = useForm<FormData>({
+  const { control, handleSubmit, formState } = useForm<FormData>({
     defaultValues: {
       email: '',
       password: '',
@@ -65,9 +63,11 @@ const Login = () => {
     }
   };
 
+  const { isDirty, isValid } = formState;
+  const isDisabled = !isDirty || !isValid || isLoggingIn;
   return (
-    <Box flex={1} bg="$white">
-      <VStack p="$4" space="lg">
+    <Box className="flex-1 bg-white">
+      <VStack space="lg" className="p-4">
         <Heading size="xl">Sign in to Emigro</Heading>
         <VStack space="2xl">
           <EmailInputControl
@@ -84,9 +84,7 @@ const Login = () => {
           />
 
           <Link onPress={() => router.push('/password-recovery')} testID="forgot-password-link">
-            <LinkText color="$primary500" textDecorationLine="none" textAlign="right">
-              Forgot your password?
-            </LinkText>
+            <LinkText className="text-primary-500 no-underline text-right">Forgot your password?</LinkText>
           </Link>
 
           {apiError && (
@@ -97,13 +95,13 @@ const Login = () => {
               </FormControlError>
             </FormControl>
           )}
-          <Button onPress={handleSubmit(onSubmit)} isDisabled={isLoggingIn} size="xl" testID="signin-button">
+          <Button onPress={handleSubmit(onSubmit)} disabled={isDisabled} size="xl" testID="signin-button">
             <ButtonText>{isLoggingIn ? 'Signing in...' : 'Sign in'}</ButtonText>
           </Button>
-          <HStack justifyContent="center">
+          <HStack className="justify-center">
             <Text size="lg">Don't have an account?</Text>
             <Link onPress={() => router.replace('/signup')}>
-              <Text size="lg" color="$primary500" ml="$2" bold>
+              <Text size="lg" bold className="text-primary-500 ml-2">
                 Sign up
               </Text>
             </Link>

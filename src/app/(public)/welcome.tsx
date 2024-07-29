@@ -1,33 +1,36 @@
 import React from 'react';
 
-import { Box, Button, ButtonGroup, ButtonText, Center, Image, Text } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 
 import emigroLogo from '@/assets/images/emigro-logo.png';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonGroup, ButtonText } from '@/components/ui/button';
+import { Center } from '@/components/ui/center';
+import { Image } from '@/components/ui/image';
+import { Text } from '@/components/ui/text';
 
 export const Welcome = () => {
   const router = useRouter();
   return (
-    <Box flex={1} bg="$white">
-      <Box bg="$primary500" pt="$40" pb="$20">
+    <Box className="flex-1 bg-white">
+      <Box className="bg-primary-500 pt-40 pb-20">
         <Center>
-          <Box h="$20" w="$80" mb="$10">
-            <Image h="$full" w="$full" source={emigroLogo} alt="Emigro logo" />
+          <Box className="h-20 w-80 mb-10">
+            <Image source={emigroLogo} alt="Emigro logo" className="h-full w-full" />
           </Box>
-          <Text size="2xl" color="$white" bold mb="$2">
+          <Text size="2xl" bold className="text-white mb-2">
             The Traveler's Digital Wallet
           </Text>
-          <Text size="lg" color="$white">
+          <Text size="lg" className="text-white">
             Instant cross-border payments
           </Text>
         </Center>
       </Box>
-
-      <ButtonGroup flexDirection="column" space="md" size="xl" mx="$4" mt="$8">
-        <Button onPress={() => router.push('/login')} variant="solid">
+      <ButtonGroup space="md" flexDirection="column" className="mx-4 mt-8">
+        <Button onPress={() => router.push('/login')} variant="solid" size="xl">
           <ButtonText>Login</ButtonText>
         </Button>
-        <Button onPress={() => router.push('/signup')} variant="outline">
+        <Button onPress={() => router.push('/signup')} variant="outline" size="xl">
           <ButtonText>Create an Account</ButtonText>
         </Button>
       </ButtonGroup>

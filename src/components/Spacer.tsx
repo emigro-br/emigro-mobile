@@ -1,3 +1,3 @@
-import { Box } from '@gluestack-ui/themed';
+import { Box } from '@/components/ui/box';
 
-export const Spacer = () => <Box flex={1} />;
+export const Spacer = () => <Box className="flex-1" />;

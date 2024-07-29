@@ -1,28 +1,24 @@
 import React, { useState } from 'react';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  Center,
-  FormControl,
-  FormControlError,
-  FormControlErrorText,
-  FormControlLabel,
-  FormControlLabelText,
-  Heading,
-  Input,
-  InputField,
-  InputIcon,
-  InputSlot,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ClipboardPasteIcon } from 'lucide-react-native';
 
 import { AssetInput } from '@/components/AssetInput';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Center } from '@/components/ui/center';
+import {
+  FormControl,
+  FormControlError,
+  FormControlErrorText,
+  FormControlLabel,
+  FormControlLabelText,
+} from '@/components/ui/form-control';
+import { Heading } from '@/components/ui/heading';
+import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { balanceStore } from '@/stores/BalanceStore';
 import { transferStore } from '@/stores/TransferStore';
 import { CryptoAsset } from '@/types/assets';
@@ -60,30 +56,23 @@ export const SendAsset = () => {
   };
 
   return (
-    <Box
-      flex={1}
-      sx={{
-        _light: { bg: 'white' },
-        _dark: { bg: '$backgroundDark950' },
-      }}
-    >
-      <Heading mt="$4" mx="$4" size="xl">
+    <Box className="flex-1 bg-white  dark:bg-backgroundDark-950">
+      <Heading size="xl" className="mt-4 mx-4">
         Send {asset}
       </Heading>
-
-      <Box m="$4">
+      <Box className="m-4">
         <VStack space="md">
           <FormControl size="md" isInvalid={isBalanceExceeded}>
-            <Text size="xs">
+            <Text size="sm">
               Balance: {balance} {asset}
             </Text>
             <AssetInput
               asset={asset}
               value={amount}
               onChangeValue={setAmount}
+              size="4xl"
               textAlign="center"
-              fontSize={36}
-              fontWeight="bold"
+              className="font-bold"
             />
             <Center>
               <FormControlError>
@@ -93,12 +82,12 @@ export const SendAsset = () => {
           </FormControl>
 
           <FormControl size="md" isInvalid={!isValidAddress}>
-            <FormControlLabel mb="$1">
+            <FormControlLabel className="mb-1">
               <FormControlLabelText>Recipient Wallet</FormControlLabelText>
             </FormControlLabel>
             <Input variant="outline" isRequired>
               <InputField placeholder="Enter the wallet address here" value={address} onChangeText={setAddress} />
-              <InputSlot pr="$3" onPress={handlePaste}>
+              <InputSlot onPress={handlePaste} className="pr-3">
                 <InputIcon as={ClipboardPasteIcon} />
               </InputSlot>
             </Input>
@@ -106,7 +95,7 @@ export const SendAsset = () => {
               <FormControlErrorText>A valid wallet is required</FormControlErrorText>
             </FormControlError>
           </FormControl>
-          <Button isDisabled={isButtonDisabled} onPress={handlePressContinue}>
+          <Button disabled={isButtonDisabled} onPress={handlePressContinue}>
             <ButtonText>Continue</ButtonText>
           </Button>
         </VStack>

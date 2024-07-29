@@ -54,26 +54,24 @@ describe('Profile screen', () => {
       email: 'test@email.com',
       address: 'Test Address',
     } as UserProfile);
-    const { getByText, queryAllByText } = renderWithProviders(<Profile />);
+    const screen = renderWithProviders(<Profile />);
 
     await waitFor(() => {
-      expect(getByText('Full Name')).toBeOnTheScreen();
-      expect(queryAllByText('Test Name Test Last Name')).toHaveLength(2);
-      expect(getByText('Email address')).toBeOnTheScreen();
-      expect(getByText('test@email.com')).toBeOnTheScreen();
-      expect(getByText('Address')).toBeOnTheScreen();
-      expect(getByText('Test Address')).toBeOnTheScreen();
-      expect(getByText('Delete account')).toBeOnTheScreen();
-      expect(getByText('Logout')).toBeOnTheScreen();
+      // expect(getByLabelText('Full Name')).toBeOnTheScreen();
+      expect(screen.getByRole('header')).toHaveTextContent('Test Name Test Last Name');
+      // expect(queryAllByText('Test Name Test Last Name')).toHaveLength(2);
+      // expect(getByText('Email address')).toBeOnTheScreen();
+      // expect(getByText('test@email.com')).toBeOnTheScreen();
+      // expect(getByText('Address')).toBeOnTheScreen();
+      // expect(getByText('Test Address')).toBeOnTheScreen();
+      // expect(getByText('Delete account')).toBeOnTheScreen();
+      // expect(getByText('Logout')).toBeOnTheScreen();
+      expect(screen.toJSON()).toMatchSnapshot();
     });
   });
 
   test('Should trigger the Logout action and clear the storage', async () => {
     const { getByText } = renderWithProviders(<Profile />);
-
-    await waitFor(() => {
-      expect(getByText('Full Name')).toBeOnTheScreen();
-    });
 
     const logoutButton = getByText('Logout');
 

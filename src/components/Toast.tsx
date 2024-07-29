@@ -1,4 +1,5 @@
-import { Toast as GToast, ToastDescription, ToastTitle, VStack } from '@gluestack-ui/themed';
+import { Toast as GToast, ToastDescription, ToastTitle } from '@/components/ui/toast';
+import { VStack } from '@/components/ui/vstack';
 
 type Props = {
   id: string;

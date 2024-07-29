@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 
-import { Box, Button, ButtonText, Card, HStack, Heading, Text, VStack } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 
 import { ErrorModal } from '@/components/modals/ErrorModal';
 import { PinScreen } from '@/components/screens/PinScreen';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { securityStore } from '@/stores/SecurityStore';
 import { swapStore as bloc } from '@/stores/SwapStore';
 
@@ -68,10 +74,10 @@ export const DetailsSwap = () => {
         isOpen={!!errorMessage}
         onClose={() => router.back()}
       />
-      <Box flex={1}>
-        <VStack p="$4" space="lg">
+      <Box className="flex-1">
+        <VStack space="lg" className="p-4">
           <Heading>Confirm Swap</Heading>
-          <Card size="md" variant="elevated" bg="$white">
+          <Card size="md" variant="elevated" className="bg-white">
             <VStack space="md">
               <Row label="Amount" value={`${fromValue.toFixed(2)} ${fromAsset}`} />
               <Row label="Exchanged" value={`${toValue.toFixed(2)} ${toAsset}`} />
@@ -80,7 +86,7 @@ export const DetailsSwap = () => {
             </VStack>
           </Card>
           <Text size="xs">The final amount is estimated and may change.</Text>
-          <Button onPress={() => setShowPinScreen(true)} isDisabled={isLoading}>
+          <Button onPress={() => setShowPinScreen(true)} disabled={isLoading}>
             <ButtonText>{isLoading ? 'Processing...' : `Swap ${fromAsset} for ${toAsset}`}</ButtonText>
           </Button>
         </VStack>
@@ -95,11 +101,11 @@ interface RowProps {
 }
 
 const Row: React.FC<RowProps> = ({ label, value }) => (
-  <HStack justifyContent="space-between">
-    <Text size="sm" color="gray">
+  <HStack className="justify-between">
+    <Text size="sm" className="text-[gray]">
       {label}
     </Text>
-    <Text color="$textLight900">{value}</Text>
+    <Text className="text-typography-900">{value}</Text>
   </HStack>
 );
 

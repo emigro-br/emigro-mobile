@@ -1,11 +1,11 @@
 import { Keyboard } from 'react-native';
 
-import { useToast } from '@gluestack-ui/themed';
 import { fireEvent, waitFor } from '@testing-library/react-native';
 import { useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
+import { useToast } from '@/components/ui/toast';
 import * as auth from '@/services/emigro/auth';
 
 import { PasswordRecovery } from '../password-recovery';
@@ -29,12 +29,20 @@ describe('PasswordRecovery', () => {
     const mockToastShow = useToast().show;
     const resetPassword = jest.spyOn(auth, 'resetPassword').mockRejectedValue(new Error('Email not found'));
 
-    const { getByPlaceholderText, getByText } = render(<PasswordRecovery />);
+    const { getByPlaceholderText, getByTestId } = render(<PasswordRecovery />);
 
     const notFoundEmail = 'any-email@found.not'; // valid e-mail, but not found in the system
     const emailInput = getByPlaceholderText('example@email.com');
+
+    const button = getByTestId('send-button');
+
     fireEvent.changeText(emailInput, notFoundEmail);
-    fireEvent.press(getByText('Send Email'));
+    await waitFor(() => {
+      expect(button).toHaveAccessibilityState({ disabled: false });
+    });
+
+    // submit the form
+    fireEvent.press(button);
 
     await waitFor(() => {
       expect(Keyboard.dismiss).toHaveBeenCalled();
@@ -54,12 +62,21 @@ describe('PasswordRecovery', () => {
   it('should navigate to CreateNewPassword screen when email sending succeeds', async () => {
     const resetPassword = jest.spyOn(auth, 'resetPassword').mockResolvedValue({ success: true });
 
-    const { getByPlaceholderText, getByText } = render(<PasswordRecovery />);
+    const { getByPlaceholderText, getByTestId } = render(<PasswordRecovery />);
 
     const validEmail = 'valid-email@example.com';
     const emailInput = getByPlaceholderText('example@email.com');
+
+    const button = getByTestId('send-button');
+    expect(button).toHaveAccessibilityState({ disabled: true });
     fireEvent.changeText(emailInput, validEmail);
-    fireEvent.press(getByText('Send Email'));
+
+    await waitFor(() => {
+      expect(button).toHaveAccessibilityState({ disabled: false });
+    });
+
+    // submit the form
+    fireEvent.press(button);
 
     await waitFor(() => {
       expect(resetPassword).toHaveBeenCalledWith(validEmail);

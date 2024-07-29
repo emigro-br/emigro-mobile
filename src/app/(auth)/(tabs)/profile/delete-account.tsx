@@ -1,24 +1,17 @@
 import React, { useState } from 'react';
 
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  ButtonText,
-  CheckIcon,
-  Checkbox,
-  CheckboxIcon,
-  CheckboxIndicator,
-  CheckboxLabel,
-  Heading,
-  ScrollView,
-  Text,
-  VStack,
-  useToast,
-} from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 
 import { Toast } from '@/components/Toast';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonGroup, ButtonText } from '@/components/ui/button';
+import { Checkbox, CheckboxIcon, CheckboxIndicator, CheckboxLabel } from '@/components/ui/checkbox';
+import { Heading } from '@/components/ui/heading';
+import { CheckIcon } from '@/components/ui/icon';
+import { ScrollView } from '@/components/ui/scroll-view';
+import { Text } from '@/components/ui/text';
+import { useToast } from '@/components/ui/toast';
+import { VStack } from '@/components/ui/vstack';
 import { deleteAccount } from '@/services/emigro/auth';
 import { sessionStore } from '@/stores/SessionStore';
 
@@ -50,9 +43,9 @@ const DeleteAccount = () => {
   };
 
   return (
-    <ScrollView bg="$white">
-      <Box flex={1}>
-        <VStack p="$4" space="lg">
+    <ScrollView className="bg-white">
+      <Box className="flex-1">
+        <VStack space="lg" className="p-4">
           <Heading size="xl">Delete Account</Heading>
           <VStack space="lg">
             <Text>Please be aware that this action is final and cannot be reversed.</Text>
@@ -76,14 +69,14 @@ const DeleteAccount = () => {
 
             <Checkbox
               size="md"
-              mt="$2"
               value="checked"
               isChecked={isChecked}
               onChange={setIsChecked}
               aria-label="Confirm understanding of account deletion risks"
               testID="checkbox"
+              className="mt-2"
             >
-              <CheckboxIndicator mr="$2">
+              <CheckboxIndicator className="mr-2">
                 <CheckboxIcon as={CheckIcon} />
               </CheckboxIndicator>
               <CheckboxLabel>
@@ -92,10 +85,10 @@ const DeleteAccount = () => {
             </Checkbox>
           </VStack>
           <ButtonGroup flexDirection="column">
-            <Button variant="solid" onPress={() => handleDeleteAccount()} isDisabled={!isChecked || isDeleting}>
+            <Button variant="solid" onPress={() => handleDeleteAccount()} disabled={!isChecked || isDeleting}>
               <ButtonText>Yes, delete my account permanently</ButtonText>
             </Button>
-            <Button variant="link" onPress={() => router.back()} isDisabled={isDeleting}>
+            <Button variant="link" onPress={() => router.back()} disabled={isDeleting}>
               <ButtonText>No, keep my account</ButtonText>
             </Button>
           </ButtonGroup>

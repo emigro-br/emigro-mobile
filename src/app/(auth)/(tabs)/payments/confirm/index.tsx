@@ -1,27 +1,23 @@
 import { useEffect, useState } from 'react';
 import { Dropdown } from 'react-native-element-dropdown';
 
-import {
-  Box,
-  Button,
-  ButtonSpinner,
-  ButtonText,
-  Card,
-  Center,
-  Divider,
-  HStack,
-  Heading,
-  Pressable,
-  ScrollView,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
 import * as Sentry from '@sentry/react-native';
 import { usePathname, useRouter } from 'expo-router';
 
 import { InputAmountActionSheet } from '@/components/InputAmountActionSheet';
 import { LoadingScreen } from '@/components/screens/Loading';
 import { PinScreen } from '@/components/screens/PinScreen';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Center } from '@/components/ui/center';
+import { Divider } from '@/components/ui/divider';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { Pressable } from '@/components/ui/pressable';
+import { ScrollView } from '@/components/ui/scroll-view';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { TRANSACTION_ERROR_MESSAGE } from '@/constants/errorMessages';
 import { IQuoteRequest, fetchQuote } from '@/services/emigro/quotes';
 import { balanceStore } from '@/stores/BalanceStore';
@@ -180,20 +176,19 @@ export const ConfirmPayment = () => {
         asset={AssetToCurrency[scannedPayment.assetCode] as FiatCurrency} //TODO: improve this
         onSave={(amount) => setRequestedAmount(amount)}
       />
-
-      <ScrollView flex={1} bg="$white">
-        <Box flex={1}>
-          <VStack p="$4" space="lg">
+      <ScrollView className="flex-1 bg-white">
+        <Box className="flex-1">
+          <VStack space="lg" className="p-4">
             <Heading size="xl">Review the payment</Heading>
 
-            <HStack alignItems="center">
+            <HStack className="items-center">
               <Pressable onPress={() => isAmountEditable && setShowEditAmount(true)}>
-                <Text size="4xl" color="$textLight800" bold>
+                <Text size="4xl" bold className="text-typography-800" testID="amount">
                   {symbolFor(scannedPayment.assetCode, requestedAmount)}
                 </Text>
               </Pressable>
               {isAmountEditable && (
-                <Button variant="link" ml="$2" onPress={() => setShowEditAmount(true)}>
+                <Button variant="link" onPress={() => setShowEditAmount(true)} className="ml-2">
                   <ButtonText>Edit</ButtonText>
                 </Button>
               )}
@@ -216,8 +211,8 @@ export const ConfirmPayment = () => {
 
               {scannedPayment.infoAdicional && (
                 <Center>
-                  <Card variant="filled" bg="$backgroundLight100">
-                    <Text textAlign="center">{scannedPayment.infoAdicional}</Text>
+                  <Card variant="filled" className="bg-background-100">
+                    <Text className="text-center">{scannedPayment.infoAdicional}</Text>
                   </Card>
                 </Center>
               )}
@@ -229,9 +224,9 @@ export const ConfirmPayment = () => {
             <Divider />
 
             <Text>Select the account</Text>
-            <Card variant="filled" pb="$2">
+            <Card variant="filled" className="pb-2">
               <HStack>
-                <Box w="$1/4">
+                <Box className="w-1/4">
                   <Dropdown
                     selectedTextStyle={{ fontWeight: '500' }}
                     data={data}
@@ -243,18 +238,18 @@ export const ConfirmPayment = () => {
                     testID="select-account"
                   />
                 </Box>
-                <Box w="$3/4">
-                  <Text textAlign="right" py="$1">
+                <Box className="w-3/4">
+                  <Text className="text-right py-1" testID="quote">
                     {paymentQuote && symbolFor(selectedAsset, paymentQuote)}
                   </Text>
                 </Box>
               </HStack>
-              <HStack justifyContent="space-between">
-                <Text size="xs" color={`${hasBalance ? '$gray' : '$red'}`}>
+              <HStack className="justify-between">
+                <Text size="xs" className={hasBalance ? 'text-typography-500' : 'text-red-500'} testID="balance">
                   Balance: {symbolFor(selectedAsset, balance)}
                 </Text>
                 {!hasBalance && (
-                  <Text color="$red" size="xs">
+                  <Text size="xs" className="text-red">
                     exceeds balance
                   </Text>
                 )}
@@ -264,8 +259,8 @@ export const ConfirmPayment = () => {
             <Text size="xs">
               The seller will receive the exact value he set. The quantity that will be sent is computed automatically.
             </Text>
-            <Button size="lg" onPress={handlePressPay} isDisabled={isPayDisabled}>
-              {isProcesing && <ButtonSpinner mr="$1" />}
+            <Button size="lg" onPress={handlePressPay} disabled={isPayDisabled}>
+              {isProcesing && <ButtonSpinner className="mr-1" />}
               <ButtonText>{isProcesing ? 'Processing...' : 'Pay'} </ButtonText>
             </Button>
           </VStack>
@@ -281,21 +276,21 @@ interface StaticPixProps {
 
 const StaticPix = ({ pix }: StaticPixProps) => (
   <VStack space="md">
-    <HStack justifyContent="space-between">
+    <HStack className="justify-between">
       <Text bold>CPF/CNPJ: </Text>
       <Text>{pix.taxId}</Text>
     </HStack>
-    <HStack justifyContent="space-between">
+    <HStack className="justify-between">
       <Text bold>Institution: </Text>
-      <Text numberOfLines={2} ellipsizeMode="tail" maxWidth="$2/3">
+      <Text numberOfLines={2} ellipsizeMode="tail" className="max-w-2/3">
         {pix.bankName}
       </Text>
     </HStack>
-    <HStack justifyContent="space-between">
+    <HStack className="justify-between">
       <Text bold>Pix Key: </Text>
       <Text>{pix.pixKey}</Text>
     </HStack>
-    <HStack justifyContent="space-between">
+    <HStack className="justify-between">
       <Text bold>Identifier: </Text>
       <Text>{pix.txid}</Text>
     </HStack>
@@ -308,11 +303,11 @@ interface StellarPayProps {
 
 const StellarPay = ({ pay }: StellarPayProps) => (
   <VStack space="md">
-    <HStack justifyContent="space-between">
+    <HStack className="justify-between">
       <Text bold>Institution:</Text>
-      <Text maxWidth="$2/3">Stellar Network</Text>
+      <Text className="max-w-2/3">Stellar Network</Text>
     </HStack>
-    <HStack justifyContent="space-between">
+    <HStack className="justify-between">
       <Text bold>Wallet Key:</Text>
       <Text>{maskWallet(pay.walletKey!)}</Text>
     </HStack>

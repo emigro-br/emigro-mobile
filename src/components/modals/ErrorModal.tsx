@@ -1,21 +1,12 @@
 import React from 'react';
 
-import {
-  Button,
-  ButtonText,
-  CloseCircleIcon,
-  HStack,
-  Heading,
-  Icon,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Text,
-  View,
-} from '@gluestack-ui/themed';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { CloseCircleIcon, Icon } from '@/components/ui/icon';
+import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@/components/ui/modal';
+import { Text } from '@/components/ui/text';
+import { View } from '@/components/ui/view';
 
 type Props = {
   isOpen: boolean;
@@ -31,8 +22,8 @@ export const ErrorModal: React.FC<Props> = ({ title, isOpen, errorMessage, onClo
       <ModalBackdrop />
       <ModalContent>
         <ModalHeader>
-          <HStack space="sm" alignItems="center">
-            <Icon as={CloseCircleIcon} color="$error700" />
+          <HStack space="sm" className="items-center">
+            <Icon as={CloseCircleIcon} className="text-error-700" />
             <Heading size="lg">{title}</Heading>
           </HStack>
         </ModalHeader>

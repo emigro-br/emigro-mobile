@@ -17,8 +17,8 @@ describe('InputAmount', () => {
   });
 
   it('should render the component with correct props', () => {
-    const taglineElement = screen.getByText('Test Tagline');
-    expect(taglineElement).toBeOnTheScreen();
+    const taglineElement = screen.getByRole('header');
+    expect(taglineElement).toHaveTextContent('Test Tagline');
 
     const assetInputElement = screen.getByLabelText('Input Field');
     expect(assetInputElement).toBeOnTheScreen();

@@ -1,20 +1,12 @@
 import React from 'react';
 
-import {
-  Button,
-  ButtonText,
-  Center,
-  HStack,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Spinner,
-  Text,
-  View,
-} from '@gluestack-ui/themed';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Center } from '@/components/ui/center';
+import { HStack } from '@/components/ui/hstack';
+import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@/components/ui/modal';
+import { Spinner } from '@/components/ui/spinner';
+import { Text } from '@/components/ui/text';
+import { View } from '@/components/ui/view';
 
 type Props = {
   isOpen: boolean;
@@ -36,13 +28,13 @@ export const LoadingModal: React.FC<Props> = ({ isOpen, text, onClose, testID = 
             <Center>
               <HStack>
                 <Spinner size="small" />
-                <Text size="lg" bold ml="$2">
+                <Text size="lg" bold className="ml-2">
                   {text || 'Loading...'}
                 </Text>
               </HStack>
             </Center>
           </ModalBody>
-          <ModalFooter justifyContent="center">
+          <ModalFooter className="justify-center">
             {onClose && (
               <Button onPress={onClose} action="primary">
                 <ButtonText>Close</ButtonText>

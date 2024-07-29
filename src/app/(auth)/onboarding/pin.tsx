@@ -1,14 +1,20 @@
-import { Box, Button, ButtonText, Heading, LockIcon, Text, VStack } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
+
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { Icon, LockIcon } from '@/components/ui/icon';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 
 export const PinOnboarding = () => {
   const router = useRouter();
   return (
-    <Box flex={1} bg="$white">
-      <VStack flex={1} px="$4" py="$16" justifyContent="space-between" borderWidth={1}>
+    <Box className="flex-1 bg-white">
+      <VStack className="flex-1 px-4 py-16 justify-between border">
         <VStack space="lg">
-          <Box pt="$12" pb="$6" testID="lock-icon">
-            <LockIcon size="4xl" color="red" />
+          <Box testID="lock-icon" className="pt-12 pb-6">
+            <Icon as={LockIcon} size="4xl" className="text-[red]" />
           </Box>
           <Heading>Set up your mobile PIN</Heading>
           <Text>

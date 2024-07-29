@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Box } from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 
 import { PinScreen } from '@/components/screens/PinScreen';
+import { Box } from '@/components/ui/box';
 import { securityStore } from '@/stores/SecurityStore';
 import { sessionStore } from '@/stores/SessionStore';
 
@@ -25,7 +25,7 @@ export const UnlockScreen = () => {
   };
 
   return (
-    <Box flex={1} bg="$white" pt={insets.top}>
+    <Box className=" flex-1 bg-white " style={{ paddingTop: insets.top }}>
       <PinScreen
         tagline="Enter your PIN"
         btnLabel="Unlock"

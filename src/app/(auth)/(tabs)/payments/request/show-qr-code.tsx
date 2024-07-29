@@ -1,30 +1,24 @@
 import { useEffect } from 'react';
-import { BackHandler } from 'react-native';
+import { BackHandler, Platform } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  ButtonText,
-  Center,
-  CloseIcon,
-  HStack,
-  Heading,
-  ModalCloseButton,
-  Text,
-  Toast,
-  ToastDescription,
-  VStack,
-  useToast,
-} from '@gluestack-ui/themed';
 import * as Sentry from '@sentry/react-native';
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { createStaticPix } from 'pix-utils';
 import { CreateStaticPixParams } from 'pix-utils/dist/main/types/pixCreate';
 
+import { Box } from '@/components/ui/box';
+import { Button, ButtonGroup, ButtonText } from '@/components/ui/button';
+import { Center } from '@/components/ui/center';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { CloseIcon, Icon } from '@/components/ui/icon';
+import { ModalCloseButton } from '@/components/ui/modal';
+import { Text } from '@/components/ui/text';
+import { Toast, ToastDescription, useToast } from '@/components/ui/toast';
+import { VStack } from '@/components/ui/vstack';
 import { UserProfile } from '@/services/emigro/types';
 import { sessionStore } from '@/stores/SessionStore';
 import { emigroCategoryCode } from '@/types/PixPayment';
@@ -130,22 +124,22 @@ export const RequestWithQRCode = () => {
   };
 
   return (
-    <Box flex={1} bg="$white" pt={insets.top}>
-      <VStack p="$4" space="lg">
-        <HStack justifyContent="space-between">
-          <Heading>Request with QR Code</Heading>
-          <ModalCloseButton onPress={() => router.replace('../')} testID="close-button" mt="-$4">
-            <CloseIcon size="xl" />
+    <Box className=" flex-1 bg-white " style={{ paddingTop: Platform.OS === 'android' ? insets.top : 0 }}>
+      <VStack space="lg" className="p-4">
+        <HStack className="justify-between">
+          <Heading size="xl">Request with QR Code</Heading>
+          <ModalCloseButton onPress={() => router.replace('../')} testID="close-button" className="mt--4">
+            <Icon as={CloseIcon} size="xl" />
           </ModalCloseButton>
         </HStack>
         <Text>Show this QR code or copy and share with who will make this payment</Text>
-        <Center my="$4" testID="qr-code">
+        <Center testID="qr-code" className="my-4">
           <QRCode value={encodedCode} size={QRCodeSize.SMALL} />
         </Center>
 
         <Box>
           <Text bold>Requested value</Text>
-          <Text size="4xl" color="$textLight800" bold>
+          <Text size="4xl" bold className="text-typography-800">
             {symbolFor(asset as CryptoAsset, value)}
           </Text>
           <Text>For {buildMerchantName(profile)}</Text>

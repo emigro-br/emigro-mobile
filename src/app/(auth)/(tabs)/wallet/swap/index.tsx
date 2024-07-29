@@ -1,20 +1,16 @@
 import React, { useEffect, useState } from 'react';
 
-import {
-  Box,
-  Button,
-  ButtonIcon,
-  ButtonText,
-  Center,
-  HStack,
-  Heading,
-  RepeatIcon,
-  Spinner,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
 import { useRouter } from 'expo-router';
 
+import { Box } from '@/components/ui/box';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { Center } from '@/components/ui/center';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { RepeatIcon } from '@/components/ui/icon';
+import { Spinner } from '@/components/ui/spinner';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { IQuoteRequest, fetchQuote } from '@/services/emigro/quotes';
 import { balanceStore } from '@/stores/BalanceStore';
 import { sessionStore } from '@/stores/SessionStore';
@@ -165,9 +161,9 @@ export const Swap = () => {
     sellValue > balanceStore.get(sellAsset);
 
   return (
-    <Box flex={1} bg="$white">
-      <VStack p="$4" space="sm">
-        <Heading size="xl">Sell {sellAsset}</Heading>
+    <Box className="flex-1 bg-white">
+      <VStack space="sm" className="p-4">
+        <Heading size="2xl">Sell {sellAsset}</Heading>
         <AssetSwap
           sellOrBuy={SwapType.SELL}
           asset={sellAsset}
@@ -180,9 +176,9 @@ export const Swap = () => {
           onPress={() => setActive(SwapType.SELL)}
           testID="sell-box"
         />
-        <Center my="$0.5">
-          <Button onPress={handleSwitch} testID="arrowIcon" variant="outline" rounded="$full" h="$10" w="$10">
-            <ButtonIcon as={RepeatIcon} color="$primary500" />
+        <Center className="my-0.5">
+          <Button onPress={handleSwitch} testID="arrowIcon" variant="outline" className="rounded-full h-10 w-10">
+            <ButtonIcon as={RepeatIcon} className="text-primary-500" />
           </Button>
         </Center>
         <AssetSwap
@@ -197,27 +193,27 @@ export const Swap = () => {
           onPress={() => setActive(SwapType.BUY)}
           testID="buy-box"
         />
-        <Box my="$1.5" ml="$1">
+        <Box className="my-1.5 ml-1">
           {fetchingRate && (
             <HStack space="md" testID="fetching">
-              <Spinner size="small" color="$textLight500" />
-              <Text size="xs" color="$textLight500">
+              <Spinner size="small" className="text-typography-500" />
+              <Text size="xs" className="text-typography-500">
                 Fetching best price...
               </Text>
             </HStack>
           )}
           {sellAsset && buyAsset && sellValue > 0 && !fetchingRate && rate === null && (
-            <Text size="xs" color="$error500">
+            <Text size="sm" className="text-error-500">
               Failed to fetch the rate
             </Text>
           )}
           {!fetchingRate && rate && (
-            <Text size="xs" color="$black">
+            <Text size="sm" className="text-black">
               1 {buyAsset} ≈ {rate.toFixed(6)} {sellAsset}
             </Text>
           )}
         </Box>
-        <Button onPress={handlePress} isDisabled={isButtonDisabled} size="lg">
+        <Button onPress={handlePress} disabled={isButtonDisabled} size="lg">
           <ButtonText>Review order</ButtonText>
         </Button>
       </VStack>

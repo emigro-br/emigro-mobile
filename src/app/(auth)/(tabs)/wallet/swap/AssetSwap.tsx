@@ -2,8 +2,13 @@ import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { SelectCountry } from 'react-native-element-dropdown';
 
-import { Box, Card, HStack, Input, InputField, Pressable, Text, VStack } from '@gluestack-ui/themed';
-
+import { Box } from '@/components/ui/box';
+import { Card } from '@/components/ui/card';
+import { HStack } from '@/components/ui/hstack';
+import { Input, InputField } from '@/components/ui/input';
+import { Pressable } from '@/components/ui/pressable';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { CryptoAsset } from '@/types/assets';
 import { iconFor, symbolFor } from '@/utils/assets';
 
@@ -101,23 +106,18 @@ export const AssetSwap = ({
 
   const hasBalance = sellOrBuy === SwapType.SELL && Number(value) > balance;
 
-  const activeProps = isActive
-    ? { borderColor: '$borderLight200', borderWidth: 1, bg: '$backgroundLight50' }
-    : { bg: '$backgroundLight100' };
+  const dynamicStyles = isActive ? 'border border-outline-200 bg-background-50' : 'bg-background-100';
 
   return (
     <Pressable onPress={handlePress} testID={testID}>
-      <Card variant="filled" {...activeProps} py="$2">
+      <Card variant="filled" className={`py-2 ${dynamicStyles}`}>
         <VStack space="sm">
-          <Text size="sm">{sellOrBuy === SwapType.SELL ? 'You sell' : 'You get'}</Text>
-          <HStack alignItems="center">
-            <HStack alignItems="center" justifyContent="flex-start" w="$4/6">
-              <Input variant="underlined" borderBottomWidth={0} isFocused={isActive} w="$full">
+          <Text size="md">{sellOrBuy === SwapType.SELL ? 'You sell' : 'You get'}</Text>
+          <HStack className="items-center">
+            <HStack className="items-center justify-start w-4/6">
+              <Input variant="underlined" isFocused={isActive} size="2xl" className="border-b-0 w-full">
                 <InputField
                   aria-label={`${sellOrBuy === SwapType.SELL ? 'sell' : 'buy'}-input`}
-                  fontWeight="bold"
-                  textAlign="left"
-                  size="2xl"
                   autoFocus={sellOrBuy === SwapType.SELL}
                   placeholder="0"
                   value={value}
@@ -125,10 +125,11 @@ export const AssetSwap = ({
                   keyboardType="numeric"
                   onFocus={handlePress}
                   editable={sellOrBuy === SwapType.SELL}
+                  className="font-bold text-left"
                 />
               </Input>
             </HStack>
-            <Box w="$2/6">
+            <Box className="w-2/6">
               <AssetsDropdown
                 selected={asset}
                 assets={assets}
@@ -136,12 +137,12 @@ export const AssetSwap = ({
               />
             </Box>
           </HStack>
-          <HStack justifyContent="space-between">
-            <Text size="xs" color={`${hasBalance ? '$red' : '$gray'}`}>
+          <HStack className="justify-between">
+            <Text size="sm" className={hasBalance ? 'text-indicator-error' : 'text-typography-500'}>
               Balance: {symbolFor(asset, balance)}
             </Text>
             {hasBalance && (
-              <Text color="$red" size="xs">
+              <Text size="sm" className="text-indicator-error">
                 exceeds balance
               </Text>
             )}

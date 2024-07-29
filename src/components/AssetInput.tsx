@@ -1,7 +1,6 @@
 import CurrencyInput from 'react-native-currency-input';
 
-import { Input, InputField } from '@gluestack-ui/themed';
-
+import { Input, InputField } from '@/components/ui/input';
 import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
 import { AssetToSymbol } from '@/utils/assets';
 
@@ -11,10 +10,11 @@ type Props = {
   asset: CryptoOrFiat;
   value: number | null;
   precision?: number;
+  size?: string;
   onChangeValue: (value: number | null) => void;
 } & InputWithoutValue;
 
-export const AssetInput = ({ asset, value, onChangeValue, precision = 2, ...props }: Props) => {
+export const AssetInput = ({ asset, value, onChangeValue, precision = 2, size = 'md', ...props }: Props) => {
   let prefix = '';
   let suffix = '';
 
@@ -29,7 +29,7 @@ export const AssetInput = ({ asset, value, onChangeValue, precision = 2, ...prop
   const placeholder = `${prefix}0${suffix}`;
 
   return (
-    <Input variant="underlined" size="xl" my="$3" borderBottomWidth={0}>
+    <Input variant="underlined" size={size} className="my-3 border-b-0">
       <CurrencyInput
         value={value || null}
         onChangeValue={onChangeValue}

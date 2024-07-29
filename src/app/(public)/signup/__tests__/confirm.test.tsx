@@ -1,6 +1,8 @@
 import * as Sentry from '@sentry/react-native';
-import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
 import { useLocalSearchParams } from 'expo-router';
+
+import { render } from 'test-utils';
 
 import { CONFIRM_ACCOUNT_ERROR } from '@/constants/errorMessages';
 import * as auth from '@/services/emigro/auth';
@@ -23,10 +25,10 @@ describe('ConfirmAccount component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
+    (useLocalSearchParams as jest.Mock).mockReturnValue(params);
   });
 
   it('Should render correctly', async () => {
-    (useLocalSearchParams as jest.Mock).mockReturnValue(params);
     const { getByPlaceholderText, getByText } = render(<ConfirmAccount />);
     const { email } = params;
     expect(getByText('Enter Confirmation Code')).toBeOnTheScreen();

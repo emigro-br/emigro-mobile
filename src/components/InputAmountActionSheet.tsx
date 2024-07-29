@@ -1,20 +1,18 @@
 import { useState } from 'react';
 
+import { AssetInput } from '@/components/AssetInput';
 import {
   Actionsheet,
   ActionsheetBackdrop,
   ActionsheetContent,
   ActionsheetDragIndicator,
   ActionsheetDragIndicatorWrapper,
-  Box,
-  Button,
-  ButtonText,
-  Heading,
-  VStack,
-  View,
-} from '@gluestack-ui/themed';
-
-import { AssetInput } from '@/components/AssetInput';
+} from '@/components/ui/actionsheet';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { View } from '@/components/ui/view';
+import { VStack } from '@/components/ui/vstack';
 import { CryptoOrFiat } from '@/types/assets';
 
 type Props = {
@@ -28,17 +26,17 @@ export const InputAmount = ({ tagline, initialAmount, asset, onSave }: Props) =>
   const [value, setValue] = useState<number | null>(initialAmount || null);
 
   return (
-    <Box h="$full">
-      <VStack p="$4" space="md">
+    <Box className="h-full">
+      <VStack space="md" className="p-4">
         {tagline && <Heading>{tagline}</Heading>}
         <AssetInput
           asset={asset}
           size="4xl"
-          fontWeight="bold"
+          className="text-bold"
           value={value}
           onChangeValue={(newValue) => setValue(newValue)}
         />
-        <Button size="lg" onPress={() => onSave(value ?? 0)} isDisabled={!value}>
+        <Button size="lg" onPress={() => onSave(value ?? 0)} disabled={!value}>
           <ButtonText>Confirm</ButtonText>
         </Button>
       </VStack>
@@ -61,13 +59,13 @@ export const InputAmountActionSheet = ({ isOpen, onClose, onSave, ...props }: Sh
 
   return (
     <View testID="input-amount-action-sheet">
-      <Actionsheet isOpen={isOpen} onClose={onClose} zIndex={999}>
+      <Actionsheet isOpen={isOpen} onClose={onClose} className="z-999">
         <ActionsheetBackdrop />
-        <ActionsheetContent maxHeight="95%">
+        <ActionsheetContent className="max-h-[95%]">
           <ActionsheetDragIndicatorWrapper>
             <ActionsheetDragIndicator />
           </ActionsheetDragIndicatorWrapper>
-          <VStack w="$full">
+          <VStack className="w-full">
             <InputAmount {...props} onSave={(amount) => handleSave(amount)} />
           </VStack>
         </ActionsheetContent>

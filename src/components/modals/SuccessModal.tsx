@@ -1,20 +1,11 @@
 import React from 'react';
 
-import {
-  Button,
-  ButtonText,
-  CheckCircleIcon,
-  HStack,
-  Heading,
-  Icon,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  View,
-} from '@gluestack-ui/themed';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { CheckCircleIcon, Icon } from '@/components/ui/icon';
+import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@/components/ui/modal';
+import { View } from '@/components/ui/view';
 
 type Props = {
   isOpen: boolean;
@@ -30,8 +21,8 @@ export const SuccessModal: React.FC<Props> = ({ isOpen, title, children, onClose
       <ModalBackdrop />
       <ModalContent>
         <ModalHeader>
-          <HStack space="sm" alignItems="center">
-            <Icon as={CheckCircleIcon} color="$success700" $dark-color="$success300" />
+          <HStack space="sm" className="items-center">
+            <Icon as={CheckCircleIcon} className="text-success-700  dark:text-success-300" />
             <Heading size="lg">{title}</Heading>
           </HStack>
         </ModalHeader>

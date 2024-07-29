@@ -1,19 +1,10 @@
 import React, { useState } from 'react';
 
-import {
-  Button,
-  ButtonGroup,
-  ButtonText,
-  HStack,
-  Heading,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  View,
-} from '@gluestack-ui/themed';
+import { Button, ButtonGroup, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { Modal, ModalBackdrop, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@/components/ui/modal';
+import { View } from '@/components/ui/view';
 
 import { LoadingModal } from './LoadingModal';
 
@@ -52,7 +43,7 @@ export const ConfirmationModal: React.FC<Props> = ({
         <ModalBackdrop />
         <ModalContent>
           <ModalHeader>
-            <HStack space="sm" alignItems="center">
+            <HStack space="sm" className="items-center">
               <Heading size="lg">{title}</Heading>
             </HStack>
           </ModalHeader>

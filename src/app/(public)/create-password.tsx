@@ -1,26 +1,24 @@
 import { useState } from 'react';
 import { Keyboard } from 'react-native';
 
-import {
-  AlertCircleIcon,
-  Box,
-  Button,
-  ButtonText,
-  FormControl,
-  FormControlError,
-  FormControlErrorIcon,
-  FormControlErrorText,
-  Heading,
-  Input,
-  InputField,
-  Text,
-  VStack,
-  useToast,
-} from '@gluestack-ui/themed';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { Toast } from '@/components/Toast';
 import { PinScreen } from '@/components/screens/PinScreen';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import {
+  FormControl,
+  FormControlError,
+  FormControlErrorIcon,
+  FormControlErrorText,
+} from '@/components/ui/form-control';
+import { Heading } from '@/components/ui/heading';
+import { AlertCircleIcon } from '@/components/ui/icon';
+import { Input, InputField } from '@/components/ui/input';
+import { Text } from '@/components/ui/text';
+import { useToast } from '@/components/ui/toast';
+import { VStack } from '@/components/ui/vstack';
 import { confirmResetPassword } from '@/services/emigro/auth';
 import { CustomError } from '@/types/errors';
 
@@ -125,8 +123,8 @@ export const CreateNewPassword = () => {
   const isValidForm = formError === '';
 
   return (
-    <Box flex={1} bg="$white">
-      <VStack p="$4" space="2xl">
+    <Box className="flex-1 bg-white">
+      <VStack space="2xl" className="p-4">
         <Heading>Create New Password</Heading>
         <Text>Enter your new password and confirm it.</Text>
         <FormControl>
@@ -159,7 +157,7 @@ export const CreateNewPassword = () => {
             </FormControlError>
           </FormControl>
         )}
-        <Button size="xl" onPress={handleCreatePassword} isDisabled={!isValidForm || isSending}>
+        <Button size="xl" onPress={handleCreatePassword} disabled={!isValidForm || isSending}>
           <ButtonText>{isSending ? 'Validating...' : 'Create new password'}</ButtonText>
         </Button>
       </VStack>

@@ -2,25 +2,6 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {
-  Avatar,
-  AvatarFallbackText,
-  Box,
-  Button,
-  ButtonIcon,
-  ButtonText,
-  Center,
-  CopyIcon,
-  Divider,
-  Heading,
-  ScrollView,
-  Spinner,
-  Text,
-  Toast,
-  ToastDescription,
-  VStack,
-  useToast,
-} from '@gluestack-ui/themed';
 import * as Application from 'expo-application';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
@@ -28,6 +9,18 @@ import { useRouter } from 'expo-router';
 import { observer } from 'mobx-react-lite';
 
 import { AssetListActionSheet } from '@/components/AssetListActionSheet';
+import { Avatar, AvatarFallbackText } from '@/components/ui/avatar';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { Center } from '@/components/ui/center';
+import { Divider } from '@/components/ui/divider';
+import { Heading } from '@/components/ui/heading';
+import { CopyIcon } from '@/components/ui/icon';
+import { ScrollView } from '@/components/ui/scroll-view';
+import { Spinner } from '@/components/ui/spinner';
+import { Text } from '@/components/ui/text';
+import { Toast, ToastDescription, useToast } from '@/components/ui/toast';
+import { VStack } from '@/components/ui/vstack';
 import { balanceStore } from '@/stores/BalanceStore';
 import { sessionStore } from '@/stores/SessionStore';
 import { FiatCurrency } from '@/types/assets';
@@ -63,7 +56,7 @@ const Profile = observer(() => {
   const profileInfo = sessionStore.profile;
   if (!profileInfo) {
     return (
-      <Center flex={1} bg="$backgroundLight0">
+      <Center className="flex-1 bg-backgroundLight-0">
         <Spinner size="large" testID="loading" />
       </Center>
     );
@@ -73,37 +66,35 @@ const Profile = observer(() => {
   const bankCurrency = sessionStore.preferences?.fiatsWithBank ?? [];
 
   return (
-    <ScrollView flex={1} bg="$white" style={{ paddingTop: insets.top }}>
-      <Box flex={1} justifyContent="space-between">
-        <VStack p="$4" space="lg">
+    <ScrollView style={{ paddingTop: insets.top }} className="flex-1 bg-white">
+      <Box className="flex-1 justify-between">
+        <VStack space="lg" className="p-4">
           <Center>
-            <Avatar bgColor="$primary300" size="xl" borderRadius="$full">
+            <Avatar size="xl" className="bg-primary-300 rounded-full">
               <AvatarFallbackText>{fullName}</AvatarFallbackText>
             </Avatar>
-            <Heading py="$2">{fullName}</Heading>
+            <Heading size="xl" className="py-2">
+              {fullName}
+            </Heading>
             {publicKey && (
               <Button size="md" variant="link" action="primary" onPress={copyToClipboard}>
                 <ButtonText>{maskWallet(publicKey)}</ButtonText>
-                <ButtonIcon as={CopyIcon} ml="$2" />
+                <ButtonIcon as={CopyIcon} className="ml-2" />
               </Button>
             )}
           </Center>
 
           <VStack space="xl">
             <View>
-              <Text size="sm" color="$textLight500">
-                Full Name
-              </Text>
-              <Text>{fullName}</Text>
+              <Text className="text-typography-500">Full Name</Text>
+              <Text size="lg">{fullName}</Text>
             </View>
 
             <Divider />
 
             <View>
-              <Text size="sm" color="$textLight500">
-                Email address
-              </Text>
-              <Text>{profileInfo.email}</Text>
+              <Text className="text-typography-500">Email address</Text>
+              <Text size="lg">{profileInfo.email}</Text>
             </View>
 
             <Divider />
@@ -111,9 +102,7 @@ const Profile = observer(() => {
             {profileInfo.address && (
               <>
                 <View>
-                  <Text size="sm" color="$textLight500">
-                    Address
-                  </Text>
+                  <Text className="text-typography-500">Address</Text>
                   <Text>{profileInfo.address}</Text>
                 </View>
 
@@ -122,10 +111,16 @@ const Profile = observer(() => {
             )}
 
             <Box>
-              <Button onPress={() => setAssetListOpen(true)} variant="link" action="secondary" alignSelf="flex-start">
+              <Button
+                onPress={() => setAssetListOpen(true)}
+                variant="link"
+                action="secondary"
+                size="lg"
+                className="self-start"
+              >
                 <ButtonText>Bank account currency: {bankCurrency.length > 0 ? bankCurrency[0] : 'not set'} </ButtonText>
               </Button>
-              <Text size="sm" color="$textLight500">
+              <Text size="sm" className="text-typography-500">
                 Used for deposit and withdraw
               </Text>
             </Box>
@@ -134,7 +129,8 @@ const Profile = observer(() => {
               onPress={() => router.push('/settings/configure-pin')}
               variant="link"
               action="secondary"
-              alignSelf="flex-start"
+              size="lg"
+              className="self-start"
             >
               <ButtonText>Configure your PIN</ButtonText>
             </Button>
@@ -144,13 +140,13 @@ const Profile = observer(() => {
               variant="link"
               action="negative"
               size="sm"
-              alignSelf="flex-start"
+              className="self-start"
             >
               <ButtonText>Delete account</ButtonText>
             </Button>
           </VStack>
         </VStack>
-        <Box alignItems="center" mb="$12">
+        <Box className="items-center mb-12">
           <Button onPress={handleLogout} variant="link" action="negative">
             <ButtonText>Logout</ButtonText>
           </Button>
@@ -160,7 +156,6 @@ const Profile = observer(() => {
         </Box>
       </Box>
       {/* Modals and sheets  */}
-
       {myCurrencies.length > 0 && (
         <AssetListActionSheet
           assets={myCurrencies}

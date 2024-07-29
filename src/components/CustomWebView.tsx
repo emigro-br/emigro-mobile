@@ -2,8 +2,11 @@ import React, { useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 
-import { Box, Button, ButtonText, HStack } from '@gluestack-ui/themed';
 import Constants from 'expo-constants';
+
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { HStack } from '@/components/ui/hstack';
 
 type Props = {
   url: string;
@@ -32,9 +35,9 @@ export const CustomWebView = ({ url, onMessage, onClose }: Props) => {
   };
 
   return (
-    <Box flex={1}>
+    <Box className="flex-1">
       {webview && (
-        <HStack px="$2">
+        <HStack className="px-2">
           <Button onPress={handleClose} variant="link">
             <ButtonText>Close</ButtonText>
           </Button>

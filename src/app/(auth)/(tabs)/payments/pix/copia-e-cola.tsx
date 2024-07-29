@@ -1,21 +1,15 @@
 import { useEffect, useState } from 'react';
 
-import {
-  Box,
-  Button,
-  ButtonText,
-  FormControl,
-  FormControlError,
-  FormControlErrorText,
-  Heading,
-  Textarea,
-  TextareaInput,
-  VStack,
-} from '@gluestack-ui/themed';
 import * as Clipboard from 'expo-clipboard';
 import { useRouter } from 'expo-router';
 import { hasError, parsePix } from 'pix-utils';
 
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { FormControl, FormControlError, FormControlErrorText } from '@/components/ui/form-control';
+import { Heading } from '@/components/ui/heading';
+import { Textarea, TextareaInput } from '@/components/ui/textarea';
+import { VStack } from '@/components/ui/vstack';
 import { paymentStore } from '@/stores/PaymentStore';
 
 export const PastePixCode = () => {
@@ -56,8 +50,8 @@ export const PastePixCode = () => {
   };
 
   return (
-    <Box flex={1} bg="$white">
-      <VStack p="$4" space="lg">
+    <Box className="flex-1 bg-white">
+      <VStack space="lg" className="p-4">
         <Heading>Insert your Pix Copia & Cola code</Heading>
         <FormControl isInvalid={!!error}>
           <Textarea>
@@ -73,7 +67,7 @@ export const PastePixCode = () => {
             <FormControlErrorText>{error}</FormControlErrorText>
           </FormControlError>
         </FormControl>
-        <Button onPress={() => handleContinue()} isDisabled={!brCode || isChecking}>
+        <Button onPress={() => handleContinue()} disabled={!brCode || isChecking}>
           <ButtonText>{isChecking ? 'Please wait...' : 'Continue'}</ButtonText>
         </Button>
       </VStack>

@@ -1,25 +1,16 @@
 import React from 'react';
 
-import {
-  ArrowRightIcon,
-  ArrowUpIcon,
-  Badge,
-  BadgeText,
-  Box,
-  Button,
-  ButtonIcon,
-  ButtonText,
-  ClockIcon,
-  Divider,
-  Heading,
-  Icon,
-  SlashIcon,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
 import { usePathname, useRouter } from 'expo-router';
 
 import { ListTile } from '@/components/ListTile';
+import { Badge, BadgeText } from '@/components/ui/badge';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { Divider } from '@/components/ui/divider';
+import { Heading } from '@/components/ui/heading';
+import { ArrowRightIcon, ArrowUpIcon, ClockIcon, Icon, SlashIcon } from '@/components/ui/icon';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 import { Sep24Transaction, Sep24TransactionStatus } from '@/services/emigro/types';
 import { CryptoAsset } from '@/types/assets';
 import { labelFor, symbolFor } from '@/utils/assets';
@@ -36,12 +27,12 @@ export const Sep24TransactionHistory = ({ asset, transactions }: Props) => {
 
   return (
     <Box>
-      <Heading mb="$4">History</Heading>
+      <Heading className="mb-4">History</Heading>
       <VStack space="lg">
         {transactions.map((transaction, index) => (
           <React.Fragment key={transaction.id}>
             <TransactionItem transaction={transaction} asset={asset} />
-            {index < transactions.length - 1 && <Divider my="$4" />}
+            {index < transactions.length - 1 && <Divider className="my-4" />}
           </React.Fragment>
         ))}
       </VStack>
@@ -95,7 +86,7 @@ const statusBadge = (status: Sep24TransactionStatus) => {
 const statusIcon = (status: Sep24TransactionStatus) => {
   const props = {
     size: 'md',
-    color: '$backgroundLight800', // TODO: use theme
+    className: 'text-typography-800', // TODO: use theme
   };
   switch (status) {
     case 'error':
@@ -106,7 +97,7 @@ const statusIcon = (status: Sep24TransactionStatus) => {
     case 'pending_external':
     case 'pending_user_transfer_start':
     default:
-      props.color = '$warning500';
+      props.className = 'text-warning-500';
       return <Icon as={ClockIcon} testID="icon-pending" {...props} />;
   }
 };
@@ -123,7 +114,7 @@ const TransactionDate = ({ date }: { date: string }) => {
   }
 
   return (
-    <Text size="sm" color="$coolGray500">
+    <Text size="sm" className="text-typography-500">
       {dateStr}
     </Text>
   );
@@ -134,17 +125,18 @@ const TransactionItem = ({ transaction, asset }: { transaction: Sep24Transaction
   const path = usePathname(); // workaround for nested routes
   const { status } = transaction;
 
+  const strikeIt = status === Sep24TransactionStatus.INCOMPLETE || status === Sep24TransactionStatus.ERROR;
   const title = (
-    <Text strikeThrough={status === Sep24TransactionStatus.INCOMPLETE} color="$textLight950" fontWeight="$medium">
+    <Text strikeThrough={strikeIt} className="text-typography-950 font-medium">
       {labelFor(asset) as string}
     </Text>
   );
 
   const trailing = (date: string, amount: string) => {
     return (
-      <VStack space="xs" height="$full" alignItems="flex-end" testID="transaction-item">
+      <VStack space="xs" testID="transaction-item" className="h-full items-end">
         <TransactionDate date={date} />
-        {amount && <Text fontWeight="$medium">{symbolFor(asset, Number(amount))}</Text>}
+        {amount && <Text className="font-medium">{symbolFor(asset, Number(amount))}</Text>}
       </VStack>
     );
   };
@@ -169,12 +161,10 @@ const TransactionItem = ({ transaction, asset }: { transaction: Sep24Transaction
               },
             })
           }
-          ml="$8"
-          my="-$4"
-          alignSelf="flex-start"
+          className="ml-8 my--4 self-start"
         >
           <ButtonText>Confirm payment</ButtonText>
-          <ButtonIcon as={ArrowRightIcon} size="2xs" ml="$1" />
+          <ButtonIcon as={ArrowRightIcon} size="sm" className="ml-1" />
         </Button>
       )}
     </>

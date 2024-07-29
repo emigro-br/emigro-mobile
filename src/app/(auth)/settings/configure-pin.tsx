@@ -1,10 +1,10 @@
 import { useRef, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Box } from '@gluestack-ui/themed';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { PinScreen } from '@/components/screens/PinScreen';
+import { Box } from '@/components/ui/box';
 import { securityStore } from '@/stores/SecurityStore';
 
 type PinRefType = {
@@ -54,7 +54,7 @@ export const ConfigurePIN = () => {
   };
 
   return (
-    <Box flex={1} pt={insets.top}>
+    <Box className="flex-1" style={{ paddingTop: insets.top }}>
       <PinScreen
         ref={pinRef}
         tagline={isReEnter ? 'Re-enter your PIN code' : 'Enter your new PIN code'}
@@ -64,7 +64,7 @@ export const ConfigurePIN = () => {
         onPinSuccess={handlePinSuccess}
         onPinFail={handlePinFail}
       />
-      {/* {error && <Text color="$error500">{error}</Text>} */}
+      {/* {error && <Text className="text-error-500">{error}</Text>} */}
     </Box>
   );
 };

@@ -1,4 +1,7 @@
-import { Card, HStack, Text, VStack } from '@gluestack-ui/themed';
+import { Card } from '@/components/ui/card';
+import { HStack } from '@/components/ui/hstack';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 
 export type RowItem = {
   label: string;
@@ -25,10 +28,10 @@ type RowProps = {
 };
 
 const Row = ({ label, value }: RowProps) => (
-  <HStack justifyContent="space-between" testID="row">
-    <Text size="sm" color="gray">
+  <HStack testID="row" className="justify-between">
+    <Text size="sm" className="text-[gray]">
       {label}
     </Text>
-    <Text color="$textLight900">{value}</Text>
+    <Text className="text-typography-900">{value}</Text>
   </HStack>
 );

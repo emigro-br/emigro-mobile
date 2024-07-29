@@ -5,7 +5,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { Ionicons } from '@expo/vector-icons';
-import { Box, Center, Pressable, Text, View } from '@gluestack-ui/themed';
 import {
   BarcodeScanningResult,
   CameraView,
@@ -17,6 +16,11 @@ import { useRouter } from 'expo-router';
 import { PixElementType, hasError, parsePix } from 'pix-utils';
 
 import { Spacer } from '@/components/Spacer';
+import { Box } from '@/components/ui/box';
+import { Center } from '@/components/ui/center';
+import { Pressable } from '@/components/ui/pressable';
+import { Text } from '@/components/ui/text';
+import { View } from '@/components/ui/view';
 import { INVALID_QR_CODE } from '@/constants/errorMessages';
 import { useFeatureFlags } from '@/hooks/feature-flags';
 import { paymentStore } from '@/stores/PaymentStore';
@@ -119,7 +123,7 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
 
   if (!cameraPermission?.granted) {
     return (
-      <Box flex={1} justifyContent="center">
+      <Box className="flex-1 justify-center">
         <Center>
           <Text size="lg">
             Camera access has been denied. Please enable camera access in your device settings to proceed with QR code
@@ -132,24 +136,24 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
 
   const QRRectangule = () => <View style={styles.rectangle} />;
   const CloseButton = () => (
-    <Pressable onPress={() => onCancel()} p="$2" mr="$2">
+    <Pressable onPress={() => onCancel()} className="p-2 mr-2">
       <Ionicons name="close" size={24} color="white" />
     </Pressable>
   );
 
   const InfoText = () => (
-    <Center mt="$8">
-      <Text size="xl" color="$white" bold>
+    <Center className="mt-8">
+      <Text size="2xl" bold className="text-white">
         Scan a QR code
       </Text>
-      <Text size="xl" color="$white" bold mt="$6">
+      <Text size="xl" bold className="text-white mt-6">
         {error || ' '}
       </Text>
     </Center>
   );
 
   return (
-    <Box flex={1}>
+    <Box className="flex-1">
       <CameraView
         style={[styles.camera]}
         onCameraReady={() => setCameraReady(true)}

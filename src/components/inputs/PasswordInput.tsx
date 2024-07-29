@@ -1,17 +1,15 @@
 import { TextInputProps } from 'react-native';
 
+import { EyeIcon, EyeOffIcon } from 'lucide-react-native';
+
 import {
   FormControl,
   FormControlError,
   FormControlErrorText,
   FormControlLabel,
   FormControlLabelText,
-  Input,
-  InputField,
-  InputIcon,
-  InputSlot,
-} from '@gluestack-ui/themed';
-import { EyeIcon, EyeOffIcon } from 'lucide-react-native';
+} from '@/components/ui/form-control';
+import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
 
 import { FieldError } from './TextInput';
 
@@ -28,7 +26,7 @@ export const PasswordInput = (props: Props) => {
   const { value, showPassword, toggleShowPassword, onChangeText, error } = props;
   return (
     <FormControl isInvalid={!!error}>
-      <FormControlLabel mb="$1">
+      <FormControlLabel className="mb-1">
         <FormControlLabelText>Password</FormControlLabelText>
       </FormControlLabel>
       <Input size="xl">
@@ -45,10 +43,14 @@ export const PasswordInput = (props: Props) => {
           blurOnSubmit
         />
         {toggleShowPassword && (
-          <InputSlot pr="$3" onPress={toggleShowPassword} aria-label={showPassword ? 'Hide password' : 'Show password'}>
+          <InputSlot
+            onPress={toggleShowPassword}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            className="pr-3"
+          >
             <InputIcon
               as={showPassword ? EyeIcon : EyeOffIcon}
-              color={showPassword ? '$primary500' : '$textLight500'}
+              className={` ${showPassword ? 'text-primary-500' : 'text-typography-500'} `}
             />
           </InputSlot>
         )}

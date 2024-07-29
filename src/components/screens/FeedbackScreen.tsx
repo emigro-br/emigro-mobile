@@ -1,19 +1,12 @@
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {
-  AlertCircleIcon,
-  Box,
-  Button,
-  ButtonText,
-  CheckCircleIcon,
-  ClockIcon,
-  CloseCircleIcon,
-  Divider,
-  Heading,
-  Icon,
-  Text,
-  VStack,
-} from '@gluestack-ui/themed';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Divider } from '@/components/ui/divider';
+import { Heading } from '@/components/ui/heading';
+import { AlertCircleIcon, CheckCircleIcon, ClockIcon, CloseCircleIcon, Icon } from '@/components/ui/icon';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
 
 type Props = {
   title: string;
@@ -26,20 +19,26 @@ type Props = {
 export const FeedbackScreen = ({ title, message, action = 'success', btnLabel = 'Continue', onContinue }: Props) => {
   const insets = useSafeAreaInsets();
   const renderIcon = () => {
-    let iconProps = { as: CheckCircleIcon, color: '$success500' };
+    let iconProps = { as: CheckCircleIcon, className: 'text-success-500' };
     if (action === 'error') {
-      iconProps = { as: CloseCircleIcon, color: '$error500' };
+      iconProps = { as: CloseCircleIcon, className: 'text-error-500' };
     } else if (action === 'warning') {
-      iconProps = { as: AlertCircleIcon, color: '$warning500' };
+      iconProps = { as: AlertCircleIcon, className: 'text-warning-500' };
     } else if (action === 'waiting') {
-      iconProps = { as: ClockIcon, color: '$warning500' };
+      iconProps = { as: ClockIcon, className: 'text-warning-500' };
     }
     return <Icon {...iconProps} size="3xl" testID={`${action}-icon`} />;
   };
 
   return (
-    <Box flex={1} bg="$white" justifyContent="space-between" pt={insets.top} pb={insets.bottom}>
-      <VStack px="$4" space="lg">
+    <Box
+      className=" flex-1 bg-white justify-between "
+      style={{
+        paddingBottom: insets.bottom,
+        paddingTop: insets.top,
+      }}
+    >
+      <VStack space="lg" className="px-4">
         {renderIcon()}
         {title && (
           <Heading size="2xl" testID="feedback-title">
@@ -52,10 +51,9 @@ export const FeedbackScreen = ({ title, message, action = 'success', btnLabel = 
           </Text>
         )}
       </VStack>
-
       <Box>
         <Divider />
-        <Button size="lg" onPress={onContinue} m="$4" testID="action-button">
+        <Button size="lg" onPress={onContinue} testID="action-button" className="m-4">
           <ButtonText>{btnLabel}</ButtonText>
         </Button>
       </Box>

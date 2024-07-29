@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 
-import { Box, ChevronRightIcon, Heading, Icon, VStack } from '@gluestack-ui/themed';
 import { Stack, useLocalSearchParams, usePathname, useRouter } from 'expo-router';
 
 import { CardAssetList } from '@/components/AssetList';
 import { SimpleModal } from '@/components/modals/SimpleModal';
+import { Box } from '@/components/ui/box';
+import { Heading } from '@/components/ui/heading';
+import { ChevronRightIcon, Icon } from '@/components/ui/icon';
+import { VStack } from '@/components/ui/vstack';
 import { balanceStore } from '@/stores/BalanceStore';
 import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
 import { AssetToCurrency, CurrencyToAsset } from '@/utils/assets';
@@ -38,7 +41,6 @@ export const AssetForOperation = () => {
           title: capitalized,
         }}
       />
-
       <SimpleModal
         isOpen={!!currencyForDeposit}
         title="Your wallet is empty. Would you like to deposit in it?"
@@ -49,9 +51,8 @@ export const AssetForOperation = () => {
           router.push(`/wallet/ramp/deposit/${currencyForDeposit}`);
         }}
       />
-
-      <Box flex={1}>
-        <VStack p="$4" space="md">
+      <Box className="flex-1">
+        <VStack space="md" className="p-4">
           <Heading size="xl">{capitalized} money</Heading>
           <CardAssetList
             data={myCurrencies}

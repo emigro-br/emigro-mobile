@@ -5,11 +5,10 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  Button,
-  ButtonText,
-  Heading,
-  Text,
-} from '@gluestack-ui/themed';
+} from '@/components/ui/alert-dialog';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
 
 type DialogProps = {
   isOpen: boolean;
@@ -30,7 +29,7 @@ export const ErrorDialog = ({ isOpen, onClose, errorMessage }: DialogProps) => {
           </Text>
         </AlertDialogBody>
         <AlertDialogFooter>
-          <Button variant="outline" size="sm" action="secondary" mr="$3" onPress={onClose}>
+          <Button variant="outline" size="sm" action="secondary" onPress={onClose} className="mr-3">
             <ButtonText>Close</ButtonText>
           </Button>
         </AlertDialogFooter>

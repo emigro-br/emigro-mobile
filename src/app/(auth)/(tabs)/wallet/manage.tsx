@@ -1,9 +1,13 @@
 import { useState } from 'react';
 
-import { Box, Button, ButtonSpinner, ButtonText, Card, Heading, VStack, useToast } from '@gluestack-ui/themed';
-
 import { AssetListTile } from '@/components/AssetListTile';
 import { Toast } from '@/components/Toast';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Heading } from '@/components/ui/heading';
+import { useToast } from '@/components/ui/toast';
+import { VStack } from '@/components/ui/vstack';
 import { addAssetToWallet } from '@/services/emigro/users';
 import { balanceStore } from '@/stores/BalanceStore';
 import { CryptoAsset, cryptoAssets } from '@/types/assets';
@@ -65,7 +69,7 @@ export const ManageAccounts = ({ accounts, onAdd, onHide }: Props) => {
 
   return (
     <Box>
-      <VStack p="$4" space="lg">
+      <VStack space="lg" className="p-4">
         <Heading size="xl">Accounts</Heading>
         <Card variant="flat">
           <VStack space="2xl">
@@ -100,7 +104,7 @@ type ButtonProps = {
 const ActionButton = ({ action = 'add', isLoading = false, onPress }: ButtonProps) => {
   if (action === 'hide') return null; // TODO: hide button not implemented yet
   return (
-    <Button variant="link" onPress={onPress} isDisabled={isLoading} action={action === 'add' ? 'primary' : 'secondary'}>
+    <Button variant="link" onPress={onPress} disabled={isLoading} action={action === 'add' ? 'primary' : 'secondary'}>
       {isLoading ? <ButtonSpinner /> : <ButtonText>{action === 'add' ? 'add' : 'hide'}</ButtonText>}
     </Button>
   );

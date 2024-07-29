@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { Text } from '@gluestack-ui/themed';
 import { fireEvent, render } from '@testing-library/react-native';
+
+import { Text } from '@/components/ui/text';
 
 import { SuccessModal } from '../SuccessModal';
 

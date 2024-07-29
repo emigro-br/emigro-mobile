@@ -1,11 +1,11 @@
 import { Keyboard } from 'react-native';
 
-import { useToast } from '@gluestack-ui/themed';
 import { fireEvent, waitFor } from '@testing-library/react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { inputPIN, render } from 'test-utils';
 
+import { useToast } from '@/components/ui/toast';
 import * as auth from '@/services/emigro/auth';
 
 import { CreateNewPassword } from '../create-password';
