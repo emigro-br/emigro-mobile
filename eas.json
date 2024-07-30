@@ -22,9 +22,14 @@
     "production": {
       "autoIncrement": true,
       "env": {
+        "NODE_OPTIONS": "--max-old-space-size=4096",
         "EXPO_PUBLIC_BACKEND_URL": "https://api.emigro.co",
         "EXPO_PUBLIC_GEOCODE_BASE_URL": "https://nominatim.openstreetmap.org/search",
         "EXPO_PUBLIC_SENTRY_DSN": "https://b5fb7203d8d3d384815ac004bbe3c317@o4506916470521856.ingest.us.sentry.io/4506916473667584"
+      },
+      "ios": {
+        "image": "latest",
+        "resourceClass": "m-medium"
       },
       "channel": "production"
     },
