@@ -104,7 +104,7 @@ const ConfirmModal = ({ isOpen, onConfirm }: ConfirmModalProps) => {
       <ModalContent>
         <ModalHeader>
           <HStack space="sm" className="items-center">
-            <Icon as={CheckCircleIcon} className="text-success-700  dark:text-success-300" />
+            <Icon as={CheckCircleIcon} className="text-success-700" />
             <Heading size="lg">Confirmation successful</Heading>
           </HStack>
         </ModalHeader>
