@@ -35,12 +35,14 @@ export const ListTile = ({ title, subtitle, leading, trailing, testID }: Props) 
   };
 
   return (
-    <HStack space="md" testID={testID} className="items-center">
-      {leading}
-      <VStack space="xs" className="flex-1">
-        {renderTitle()}
-        {renderSubtitle()}
-      </VStack>
+    <HStack className="justify-between items-center" testID={testID}>
+      <HStack space="md" className="items-center">
+        {leading}
+        <VStack space="xs">
+          {renderTitle()}
+          {renderSubtitle()}
+        </VStack>
+      </HStack>
       {trailing}
     </HStack>
   );
