@@ -47,6 +47,7 @@ export function AppLayout() {
   return (
     <Stack initialRouteName="(tabs)" screenOptions={{ ...defaultScreenOptions }}>
       <Stack.Screen name="(tabs)" options={{ title: '', headerShown: false }} />
+      <Stack.Screen name="index" options={{ headerShown: false }} />
 
       {/* Stop using presentaion modal for while (Android safe area) */}
       <Stack.Screen
