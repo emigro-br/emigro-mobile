@@ -31,7 +31,7 @@ export const PinOnboarding = () => {
             onPress={() =>
               router.navigate({
                 pathname: '/settings/configure-pin',
-                params: { backTo: '/' },
+                params: { backTo: '/wallet' },
               })
             }
           >

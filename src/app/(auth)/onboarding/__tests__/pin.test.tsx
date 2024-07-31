@@ -28,7 +28,7 @@ describe('PinOnboarding', () => {
 
     expect(router.navigate).toHaveBeenCalledWith({
       pathname: '/settings/configure-pin',
-      params: { backTo: '/' },
+      params: { backTo: '/wallet' },
     });
   });
 });
