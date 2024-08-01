@@ -10,11 +10,21 @@ type Props = {
   subasset?: CryptoOrFiat;
   subtitle?: string | React.ReactNode;
   trailing?: React.ReactNode;
+  onPress?: () => void;
   dense?: boolean;
   testID?: string;
 };
 
-export const AssetListTile = ({ asset, assetType = 'crypto', subasset, subtitle, trailing, dense, testID }: Props) => {
+export const AssetListTile = ({
+  asset,
+  assetType = 'crypto',
+  subasset,
+  subtitle,
+  trailing,
+  onPress,
+  dense,
+  testID,
+}: Props) => {
   const title = labelFor(asset, assetType);
 
   if (subasset && !subtitle) {
@@ -26,6 +36,7 @@ export const AssetListTile = ({ asset, assetType = 'crypto', subasset, subtitle,
       title={title ?? asset}
       subtitle={subtitle}
       trailing={trailing}
+      onPress={onPress}
       testID={testID}
     />
   );
