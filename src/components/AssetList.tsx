@@ -3,15 +3,14 @@ import React from 'react';
 import { Box } from '@/components/ui/box';
 import { Card } from '@/components/ui/card';
 import { FlatList } from '@/components/ui/flat-list';
-import { Pressable } from '@/components/ui/pressable';
 import { CryptoOrFiat } from '@/types/assets';
 
 import { AssetListTile } from './AssetListTile';
 
 type Props = {
   data: CryptoOrFiat[];
-  onPress: (item: CryptoOrFiat) => void;
   trailing?: React.ReactNode;
+  onPress: (item: CryptoOrFiat) => void;
   renderSubtitle?: (item: CryptoOrFiat) => string | React.ReactNode;
 };
 
@@ -20,10 +19,8 @@ export const AssetList = ({ data, trailing, onPress, renderSubtitle }: Props) =>
     return renderSubtitle ? renderSubtitle(item) : item;
   };
 
-  const renderItem = ({ item }) => (
-    <Pressable onPress={() => onPress(item)}>
-      <AssetListTile asset={item} subtitle={_subtitle(item)} trailing={trailing} />
-    </Pressable>
+  const renderItem = ({ item }: { item: CryptoOrFiat }) => (
+    <AssetListTile asset={item} subtitle={_subtitle(item)} trailing={trailing} onPress={() => onPress(item)} />
   );
 
   return (

@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 
-import { screen } from '@testing-library/react-native';
+import { fireEvent, screen } from '@testing-library/react-native';
 
 import { render } from 'test-utils';
 
@@ -46,5 +46,15 @@ describe('ListTile component', () => {
 
     expect(titleElement).toBeOnTheScreen();
     expect(subtitleElement).toBeOnTheScreen();
+  });
+
+  it('calls the onPress function when an item is pressed', () => {
+    const onPressMock = jest.fn();
+    const { getByText } = render(<ListTile title="Clickable" onPress={onPressMock} />);
+
+    // Simulate pressing the first item
+    fireEvent.press(getByText('Clickable'));
+
+    expect(onPressMock).toHaveBeenCalled();
   });
 });

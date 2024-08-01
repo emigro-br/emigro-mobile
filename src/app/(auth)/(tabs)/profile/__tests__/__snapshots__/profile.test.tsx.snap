@@ -254,145 +254,133 @@ exports[`Profile screen Should render the Profile screen correctly 1`] = `
           <View
             className="flex-col gap-5"
           >
-            <View>
-              <RCTText
-                accessible={true}
-                allowFontScaling={true}
-                ellipsizeMode="tail"
-                isHighlighted={false}
-                selectionColor={null}
-              >
-                Full Name
-              </RCTText>
-              <RCTText
-                accessible={true}
-                allowFontScaling={true}
-                ellipsizeMode="tail"
-                isHighlighted={false}
-                selectionColor={null}
-              >
-                Test Name Test Last Name
-              </RCTText>
-            </View>
-            <View />
-            <View>
-              <RCTText
-                accessible={true}
-                allowFontScaling={true}
-                ellipsizeMode="tail"
-                isHighlighted={false}
-                selectionColor={null}
-              >
-                Email address
-              </RCTText>
-              <RCTText
-                accessible={true}
-                allowFontScaling={true}
-                ellipsizeMode="tail"
-                isHighlighted={false}
-                selectionColor={null}
-              >
-                test@email.com
-              </RCTText>
-            </View>
-            <View />
-            <View>
-              <RCTText
-                accessible={true}
-                allowFontScaling={true}
-                ellipsizeMode="tail"
-                isHighlighted={false}
-                selectionColor={null}
-              >
-                Address
-              </RCTText>
-              <RCTText
-                accessible={true}
-                allowFontScaling={true}
-                ellipsizeMode="tail"
-                isHighlighted={false}
-                selectionColor={null}
-              >
-                Test Address
-              </RCTText>
-            </View>
-            <View />
-            <View>
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="personal-info-button"
+            >
               <View
-                accessibilityState={
-                  {
-                    "busy": undefined,
-                    "checked": undefined,
-                    "disabled": undefined,
-                    "expanded": undefined,
-                    "selected": undefined,
-                  }
-                }
-                accessibilityValue={
-                  {
-                    "max": undefined,
-                    "min": undefined,
-                    "now": undefined,
-                    "text": undefined,
-                  }
-                }
-                accessible={true}
-                collapsable={false}
-                dataSet={
-                  {
-                    "active": "false",
-                    "disabled": "false",
-                    "focus": "false",
-                    "focusVisible": "false",
-                    "hover": "false",
-                  }
-                }
-                focusable={true}
-                onBlur={[Function]}
-                onClick={[Function]}
-                onFocus={[Function]}
-                onResponderGrant={[Function]}
-                onResponderMove={[Function]}
-                onResponderRelease={[Function]}
-                onResponderTerminate={[Function]}
-                onResponderTerminationRequest={[Function]}
-                onStartShouldSetResponder={[Function]}
-                role="button"
+                className="flex-row justify-between items-center"
               >
-                <Text
-                  dataSet={
-                    {
-                      "active": false,
-                      "disabled": undefined,
-                      "focus": false,
-                      "focusVisible": false,
-                      "hover": false,
-                    }
-                  }
-                  states={
-                    {
-                      "active": false,
-                      "disabled": undefined,
-                      "focus": false,
-                      "focusVisible": false,
-                      "hover": false,
-                    }
-                  }
+                <View
+                  className="flex-row gap-3 items-center"
                 >
-                  Bank account currency: 
-                  not set
-                   
-                </Text>
+                  <View
+                    className="flex-col gap-1"
+                  >
+                    <RCTText
+                      accessible={true}
+                      allowFontScaling={true}
+                      ellipsizeMode="tail"
+                      isHighlighted={false}
+                      selectionColor={null}
+                    >
+                      Personal Info
+                    </RCTText>
+                  </View>
+                </View>
+                <RNSVGSvgView
+                  align="xMidYMid"
+                  bbHeight="100%"
+                  bbWidth="100%"
+                  focusable={false}
+                  meetOrSlice={0}
+                  minX={0}
+                  minY={0}
+                  role="img"
+                  stroke="currentColor"
+                  style={
+                    [
+                      {
+                        "backgroundColor": "transparent",
+                        "borderWidth": 0,
+                      },
+                      {
+                        "flex": 0,
+                        "height": "100%",
+                        "width": "100%",
+                      },
+                    ]
+                  }
+                  vbHeight={24}
+                  vbWidth={24}
+                >
+                  <RNSVGGroup
+                    fill={
+                      {
+                        "payload": 4278190080,
+                        "type": 0,
+                      }
+                    }
+                    propList={
+                      [
+                        "stroke",
+                      ]
+                    }
+                    stroke={
+                      {
+                        "type": 2,
+                      }
+                    }
+                  >
+                    <RNSVGGroup
+                      fill={
+                        {
+                          "payload": 4278190080,
+                          "type": 0,
+                        }
+                      }
+                    >
+                      <RNSVGPath
+                        d="M9 18L15 12L9 6"
+                        fill={
+                          {
+                            "payload": 4278190080,
+                            "type": 0,
+                          }
+                        }
+                        propList={
+                          [
+                            "strokeWidth",
+                            "strokeLinecap",
+                            "strokeLinejoin",
+                          ]
+                        }
+                        strokeLinecap={1}
+                        strokeLinejoin={1}
+                        strokeWidth="2"
+                      />
+                    </RNSVGGroup>
+                  </RNSVGGroup>
+                </RNSVGSvgView>
               </View>
-              <RCTText
-                accessible={true}
-                allowFontScaling={true}
-                ellipsizeMode="tail"
-                isHighlighted={false}
-                selectionColor={null}
-              >
-                Used for deposit and withdraw
-              </RCTText>
             </View>
             <View
               accessibilityState={
@@ -414,15 +402,6 @@ exports[`Profile screen Should render the Profile screen correctly 1`] = `
               }
               accessible={true}
               collapsable={false}
-              dataSet={
-                {
-                  "active": "false",
-                  "disabled": "false",
-                  "focus": "false",
-                  "focusVisible": "false",
-                  "hover": "false",
-                }
-              }
               focusable={true}
               onBlur={[Function]}
               onClick={[Function]}
@@ -433,30 +412,240 @@ exports[`Profile screen Should render the Profile screen correctly 1`] = `
               onResponderTerminate={[Function]}
               onResponderTerminationRequest={[Function]}
               onStartShouldSetResponder={[Function]}
-              role="button"
+              testID="configure-pin-button"
             >
-              <Text
-                dataSet={
-                  {
-                    "active": false,
-                    "disabled": undefined,
-                    "focus": false,
-                    "focusVisible": false,
-                    "hover": false,
-                  }
-                }
-                states={
-                  {
-                    "active": false,
-                    "disabled": undefined,
-                    "focus": false,
-                    "focusVisible": false,
-                    "hover": false,
-                  }
-                }
+              <View
+                className="flex-row justify-between items-center"
               >
-                Configure your PIN
-              </Text>
+                <View
+                  className="flex-row gap-3 items-center"
+                >
+                  <View
+                    className="flex-col gap-1"
+                  >
+                    <RCTText
+                      accessible={true}
+                      allowFontScaling={true}
+                      ellipsizeMode="tail"
+                      isHighlighted={false}
+                      selectionColor={null}
+                    >
+                      Configure your PIN
+                    </RCTText>
+                  </View>
+                </View>
+                <RNSVGSvgView
+                  align="xMidYMid"
+                  bbHeight="100%"
+                  bbWidth="100%"
+                  focusable={false}
+                  meetOrSlice={0}
+                  minX={0}
+                  minY={0}
+                  role="img"
+                  stroke="currentColor"
+                  style={
+                    [
+                      {
+                        "backgroundColor": "transparent",
+                        "borderWidth": 0,
+                      },
+                      {
+                        "flex": 0,
+                        "height": "100%",
+                        "width": "100%",
+                      },
+                    ]
+                  }
+                  vbHeight={24}
+                  vbWidth={24}
+                >
+                  <RNSVGGroup
+                    fill={
+                      {
+                        "payload": 4278190080,
+                        "type": 0,
+                      }
+                    }
+                    propList={
+                      [
+                        "stroke",
+                      ]
+                    }
+                    stroke={
+                      {
+                        "type": 2,
+                      }
+                    }
+                  >
+                    <RNSVGGroup
+                      fill={
+                        {
+                          "payload": 4278190080,
+                          "type": 0,
+                        }
+                      }
+                    >
+                      <RNSVGPath
+                        d="M9 18L15 12L9 6"
+                        fill={
+                          {
+                            "payload": 4278190080,
+                            "type": 0,
+                          }
+                        }
+                        propList={
+                          [
+                            "strokeWidth",
+                            "strokeLinecap",
+                            "strokeLinejoin",
+                          ]
+                        }
+                        strokeLinecap={1}
+                        strokeLinejoin={1}
+                        strokeWidth="2"
+                      />
+                    </RNSVGGroup>
+                  </RNSVGGroup>
+                </RNSVGSvgView>
+              </View>
+            </View>
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="bank-currency-button"
+            >
+              <View
+                className="flex-row justify-between items-center"
+              >
+                <View
+                  className="flex-row gap-3 items-center"
+                >
+                  <View
+                    className="flex-col gap-1"
+                  >
+                    <RCTText
+                      accessible={true}
+                      allowFontScaling={true}
+                      ellipsizeMode="tail"
+                      isHighlighted={false}
+                      selectionColor={null}
+                    >
+                      Bank account currency: not set
+                    </RCTText>
+                    <RCTText
+                      accessible={true}
+                      allowFontScaling={true}
+                      ellipsizeMode="tail"
+                      isHighlighted={false}
+                      selectionColor={null}
+                    >
+                      Used for deposit and withdraw
+                    </RCTText>
+                  </View>
+                </View>
+                <RNSVGSvgView
+                  align="xMidYMid"
+                  bbHeight="100%"
+                  bbWidth="100%"
+                  focusable={false}
+                  meetOrSlice={0}
+                  minX={0}
+                  minY={0}
+                  role="img"
+                  stroke="currentColor"
+                  style={
+                    [
+                      {
+                        "backgroundColor": "transparent",
+                        "borderWidth": 0,
+                      },
+                      {
+                        "flex": 0,
+                        "height": "100%",
+                        "width": "100%",
+                      },
+                    ]
+                  }
+                  vbHeight={24}
+                  vbWidth={24}
+                >
+                  <RNSVGGroup
+                    fill={
+                      {
+                        "payload": 4278190080,
+                        "type": 0,
+                      }
+                    }
+                    propList={
+                      [
+                        "stroke",
+                      ]
+                    }
+                    stroke={
+                      {
+                        "type": 2,
+                      }
+                    }
+                  >
+                    <RNSVGGroup
+                      fill={
+                        {
+                          "payload": 4278190080,
+                          "type": 0,
+                        }
+                      }
+                    >
+                      <RNSVGPath
+                        d="M9 18L15 12L9 6"
+                        fill={
+                          {
+                            "payload": 4278190080,
+                            "type": 0,
+                          }
+                        }
+                        propList={
+                          [
+                            "strokeWidth",
+                            "strokeLinecap",
+                            "strokeLinejoin",
+                          ]
+                        }
+                        strokeLinecap={1}
+                        strokeLinejoin={1}
+                        strokeWidth="2"
+                      />
+                    </RNSVGGroup>
+                  </RNSVGGroup>
+                </RNSVGSvgView>
+              </View>
             </View>
             <View
               accessibilityState={
