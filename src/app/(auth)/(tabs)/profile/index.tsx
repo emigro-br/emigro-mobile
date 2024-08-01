@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Application from 'expo-application';
@@ -9,15 +8,15 @@ import { useRouter } from 'expo-router';
 import { observer } from 'mobx-react-lite';
 
 import { AssetListActionSheet } from '@/components/AssetListActionSheet';
+import { ListTile } from '@/components/ListTile';
+import { LoadingScreen } from '@/components/screens/Loading';
 import { Avatar, AvatarFallbackText } from '@/components/ui/avatar';
 import { Box } from '@/components/ui/box';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Center } from '@/components/ui/center';
-import { Divider } from '@/components/ui/divider';
 import { Heading } from '@/components/ui/heading';
-import { CopyIcon } from '@/components/ui/icon';
+import { ChevronRightIcon, CopyIcon, Icon } from '@/components/ui/icon';
 import { ScrollView } from '@/components/ui/scroll-view';
-import { Spinner } from '@/components/ui/spinner';
 import { Text } from '@/components/ui/text';
 import { Toast, ToastDescription, useToast } from '@/components/ui/toast';
 import { VStack } from '@/components/ui/vstack';
@@ -55,11 +54,7 @@ const Profile = observer(() => {
 
   const profileInfo = sessionStore.profile;
   if (!profileInfo) {
-    return (
-      <Center className="flex-1 bg-backgroundLight-0">
-        <Spinner size="large" testID="loading" />
-      </Center>
-    );
+    return <LoadingScreen />;
   }
 
   const fullName = `${profileInfo.given_name} ${profileInfo.family_name}`;
@@ -85,55 +80,27 @@ const Profile = observer(() => {
           </Center>
 
           <VStack space="xl">
-            <View>
-              <Text className="text-typography-500">Full Name</Text>
-              <Text size="lg">{fullName}</Text>
-            </View>
+            <ListTile
+              title="Personal Info"
+              trailing={<Icon as={ChevronRightIcon} />}
+              onPress={() => router.push('/profile/personal-info')}
+              testID="personal-info-button"
+            />
 
-            <Divider />
-
-            <View>
-              <Text className="text-typography-500">Email address</Text>
-              <Text size="lg">{profileInfo.email}</Text>
-            </View>
-
-            <Divider />
-
-            {profileInfo.address && (
-              <>
-                <View>
-                  <Text className="text-typography-500">Address</Text>
-                  <Text>{profileInfo.address}</Text>
-                </View>
-
-                <Divider />
-              </>
-            )}
-
-            <Box>
-              <Button
-                onPress={() => setAssetListOpen(true)}
-                variant="link"
-                action="secondary"
-                size="lg"
-                className="self-start"
-              >
-                <ButtonText>Bank account currency: {bankCurrency.length > 0 ? bankCurrency[0] : 'not set'} </ButtonText>
-              </Button>
-              <Text size="sm" className="text-typography-500">
-                Used for deposit and withdraw
-              </Text>
-            </Box>
-
-            <Button
+            <ListTile
+              title="Configure your PIN"
+              trailing={<Icon as={ChevronRightIcon} />}
               onPress={() => router.push('/settings/configure-pin')}
-              variant="link"
-              action="secondary"
-              size="lg"
-              className="self-start"
-            >
-              <ButtonText>Configure your PIN</ButtonText>
-            </Button>
+              testID="configure-pin-button"
+            />
+
+            <ListTile
+              title={`Bank account currency: ${bankCurrency.length > 0 ? bankCurrency[0] : 'not set'}`}
+              subtitle="Used for deposit and withdraw"
+              trailing={<Icon as={ChevronRightIcon} />}
+              onPress={() => setAssetListOpen(true)}
+              testID="bank-currency-button"
+            />
 
             <Button
               onPress={() => router.push('/profile/delete-account')}
