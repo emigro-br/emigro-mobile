@@ -4,7 +4,7 @@ import { fireEvent, render, waitFor } from '@testing-library/react-native';
 
 import AskCamera from '../ask-camera';
 
-jest.mock('expo-camera/next', () => ({
+jest.mock('expo-camera', () => ({
   Camera: () => null,
   useCameraPermissions: () => [null, jest.fn()],
 }));

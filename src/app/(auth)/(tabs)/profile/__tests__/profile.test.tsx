@@ -35,6 +35,7 @@ describe('Profile screen', () => {
   let router: any;
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.useFakeTimers();
     router = useRouter();
   });
 
