@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 
-import { FeedbackScreen } from '@/components/screens/FeedbackScreen';
+import { FeedbackScreen } from '@/screens/FeedbackScreen';
 
 const PaymentSuccess = () => {
   const router = useRouter();

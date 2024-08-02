@@ -3,9 +3,9 @@ import { useEffect } from 'react';
 import { Redirect, Stack, useRouter } from 'expo-router';
 import { observer } from 'mobx-react-lite';
 
-import { SplashScreen } from '@/components/Splash';
 import { useSession } from '@/hooks/useSession';
 import defaultScreenOptions from '@/navigation/screenOptions';
+import { SplashScreen } from '@/screens/Splash';
 import { securityStore } from '@/stores/SecurityStore';
 import { sessionStore } from '@/stores/SessionStore';
 

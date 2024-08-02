@@ -9,7 +9,6 @@ import { observer } from 'mobx-react-lite';
 
 import { AssetListActionSheet } from '@/components/AssetListActionSheet';
 import { ListTile } from '@/components/ListTile';
-import { LoadingScreen } from '@/components/screens/Loading';
 import { Avatar, AvatarFallbackText } from '@/components/ui/avatar';
 import { Box } from '@/components/ui/box';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
@@ -20,6 +19,7 @@ import { ScrollView } from '@/components/ui/scroll-view';
 import { Text } from '@/components/ui/text';
 import { Toast, ToastDescription, useToast } from '@/components/ui/toast';
 import { VStack } from '@/components/ui/vstack';
+import { LoadingScreen } from '@/screens/Loading';
 import { balanceStore } from '@/stores/BalanceStore';
 import { sessionStore } from '@/stores/SessionStore';
 import { FiatCurrency } from '@/types/assets';

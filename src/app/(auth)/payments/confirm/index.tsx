@@ -6,8 +6,6 @@ import * as Sentry from '@sentry/react-native';
 import { Stack, usePathname, useRouter } from 'expo-router';
 
 import { InputAmountActionSheet } from '@/components/InputAmountActionSheet';
-import { LoadingScreen } from '@/components/screens/Loading';
-import { PinScreen } from '@/components/screens/PinScreen';
 import { Box } from '@/components/ui/box';
 import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -20,6 +18,8 @@ import { ScrollView } from '@/components/ui/scroll-view';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { TRANSACTION_ERROR_MESSAGE } from '@/constants/errorMessages';
+import { LoadingScreen } from '@/screens/Loading';
+import { PinScreen } from '@/screens/PinScreen';
 import { IQuoteRequest, fetchQuote } from '@/services/emigro/quotes';
 import { balanceStore } from '@/stores/BalanceStore';
 import { paymentStore } from '@/stores/PaymentStore';

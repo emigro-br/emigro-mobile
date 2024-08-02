@@ -5,7 +5,6 @@ import { useLocalSearchParams, usePathname, useRouter } from 'expo-router';
 
 import { AssetImage } from '@/components/AssetImage';
 import { DetailsTable } from '@/components/DetailsTable';
-import { LoadingScreen } from '@/components/screens/Loading';
 import { Box } from '@/components/ui/box';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Divider } from '@/components/ui/divider';
@@ -15,6 +14,7 @@ import { CloseIcon, Icon } from '@/components/ui/icon';
 import { ModalCloseButton } from '@/components/ui/modal';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
+import { LoadingScreen } from '@/screens/Loading';
 import { ConfirmWithdrawDto, confirmWithdraw, getTransaction } from '@/services/emigro/anchors';
 import { Sep24Transaction, Sep24TransactionStatus } from '@/services/emigro/types';
 import { CryptoAsset, FiatCurrency } from '@/types/assets';

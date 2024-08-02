@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Stack, useRouter } from 'expo-router';
 
 import { ErrorModal } from '@/components/modals/ErrorModal';
-import { PinScreen } from '@/components/screens/PinScreen';
 import { Box } from '@/components/ui/box';
 import { Button, ButtonText } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -11,6 +10,7 @@ import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
+import { PinScreen } from '@/screens/PinScreen';
 import { securityStore } from '@/stores/SecurityStore';
 import { swapStore as bloc } from '@/stores/SwapStore';
 

@@ -3,8 +3,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 
-import { PinScreen } from '@/components/screens/PinScreen';
 import { Box } from '@/components/ui/box';
+import { PinScreen } from '@/screens/PinScreen';
 import { securityStore } from '@/stores/SecurityStore';
 
 type PinRefType = {

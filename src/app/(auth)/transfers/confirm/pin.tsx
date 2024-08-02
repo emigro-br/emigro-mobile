@@ -4,10 +4,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
 import { Toast } from '@/components/Toast';
-import { LoadingScreen } from '@/components/screens/Loading';
-import { PinScreen } from '@/components/screens/PinScreen';
 import { Box } from '@/components/ui/box';
 import { useToast } from '@/components/ui/toast';
+import { LoadingScreen } from '@/screens/Loading';
+import { PinScreen } from '@/screens/PinScreen';
 import { securityStore } from '@/stores/SecurityStore';
 import { transferStore } from '@/stores/TransferStore';
 

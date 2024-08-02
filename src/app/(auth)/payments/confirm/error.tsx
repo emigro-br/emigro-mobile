@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
-import { FeedbackScreen } from '@/components/screens/FeedbackScreen';
+import { FeedbackScreen } from '@/screens/FeedbackScreen';
 
 const PaymentError = () => {
   const router = useRouter();

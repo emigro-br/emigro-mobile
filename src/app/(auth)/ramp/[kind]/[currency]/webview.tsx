@@ -4,8 +4,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { CustomWebView } from '@/components/CustomWebView';
-import { LoadingScreen } from '@/components/screens/Loading';
 import { Box } from '@/components/ui/box';
+import { LoadingScreen } from '@/screens/Loading';
 import { CallbackType, OperationKind, depositUrl, withdrawUrl } from '@/services/emigro/anchors';
 import { CryptoAsset } from '@/types/assets';
 

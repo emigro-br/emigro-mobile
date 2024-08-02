@@ -1,11 +1,11 @@
 import { Stack } from 'expo-router';
 
-import { LoadingScreen } from '@/components/screens/Loading';
 import { Box } from '@/components/ui/box';
 import { Divider } from '@/components/ui/divider';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
 import { VStack } from '@/components/ui/vstack';
+import { LoadingScreen } from '@/screens/Loading';
 import { sessionStore } from '@/stores/SessionStore';
 
 export const PersonalInfo = () => {
