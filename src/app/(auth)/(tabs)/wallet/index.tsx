@@ -7,9 +7,8 @@ import * as Haptics from 'expo-haptics';
 import { Stack } from 'expo-router';
 import { observer } from 'mobx-react-lite';
 
-import Header from '@/components/Header';
+import { EmigroHeader } from '@/components/Header';
 import { Button } from '@/components/ui/button';
-import { HStack } from '@/components/ui/hstack';
 import { EyeIcon, EyeOffIcon, Icon } from '@/components/ui/icon';
 import { ScrollView } from '@/components/ui/scroll-view';
 import { VStack } from '@/components/ui/vstack';
@@ -54,17 +53,18 @@ export const Wallet = () => {
     }
   }, [balanceStore.fetchUserBalance, publicKey]);
 
+  const actions = [
+    <Button onPress={() => setHide(!hide)} testID="toggle-button">
+      <Icon as={hide ? EyeOffIcon : EyeIcon} size="xl" className="text-white" />
+    </Button>,
+  ];
+
   return (
     <>
-      <Stack.Screen options={{ title: 'Wallet', header: () => <Header /> }} />
+      <Stack.Screen options={{ title: 'Wallet', header: () => <EmigroHeader actions={actions} /> }} />
 
       <VStack space="2xl" className="bg-primary-500 px-4">
-        <HStack className="items-end">
-          <TotalBalance total={balanceStore.totalBalance} cryptoOrFiat={FiatCurrency.USD} hide={hide} />
-          <Button onPress={() => setHide(!hide)} testID="toggle-button">
-            <Icon as={hide ? EyeOffIcon : EyeIcon} size="2xl" className="text-white" />
-          </Button>
-        </HStack>
+        <TotalBalance total={balanceStore.totalBalance} cryptoOrFiat={FiatCurrency.USD} hide={hide} />
         <OperationButtons />
       </VStack>
       <ScrollView
