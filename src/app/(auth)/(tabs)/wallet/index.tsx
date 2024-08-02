@@ -7,13 +7,13 @@ import * as Haptics from 'expo-haptics';
 import { Stack } from 'expo-router';
 import { observer } from 'mobx-react-lite';
 
-import { CreateWallet } from '@/components/CreateWallet';
 import Header from '@/components/Header';
-import OperationButtons from '@/components/OperationButtons';
-import { WalletBalances } from '@/components/WalletBalances';
 import { Box } from '@/components/ui/box';
 import { ScrollView } from '@/components/ui/scroll-view';
 import { VStack } from '@/components/ui/vstack';
+import { CreateWallet } from '@/components/wallet/CreateWallet';
+import { OperationButtons } from '@/components/wallet/OperationButtons';
+import { WalletBalances } from '@/components/wallet/WalletBalances';
 import { balanceStore } from '@/stores/BalanceStore';
 import { sessionStore } from '@/stores/SessionStore';
 

@@ -11,7 +11,7 @@ import { Balance } from '@/services/emigro/types';
 import { CryptoAsset } from '@/types/assets';
 import { symbolFor } from '@/utils/assets';
 
-import { AssetListTile } from './AssetListTile';
+import { AssetListTile } from '../AssetListTile';
 
 interface Props {
   userBalance: Balance[];

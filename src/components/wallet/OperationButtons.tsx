@@ -5,9 +5,9 @@ import { useRouter } from 'expo-router';
 import { ButtonGroup } from '@/components/ui/button';
 import { AddIcon, ArrowRightIcon, ArrowUpIcon, RepeatIcon } from '@/components/ui/icon';
 
-import { CircularButton } from './CircularButton';
+import { CircularButton } from '../CircularButton';
 
-const OperationButtons = () => {
+export const OperationButtons = () => {
   const router = useRouter();
   return (
     <ButtonGroup className="justify-around py-2">
@@ -18,5 +18,3 @@ const OperationButtons = () => {
     </ButtonGroup>
   );
 };
-
-export default OperationButtons;

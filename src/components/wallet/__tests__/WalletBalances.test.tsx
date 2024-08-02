@@ -3,7 +3,8 @@ import { useRouter } from 'expo-router';
 
 import { render } from 'test-utils';
 
-import { userBalance } from '../../__mocks__/mock-balance';
+import { userBalance } from '@/mocks/mock-balance';
+
 import { WalletBalances } from '../WalletBalances';
 
 describe('WalletBalances component', () => {
