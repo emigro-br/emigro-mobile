@@ -10,7 +10,7 @@ import { CircularButton } from '../CircularButton';
 export const OperationButtons = () => {
   const router = useRouter();
   return (
-    <ButtonGroup className="justify-around py-2">
+    <ButtonGroup className="justify-between pb-1" testID="operation-buttons">
       <CircularButton label="Deposit" bg="white" icon={AddIcon} onPress={() => router.push('/ramp/deposit')} />
       <CircularButton label="Withdraw" bg="white" icon={ArrowUpIcon} onPress={() => router.push('/ramp/withdraw')} />
       <CircularButton label="Send" bg="white" icon={ArrowRightIcon} onPress={() => router.push('/transfers')} />

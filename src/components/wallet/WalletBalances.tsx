@@ -15,12 +15,13 @@ import { AssetListTile } from '../AssetListTile';
 
 interface Props {
   userBalance: Balance[];
+  hide?: boolean;
 }
 
-export const WalletBalances: React.FC<Props> = ({ userBalance }) => {
+export const WalletBalances = ({ userBalance, hide = false }: Props) => {
   const router = useRouter();
   return (
-    <VStack space="sm">
+    <VStack space="sm" testID="wallet-balances">
       <HStack className="justify-between">
         <Heading>Accounts</Heading>
         <Button variant="link" onPress={() => router.push('/wallet/manage')} testID="add-button" className="px-2">
@@ -36,7 +37,7 @@ export const WalletBalances: React.FC<Props> = ({ userBalance }) => {
                 key={index}
                 asset={asset}
                 subasset={asset}
-                trailing={<Text size="lg">{symbolFor(asset, Number(balance))}</Text>}
+                trailing={<Text size="lg">{hide ? '****' : symbolFor(asset, Number(balance))}</Text>}
               />
             );
           })}

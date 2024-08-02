@@ -38,6 +38,21 @@ describe('WalletBalances component', () => {
     expect(euroBalance).toBeOnTheScreen();
   });
 
+  it('Should not display the balances when hiding', () => {
+    const { queryByText, queryAllByText } = render(<WalletBalances userBalance={userBalance} hide />);
+    expect(queryByText('Brazilian Real')).toBeOnTheScreen();
+    expect(queryByText('R$ 10.00')).not.toBeOnTheScreen();
+
+    expect(queryByText('USD Coin')).toBeOnTheScreen();
+    expect(queryByText('$ 30.00')).not.toBeOnTheScreen();
+
+    expect(queryByText('EURo Coin')).toBeOnTheScreen();
+    expect(queryByText('€ 0.00')).not.toBeOnTheScreen();
+
+    // Should display **** instead of the balance
+    expect(queryAllByText('****')).toHaveLength(userBalance.length);
+  });
+
   it('Should go to manage accounts when press add button', () => {
     const mockNavigation = useRouter();
     render(<WalletBalances userBalance={userBalance} />);
