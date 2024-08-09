@@ -1,5 +1,6 @@
 import { Balance } from '@/services/emigro/types';
 import * as usersApi from '@/services/emigro/users';
+import { CryptoAsset } from '@/types/assets';
 
 import { BalanceStore } from '../BalanceStore';
 
@@ -12,8 +13,9 @@ describe('BalanceStore', () => {
   const mockBalances: Balance[] = [
     {
       assetType: 'someAssetType',
-      assetCode: 'someAssetCode',
+      assetCode: 'XLM',
       balance: '100',
+      priceUSD: 5,
     },
   ];
 
@@ -33,17 +35,18 @@ describe('BalanceStore', () => {
 
   it('should fetch user balance', async () => {
     (usersApi.getUserBalance as jest.Mock).mockResolvedValue(mockBalances);
-    jest.spyOn(balanceStore, 'setUserBalance');
+
+    expect(balanceStore.totalBalance).toEqual(0);
 
     await balanceStore.fetchUserBalance();
 
     expect(usersApi.getUserBalance).toHaveBeenCalledTimes(1);
-    expect(balanceStore.setUserBalance).toHaveBeenCalledWith(mockBalances);
+    expect(balanceStore.userBalance).toEqual(mockBalances);
+    expect(balanceStore.totalBalance).toEqual(5);
   });
 
   it('should not call api twice on fetch user balance in short period', async () => {
     (usersApi.getUserBalance as jest.Mock).mockResolvedValue(mockBalances);
-    jest.spyOn(balanceStore, 'setUserBalance');
 
     // call 2x
     await balanceStore.fetchUserBalance();
@@ -54,7 +57,6 @@ describe('BalanceStore', () => {
 
   it('should force to call api twice on fetch balance even in short period', async () => {
     (usersApi.getUserBalance as jest.Mock).mockResolvedValue(mockBalances);
-    jest.spyOn(balanceStore, 'setUserBalance');
 
     // call 2x
     await balanceStore.fetchUserBalance({ force: true });
@@ -69,7 +71,7 @@ describe('BalanceStore', () => {
     (usersApi.getUserBalance as jest.Mock).mockRejectedValue(error);
     jest.spyOn(balanceStore, 'setUserBalance');
 
-    await expect(balanceStore.fetchUserBalance()).rejects.toThrowError();
+    expect(balanceStore.fetchUserBalance()).rejects.toThrow();
 
     expect(usersApi.getUserBalance).toHaveBeenCalled();
     expect(balanceStore.setUserBalance).not.toHaveBeenCalled();
@@ -77,7 +79,7 @@ describe('BalanceStore', () => {
 
   it('should return user balance', () => {
     balanceStore.setUserBalance(mockBalances);
-    expect(balanceStore.get('someAssetCode')).toBe(100);
+    expect(balanceStore.get(CryptoAsset.XLM)).toBe(100);
   });
 
   it('should find the balance by asset code', () => {
@@ -85,13 +87,14 @@ describe('BalanceStore', () => {
     const mockBalances: Balance[] = [
       {
         assetType: 'someAssetType',
-        assetCode: 'someAssetCode',
+        assetCode: 'XLM',
         balance: '100',
+        priceUSD: 2,
       },
     ];
     balanceStore.setUserBalance(mockBalances);
 
-    const foundBalance = balanceStore.find('someAssetCode');
+    const foundBalance = balanceStore.find(CryptoAsset.XLM);
 
     expect(foundBalance).toEqual(mockBalances[0]);
   });
@@ -101,13 +104,14 @@ describe('BalanceStore', () => {
     const mockBalances: Balance[] = [
       {
         assetType: 'someAssetType',
-        assetCode: 'someAssetCode',
+        assetCode: 'XLM',
         balance: '100',
+        priceUSD: 2,
       },
     ];
     balanceStore.setUserBalance(mockBalances);
 
-    const foundBalance = balanceStore.find('nonExistingAssetCode');
+    const foundBalance = balanceStore.find(CryptoAsset.SRT);
 
     expect(foundBalance).toBeUndefined();
   });

@@ -5,26 +5,49 @@ import { useRouter } from 'expo-router';
 
 import emigroLogo from '@/assets/images/emigro-logo.png';
 import { Box } from '@/components/ui/box';
-import { Center } from '@/components/ui/center';
+import { HStack } from '@/components/ui/hstack';
 import { Image } from '@/components/ui/image';
 import { Pressable } from '@/components/ui/pressable';
 
-const Header: React.FC = () => {
-  // https://reactnavigation.org/docs/handling-safe-area/
-  const insets = useSafeAreaInsets();
-  const router = useRouter();
+type Props = {
+  leading?: JSX.Element;
+  title?: JSX.Element;
+  actions?: JSX.Element[];
+};
 
+export const EmigroHeader = (props: Props) => {
+  const router = useRouter();
   return (
-    <Box style={{ paddingTop: insets.top }} className="bg-primary-500 pb-2">
-      <Center>
+    <Header
+      title={
         <Pressable onPress={() => router.navigate('/')}>
           <Box className="w-40 h-14">
-            <Image source={emigroLogo} alt="Emigro" testID="logo" className="w-full h-full" />
+            <Image source={emigroLogo} alt="Emigro" testID="emigro-logo" className="w-full h-full" />
           </Box>
         </Pressable>
-      </Center>
-    </Box>
+      }
+      {...props}
+    />
   );
 };
 
-export default Header;
+const Header = ({ title, leading, actions = [] }: Props) => {
+  // https://reactnavigation.org/docs/handling-safe-area/
+  const insets = useSafeAreaInsets();
+
+  return (
+    <HStack style={{ paddingTop: insets.top }} className="bg-primary-500 justify-between items-center pb-2">
+      <Box testID="header-leading" className="basis-1/4">
+        {leading}
+      </Box>
+      <Box testID="header-title" className="basis-1/2 items-center">
+        {title}
+      </Box>
+      <Box testID="header-actions" className="basis-1/4 items-end">
+        {actions.map((action, index) => (
+          <HStack key={index}>{action}</HStack>
+        ))}
+      </Box>
+    </HStack>
+  );
+};

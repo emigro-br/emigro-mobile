@@ -7,17 +7,25 @@ import { CryptoAsset } from '@/types/assets';
 export class BalanceStore {
   userBalance: Balance[] = [];
   lastUpdate: number | null = null;
+  totalBalance: number = 0;
 
   constructor() {
     makeAutoObservable(this, {
       userBalance: observable,
       setUserBalance: action,
+      // total balance
+      totalBalance: observable,
+      setTotalBalance: action,
     });
   }
 
   setUserBalance(balance: Balance[]): void {
     this.userBalance = balance;
     this.lastUpdate = Date.now();
+  }
+
+  setTotalBalance(total: number): void {
+    this.totalBalance = total;
   }
 
   find(assetCode: CryptoAsset): Balance | undefined {
@@ -50,6 +58,11 @@ export class BalanceStore {
       if (balances) {
         this.setUserBalance(balances);
       }
+      // update total balance
+      const total = balances.reduce((acc, balance) => {
+        return acc + balance.priceUSD;
+      }, 0);
+      this.setTotalBalance(total);
     }
     return this.userBalance;
   }

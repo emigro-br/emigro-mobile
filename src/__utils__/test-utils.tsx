@@ -1,5 +1,7 @@
 import { JSX, JSXElementConstructor, ReactElement } from 'react';
 
+import { NavigationContainer } from '@react-navigation/native';
+
 import { RenderOptions, fireEvent, render, screen } from '@testing-library/react-native';
 
 import { ThemeProvider } from './ThemeProvider';
@@ -9,7 +11,11 @@ type Props = {
 };
 
 const AllTheProviders = ({ children }: Props) => {
-  return <ThemeProvider theme="light">{children}</ThemeProvider>;
+  return (
+    <NavigationContainer>
+      <ThemeProvider theme="light">{children}</ThemeProvider>
+    </NavigationContainer>
+  );
 };
 
 const customRender = (
