@@ -60,7 +60,7 @@ export class BalanceStore {
       }
       // update total balance
       const total = balances.reduce((acc, balance) => {
-        return acc + Number(balance.balance);
+        return acc + balance.priceUSD;
       }, 0);
       this.setTotalBalance(total);
     }

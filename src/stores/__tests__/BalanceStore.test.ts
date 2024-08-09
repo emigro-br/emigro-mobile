@@ -15,6 +15,7 @@ describe('BalanceStore', () => {
       assetType: 'someAssetType',
       assetCode: 'XLM',
       balance: '100',
+      priceUSD: 5,
     },
   ];
 
@@ -41,7 +42,7 @@ describe('BalanceStore', () => {
 
     expect(usersApi.getUserBalance).toHaveBeenCalledTimes(1);
     expect(balanceStore.userBalance).toEqual(mockBalances);
-    expect(balanceStore.totalBalance).toEqual(100);
+    expect(balanceStore.totalBalance).toEqual(5);
   });
 
   it('should not call api twice on fetch user balance in short period', async () => {
@@ -88,6 +89,7 @@ describe('BalanceStore', () => {
         assetType: 'someAssetType',
         assetCode: 'XLM',
         balance: '100',
+        priceUSD: 2,
       },
     ];
     balanceStore.setUserBalance(mockBalances);
@@ -104,6 +106,7 @@ describe('BalanceStore', () => {
         assetType: 'someAssetType',
         assetCode: 'XLM',
         balance: '100',
+        priceUSD: 2,
       },
     ];
     balanceStore.setUserBalance(mockBalances);

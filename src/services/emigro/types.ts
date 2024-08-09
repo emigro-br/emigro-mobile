@@ -65,6 +65,7 @@ export type Balance = {
   balance: string; // TODO: convert to number
   assetType: string;
   assetCode: string;
+  priceUSD: number;
 };
 
 //-- Anchors
