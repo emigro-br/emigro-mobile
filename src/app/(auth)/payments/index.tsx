@@ -5,7 +5,7 @@ import { HandCoinsIcon, QrCodeIcon } from 'lucide-react-native';
 
 import { AssetListActionSheet } from '@/components/AssetListActionSheet';
 import { CircularButton } from '@/components/CircularButton';
-import Header from '@/components/Header';
+import { EmigroHeader } from '@/components/Header';
 import { Box } from '@/components/ui/box';
 import { ButtonGroup } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
@@ -25,7 +25,7 @@ export const Payments = () => {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Payments', header: () => <Header /> }} />
+      <Stack.Screen options={{ title: 'Payments', header: () => <EmigroHeader /> }} />
 
       <Box className="flex-1 bg-white">
         <VStack space="lg" className="p-4">
