@@ -76,8 +76,8 @@ describe('emigro service', () => {
     const mockResponse: StellarAccount = {
       publicKey: 'abc123',
       balances: [
-        { assetCode: 'USD', assetType: '', balance: '100' },
-        { assetCode: 'BRL', assetType: '', balance: '200' },
+        { assetCode: 'USDC', assetType: '', balance: '100', priceUSD: 1 },
+        { assetCode: 'EURC', assetType: '', balance: '200', priceUSD: 5 },
       ],
     };
 
@@ -92,11 +92,11 @@ describe('emigro service', () => {
   });
 
   describe('addAssetToWallet', () => {
-    const mockAssetCode: CryptoAsset = CryptoAsset.BRL;
+    const mockAssetCode: CryptoAsset = CryptoAsset.EURC;
     const mockResponse = {
       balances: [
-        { assetCode: 'USD', balance: 100 },
-        { assetCode: 'BRL', balance: 200 },
+        { assetCode: 'USDC', balance: 100 },
+        { assetCode: 'EURC', balance: 200 },
       ],
     };
 

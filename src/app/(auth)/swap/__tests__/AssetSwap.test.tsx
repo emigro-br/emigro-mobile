@@ -10,7 +10,7 @@ import { AssetSwap } from '../AssetSwap';
 import { SwapType } from '../types';
 
 describe('AssetSwap component', () => {
-  const assets = [CryptoAsset.BRL, CryptoAsset.EURC, CryptoAsset.USDC];
+  const assets = [CryptoAsset.BRZ, CryptoAsset.EURC, CryptoAsset.USDC];
 
   test('Should render AssetSwap component correctly', () => {
     const mockSetAsset = jest.fn();
@@ -18,7 +18,7 @@ describe('AssetSwap component', () => {
 
     const { getByText } = render(
       <AssetSwap
-        asset={CryptoAsset.BRL}
+        asset={CryptoAsset.BRZ}
         assets={assets}
         balance={1.0}
         onChangeAsset={mockSetAsset}
@@ -27,7 +27,7 @@ describe('AssetSwap component', () => {
       />,
     );
 
-    const assetSwapText = getByText('BRL');
+    const assetSwapText = getByText('BRZ');
     expect(assetSwapText).toBeDefined();
 
     const balanceText = getByText('Balance: R$ 1.00');

@@ -23,7 +23,7 @@ describe('DetailsSwap', () => {
   const transaction: SwapTransaction = {
     fromAsset: CryptoAsset.EURC,
     fromValue: 100,
-    toAsset: CryptoAsset.BRL,
+    toAsset: CryptoAsset.USDC,
     toValue: 120,
     rate: 1.2,
   };
@@ -52,11 +52,11 @@ describe('DetailsSwap', () => {
 
     // rate
     expect(getByText('Rate')).toBeOnTheScreen();
-    expect(getByText('1 BRL ≈ 1.200000 EURC')).toBeOnTheScreen();
+    expect(getByText('1 USDC ≈ 1.200000 EURC')).toBeOnTheScreen();
 
     // to: rate is 1.2, so 100 EURC = 120 BRL
     expect(getByText('Exchanged')).toBeOnTheScreen();
-    expect(getAllByText('120.00 BRL')).toHaveLength(2); // 2 because we have the rate and the final value (no fees)
+    expect(getAllByText('120.00 USDC')).toHaveLength(2); // 2 because we have the rate and the final value (no fees)
 
     // fees
     // expect(getByText('Fees')).toBeOnTheScreen();
@@ -67,14 +67,14 @@ describe('DetailsSwap', () => {
     // expect(getByText('119.99 BRL')).toBeOnTheScreen();
 
     expect(getByText('The final amount is estimated and may change.')).toBeOnTheScreen();
-    expect(getByText('Swap EURC for BRL')).toBeOnTheScreen();
+    expect(getByText('Swap EURC for USDC')).toBeOnTheScreen();
   });
 
   it('show PIN on button press and swap when confirm', async () => {
     const verifyPinSpy = jest.spyOn(securityStore, 'verifyPin').mockResolvedValueOnce(true);
     const { getByText } = render(<DetailsSwapScreen />);
 
-    fireEvent.press(getByText('Swap EURC for BRL'));
+    fireEvent.press(getByText('Swap EURC for USDC'));
 
     inputPIN('1234');
 
@@ -92,7 +92,7 @@ describe('DetailsSwap', () => {
 
     const { getByText, getByTestId } = render(<DetailsSwapScreen />);
 
-    fireEvent.press(getByText('Swap EURC for BRL'));
+    fireEvent.press(getByText('Swap EURC for USDC'));
 
     inputPIN('1234');
 

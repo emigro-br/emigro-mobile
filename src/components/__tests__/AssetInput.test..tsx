@@ -35,8 +35,8 @@ describe('AssetInput component', () => {
 
   it('Should render the correct prefix and suffix for asset with same name of currency', () => {
     const value = 1;
-    render(<AssetInput asset={CryptoAsset.BRL} value={value} onChangeValue={() => {}} />);
-    const inputElement = screen.getByDisplayValue('1.00 BRL'); // not be: R$ 1.00 BRL
+    render(<AssetInput asset={CryptoAsset.ARS} value={value} onChangeValue={() => {}} />);
+    const inputElement = screen.getByDisplayValue('1.00 ARS'); // not be: $ 1.00 ARS
     expect(inputElement).toBeTruthy();
   });
 

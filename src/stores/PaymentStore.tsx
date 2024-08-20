@@ -130,7 +130,7 @@ export class PaymentStore {
     const pixPayment = this.scannedPayment as PixPayment;
     const paymentRequest: BrcodePaymentRequest = {
       brcode: pixPayment.brCode,
-      amount: this.transaction.to.value, // BRL value
+      amount: this.transaction.to.value, // Brazilian Real value
       exchangeAsset: this.transaction.from.asset, // selected Asset
       name: pixPayment.merchantName,
       taxId: pixPayment.taxId,
