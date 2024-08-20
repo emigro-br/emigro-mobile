@@ -10,7 +10,7 @@ import { CryptoAsset } from '@/types/assets';
 import { Sep24TransactionHistory } from '../Sep24TransactionHistory';
 
 describe('Sep24TransactionHistory', () => {
-  const asset = CryptoAsset.BRL;
+  const asset = CryptoAsset.USDC;
   it('should render the transaction history', () => {
     const { getByText, getAllByText, getAllByTestId } = render(
       <Sep24TransactionHistory asset={asset} transactions={transactions} />,
@@ -25,7 +25,7 @@ describe('Sep24TransactionHistory', () => {
 
     // Assert that the transaction item is rendered
     // FIXME: within is not working (https://testing-library.com/docs/dom-testing-library/api-within/)
-    expect(getAllByText('Brazilian Real')).toHaveLength(5);
+    expect(getAllByText('USD Coin')).toHaveLength(5);
   });
 
   it('should render the transaction history with the correct status', () => {

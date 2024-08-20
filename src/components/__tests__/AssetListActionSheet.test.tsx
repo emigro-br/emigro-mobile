@@ -6,7 +6,7 @@ import { AssetListActionSheet } from '../AssetListActionSheet';
 
 // FIXME: gluestack not rendering correctly
 describe.skip('AssetListActionSheet component', () => {
-  const assets = [CryptoAsset.BRL, CryptoAsset.USDC];
+  const assets = [CryptoAsset.EURC, CryptoAsset.USDC]; // FIXME: change to Assets[]
   const isOpen = true;
   const onClose = jest.fn();
   const onItemPress = jest.fn();

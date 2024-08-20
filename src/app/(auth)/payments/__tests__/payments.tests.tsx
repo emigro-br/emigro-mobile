@@ -44,7 +44,7 @@ describe('Payments component', () => {
   it.skip('Should close the asset list action sheet when an asset is selected', () => {
     const requestButton = screen.getByTestId('request-payment');
     fireEvent.press(requestButton);
-    const assetItem = screen.getByText(CryptoAsset.BRL);
+    const assetItem = screen.getByText(CryptoAsset.USDC);
     fireEvent.press(assetItem);
     expect(screen.queryByTestId('asset-list-action-sheet')).toBeNull();
   });
@@ -52,9 +52,9 @@ describe('Payments component', () => {
   it.skip('Should navigate to RequestPayment screen when an asset is selected', () => {
     const requestButton = screen.getByTestId('request-payment');
     fireEvent.press(requestButton);
-    const assetItem = screen.getByText(CryptoAsset.BRL);
+    const assetItem = screen.getByText(CryptoAsset.USDC);
     fireEvent.press(assetItem);
-    expect(router.push).toHaveBeenCalledWith('RequestPayment', { asset: CryptoAsset.BRL });
+    expect(router.push).toHaveBeenCalledWith('RequestPayment', { asset: CryptoAsset.USDC });
   });
 
   it('Should open the Pix Copia & Cola screen when Pix Copia & Cola button is pressed', () => {

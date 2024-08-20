@@ -25,7 +25,7 @@ jest.mock('@/stores/BalanceStore', () => ({
 
 describe('Swap component', () => {
   const fromAsset = CryptoAsset.USDC;
-  const toAsset = CryptoAsset.BRL;
+  const toAsset = CryptoAsset.XLM;
   let router: any;
 
   beforeEach(() => {

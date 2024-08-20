@@ -149,7 +149,7 @@ describe('PaymentStore', () => {
     const waitSpy = jest.spyOn(utils, 'waitTransaction').mockResolvedValueOnce(paidResponse);
 
     const pixPayment: PixPayment = {
-      assetCode: CryptoAsset.BRL,
+      assetCode: CryptoAsset.BRZ,
       transactionAmount: 100,
       taxId: 'test-taxId',
       pixKey: 'test-pixKey',
@@ -164,12 +164,12 @@ describe('PaymentStore', () => {
       type: 'payment' as any, // FIXME: remove any
       from: {
         wallet: 'user-public-key',
-        asset: CryptoAsset.BRL,
+        asset: CryptoAsset.BRZ,
         value: pixPayment.transactionAmount,
       },
       to: {
         wallet: 'merchant-public-key',
-        asset: CryptoAsset.BRL,
+        asset: CryptoAsset.BRZ,
         value: pixPayment.transactionAmount,
       },
       rate: 1,

@@ -59,9 +59,9 @@ describe('symbolFor', () => {
 
   describe('fiatsFromCryptoCodes', () => {
     it('should return an array of fiat assets for a list of crypto assets', () => {
-      const cryptos = [CryptoAsset.USDC, CryptoAsset.BRL];
+      const cryptos = [CryptoAsset.USDC, CryptoAsset.ARS];
       const fiats = fiatsFromCryptoCodes(cryptos);
-      expect(fiats).toEqual([fiatByCode[FiatCurrency.USD], fiatByCode[FiatCurrency.BRL]]);
+      expect(fiats).toEqual([fiatByCode[FiatCurrency.USD], fiatByCode[FiatCurrency.ARS]]);
     });
 
     it('should filter out undefined assets (ie XLM)', () => {
