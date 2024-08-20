@@ -41,9 +41,14 @@ export class Asset {
 
 export const cryptoAssets = () => {
   const allAssets = Object.values(CryptoAsset);
-  if (__DEV__) {
-    return allAssets;
-  }
-  const excludedAssets = [CryptoAsset.SRT, CryptoAsset.XLM, CryptoAsset.BRZ];
+  const excludedAssets = __DEV__
+    ? [
+        CryptoAsset.BRL, // FIXME: nTokens is not supported anymore
+      ]
+    : [
+        CryptoAsset.SRT,
+        CryptoAsset.XLM,
+        CryptoAsset.BRL, // FIXME: nTokens is not supported anymore
+      ];
   return allAssets.filter((asset) => !excludedAssets.includes(asset));
 };

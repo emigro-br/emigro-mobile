@@ -70,7 +70,7 @@ export const AssetToCurrency = {
 export const CurrencyToAsset = {
   [FiatCurrency.EUR]: CryptoAsset.EURC,
   [FiatCurrency.USD]: CryptoAsset.USDC,
-  [FiatCurrency.BRL]: CryptoAsset.BRL,
+  [FiatCurrency.BRL]: CryptoAsset.BRZ,
   [FiatCurrency.ARS]: CryptoAsset.ARS,
   [FiatCurrency.SRT]: CryptoAsset.SRT,
 };
