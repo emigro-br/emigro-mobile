@@ -40,7 +40,7 @@ describe('RequestPayment component', () => {
 
     fireEvent.press(generateQRCodeButton);
 
-    expect(router.navigate).toHaveBeenCalledWith({
+    expect(router.replace).toHaveBeenCalledWith({
       pathname: '/payments/request/show-qr-code',
       params: { asset: 'BRL', value: '1' },
     });
@@ -51,7 +51,7 @@ describe('RequestPayment component', () => {
 
     fireEvent.press(requestOpenAmountButton);
 
-    expect(router.navigate).toHaveBeenCalledWith({
+    expect(router.replace).toHaveBeenCalledWith({
       pathname: '/payments/request/show-qr-code',
       params: { asset: 'BRL', value: '0' },
     });

@@ -110,6 +110,6 @@ describe('RequestWithQRCode component', () => {
     });
 
     expect(toast.show).toHaveBeenCalled();
-    expect(router.dismissAll).toHaveBeenCalled();
+    expect(router.dismiss).toHaveBeenCalled();
   });
 });

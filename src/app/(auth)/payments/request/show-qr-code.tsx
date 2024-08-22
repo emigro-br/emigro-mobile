@@ -123,7 +123,7 @@ export const RequestWithQRCode = () => {
         </Toast>
       ),
     });
-    router.dismissAll();
+    router.dismiss();
   };
 
   return (

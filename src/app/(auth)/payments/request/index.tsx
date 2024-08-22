@@ -20,7 +20,7 @@ export const RequestPayment = () => {
   }
 
   const handleGenerateQRCode = (value: number) => {
-    router.navigate({
+    router.replace({
       pathname: '/payments/request/show-qr-code',
       params: { asset, value: `${value}` },
     });
