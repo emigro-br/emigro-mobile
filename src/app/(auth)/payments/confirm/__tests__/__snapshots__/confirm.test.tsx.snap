@@ -68,23 +68,170 @@ exports[`ConfirmPayment component renders correctly for pix payment 1`] = `
         <View
           className="flex-col gap-4 p-4"
         >
-          <RCTText
-            accessibilityRole="header"
-            accessible={true}
-            allowFontScaling={true}
-            ellipsizeMode="tail"
-            isHighlighted={false}
-            selectionColor={null}
-            style={
-              {
-                "fontSize": 37.44,
-                "fontWeight": "bold",
-                "marginVertical": 32,
-              }
-            }
+          <View
+            className="flex-row justify-between"
           >
-            Review the payment
-          </RCTText>
+            <RCTText
+              accessibilityRole="header"
+              accessible={true}
+              allowFontScaling={true}
+              ellipsizeMode="tail"
+              isHighlighted={false}
+              selectionColor={null}
+              style={
+                {
+                  "fontSize": 37.44,
+                  "fontWeight": "bold",
+                  "marginVertical": 32,
+                }
+              }
+            >
+              Review the payment
+            </RCTText>
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              dataSet={
+                {
+                  "active": "false",
+                  "focus": "false",
+                  "focusVisible": "false",
+                  "hover": "false",
+                }
+              }
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              role="button"
+              states={
+                {
+                  "active": false,
+                  "focus": false,
+                  "focusVisible": false,
+                  "hover": false,
+                }
+              }
+              testID="close-button"
+            >
+              <RNSVGSvgView
+                align="xMidYMid"
+                bbHeight="100%"
+                bbWidth="100%"
+                focusable={false}
+                meetOrSlice={0}
+                minX={0}
+                minY={0}
+                role="img"
+                stroke="currentColor"
+                style={
+                  [
+                    {
+                      "backgroundColor": "transparent",
+                      "borderWidth": 0,
+                    },
+                    {
+                      "flex": 0,
+                      "height": "100%",
+                      "width": "100%",
+                    },
+                  ]
+                }
+                vbHeight={24}
+                vbWidth={24}
+              >
+                <RNSVGGroup
+                  fill={
+                    {
+                      "payload": 4278190080,
+                      "type": 0,
+                    }
+                  }
+                  propList={
+                    [
+                      "stroke",
+                    ]
+                  }
+                  stroke={
+                    {
+                      "type": 2,
+                    }
+                  }
+                >
+                  <RNSVGGroup
+                    fill={
+                      {
+                        "payload": 4278190080,
+                        "type": 0,
+                      }
+                    }
+                  >
+                    <RNSVGPath
+                      d="M18 6L6 18"
+                      fill={
+                        {
+                          "payload": 4278190080,
+                          "type": 0,
+                        }
+                      }
+                      propList={
+                        [
+                          "strokeWidth",
+                          "strokeLinecap",
+                          "strokeLinejoin",
+                        ]
+                      }
+                      strokeLinecap={1}
+                      strokeLinejoin={1}
+                      strokeWidth="2"
+                    />
+                    <RNSVGPath
+                      d="M6 6L18 18"
+                      fill={
+                        {
+                          "payload": 4278190080,
+                          "type": 0,
+                        }
+                      }
+                      propList={
+                        [
+                          "strokeWidth",
+                          "strokeLinecap",
+                          "strokeLinejoin",
+                        ]
+                      }
+                      strokeLinecap={1}
+                      strokeLinejoin={1}
+                      strokeWidth="2"
+                    />
+                  </RNSVGGroup>
+                </RNSVGGroup>
+              </RNSVGSvgView>
+            </View>
+          </View>
           <View
             className="flex-row items-center"
           >
@@ -536,23 +683,170 @@ exports[`ConfirmPayment component renders correctly for stellar payment 1`] = `
         <View
           className="flex-col gap-4 p-4"
         >
-          <RCTText
-            accessibilityRole="header"
-            accessible={true}
-            allowFontScaling={true}
-            ellipsizeMode="tail"
-            isHighlighted={false}
-            selectionColor={null}
-            style={
-              {
-                "fontSize": 37.44,
-                "fontWeight": "bold",
-                "marginVertical": 32,
-              }
-            }
+          <View
+            className="flex-row justify-between"
           >
-            Review the payment
-          </RCTText>
+            <RCTText
+              accessibilityRole="header"
+              accessible={true}
+              allowFontScaling={true}
+              ellipsizeMode="tail"
+              isHighlighted={false}
+              selectionColor={null}
+              style={
+                {
+                  "fontSize": 37.44,
+                  "fontWeight": "bold",
+                  "marginVertical": 32,
+                }
+              }
+            >
+              Review the payment
+            </RCTText>
+            <View
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              dataSet={
+                {
+                  "active": "false",
+                  "focus": "false",
+                  "focusVisible": "false",
+                  "hover": "false",
+                }
+              }
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              role="button"
+              states={
+                {
+                  "active": false,
+                  "focus": false,
+                  "focusVisible": false,
+                  "hover": false,
+                }
+              }
+              testID="close-button"
+            >
+              <RNSVGSvgView
+                align="xMidYMid"
+                bbHeight="100%"
+                bbWidth="100%"
+                focusable={false}
+                meetOrSlice={0}
+                minX={0}
+                minY={0}
+                role="img"
+                stroke="currentColor"
+                style={
+                  [
+                    {
+                      "backgroundColor": "transparent",
+                      "borderWidth": 0,
+                    },
+                    {
+                      "flex": 0,
+                      "height": "100%",
+                      "width": "100%",
+                    },
+                  ]
+                }
+                vbHeight={24}
+                vbWidth={24}
+              >
+                <RNSVGGroup
+                  fill={
+                    {
+                      "payload": 4278190080,
+                      "type": 0,
+                    }
+                  }
+                  propList={
+                    [
+                      "stroke",
+                    ]
+                  }
+                  stroke={
+                    {
+                      "type": 2,
+                    }
+                  }
+                >
+                  <RNSVGGroup
+                    fill={
+                      {
+                        "payload": 4278190080,
+                        "type": 0,
+                      }
+                    }
+                  >
+                    <RNSVGPath
+                      d="M18 6L6 18"
+                      fill={
+                        {
+                          "payload": 4278190080,
+                          "type": 0,
+                        }
+                      }
+                      propList={
+                        [
+                          "strokeWidth",
+                          "strokeLinecap",
+                          "strokeLinejoin",
+                        ]
+                      }
+                      strokeLinecap={1}
+                      strokeLinejoin={1}
+                      strokeWidth="2"
+                    />
+                    <RNSVGPath
+                      d="M6 6L18 18"
+                      fill={
+                        {
+                          "payload": 4278190080,
+                          "type": 0,
+                        }
+                      }
+                      propList={
+                        [
+                          "strokeWidth",
+                          "strokeLinecap",
+                          "strokeLinejoin",
+                        ]
+                      }
+                      strokeLinecap={1}
+                      strokeLinejoin={1}
+                      strokeWidth="2"
+                    />
+                  </RNSVGGroup>
+                </RNSVGGroup>
+              </RNSVGSvgView>
+            </View>
+          </View>
           <View
             className="flex-row items-center"
           >
