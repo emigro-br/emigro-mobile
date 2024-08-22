@@ -1,12 +1,13 @@
 import React from 'react';
 
-import { fireEvent } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
 import * as Clipboard from 'expo-clipboard';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as pixUtils from 'pix-utils';
 
 import { render } from 'test-utils';
 
+import { useToast } from '@/components/ui/toast';
 import { UserProfile } from '@/services/emigro/types';
 import { sessionStore } from '@/stores/SessionStore';
 
@@ -94,7 +95,21 @@ describe('RequestWithQRCode component', () => {
 
     fireEvent.press(closeButton);
 
-    // dismiss modal is: ../
     expect(router.dismiss).toHaveBeenCalled();
+  });
+
+  it('should copy to clipboard and close when the "Copy & Close" button is pressed', async () => {
+    const toast = useToast();
+    const { getByText } = render(<RequestWithQRCode />);
+    const copyButton = getByText('Copy & Close');
+
+    fireEvent.press(copyButton);
+
+    await waitFor(() => {
+      expect(Clipboard.setStringAsync).toHaveBeenCalled();
+    });
+
+    expect(toast.show).toHaveBeenCalled();
+    expect(router.dismissAll).toHaveBeenCalled();
   });
 });

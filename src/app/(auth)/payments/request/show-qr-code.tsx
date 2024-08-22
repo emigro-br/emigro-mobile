@@ -5,12 +5,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Sentry from '@sentry/react-native';
 import * as Clipboard from 'expo-clipboard';
+import * as Haptics from 'expo-haptics';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { createStaticPix } from 'pix-utils';
 import { CreateStaticPixParams } from 'pix-utils/dist/main/types/pixCreate';
 
 import { Box } from '@/components/ui/box';
-import { Button, ButtonGroup, ButtonText } from '@/components/ui/button';
+import { Button, ButtonText } from '@/components/ui/button';
 import { Center } from '@/components/ui/center';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
@@ -68,7 +69,6 @@ const encodeQRCode = (profile: UserProfile, asset: CryptoAsset, amount: number):
 };
 
 export const RequestWithQRCode = () => {
-  const enableCopy = false;
   const router = useRouter();
   const params = useLocalSearchParams<{ asset: CryptoAsset; value: string }>();
   const insets = useSafeAreaInsets();
@@ -112,8 +112,10 @@ export const RequestWithQRCode = () => {
     return null;
   }
 
-  const copyToClipboard = async () => {
+  const handleCopyAndClose = async () => {
     await Clipboard.setStringAsync(encodedCode);
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
     toast.show({
       render: ({ id }) => (
         <Toast nativeID={`toast-${id}`} action="info" variant="solid">
@@ -121,6 +123,7 @@ export const RequestWithQRCode = () => {
         </Toast>
       ),
     });
+    router.dismissAll();
   };
 
   return (
@@ -147,20 +150,16 @@ export const RequestWithQRCode = () => {
             <QRCode value={encodedCode} size={QRCodeSize.SMALL} />
           </Center>
 
-          <Box>
+          <Box className="mb-2">
             <Text bold>Requested value</Text>
             <Text size="4xl" bold className="text-typography-800">
               {symbolFor(asset as CryptoAsset, value)}
             </Text>
             <Text>For {buildMerchantName(profile)}</Text>
           </Box>
-          {enableCopy && (
-            <ButtonGroup flexDirection="column">
-              <Button onPress={copyToClipboard}>
-                <ButtonText>Copy the code</ButtonText>
-              </Button>
-            </ButtonGroup>
-          )}
+          <Button onPress={() => handleCopyAndClose()} size="xl">
+            <ButtonText>Copy & Close</ButtonText>
+          </Button>
         </VStack>
       </Box>
     </>
