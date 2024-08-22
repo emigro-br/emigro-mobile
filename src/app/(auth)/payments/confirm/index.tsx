@@ -13,6 +13,8 @@ import { Center } from '@/components/ui/center';
 import { Divider } from '@/components/ui/divider';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
+import { CloseIcon, Icon } from '@/components/ui/icon';
+import { ModalCloseButton } from '@/components/ui/modal';
 import { Pressable } from '@/components/ui/pressable';
 import { ScrollView } from '@/components/ui/scroll-view';
 import { Text } from '@/components/ui/text';
@@ -186,7 +188,12 @@ export const ConfirmPayment = () => {
       <ScrollView className="flex-1 bg-white">
         <Box className="flex-1" style={{ paddingTop: insets.top }}>
           <VStack space="lg" className="p-4">
-            <Heading size="xl">Review the payment</Heading>
+            <HStack className="justify-between">
+              <Heading size="xl">Review the payment</Heading>
+              <ModalCloseButton onPress={() => router.dismiss()} testID="close-button" className="mt--4">
+                <Icon as={CloseIcon} size="xl" />
+              </ModalCloseButton>
+            </HStack>
 
             <HStack className="items-center">
               <Pressable onPress={() => isAmountEditable && setShowEditAmount(true)}>
