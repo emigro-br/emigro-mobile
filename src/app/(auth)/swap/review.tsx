@@ -88,7 +88,7 @@ export const DetailsSwap = () => {
             </VStack>
           </Card>
           <Text size="xs">The final amount is estimated and may change.</Text>
-          <Button onPress={() => setShowPinScreen(true)} disabled={isLoading} size="lg">
+          <Button onPress={() => setShowPinScreen(true)} disabled={isLoading} size="xl">
             <ButtonText>{isLoading ? 'Processing...' : `Swap ${fromAsset} for ${toAsset}`}</ButtonText>
           </Button>
         </VStack>
