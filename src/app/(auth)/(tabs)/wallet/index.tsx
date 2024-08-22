@@ -53,8 +53,13 @@ export const Wallet = () => {
     }
   }, [balanceStore.fetchUserBalance, publicKey]);
 
+  const handleToggle = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setHide(!hide);
+  };
+
   const actions = [
-    <Button onPress={() => setHide(!hide)} testID="toggle-button">
+    <Button onPress={() => handleToggle()} testID="toggle-button">
       <Icon as={hide ? EyeOffIcon : EyeIcon} size="xl" className="text-white" />
     </Button>,
   ];

@@ -48,7 +48,7 @@ const Profile = observer(() => {
           </Toast>
         ),
       });
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
   };
 
