@@ -161,7 +161,13 @@ export const ConfirmPayment = () => {
     );
   }
 
-  const data = balanceStore.currentAssets().map((asset) => ({
+  let allowedAssets = balanceStore.currentAssets();
+  if (isPix) {
+    // TODO: there is no quotes for ARS/EUROC for BRZ in the DEX. So, keep only BRZ and USDC for Pix
+    allowedAssets = allowedAssets.filter((asset) => [CryptoAsset.BRZ, CryptoAsset.USDC].includes(asset));
+  }
+
+  const dropdownValues = allowedAssets.map((asset) => ({
     label: asset,
     value: asset,
   }));
@@ -243,7 +249,7 @@ export const ConfirmPayment = () => {
                 <Box className="w-1/4">
                   <Dropdown
                     selectedTextStyle={{ fontWeight: '500' }}
-                    data={data}
+                    data={dropdownValues}
                     value={selectedAsset}
                     labelField="label"
                     valueField="value"
