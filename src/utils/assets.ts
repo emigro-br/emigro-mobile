@@ -62,7 +62,6 @@ export const AssetToCurrency = {
   [CryptoAsset.SRT]: FiatCurrency.SRT,
   [CryptoAsset.USDC]: FiatCurrency.USD,
   [CryptoAsset.EURC]: FiatCurrency.EUR,
-  [CryptoAsset.BRL]: FiatCurrency.BRL,
   [CryptoAsset.BRZ]: FiatCurrency.BRL,
   [CryptoAsset.ARS]: FiatCurrency.ARS,
 };

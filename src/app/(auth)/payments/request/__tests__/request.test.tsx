@@ -9,7 +9,7 @@ describe('RequestPayment component', () => {
 
   beforeEach(() => {
     router = useRouter();
-    (useLocalSearchParams as jest.Mock).mockReturnValue({ asset: 'BRL' });
+    (useLocalSearchParams as jest.Mock).mockReturnValue({ asset: 'USDC' });
     render(<RequestPayment />);
   });
 
@@ -32,7 +32,7 @@ describe('RequestPayment component', () => {
   it('Should navigate to RequestWithQRCode screen when Generate QR Code button is pressed', () => {
     // fill input to enable button
     const assetInput = screen.getByTestId('asset-input');
-    fireEvent.changeText(assetInput, '100'); // 1.00 BRL (mask put 2 decimal places)
+    fireEvent.changeText(assetInput, '100'); // 1.00 (mask put 2 decimal places)
 
     // button enabled
     const generateQRCodeButton = screen.getByTestId('generate-qr-code-button');
@@ -42,7 +42,7 @@ describe('RequestPayment component', () => {
 
     expect(router.replace).toHaveBeenCalledWith({
       pathname: '/payments/request/show-qr-code',
-      params: { asset: 'BRL', value: '1' },
+      params: { asset: 'USDC', value: '1' },
     });
   });
 
@@ -53,7 +53,7 @@ describe('RequestPayment component', () => {
 
     expect(router.replace).toHaveBeenCalledWith({
       pathname: '/payments/request/show-qr-code',
-      params: { asset: 'BRL', value: '0' },
+      params: { asset: 'USDC', value: '0' },
     });
   });
 });

@@ -22,7 +22,7 @@ describe('WalletBalances component', () => {
 
   it('Should display the correct asset codes and balances', () => {
     render(<WalletBalances userBalance={userBalance} />);
-    const brlAsset = screen.getByText('Brazilian Real');
+    const brlAsset = screen.getByText('Brazilian Digital Token');
     const brlBalance = screen.getByText('R$ 10.00');
     expect(brlAsset).toBeOnTheScreen();
     expect(brlBalance).toBeOnTheScreen();
@@ -40,7 +40,7 @@ describe('WalletBalances component', () => {
 
   it('Should not display the balances when hiding', () => {
     const { queryByText, queryAllByText } = render(<WalletBalances userBalance={userBalance} hide />);
-    expect(queryByText('Brazilian Real')).toBeOnTheScreen();
+    expect(queryByText('Brazilian Digital Token')).toBeOnTheScreen();
     expect(queryByText('R$ 10.00')).not.toBeOnTheScreen();
 
     expect(queryByText('USD Coin')).toBeOnTheScreen();

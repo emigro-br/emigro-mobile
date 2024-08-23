@@ -25,8 +25,8 @@ describe('emigro service', () => {
   describe('getUserBalance', () => {
     const mockResponse = {
       balances: [
-        { assetCode: 'USD', balance: 100 },
-        { assetCode: 'BRL', balance: 200 },
+        { assetCode: 'USDC', balance: 100 },
+        { assetCode: 'ARS', balance: 200 },
       ],
     };
 

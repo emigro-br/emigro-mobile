@@ -1,7 +1,6 @@
 export enum CryptoAsset {
   // keep alphametical order
   ARS = 'ARS',
-  BRL = 'BRL',
   BRZ = 'BRZ',
   EURC = 'EURC',
   USDC = 'USDC',
@@ -41,14 +40,6 @@ export class Asset {
 
 export const cryptoAssets = () => {
   const allAssets = Object.values(CryptoAsset);
-  const excludedAssets = __DEV__
-    ? [
-        CryptoAsset.BRL, // FIXME: nTokens is not supported anymore
-      ]
-    : [
-        CryptoAsset.SRT,
-        CryptoAsset.XLM,
-        CryptoAsset.BRL, // FIXME: nTokens is not supported anymore
-      ];
+  const excludedAssets = __DEV__ ? [] : [CryptoAsset.SRT, CryptoAsset.XLM];
   return allAssets.filter((asset) => !excludedAssets.includes(asset));
 };

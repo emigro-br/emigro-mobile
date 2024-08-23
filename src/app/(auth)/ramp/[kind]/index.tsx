@@ -25,7 +25,6 @@ export const AssetForOperation = () => {
   const myCurrencies = balanceStore
     .currentAssets()
     .filter((asset) => asset !== CryptoAsset.XLM) // disable XLM ramps
-    .filter((asset) => asset !== CryptoAsset.BRL) // FIXME: nTokens is not supported anymore
     .filter((asset) => asset !== CryptoAsset.BRZ) // FIXME: Transfero SEP24 is not implemented
     .map((asset) => AssetToCurrency[asset])
     .filter((a) => a !== undefined) as FiatCurrency[];
