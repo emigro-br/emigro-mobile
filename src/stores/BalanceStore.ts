@@ -39,9 +39,12 @@ export class BalanceStore {
   }
 
   currentAssets(): CryptoAsset[] {
-    return this.userBalance.map((balance) => {
-      return balance.assetCode as CryptoAsset;
-    });
+    return (
+      this.userBalance
+        // converting and filtering unknown assets
+        .map((balance) => CryptoAsset[balance.assetCode as keyof typeof CryptoAsset])
+        .filter((asset) => asset !== undefined)
+    );
   }
 
   async fetchUserBalance({

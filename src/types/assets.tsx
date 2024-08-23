@@ -1,11 +1,12 @@
+// also control the allowed assets in the app
 export enum CryptoAsset {
-  // keep alphametical order
   ARS = 'ARS',
   BRZ = 'BRZ',
   EURC = 'EURC',
   USDC = 'USDC',
-  XLM = 'XLM',
+  // dev only
   SRT = 'SRT',
+  XLM = 'XLM',
 }
 
 export enum FiatCurrency {
