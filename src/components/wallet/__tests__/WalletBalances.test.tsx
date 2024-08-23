@@ -21,7 +21,11 @@ describe('WalletBalances component', () => {
   });
 
   it('Should display the correct asset codes and balances', () => {
-    render(<WalletBalances userBalance={userBalance} />);
+    const customBalances = [
+      ...userBalance,
+      { balance: '2', assetType: 'credit_alphanum4', assetCode: 'ANY', priceUSD: 0.1 },
+    ];
+    render(<WalletBalances userBalance={customBalances} />);
     const brlAsset = screen.getByText('Brazilian Digital Token');
     const brlBalance = screen.getByText('R$ 10.00');
     expect(brlAsset).toBeOnTheScreen();
@@ -36,6 +40,9 @@ describe('WalletBalances component', () => {
     const euroBalance = screen.getByText('€ 0.00');
     expect(eurocAsset).toBeOnTheScreen();
     expect(euroBalance).toBeOnTheScreen();
+
+    const unknownAsset = screen.queryByText('ANY');
+    expect(unknownAsset).not.toBeOnTheScreen();
   });
 
   it('Should not display the balances when hiding', () => {

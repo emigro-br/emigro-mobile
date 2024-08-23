@@ -30,16 +30,18 @@ export const WalletBalances = ({ userBalance, hide = false }: Props) => {
       </HStack>
       <Card variant="flat">
         <VStack space="lg">
-          {userBalance?.map(({ balance, assetCode, assetType }, index) => {
-            const asset: CryptoAsset = assetType === 'native' ? CryptoAsset.XLM : (assetCode as CryptoAsset);
-            return (
-              <AssetListTile
-                key={index}
-                asset={asset}
-                subasset={asset}
-                trailing={<Text size="lg">{hide ? '****' : symbolFor(asset, Number(balance))}</Text>}
-              />
-            );
+          {userBalance?.map(({ balance, assetCode }, index) => {
+            const asset: CryptoAsset = CryptoAsset[assetCode as keyof typeof CryptoAsset];
+            if (asset) {
+              return (
+                <AssetListTile
+                  key={index}
+                  asset={asset}
+                  subasset={asset}
+                  trailing={<Text size="lg">{hide ? '****' : symbolFor(asset, Number(balance))}</Text>}
+                />
+              );
+            }
           })}
         </VStack>
       </Card>
