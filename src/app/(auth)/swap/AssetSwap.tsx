@@ -10,7 +10,7 @@ import { Pressable } from '@/components/ui/pressable';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { CryptoAsset } from '@/types/assets';
-import { iconFor, symbolFor } from '@/utils/assets';
+import { iconFor, symbolFor, truncateToTwoDecimals } from '@/utils/assets';
 
 import { SwapType } from './types';
 
@@ -22,7 +22,7 @@ type Props = {
   value?: number;
   isActive?: boolean;
   testID?: string;
-  onPress?: () => void;
+  onFocus?: () => void;
   onChangeAsset: (asset: CryptoAsset, type: SwapType) => void;
   onChangeValue: (value: number, type: SwapType) => void;
 };
@@ -36,7 +36,7 @@ export const AssetSwap = ({
   isActive,
   testID,
   value: propValue,
-  onPress,
+  onFocus,
   onChangeAsset,
   onChangeValue,
 }: Props) => {
@@ -74,8 +74,8 @@ export const AssetSwap = ({
     if (text.split('.').length > 1) {
       const [, decimal] = text.split('.');
       if (decimal.length > 2) {
-        console.log('decimal has more than 2 characters');
-        return;
+        // truncate it to no exceed the balance: 1.2322 -> 1.23
+        text = truncateToTwoDecimals(Number(text)).toString();
       }
     }
 
@@ -98,10 +98,8 @@ export const AssetSwap = ({
     }
   };
 
-  const handlePress = () => {
-    if (onPress) {
-      onPress();
-    }
+  const handleFocus = () => {
+    return onFocus && onFocus();
   };
 
   const hasBalance = sellOrBuy === SwapType.SELL && Number(value) > balance;
@@ -109,7 +107,7 @@ export const AssetSwap = ({
   const dynamicStyles = isActive ? 'border border-outline-200 bg-background-50' : 'bg-background-100';
 
   return (
-    <Pressable onPress={handlePress} testID={testID}>
+    <Pressable onPress={handleFocus} testID={testID}>
       <Card variant="filled" className={`py-2 ${dynamicStyles}`}>
         <VStack space="sm">
           <Text size="md">{sellOrBuy === SwapType.SELL ? 'You sell' : 'You get'}</Text>
@@ -123,7 +121,7 @@ export const AssetSwap = ({
                   value={value}
                   onChangeText={(text) => handleInputChange(text)}
                   keyboardType="numeric"
-                  onFocus={handlePress}
+                  onFocus={handleFocus} // for android
                   editable={sellOrBuy === SwapType.SELL}
                   className="font-bold text-left"
                 />
@@ -138,9 +136,11 @@ export const AssetSwap = ({
             </Box>
           </HStack>
           <HStack className="justify-between">
-            <Text size="sm" className={hasBalance ? 'text-indicator-error' : 'text-typography-500'}>
-              Balance: {symbolFor(asset, balance)}
-            </Text>
+            <Pressable onPress={() => isActive && handleInputChange(`${balance}`)}>
+              <Text size="sm" className={hasBalance ? 'text-indicator-error' : 'text-typography-500'}>
+                Balance: {symbolFor(asset, balance)}
+              </Text>
+            </Pressable>
             {hasBalance && (
               <Text size="sm" className="text-indicator-error">
                 exceeds balance

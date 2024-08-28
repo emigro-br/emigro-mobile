@@ -176,7 +176,7 @@ export const Swap = () => {
             onChangeAsset={(asset) => onChangeAsset(asset, SwapType.SELL)}
             onChangeValue={(value) => setSellValue(value)}
             isActive={active === SwapType.SELL}
-            onPress={() => setActive(SwapType.SELL)}
+            onFocus={() => setActive(SwapType.SELL)}
             testID="sell-box"
           />
           <Center className="my-0.5">
@@ -193,7 +193,7 @@ export const Swap = () => {
             onChangeAsset={(asset) => onChangeAsset(asset, SwapType.BUY)}
             onChangeValue={(value) => setBuyValue(value)}
             isActive={active === SwapType.BUY}
-            onPress={() => setActive(SwapType.BUY)}
+            // onFocus={() => setActive(SwapType.BUY)}
             testID="buy-box"
           />
           <Box className="my-1.5 ml-1">

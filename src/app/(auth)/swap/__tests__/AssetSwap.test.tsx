@@ -69,7 +69,7 @@ describe('AssetSwap component', () => {
         onChangeAsset={mockSetAsset}
         sellOrBuy={SwapType.SELL}
         onChangeValue={mockOnChangeValue}
-        onPress={onPressMock}
+        onFocus={onPressMock}
         testID={testID}
       />,
     );
