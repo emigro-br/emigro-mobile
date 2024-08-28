@@ -23,6 +23,7 @@ import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
 import { INVALID_QR_CODE } from '@/constants/errorMessages';
 import { useFeatureFlags } from '@/hooks/feature-flags';
+import { LoadingScreen } from '@/screens/Loading';
 import { paymentStore } from '@/stores/PaymentStore';
 import { Payment, emigroCategoryCode } from '@/types/PixPayment';
 import { isoToCrypto } from '@/utils/assets';
@@ -51,7 +52,7 @@ export const PayWithQRCode = () => {
 
 type Props = {
   onCancel: () => void;
-  onScanPayment: (payment: Payment) => void;
+  onScanPayment: (payment: Payment) => Promise<void>;
 };
 
 export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
@@ -71,7 +72,7 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
 
   useFocusEffect(
     useCallback(() => {
-      // reset the scanner when the user comes back to the screen
+      // reset the camera state when the screen comes into focus
       setIsScanned(false);
       setError('');
     }, []),
@@ -100,7 +101,7 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
     throw new Error(INVALID_QR_CODE);
   };
 
-  const handleBarCodeScanned = (result: BarcodeScanningResult) => {
+  const handleBarCodeScanned = async (result: BarcodeScanningResult) => {
     // If a QR code has already been scanned, return early
     if (isScanned) {
       return;
@@ -109,7 +110,7 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
     setIsScanned(true);
     try {
       const payment = parseQRCode(result.data);
-      onScanPayment(payment);
+      await onScanPayment(payment);
     } catch (error) {
       console.warn('[handleBarCodeScanned]', error);
       setError(INVALID_QR_CODE);
@@ -132,6 +133,10 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
         </Center>
       </Box>
     );
+  }
+
+  if (isScanned) {
+    return <LoadingScreen />;
   }
 
   const QRRectangule = () => <View style={styles.rectangle} />;
