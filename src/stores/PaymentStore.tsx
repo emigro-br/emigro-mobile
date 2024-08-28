@@ -28,6 +28,12 @@ type PayTransaction = {
   idempotencyKey?: string;
 };
 
+export class InvalidPixError extends Error {
+  constructor(brCode: string) {
+    super(`Invalid Pix code: ${brCode}`);
+  }
+}
+
 export class PaymentStore {
   transaction?: PayTransaction;
   scannedPayment?: Payment | PixPayment;
@@ -61,7 +67,7 @@ export class PaymentStore {
   async preview(brCode: string): Promise<Payment | PixPayment> {
     const pix = parsePix(brCode);
     if (hasError(pix) || pix.type === PixElementType.INVALID) {
-      throw new Error('Invalid Pix code');
+      throw new InvalidPixError(brCode);
     }
 
     if (pix.merchantCategoryCode === emigroCategoryCode && pix.type === PixElementType.STATIC) {

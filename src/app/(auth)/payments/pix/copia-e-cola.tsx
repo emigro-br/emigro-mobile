@@ -10,7 +10,7 @@ import { FormControl, FormControlError, FormControlErrorText } from '@/component
 import { Heading } from '@/components/ui/heading';
 import { Textarea, TextareaInput } from '@/components/ui/textarea';
 import { VStack } from '@/components/ui/vstack';
-import { paymentStore } from '@/stores/PaymentStore';
+import { InvalidPixError, paymentStore } from '@/stores/PaymentStore';
 
 export const PastePixCode = () => {
   const router = useRouter();
@@ -39,11 +39,11 @@ export const PastePixCode = () => {
       paymentStore.setScannedPayment(payment);
       router.push('/payments/confirm');
     } catch (error) {
-      if (error instanceof Error) {
-        setError(error.message);
+      if (error instanceof InvalidPixError) {
+        setError('Invalid Pix code');
       } else {
         console.warn('Error previewing payment:', error);
-        setError('An error occurred while checking the payment');
+        setError('An error occurred while checking this payment');
       }
     }
     setIsChecking(false);

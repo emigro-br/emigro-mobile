@@ -3,8 +3,9 @@ import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import * as Clipboard from 'expo-clipboard';
 import { useRouter } from 'expo-router';
+import mockConsole from 'jest-mock-console';
 
-import { paymentStore } from '@/stores/PaymentStore';
+import { InvalidPixError, paymentStore } from '@/stores/PaymentStore';
 
 import { PastePixCode } from '../copia-e-cola';
 
@@ -13,6 +14,7 @@ jest.mock('expo-clipboard', () => ({
 }));
 
 jest.mock('@/stores/PaymentStore', () => ({
+  ...jest.requireActual('@/stores/PaymentStore'),
   paymentStore: {
     preview: jest.fn(),
     setScannedPayment: jest.fn(),
@@ -87,7 +89,7 @@ describe('PastePixCode', () => {
   it('should display an error message for invalid Pix code', async () => {
     const invalidBrCode = 'invalidPixCode';
     const { getByTestId, getByText } = render(<PastePixCode />);
-    jest.spyOn(paymentStore, 'preview').mockRejectedValueOnce(new Error('Invalid Pix code'));
+    jest.spyOn(paymentStore, 'preview').mockRejectedValueOnce(new InvalidPixError(invalidBrCode));
 
     fireEvent(getByTestId('text-area'), 'onChangeText', invalidBrCode);
     fireEvent.press(getByText('Continue'));
@@ -95,5 +97,19 @@ describe('PastePixCode', () => {
     await waitFor(() => {
       expect(getByText('Invalid Pix code')).toBeOnTheScreen();
     });
+  });
+
+  it('should display an error message for any other error', async () => {
+    const restoreConsole = mockConsole();
+    const { getByTestId, getByText } = render(<PastePixCode />);
+    jest.spyOn(paymentStore, 'preview').mockRejectedValueOnce(new Error('Any Error'));
+
+    fireEvent(getByTestId('text-area'), 'onChangeText', validStaticBrCode);
+    fireEvent.press(getByText('Continue'));
+
+    await waitFor(() => {
+      expect(getByText('An error occurred while checking this payment')).toBeOnTheScreen();
+    });
+    restoreConsole();
   });
 });
