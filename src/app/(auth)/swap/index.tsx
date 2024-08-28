@@ -75,20 +75,21 @@ export const Swap = () => {
   }, [sellValue, sellAsset, buyAsset]); // will update the rate when the assets change
 
   useEffect(() => {
-    // use the preferences to set the initial assets
-    const preferences = sessionStore.preferences;
-    if (!preferences) return;
-    preferences.fiatsWithBank?.forEach((fiat) => {
+    // use USDC as the default sell asset if it is in the wallet
+    const sellAsset = myAssetss.includes(CryptoAsset.USDC) ? CryptoAsset.USDC : myAssetss[0];
+    let buyAsset = myAssetss[1];
+
+    // use the preferences to set the initial buy asset
+    if (sessionStore.preferences?.fiatsWithBank?.length) {
+      const fiat = sessionStore.preferences.fiatsWithBank[0]; // use the first fiat
       const asset = CurrencyToAsset[fiat];
-      // ensure that the asset is in myAssets
-      if (!myAssetss.includes(asset)) return;
-      setSellAsset(asset);
-      // set buy asset the first in myAssets that is not the same as sellAsset
-      const buyAsset = myAssetss.find((asset) => asset !== sellAsset);
-      if (buyAsset) {
-        setBuyAsset(buyAsset);
-      }
-    });
+      // ensure that the asset exists in the wallet
+      buyAsset = myAssetss.includes(asset) ? asset : buyAsset;
+    }
+
+    // set the initial assets
+    setSellAsset(sellAsset);
+    setBuyAsset(buyAsset);
   }, [sessionStore.preferences]);
 
   const onChangeAsset = (asset: CryptoAsset, type: SwapType) => {
