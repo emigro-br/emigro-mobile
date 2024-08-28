@@ -10,7 +10,7 @@ import { InvalidPixError, paymentStore } from '@/stores/PaymentStore';
 import { PastePixCode } from '../copia-e-cola';
 
 jest.mock('expo-clipboard', () => ({
-  getStringAsync: jest.fn(),
+  getStringAsync: jest.fn().mockResolvedValue(''),
 }));
 
 jest.mock('@/stores/PaymentStore', () => ({

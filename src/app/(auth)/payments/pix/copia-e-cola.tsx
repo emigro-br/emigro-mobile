@@ -23,9 +23,9 @@ export const PastePixCode = () => {
   }, []);
 
   const handlePaste = async () => {
-    const text = await Clipboard.getStringAsync();
+    const text = (await Clipboard.getStringAsync()).trim();
     if (text) {
-      const pix = parsePix(text.trim());
+      const pix = parsePix(text);
       if (!hasError(pix)) {
         setBrCode(text);
       }
@@ -38,6 +38,7 @@ export const PastePixCode = () => {
       const payment = await paymentStore.preview(brCode);
       paymentStore.setScannedPayment(payment);
       router.push('/payments/confirm');
+      setError(''); // Reset error
     } catch (error) {
       if (error instanceof InvalidPixError) {
         setError('Invalid Pix code');
@@ -60,7 +61,7 @@ export const PastePixCode = () => {
               <TextareaInput
                 value={brCode}
                 onChange={() => setError('')}
-                onChangeText={(text) => setBrCode(text)}
+                onChangeText={(text) => setBrCode(text.trim())}
                 placeholder="Paste your Pix code here"
                 testID="text-area"
               />
