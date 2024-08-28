@@ -1,6 +1,6 @@
 import { CryptoAsset, FiatCurrency } from '@/types/assets';
 
-import { fiatByCode, fiatsFromCryptoCodes, iconFor, labelFor, symbolFor } from '../assets';
+import { fiatByCode, fiatsFromCryptoCodes, iconFor, labelFor, symbolFor, truncateToTwoDecimals } from '../assets';
 
 describe('labelFor', () => {
   it('should return the label for a crypto asset', () => {
@@ -57,6 +57,11 @@ describe('symbolFor', () => {
     expect(symbol).toBe('R$ 20.00');
   });
 
+  it('should return the truncated value for 2 decimals', () => {
+    const symbol = symbolFor(FiatCurrency.BRL, 10.019);
+    expect(symbol).toBe('R$ 10.01');
+  });
+
   describe('fiatsFromCryptoCodes', () => {
     it('should return an array of fiat assets for a list of crypto assets', () => {
       const cryptos = [CryptoAsset.USDC, CryptoAsset.ARS];
@@ -68,6 +73,38 @@ describe('symbolFor', () => {
       const cryptos = [CryptoAsset.XLM, CryptoAsset.EURC];
       const fiats = fiatsFromCryptoCodes(cryptos);
       expect(fiats).toEqual([fiatByCode[FiatCurrency.EUR]]);
+    });
+  });
+
+  describe('truncateToTwoDecimals', () => {
+    it('should truncate a positive number to two decimal places', () => {
+      const value = 3.14159;
+      const truncatedValue = truncateToTwoDecimals(value);
+      expect(truncatedValue).toBe('3.14');
+    });
+
+    it('should truncate a negative number to two decimal places', () => {
+      const value = -2.71828;
+      const truncatedValue = truncateToTwoDecimals(value);
+      expect(truncatedValue).toBe('-2.71');
+    });
+
+    it('should truncate a number with more than two decimal places to two decimal places', () => {
+      const value = 1.23456789;
+      const truncatedValue = truncateToTwoDecimals(value);
+      expect(truncatedValue).toBe('1.23');
+    });
+
+    it('should truncate a number with exactly two decimal places', () => {
+      const value = 4.2;
+      const truncatedValue = truncateToTwoDecimals(value);
+      expect(truncatedValue).toBe('4.20');
+    });
+
+    it('should truncate zero to two decimal places', () => {
+      const value = 0;
+      const truncatedValue = truncateToTwoDecimals(value);
+      expect(truncatedValue).toBe('0.00');
     });
   });
 });

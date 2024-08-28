@@ -10,7 +10,7 @@ import { ChevronRightIcon, Icon } from '@/components/ui/icon';
 import { VStack } from '@/components/ui/vstack';
 import { balanceStore } from '@/stores/BalanceStore';
 import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
-import { AssetToCurrency, CurrencyToAsset } from '@/utils/assets';
+import { AssetToCurrency, CurrencyToAsset, truncateToTwoDecimals } from '@/utils/assets';
 
 const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -32,7 +32,7 @@ export const AssetForOperation = () => {
   const renderSubtitle = (currency: CryptoOrFiat) => {
     const asset = CurrencyToAsset[currency as FiatCurrency];
     const balance = balanceStore.get(asset);
-    return `${balance.toFixed(2)} ${asset}`;
+    return `${truncateToTwoDecimals(balance)} ${asset}`;
   };
 
   return (

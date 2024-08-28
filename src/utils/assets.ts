@@ -127,12 +127,17 @@ export const labelForFiat = (asset: FiatCurrency): string => {
   return assetObj?.name || asset;
 };
 
+export const truncateToTwoDecimals = (value: number): string => {
+  const truncatedValue = Math.trunc(value * 100) / 100;
+  return truncatedValue.toFixed(2);
+};
+
 export const symbolFor = (asset: CryptoOrFiat, value: number = 0) => {
   const assetObj = allAssets.find((a) => a.code === asset);
   if (assetObj) {
-    return `${assetObj.symbol} ${Number(value).toFixed(2)}`;
+    return `${assetObj.symbol} ${truncateToTwoDecimals(value)}`;
   }
-  return `${value.toFixed(2)} ${asset}`;
+  return `${truncateToTwoDecimals(value)} ${asset}`;
 };
 
 export const iconFor = (asset: CryptoOrFiat, type?: string) => {
