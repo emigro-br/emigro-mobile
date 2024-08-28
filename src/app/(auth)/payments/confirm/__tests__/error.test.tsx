@@ -19,6 +19,6 @@ describe('PaymentError', () => {
     render(<PaymentError />);
     const button = screen.getByText('Understood');
     fireEvent.press(button);
-    expect(router.dismiss).toHaveBeenCalled();
+    expect(router.dismissAll).toHaveBeenCalled();
   });
 });

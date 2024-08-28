@@ -11,7 +11,7 @@ const PaymentError = () => {
       title="Transaction Failed"
       message={`Unfortunately, we couldn't complete your transaction. Here's what went wrong: ${error}`}
       btnLabel="Understood"
-      onContinue={() => router.dismiss()}
+      onContinue={() => router.dismissAll()}
     />
   );
 };

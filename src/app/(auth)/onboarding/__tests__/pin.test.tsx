@@ -26,7 +26,7 @@ describe('PinOnboarding', () => {
 
     fireEvent.press(button);
 
-    expect(router.navigate).toHaveBeenCalledWith({
+    expect(router.replace).toHaveBeenCalledWith({
       pathname: '/settings/configure-pin',
       params: { backTo: '/wallet' },
     });

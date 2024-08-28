@@ -29,7 +29,7 @@ export const PinOnboarding = () => {
           <Button
             size="xl"
             onPress={() =>
-              router.navigate({
+              router.replace({
                 pathname: '/settings/configure-pin',
                 params: { backTo: '/wallet' },
               })
