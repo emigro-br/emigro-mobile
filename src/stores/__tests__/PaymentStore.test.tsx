@@ -78,7 +78,12 @@ describe('PaymentStore', () => {
     };
 
     expect(paymentSpy).toHaveBeenCalledWith(expectedTransaction);
-    expect(waitSpy).toHaveBeenCalledWith('test-id', transactionApi.getTransaction);
+    expect(waitSpy).toHaveBeenCalledWith({
+      transactionId: 'test-id',
+      fetchFn: transactionApi.getTransaction,
+      initialDelay: expect.any(Number),
+      maxAttempts: expect.any(Number),
+    });
   });
 
   it('should call preview pix payment correctly', async () => {
@@ -193,6 +198,11 @@ describe('PaymentStore', () => {
       description: 'test-infoAdicional',
     });
 
-    expect(waitSpy).toHaveBeenCalledWith(createdResponse.id, pixApi.getBrcodePayment);
+    expect(waitSpy).toHaveBeenCalledWith({
+      transactionId: 'test-id',
+      fetchFn: pixApi.getBrcodePayment,
+      initialDelay: expect.any(Number),
+      maxAttempts: expect.any(Number),
+    });
   });
 });

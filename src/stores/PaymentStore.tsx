@@ -115,7 +115,12 @@ export class PaymentStore {
     };
 
     let result = await paymentTransaction(data);
-    result = await waitTransaction(result.id, getTransaction);
+    result = await waitTransaction({
+      transactionId: result.id,
+      fetchFn: getTransaction,
+      initialDelay: 3000, // 3 seconds
+      maxAttempts: 25, // +25 seconds
+    });
 
     if (result.status === 'failed') {
       throw new Error('Transaction failed');
@@ -144,7 +149,12 @@ export class PaymentStore {
     };
     let result = await pixApi.createBrcodePayment(paymentRequest);
 
-    result = await waitTransaction(result.id, pixApi.getBrcodePayment);
+    result = await waitTransaction({
+      transactionId: result.id,
+      fetchFn: pixApi.getBrcodePayment,
+      initialDelay: 10000, // 10 seconds
+      maxAttempts: 20, // +20 seconds
+    });
 
     if (result.status === 'failed') {
       throw new Error('Pix Payment failed');
