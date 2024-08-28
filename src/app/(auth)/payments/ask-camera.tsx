@@ -23,7 +23,7 @@ const AskCamera = ({ onAnswer }: AskCameraProps) => {
 
   return (
     <Box className="flex-1">
-      <VStack space="xl" className="items-center">
+      <VStack space="xl" className="p-4 items-center">
         <Box testID="camera-icon" className="pt-12 pb-6">
           <CameraIcon size={128} color="red" />
         </Box>
