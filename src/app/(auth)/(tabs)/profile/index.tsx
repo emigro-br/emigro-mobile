@@ -43,7 +43,7 @@ const Profile = observer(() => {
       await Clipboard.setStringAsync(publicKey);
       toast.show({
         render: ({ id }) => (
-          <Toast nativeID={`toast${id}`} action="info" variant="solid">
+          <Toast nativeID={`toast${id}`} action="muted" variant="solid">
             <ToastDescription>Copied to clipboard</ToastDescription>
           </Toast>
         ),

@@ -31,11 +31,13 @@ const toastStyle = tva({
   base: 'p-4 m-1 rounded-md gap-1 web:pointer-events-auto shadow-hard-5 border-outline-100',
   variants: {
     action: {
+      // TODO: these colors are terrible
       error: 'bg-error-800',
       warning: 'bg-warning-700',
       success: 'bg-success-700',
       info: 'bg-info-700',
       muted: 'bg-secondary-700',
+      // TODO: update to appear attention
     },
 
     variant: {

@@ -5,7 +5,7 @@ type Props = {
   id: string;
   title: string;
   description: string;
-  action: 'error' | 'warning' | 'success' | 'info' | 'attention';
+  action: 'error' | 'warning' | 'success' | 'info' | 'muted'; // TODO: Add 'attention' to the union
 };
 
 export const Toast = ({ id, title, description, action }: Props) => {
