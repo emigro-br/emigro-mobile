@@ -307,7 +307,7 @@ const StaticPix = ({ pix }: StaticPixProps) => (
     </HStack>
     <HStack className="justify-between">
       <Text bold>Institution: </Text>
-      <Text numberOfLines={2} ellipsizeMode="tail" className="max-w-2/3">
+      <Text numberOfLines={2} ellipsizeMode="tail" className="w-2/3 text-right">
         {pix.bankName}
       </Text>
     </HStack>
@@ -317,7 +317,9 @@ const StaticPix = ({ pix }: StaticPixProps) => (
     </HStack>
     <HStack className="justify-between">
       <Text bold>Identifier: </Text>
-      <Text>{pix.txid}</Text>
+      <Text numberOfLines={1} ellipsizeMode="tail">
+        {pix.txid}
+      </Text>
     </HStack>
   </VStack>
 );
@@ -330,7 +332,7 @@ const StellarPay = ({ pay }: StellarPayProps) => (
   <VStack space="md">
     <HStack className="justify-between">
       <Text bold>Institution:</Text>
-      <Text className="max-w-2/3">Stellar Network</Text>
+      <Text>Stellar Network</Text>
     </HStack>
     <HStack className="justify-between">
       <Text bold>Wallet Key:</Text>

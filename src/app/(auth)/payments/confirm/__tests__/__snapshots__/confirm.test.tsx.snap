@@ -413,6 +413,7 @@ exports[`ConfirmPayment component renders correctly for pix payment 1`] = `
                   allowFontScaling={true}
                   ellipsizeMode="tail"
                   isHighlighted={false}
+                  numberOfLines={1}
                   selectionColor={null}
                 >
                   mocked-identifier
