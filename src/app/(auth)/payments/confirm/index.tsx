@@ -36,12 +36,17 @@ export const ConfirmPayment = () => {
   const insets = useSafeAreaInsets();
   const path = usePathname();
   const { scannedPayment } = paymentStore;
+  // try to get the asset from the scanned payment if has balance, otherwise use USDC
+  const initialAsset =
+    scannedPayment?.assetCode && balanceStore.get(scannedPayment?.assetCode) > scannedPayment.transactionAmount
+      ? scannedPayment.assetCode
+      : CryptoAsset.USDC;
 
   const [isProcesing, setIsProcessing] = useState(false);
   const [showPinScreen, setShowPinScreen] = useState(false);
   const [showEditAmount, setShowEditAmount] = useState(false);
   const [requestedAmount, setRequestedAmount] = useState<number>(scannedPayment?.transactionAmount ?? 0);
-  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(scannedPayment?.assetCode ?? CryptoAsset.USDC);
+  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(initialAsset);
   const [paymentQuote, setPaymentQuote] = useState<number | null>(scannedPayment?.transactionAmount ?? null);
 
   const isPix = scannedPayment && 'pixKey' in scannedPayment;
@@ -269,7 +274,7 @@ export const ConfirmPayment = () => {
                   Balance: {symbolFor(selectedAsset, balance)}
                 </Text>
                 {!hasBalance && (
-                  <Text size="xs" className="text-red">
+                  <Text size="xs" className="text-red-500">
                     exceeds balance
                   </Text>
                 )}
