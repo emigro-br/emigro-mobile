@@ -53,7 +53,7 @@
     "preview": {
       "extends": "production",
       "android": {
-        "track": "alpha",
+        "track": "beta",
         "releaseStatus": "completed"
       }
     }
