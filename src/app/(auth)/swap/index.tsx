@@ -23,7 +23,7 @@ import { SwapType } from './types';
 
 export const Swap = () => {
   const router = useRouter();
-  const myAssetss = balanceStore.currentAssets();
+  const myAssetss: CryptoAsset[] = balanceStore.currentAssets().filter((asset) => asset !== CryptoAsset.BRZ); // BRZ has no avaliable offers on DEX
   const [active, setActive] = useState<SwapType>(SwapType.SELL);
   const [sellAsset, setSellAsset] = useState<CryptoAsset>(myAssetss[0]);
   const [buyAsset, setBuyAsset] = useState<CryptoAsset>(myAssetss.length > 1 ? myAssetss[1] : myAssetss[0]); // just a protection for empty wallet
