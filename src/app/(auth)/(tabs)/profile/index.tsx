@@ -5,6 +5,7 @@ import * as Application from 'expo-application';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
+import { Coins, Lock, User } from 'lucide-react-native';
 import { observer } from 'mobx-react-lite';
 
 import { AssetListActionSheet } from '@/components/AssetListActionSheet';
@@ -63,7 +64,7 @@ const Profile = observer(() => {
   return (
     <ScrollView style={{ paddingTop: insets.top }} className="flex-1 bg-white">
       <Box className="flex-1 justify-between">
-        <VStack space="lg" className="p-4">
+        <VStack space="3xl" className="p-4">
           <Center>
             <Avatar size="xl" className="bg-primary-300 rounded-full">
               <AvatarFallbackText>{fullName}</AvatarFallbackText>
@@ -81,6 +82,7 @@ const Profile = observer(() => {
 
           <VStack space="xl">
             <ListTile
+              leading={<Icon as={User} />}
               title="Personal Info"
               trailing={<Icon as={ChevronRightIcon} />}
               onPress={() => router.push('/profile/personal-info')}
@@ -88,6 +90,7 @@ const Profile = observer(() => {
             />
 
             <ListTile
+              leading={<Icon as={Lock} />}
               title="Configure your PIN"
               trailing={<Icon as={ChevronRightIcon} />}
               onPress={() => router.push('/settings/configure-pin')}
@@ -95,6 +98,7 @@ const Profile = observer(() => {
             />
 
             <ListTile
+              leading={<Icon as={Coins} />}
               title={`Bank account currency: ${bankCurrency.length > 0 ? bankCurrency[0] : 'not set'}`}
               subtitle="Used for deposit and withdraw"
               trailing={<Icon as={ChevronRightIcon} />}
@@ -113,6 +117,7 @@ const Profile = observer(() => {
             </Button>
           </VStack>
         </VStack>
+
         <Box className="items-center mb-12">
           <Button onPress={handleLogout} variant="link" action="negative">
             <ButtonText>Logout</ButtonText>
