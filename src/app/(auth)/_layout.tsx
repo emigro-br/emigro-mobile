@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 
 import { Redirect, Stack, useRouter } from 'expo-router';
 import { observer } from 'mobx-react-lite';
@@ -30,6 +31,22 @@ export function AppLayout() {
       } else {
         router.replace('/onboarding/pin');
       }
+
+      // lock when app is in background
+      const handleAppStateChange = (nextAppState: AppStateStatus) => {
+        if (nextAppState === 'active' && isLogged) {
+          const hasPin = securityStore.pin;
+          if (hasPin && !__DEV__) {
+            router.replace('/unlock');
+          }
+        }
+      };
+
+      const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+      return () => {
+        subscription.remove();
+      };
     }
   }, [isLogged, securityStore.pin]);
 
