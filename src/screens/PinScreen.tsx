@@ -117,6 +117,7 @@ export const PinScreen = forwardRef(
                   ref={(ref: TextInput) => (inputRefs.current[i] = ref)}
                   value={pin[i]}
                   maxLength={1}
+                  autoFocus={i === 0}
                   onKeyPress={({ nativeEvent }) => {
                     if (nativeEvent.key === 'Backspace') {
                       // Focus the previous input when backspace is pressed
