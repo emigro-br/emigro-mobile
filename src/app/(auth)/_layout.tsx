@@ -24,29 +24,33 @@ export function AppLayout() {
       }
 
       const hasPin = securityStore.pin;
-      if (hasPin) {
-        if (!__DEV__) {
-          router.replace('/unlock');
-        }
-      } else {
+      if (!hasPin) {
         router.replace('/onboarding/pin');
-      }
+      } else {
+        // disable lock in development
+        if (__DEV__) {
+          return;
+        }
 
-      // lock when app is in background
-      const handleAppStateChange = (nextAppState: AppStateStatus) => {
-        if (nextAppState === 'active' && isLogged) {
-          const hasPin = securityStore.pin;
-          if (hasPin && !__DEV__) {
+        // lock when app is loaded
+        router.replace('/unlock');
+
+        // lock when app is in background
+        const handleAppStateChange = (nextAppState: AppStateStatus) => {
+          // Android = background, iOS = inactive
+          if (nextAppState === 'background' || nextAppState === 'inactive') {
+            router.replace('/lock');
+          } else if (nextAppState === 'active') {
             router.replace('/unlock');
           }
-        }
-      };
+        };
 
-      const subscription = AppState.addEventListener('change', handleAppStateChange);
-
-      return () => {
-        subscription.remove();
-      };
+        // Subscribe to app state changes
+        const subscription = AppState.addEventListener('change', handleAppStateChange);
+        return () => {
+          subscription.remove();
+        };
+      }
     }
   }, [isLogged, securityStore.pin]);
 
