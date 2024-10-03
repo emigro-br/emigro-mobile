@@ -22,7 +22,6 @@ import { Pressable } from '@/components/ui/pressable';
 import { Text } from '@/components/ui/text';
 import { View } from '@/components/ui/view';
 import { INVALID_QR_CODE } from '@/constants/errorMessages';
-import { useFeatureFlags } from '@/hooks/feature-flags';
 import { LoadingScreen } from '@/screens/Loading';
 import { paymentStore } from '@/stores/PaymentStore';
 import { Payment, emigroCategoryCode } from '@/types/PixPayment';
@@ -56,8 +55,6 @@ type Props = {
 };
 
 export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
-  const isFeatureEnabled = useFeatureFlags();
-  const enablePix = isFeatureEnabled('pix-payment');
   const insets = useSafeAreaInsets();
   const [cameraPermission, setCameraPermission] = useState<PermissionResponse | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
@@ -91,7 +88,7 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
       throw new Error(INVALID_QR_CODE);
     }
 
-    if (pix.merchantCategoryCode === emigroCategoryCode || enablePix) {
+    if (pix.merchantCategoryCode === emigroCategoryCode) {
       return {
         ...pix,
         brCode: scanned,

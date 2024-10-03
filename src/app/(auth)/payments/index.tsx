@@ -11,14 +11,11 @@ import { ButtonGroup } from '@/components/ui/button';
 import { Heading } from '@/components/ui/heading';
 import { CopyIcon } from '@/components/ui/icon';
 import { VStack } from '@/components/ui/vstack';
-import { useFeatureFlags } from '@/hooks/feature-flags';
 import { balanceStore } from '@/stores/BalanceStore';
 import { allCryptoCodesToObjs } from '@/utils/assets';
 
 export const Payments = () => {
   const router = useRouter();
-  const isFeatureEnabled = useFeatureFlags();
-  const enablePix = isFeatureEnabled('pix-payment');
   const [assetListOpen, setAssetListOpen] = useState(false);
 
   const availableAssets = allCryptoCodesToObjs(balanceStore.currentAssets());
@@ -49,18 +46,14 @@ export const Payments = () => {
             />
           </ButtonGroup>
           <ButtonGroup space="4xl" className="mt-8">
-            {enablePix ? (
-              <CircularButton
-                icon={CopyIcon}
-                label="Pix Copia & Cola"
-                size="lg"
-                textSize="lg"
-                onPress={() => router.push('/payments/pix/copia-e-cola')}
-                testID="pix-copia-e-cola"
-              />
-            ) : (
-              <></>
-            )}
+            <CircularButton
+              icon={CopyIcon}
+              label="Pix Copia & Cola"
+              size="lg"
+              textSize="lg"
+              onPress={() => router.push('/payments/pix/copia-e-cola')}
+              testID="pix-copia-e-cola"
+            />
           </ButtonGroup>
         </VStack>
         <AssetListActionSheet

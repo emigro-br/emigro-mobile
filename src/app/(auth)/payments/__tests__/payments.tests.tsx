@@ -7,10 +7,6 @@ import { CryptoAsset } from '@/types/assets';
 
 import { Payments } from '..';
 
-jest.mock('@/hooks/feature-flags', () => ({
-  useFeatureFlags: () => () => true,
-}));
-
 describe('Payments component', () => {
   let router: any;
 
