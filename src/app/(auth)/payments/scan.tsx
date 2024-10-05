@@ -24,7 +24,7 @@ import { View } from '@/components/ui/view';
 import { INVALID_QR_CODE } from '@/constants/errorMessages';
 import { LoadingScreen } from '@/screens/Loading';
 import { paymentStore } from '@/stores/PaymentStore';
-import { Payment, emigroCategoryCode } from '@/types/PixPayment';
+import { Payment } from '@/types/PixPayment';
 import { isoToCrypto } from '@/utils/assets';
 import { brCodeFromMercadoPagoUrl } from '@/utils/pix';
 
@@ -88,14 +88,11 @@ export const QRCodeScanner: React.FC<Props> = ({ onCancel, onScanPayment }) => {
       throw new Error(INVALID_QR_CODE);
     }
 
-    if (pix.merchantCategoryCode === emigroCategoryCode) {
-      return {
-        ...pix,
-        brCode: scanned,
-        assetCode: isoToCrypto[pix.transactionCurrency as keyof typeof isoToCrypto],
-      } as Payment;
-    }
-    throw new Error(INVALID_QR_CODE);
+    return {
+      ...pix,
+      brCode: scanned,
+      assetCode: isoToCrypto[pix.transactionCurrency as keyof typeof isoToCrypto],
+    } as Payment;
   };
 
   const handleBarCodeScanned = async (result: BarcodeScanningResult) => {
