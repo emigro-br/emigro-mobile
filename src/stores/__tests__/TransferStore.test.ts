@@ -81,7 +81,10 @@ describe('TransferStore', () => {
 
       await transferStore.transfer();
 
-      expect(utils.waitTransaction).toHaveBeenCalledWith('123', transactions.getTransaction);
+      expect(utils.waitTransaction).toHaveBeenCalledWith({
+        transactionId: '123',
+        fetchFn: transactions.getTransaction,
+      });
     });
 
     it('should throw an error if the transaction status is "failed"', async () => {

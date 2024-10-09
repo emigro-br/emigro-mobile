@@ -37,7 +37,10 @@ export class TransferStore {
     };
 
     let result = await transferTransaction(data);
-    result = await waitTransaction(result.id, getTransaction);
+    result = await waitTransaction({
+      transactionId: result.id,
+      fetchFn: getTransaction,
+    });
 
     if (result.status === 'failed') {
       throw new Error('Transaction failed');

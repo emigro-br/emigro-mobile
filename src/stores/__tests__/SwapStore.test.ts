@@ -88,7 +88,10 @@ describe('SwapStore', () => {
 
       await swapStore.swap();
 
-      expect(waitTransaction).toHaveBeenCalledWith('123', transactions.getTransaction);
+      expect(waitTransaction).toHaveBeenCalledWith({
+        transactionId: '123',
+        fetchFn: transactions.getTransaction,
+      });
     });
 
     it('should throw an error if the transaction status is "failed"', async () => {
