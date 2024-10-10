@@ -13,11 +13,11 @@ import { CheckIcon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { sessionStore } from '@/stores/SessionStore';
-import { FiatCurrency } from '@/types/assets';
+import { FiatCurrency, fiatCurrencies } from '@/types/assets';
 
 export const ChooseBankCurrencyScreen = () => {
   const router = useRouter();
-  const currencies = Object.values(FiatCurrency);
+  const currencies = fiatCurrencies();
   const handleContinue = (currency: FiatCurrency) => {
     sessionStore.updatePreferences({
       fiatsWithBank: [currency],

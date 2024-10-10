@@ -6,12 +6,25 @@ import { useRouter } from 'expo-router';
 import { render } from 'test-utils';
 
 import { sessionStore } from '@/stores/SessionStore';
-import { FiatCurrency } from '@/types/assets';
+import { FiatCurrency, fiatCurrencies } from '@/types/assets';
 import { labelForFiat } from '@/utils/assets';
 
 import { ChooseBankCurrency, ChooseBankCurrencyScreen } from '../choose-bank-currency';
 
 describe('ChooseBankCurrencyScreen component', () => {
+  test('Should render correctly', async () => {
+    const { getByText, getByLabelText } = render(<ChooseBankCurrencyScreen />);
+
+    const heading = getByText('Choose your main currency');
+    expect(heading).toBeOnTheScreen();
+
+    const currencies = fiatCurrencies();
+    currencies.forEach((currency) => {
+      const checkbox = getByLabelText(currency);
+      expect(checkbox).toBeOnTheScreen();
+    });
+  });
+
   test('Should navigate to PinOnboarding screen when Continue button is pressed', () => {
     const router = useRouter();
     const updatePreferencesMock = jest.spyOn(sessionStore, 'updatePreferences').mockImplementation(jest.fn());

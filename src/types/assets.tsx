@@ -14,6 +14,7 @@ export enum FiatCurrency {
   BRL = 'BRL', // Brazilian Real
   EUR = 'EUR', // Euro
   USD = 'USD', // United States Dollar
+  // dev only
   SRT = 'SRT', // SRT - fake currency
 }
 
@@ -43,4 +44,10 @@ export const cryptoAssets = () => {
   const allAssets = Object.values(CryptoAsset);
   const excludedAssets = __DEV__ ? [] : [CryptoAsset.SRT, CryptoAsset.XLM];
   return allAssets.filter((asset) => !excludedAssets.includes(asset));
+};
+
+export const fiatCurrencies = () => {
+  const allCurrencies = Object.values(FiatCurrency);
+  const excludedCurrencies = __DEV__ ? [] : [FiatCurrency.SRT];
+  return allCurrencies.filter((currency) => !excludedCurrencies.includes(currency));
 };
