@@ -66,6 +66,7 @@ export type Balance = {
   assetType: string;
   assetCode: string;
   priceUSD: number;
+  deprecated?: boolean;
 };
 
 //-- Anchors

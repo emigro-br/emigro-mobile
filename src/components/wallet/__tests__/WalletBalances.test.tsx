@@ -24,6 +24,7 @@ describe('WalletBalances component', () => {
     const customBalances = [
       ...userBalance,
       { balance: '2', assetType: 'credit_alphanum4', assetCode: 'ANY', priceUSD: 0.1 },
+      { balance: '1', assetType: 'credit_alphanum4', assetCode: 'EURO', priceUSD: 0.1, deprecated: true },
     ];
     render(<WalletBalances userBalance={customBalances} />);
     const brlAsset = screen.getByText('Brazilian Digital Token');
@@ -43,9 +44,12 @@ describe('WalletBalances component', () => {
 
     const unknownAsset = screen.queryByText('ANY');
     expect(unknownAsset).not.toBeOnTheScreen();
+
+    const deprecatedAsset = screen.queryByText('EURO');
+    expect(deprecatedAsset).not.toBeOnTheScreen();
   });
 
-  it('Should not display the balances when hiding', () => {
+  it('Should not display the balances values when hiding', () => {
     const { queryByText, queryAllByText } = render(<WalletBalances userBalance={userBalance} hide />);
     expect(queryByText('Brazilian Digital Token')).toBeOnTheScreen();
     expect(queryByText('R$ 10.00')).not.toBeOnTheScreen();

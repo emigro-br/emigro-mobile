@@ -30,7 +30,11 @@ export const WalletBalances = ({ userBalance, hide = false }: Props) => {
       </HStack>
       <Card variant="flat">
         <VStack space="lg">
-          {userBalance?.map(({ balance, assetCode }, index) => {
+          {userBalance?.map(({ balance, assetCode, deprecated }, index) => {
+            // don't show deprecated assets
+            if (deprecated) {
+              return null;
+            }
             const asset: CryptoAsset = CryptoAsset[assetCode as keyof typeof CryptoAsset];
             if (asset) {
               return (
