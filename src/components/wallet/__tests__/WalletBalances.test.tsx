@@ -36,7 +36,7 @@ describe('WalletBalances component', () => {
     expect(usdcAsset).toBeOnTheScreen();
     expect(usdcBalance).toBeOnTheScreen();
 
-    const eurocAsset = screen.getByText('EURo Coin');
+    const eurocAsset = screen.getByText('Euro Coin');
     const euroBalance = screen.getByText('€ 0.00');
     expect(eurocAsset).toBeOnTheScreen();
     expect(euroBalance).toBeOnTheScreen();
@@ -53,7 +53,7 @@ describe('WalletBalances component', () => {
     expect(queryByText('USD Coin')).toBeOnTheScreen();
     expect(queryByText('$ 30.00')).not.toBeOnTheScreen();
 
-    expect(queryByText('EURo Coin')).toBeOnTheScreen();
+    expect(queryByText('Euro Coin')).toBeOnTheScreen();
     expect(queryByText('€ 0.00')).not.toBeOnTheScreen();
 
     // Should display **** instead of the balance

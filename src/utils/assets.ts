@@ -16,7 +16,7 @@ const cryptosData = [
   { type: 'crypto', code: 'XLM', name: 'Stellar Lumens', icon: xlmIcon, symbol: 'XLM' },
   { type: 'crypto', code: 'SRT', name: 'Stellar Reference Token', icon: xlmIcon, symbol: 'SRT' },
   { type: 'crypto', code: 'USDC', name: 'USD Coin', icon: usdcIcon, symbol: '$', currency: 'USD' },
-  { type: 'crypto', code: 'EURC', name: 'EURo Coin', icon: eurcIcon, symbol: '€', currency: 'EUR' },
+  { type: 'crypto', code: 'EURC', name: 'Euro Coin', icon: eurcIcon, symbol: '€', currency: 'EUR' },
   { type: 'crypto', code: 'BRZ', name: 'Brazilian Digital Token', icon: brzIcon, symbol: 'R$', currency: 'BRL' },
   { type: 'crypto', code: 'ARS', name: 'Peso Argentino Digital', icon: arsIcon, symbol: '$', currency: 'ARS' },
 ];
