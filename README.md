@@ -1,36 +1,66 @@
 # Emigro Mobile
 
-## Overview
+Emigro Mobile is a digital wallet application designed for travelers, available on both iOS and Android platforms. It offers a seamless and secure way to manage multiple currencies, make payments, and track expenses while on the go.
 
-Interface developed with React Native + Typescript, to consume Emigro API. Creating, logging users and making payments between users.
+Key features include:
 
-## Powered by
+- **Multi-currency support:** Manage and exchange multiple currencies effortlessly.
+- **Secure transactions:** Ensure the safety of your financial transactions protecting with PIN
+- **QR code payments:** Quickly and easily make payments using QR codes.
 
-- React Native.
-- Typescript.
-- Jest.
-- React Testing Library
+Powered by
 
-## How to run it
+- [Expo](https://expo.dev/)
+- React Native
+- Typescript
+- Jest
 
-1. You've to install it with npm ci/install
-2. You've to populate the .env file using the .env.dist file as a guide
-3. Then, you can execute `npm run start`
-
-## How to run unit & integration tests
-
-Jest: Execute `npm run test`
+# Getting Started
 
 ### Environment variables
 
-#### Database
-
 | Variable              | Description                                 | URL
 | -------------         | ---------------------                       | ---------------------
-| `EXPO_PUBLIC_BACKEND_URL`         | Backend Url where Emigro API is consumed.   | 
-| `EXPO_PUBLIC_GEOCODE_BASE_URL`    | Base URL for geocoding requests.            | [https://nominatim.openstreetmap.org/search](https://nominatim.openstreetmap.org/search)
+| `EXPO_PUBLIC_BACKEND_URL`         | Backend Url where Emigro API is consumed.   | http://localhost:3000
 
 ## Local Development
+
+1. Copy the `.env.sample` file to `.env.local` and update the environment variables:
+
+```sh
+cp .env.sample .env.local
+vi .env.local 
+```
+
+**Tip:** use `https://api.emigro.co` to consume for production API
+
+2. Install the dependencies using NPM:
+
+```sh
+npm i
+```
+
+3. Run the Expo Metro and follow the instructions:
+
+```sh
+npm run start
+```
+
+4. Running tests:
+
+```sh
+npm test
+```
+
+## Platform Guide
+
+### iOS
+
+Requirements:
+- XCode
+- iOS Simulator
+
+### Android
 
 Requirements:
 - OpenJDK 11
@@ -38,14 +68,17 @@ Requirements:
 
 Install and prepare the environment:
 
-	# macOS users
-	brew install openjdk@11
-	export JAVA_HOME=$(/usr/libexec/java_home -v11)
-	export ANDROID_HOME=$HOME/Library/Android/sdk
+For macOS users:
+
+```sh
+brew install openjdk@11
+export JAVA_HOME=$(/usr/libexec/java_home -v11)
+export ANDROID_HOME=$HOME/Library/Android/sdk
+```
 
 Build the app:
 
-	eas build --local  --clear-cache --platform android
+	eas build --local --clear-cache --platform android
 
 ### Troubleshooting
 
@@ -65,3 +98,29 @@ SOLVED: https://github.com/expo/expo/issues/19596#issuecomment-1880842689
 	cd android && ./gradlew clean
 	eas build --local  --platform android
 </details>
+
+
+# Publishing Releases
+
+To publish a new preview version for TestFlight and Open Testing in Google Play, follow these steps:
+
+1. Checkout the `preview` branch:
+```sh
+git checkout preview
+```
+
+2. Merge the `main` branch into `preview`:
+```sh
+git merge main
+```
+
+3. Push the changes to the `preview` branch:
+```sh
+git push
+```
+
+This will trigger the CI/CD pipeline to build and publish the new version to TestFlight and Google Play Open Testing.
+
+**Notes:**
+- Ensure all changes are thoroughly tested before merging into the preview branch.
+- Monitor the build and deployment process in [GitHub Actions](https://github.com/emigro-br/emigro-mobile/actions) and [Expo Dashboard](https://expo.dev/accounts/emigro) to ensure there are no issues.
