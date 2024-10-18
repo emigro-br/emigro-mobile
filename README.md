@@ -21,7 +21,8 @@ Powered by
 
 | Variable              | Description                                 | URL
 | -------------         | ---------------------                       | ---------------------
-| `EXPO_PUBLIC_BACKEND_URL`         | Backend Url where Emigro API is consumed.   | http://localhost:3000
+| `EXPO_PUBLIC_BACKEND_URL`       | Backend Url where Emigro API is consumed.   | http://localhost:3000
+| `EXPO_PUBLIC_SENTRY_DSN`        | Sentry Data Source Name (DSN) for error tracking and monitoring.   | N/A  
 
 ## Local Development
 
@@ -32,7 +33,7 @@ cp .env.sample .env.local
 vi .env.local 
 ```
 
-**Tip:** use `https://api.emigro.co` to consume for production API
+> **Tip:** use `https://api.emigro.co` to consume for production API
 
 2. Install the dependencies using NPM:
 
@@ -40,11 +41,13 @@ vi .env.local
 npm i
 ```
 
-3. Run the Expo Metro and follow the instructions:
+3. Start the development server to work on your project by running:
 
 ```sh
 npm run start
 ```
+
+
 
 4. Running tests:
 
@@ -124,3 +127,4 @@ This will trigger the CI/CD pipeline to build and publish the new version to Tes
 **Notes:**
 - Ensure all changes are thoroughly tested before merging into the preview branch.
 - Monitor the build and deployment process in [GitHub Actions](https://github.com/emigro-br/emigro-mobile/actions) and [Expo Dashboard](https://expo.dev/accounts/emigro) to ensure there are no issues.
+- Check the new release in the [Google Play Console](https://play.google.com/console/u/0/developers/7584002803657299601/app/4974697401918909765/app-dashboard) and [App Store Connect](https://appstoreconnect.apple.com/apps/6475793514/distribution)
