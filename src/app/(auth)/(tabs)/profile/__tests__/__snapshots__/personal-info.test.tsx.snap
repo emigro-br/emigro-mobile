@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PersonalInfo screen Should render the Profile screen correctly 1`] = `
+<View
+  style={
+    [
+      {},
+      {
+        "flex": 1,
+        "height": "100%",
+        "width": "100%",
+      },
+      undefined,
+    ]
+  }
+>
+  <View
+    className="flex-1 bg-white"
+  >
+    <View
+      className="flex-col gap-4 p-4"
+    >
+      <View>
+        <Text
+          className="font-body text-base text-typography-500"
+        >
+          Full Name
+        </Text>
+        <Text
+          className="text-typography-700 font-body text-lg"
+        >
+          Test Name Test Last Name
+        </Text>
+      </View>
+      <View />
+      <View>
+        <Text
+          className="font-body text-base text-typography-500"
+        >
+          Email
+        </Text>
+        <Text
+          className="text-typography-700 font-body text-lg"
+        >
+          test@email.com
+        </Text>
+      </View>
+      <View />
+      <View>
+        <Text
+          className="font-body text-base text-typography-500"
+        >
+          Address
+        </Text>
+        <Text
+          className="text-typography-700 font-body text-base"
+        >
+          Test Address
+        </Text>
+      </View>
+      <View />
+    </View>
+  </View>
+</View>
+`;

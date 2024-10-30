@@ -1,0 +1,84 @@
+{
+  "expo": {
+    "name": "Emigro",
+    "slug": "emigro-mobile",
+    "owner": "emigro",
+    "version": "1.10.6",
+    "description": "The traveler's digital wallet",
+    "orientation": "portrait",
+    "scheme": "emigro",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "light",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Access to the camera is required to scan QR codes for payments."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 34,
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "buildToolsVersion": "34.0.0"
+          },
+          "ios": {
+            "deploymentTarget": "13.4"
+          }
+        }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "emigro",
+          "project": "emigro-mobile"
+        }
+      ],
+      "expo-secure-store",
+      "expo-router"
+    ],
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/d84d8915-cdac-448c-bf38-fc1ebcbe8eac",
+      "enabled": true,
+      "fallbackToCacheTimeout": 0,
+      "checkAutomatically": "ON_LOAD"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "co.emigro.app",
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "co.emigro.app"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d84d8915-cdac-448c-bf38-fc1ebcbe8eac"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
+  }
+}
