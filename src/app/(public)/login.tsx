@@ -48,6 +48,33 @@ const Login = () => {
     try {
       const { email, password } = data;
       await sessionStore.signIn(email, password);
+
+      // const { email, password } = data;
+
+      // Sign in the user
+      // const signInResponse = await sessionStore.signIn(email, password);
+
+      // Fetch the user profile
+      await sessionStore.fetchProfile();
+      const userId = sessionStore.user?.id;
+      console.log('UserID:', userId); // Log the user ID
+
+      if (userId) {
+        const kycResponse = await checkKycStatus(userId);
+        console.log('KYC Response:', kycResponse); // Debugging log
+
+        // Check if KYC is verified
+        if (!kycResponse.kycVerified) {
+          console.log('User KYC not verified, redirecting to KYC screen...');
+          router.replace('/profile/kyc');
+          return; // Prevent further execution
+        }
+      } else {
+        console.error('User ID is undefined after fetching profile.'); // Log an error
+      }
+
+      // Redirect to home if KYC is verified
+
       router.replace('/');
     } catch (error) {
       if (error instanceof BadRequestException) {
