@@ -43,3 +43,16 @@ export const saveUserPreferences = async (preferences: Record<string, any>): Pro
   const res = await api().post('/user/preferences', preferences);
   return res.data;
 };
+
+/**
+ * Fetches the KYC status for a given user ID.
+ * @param userId - The ID of the user to check KYC status for.
+ * @returns An object containing the KYC status.
+ */
+export const checkKycStatus = async (userId: string): Promise<{ kycVerified: boolean }> => {
+  const res = await api().get(`/user/kyc-status/${userId}`);
+  if (!res.data) {
+    throw new Error('Failed to fetch KYC status');
+  }
+  return res.data;
+};

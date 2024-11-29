@@ -36,6 +36,13 @@
     "preview": {
       "extends": "production",
       "channel": "preview"
+    },
+    "apk": {
+      "extends": "production",
+      "android": {
+        "buildType": "apk"
+      },
+      "resourceClass": "large"
     }
   },
   "submit": {

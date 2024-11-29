@@ -3,7 +3,7 @@ import { action, flow, makeAutoObservable, observable } from 'mobx';
 
 import { refresh as refreshSession, signIn } from '@/services/emigro/auth';
 import { AuthSession, User, UserProfile } from '@/services/emigro/types';
-import { getUser, getUserProfile, saveUserPreferences } from '@/services/emigro/users';
+import { checkKycStatus, getUser, getUserProfile, saveUserPreferences } from '@/services/emigro/users';
 import { UserPreferences } from '@/types/UserPreferences';
 import { InvalidSessionError } from '@/types/errors';
 
@@ -108,6 +108,17 @@ export class SessionStore {
       }
       return profile;
     }
+  }
+
+  /**
+   * Checks the KYC status of the current user.
+   * @returns An object containing the KYC status.
+   */
+  async checkKycStatus(): Promise<{ kycVerified: boolean }> {
+    if (!this.user?.id) {
+      throw new Error('User ID is not available');
+    }
+    return await checkKycStatus(this.user.id);
   }
 
   get isTokenExpired(): boolean {

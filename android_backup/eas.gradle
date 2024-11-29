@@ -1,0 +1,10 @@
+allprojects {
+    repositories {
+        maven { 
+            url 'https://sdk.withpersona.com/android/releases' 
+            println "Adding Persona repository: ${url}"
+        }
+        google()
+        mavenCentral()
+    }
+}
