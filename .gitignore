@@ -5,13 +5,9 @@ dist/
 web-build/
 
 # Native build directories
-android/
-ios/
-*.aab
-
-# Gradle files (do not ignore these specific files)
-!android/build.gradle
-!android/eas.gradle
+# android/
+# ios/
+# *.aab
 
 # Debug and local files
 npm-debug.*
