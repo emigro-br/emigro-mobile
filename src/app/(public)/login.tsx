@@ -20,6 +20,7 @@ import { Link, LinkText } from '@/components/ui/link';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { sessionStore } from '@/stores/SessionStore';
+import { checkKycStatus } from '@/services/emigro/users'; // Importing checkKycStatus
 import { BadRequestException } from '@/types/errors';
 
 // for react-hook-form
@@ -42,22 +43,19 @@ const Login = () => {
   });
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
-    // setShowPassword(false);
     setApiError(null);
     setIsLoggingIn(true);
     try {
       const { email, password } = data;
-      await sessionStore.signIn(email, password);
-
-      // const { email, password } = data;
 
       // Sign in the user
-      // const signInResponse = await sessionStore.signIn(email, password);
+      await sessionStore.signIn(email, password);
 
       // Fetch the user profile
       await sessionStore.fetchProfile();
       const userId = sessionStore.user?.id;
-      console.log('UserID:', userId); // Log the user ID
+
+      console.log('UserID:', userId); // Log the user ID for debugging
 
       if (userId) {
         const kycResponse = await checkKycStatus(userId);
@@ -70,15 +68,15 @@ const Login = () => {
           return; // Prevent further execution
         }
       } else {
-        console.error('User ID is undefined after fetching profile.'); // Log an error
+        console.error('User ID is undefined after fetching profile.');
+        throw new Error('User ID is undefined. Unable to check KYC status.');
       }
 
       // Redirect to home if KYC is verified
-
       router.replace('/');
     } catch (error) {
       if (error instanceof BadRequestException) {
-        console.warn('Error', error);
+        console.warn('Error:', error);
         setApiError('Invalid login or password');
       } else if (error instanceof Error) {
         setApiError(error.message);
@@ -92,6 +90,7 @@ const Login = () => {
 
   const { isDirty, isValid } = formState;
   const isDisabled = !isDirty || !isValid || isLoggingIn;
+
   return (
     <Box className="flex-1 bg-white">
       <VStack space="lg" className="p-4">

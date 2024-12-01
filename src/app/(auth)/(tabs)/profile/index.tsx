@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import * as Application from 'expo-application';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import { Coins, Lock, User } from 'lucide-react-native';
+import { Coins, Lock, User, CheckCircle } from 'lucide-react-native';
 import { observer } from 'mobx-react-lite';
 
+//import { Persona } from '@persona/react-native';
 import { AssetListActionSheet } from '@/components/AssetListActionSheet';
 import { ListTile } from '@/components/ListTile';
 import { Avatar, AvatarFallbackText } from '@/components/ui/avatar';
@@ -32,8 +33,36 @@ const Profile = observer(() => {
   const insets = useSafeAreaInsets();
   const toast = useToast();
   const [assetListOpen, setAssetListOpen] = useState(false);
+  const [kycVerified, setKycVerified] = useState(false);
   const publicKey = sessionStore.publicKey;
   const myCurrencies = fiatsFromCryptoCodes(balanceStore.currentAssets());
+
+  useEffect(() => {
+    const fetchKycStatus = async () => {
+      const { kycVerified } = await sessionStore.checkKycStatus();
+      setKycVerified(kycVerified);
+    };
+    fetchKycStatus();
+  }, []);
+
+  const handleVerifyIdentity = () => {
+    if (!kycVerified) {
+      Persona.open({
+        templateId: 'your-template-id',
+        environment: 'sandbox',
+        onSuccess: (inquiryId, attributes) => {
+          console.log('KYC Completed:', inquiryId, attributes);
+          setKycVerified(true);
+        },
+        onCancelled: () => {
+          console.log('KYC process cancelled');
+        },
+        onError: (error) => {
+          console.error('KYC Error:', error);
+        },
+      });
+    }
+  };
 
   const handleLogout = async () => {
     await sessionStore.clear();
@@ -105,6 +134,16 @@ const Profile = observer(() => {
               onPress={() => setAssetListOpen(true)}
               testID="bank-currency-button"
             />
+
+<ListTile
+  leading={<CheckCircle />}
+  title="Verify Identity"
+  subtitle={kycVerified ? "Verified" : "Complete your identity verification"}
+  trailing={<ChevronRightIcon />}
+  onPress={handleVerifyIdentity}
+  disabled={kycVerified}
+  className={kycVerified ? "opacity-50" : ""}
+/>
 
             <Button
               onPress={() => router.push('/profile/delete-account')}
