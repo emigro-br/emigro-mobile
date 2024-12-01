@@ -37,16 +37,21 @@ export class SecurityStore {
     this.setPin(null);
   }
 
-  verifyPin = async (pin: string): Promise<boolean> => {
-    const hashedPin = this.pin ?? (await this.loadPin());
-    if (!hashedPin) {
-      throw new Error('PIN not set');
-    }
+//  verifyPin = async (pin: string): Promise<boolean> => {
+//    const hashedPin = this.pin ?? (await this.loadPin());
+//    if (!hashedPin) {
+//      throw new Error('PIN not set');
+//    }
 
     // Hash the input PIN and compare it with the stored hashed PIN
-    const inputHashedPin = await Crypto.digestStringAsync(this.algotithm, pin);
-    return hashedPin === inputHashedPin;
-  };
+//    const inputHashedPin = await Crypto.digestStringAsync(this.algotithm, pin);
+//    return hashedPin === inputHashedPin;
+//  };
+
+// Temporarily disable PIN verification
+	verifyPin = async (pin: string): Promise<boolean> => {
+	  return true;
+	};
 }
 
 export const securityStore = new SecurityStore();

@@ -230,7 +230,8 @@ export class SessionStore {
 
     this.setJustLoggedIn(false);
 
-    securityStore.clearPin();
+	// Temporarily disable clearing PIN
+    // securityStore.clearPin();
   }
 
   signIn = async (email: string, password: string) => {

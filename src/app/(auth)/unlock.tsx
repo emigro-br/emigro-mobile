@@ -13,6 +13,11 @@ export const UnlockScreen = () => {
   const insets = useSafeAreaInsets();
   const [unlocked, setUnlocked] = useState(false);
 
+// Bypass PIN check
+useEffect(() => {
+  setUnlocked(true); // Bypass PIN check
+}, []);
+
   useEffect(() => {
     if (unlocked) {
       router.replace('/');

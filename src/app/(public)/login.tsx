@@ -42,51 +42,49 @@ const Login = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
-    setApiError(null);
-    setIsLoggingIn(true);
-    try {
-      const { email, password } = data;
+const onSubmit: SubmitHandler<FormData> = async (data) => {
+  setApiError(null);
+  setIsLoggingIn(true);
+  try {
+    const { email, password } = data;
 
-      // Sign in the user
-      await sessionStore.signIn(email, password);
+    // Sign in the user
+    await sessionStore.signIn(email, password);
 
-      // Fetch the user profile
-      await sessionStore.fetchProfile();
-      const userId = sessionStore.user?.id;
+    // Fetch the user profile
+    await sessionStore.fetchProfile();
+    const userId = sessionStore.user?.id;
 
-      console.log('UserID:', userId); // Log the user ID for debugging
+    console.log('UserID:', userId); // Log the user ID for debugging
 
-      if (userId) {
-        const kycResponse = await checkKycStatus(userId);
-        console.log('KYC Response:', kycResponse); // Debugging log
+    // Comment out the KYC status check and redirection
+    // if (userId) {
+    //   const kycResponse = await checkKycStatus(userId);
+    //   console.log('KYC Response:', kycResponse); // Debugging log
 
-        // Check if KYC is verified
-        if (!kycResponse.kycVerified) {
-          console.log('User KYC not verified, redirecting to KYC screen...');
-          router.replace('/profile/kyc');
-          return; // Prevent further execution
-        }
-      } else {
-        console.error('User ID is undefined after fetching profile.');
-        throw new Error('User ID is undefined. Unable to check KYC status.');
-      }
+    //   if (!kycResponse.kycVerified) {
+    //     console.log('User KYC not verified, redirecting to KYC screen...');
+    //     router.replace('/profile/kyc');
+    //     return;
+    //   }
+    // }
 
-      // Redirect to home if KYC is verified
-      router.replace('/');
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        console.warn('Error:', error);
-        setApiError('Invalid login or password');
-      } else if (error instanceof Error) {
-        setApiError(error.message);
-      } else {
-        setApiError('An unknown error occurred');
-      }
-    } finally {
-      setIsLoggingIn(false);
+    // Redirect to home
+    router.replace('/');
+  } catch (error) {
+    if (error instanceof BadRequestException) {
+      console.warn('Error:', error);
+      setApiError('Invalid login or password');
+    } else if (error instanceof Error) {
+      setApiError(error.message);
+    } else {
+      setApiError('An unknown error occurred');
     }
-  };
+  } finally {
+    setIsLoggingIn(false);
+  }
+};
+
 
   const { isDirty, isValid } = formState;
   const isDisabled = !isDirty || !isValid || isLoggingIn;
