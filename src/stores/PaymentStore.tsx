@@ -37,6 +37,7 @@ export class InvalidPixError extends Error {
 export class PaymentStore {
   transaction?: PayTransaction;
   scannedPayment?: Payment | PixPayment;
+  pixTransferDetails?: { pixKey: string; value: number; name: string; taxId: string };
 
   constructor() {
     makeAutoObservable(this, {
@@ -45,6 +46,9 @@ export class PaymentStore {
       //
       scannedPayment: observable,
       setScannedPayment: action,
+      //
+      pixTransferDetails: observable,
+      setPixTransferDetails: action,
     });
   }
 
@@ -59,9 +63,18 @@ export class PaymentStore {
     this.scannedPayment = payment;
   }
 
+  setPixTransferDetails(details: { pixKey: string; value: number; name: string; taxId: string }) {
+    this.pixTransferDetails = details;
+  }
+
+  resetPixTransferDetails() {
+    this.pixTransferDetails = undefined;
+  }
+
   reset() {
     this.setTransaction(undefined);
     this.setScannedPayment(undefined);
+    this.resetPixTransferDetails();
   }
 
   async preview(brCode: string): Promise<Payment | PixPayment> {
@@ -71,7 +84,6 @@ export class PaymentStore {
     }
 
     if (pix.merchantCategoryCode === emigroCategoryCode && pix.type === PixElementType.STATIC) {
-      // It's Emigro a Payment
       const { merchantName, merchantCity, transactionAmount, infoAdicional } = pix;
       return {
         brCode,
@@ -86,7 +98,7 @@ export class PaymentStore {
 
     const res = await pixApi.brcodePaymentPreview(brCode);
 
-    const assetCode = isoToCrypto[res.currency as keyof typeof isoToCrypto] ?? CryptoAsset.BRZ; // Pix is aways in BRL/BRZ
+    const assetCode = isoToCrypto[res.currency as keyof typeof isoToCrypto] ?? CryptoAsset.BRZ;
 
     const pixPayment: PixPayment = {
       brCode,
@@ -104,7 +116,6 @@ export class PaymentStore {
 
   async pay() {
     const { from, to, idempotencyKey } = this.transaction!;
-    // map to dto
     const data: CreatePaymentTransaction = {
       destinationAddress: to.wallet,
       sendAssetCode: from.asset,
@@ -118,8 +129,8 @@ export class PaymentStore {
     result = await waitTransaction({
       transactionId: result.id,
       fetchFn: getTransaction,
-      initialDelay: 3000, // 3 seconds
-      maxAttempts: 25, // +25 seconds
+      initialDelay: 3000,
+      maxAttempts: 25,
     });
 
     if (result.status === 'failed') {
@@ -129,39 +140,96 @@ export class PaymentStore {
     return result;
   }
 
-  async payPix() {
-    if (!this.scannedPayment) {
-      throw new Error('No payment scanned');
-    }
+async payPix() {
+  try {
+    console.log('[payPix] Initiating Pix payment...');
 
+    // Validate that we have payment details
+    if (!this.scannedPayment && !this.pixTransferDetails) {
+      throw new Error('No payment details available');
+    }
     if (!this.transaction) {
       throw new Error('No transaction set');
     }
 
-    const pixPayment = this.scannedPayment as PixPayment;
-    const paymentRequest: BrcodePaymentRequest = {
-      brcode: pixPayment.brCode,
-      amount: this.transaction.to.value, // Brazilian Real value
-      exchangeAsset: this.transaction.from.asset, // selected Asset
-      name: pixPayment.merchantName,
-      taxId: pixPayment.taxId,
-      description: pixPayment.infoAdicional || 'Payment via Emigro Wallet',
-    };
-    let result = await pixApi.createBrcodePayment(paymentRequest);
+    console.log('[payPix] Pix Transfer Details:', this.pixTransferDetails);
+    console.log('[payPix] Transaction Details:', this.transaction);
 
-    result = await waitTransaction({
-      transactionId: result.id,
-      fetchFn: pixApi.getBrcodePayment,
-      initialDelay: 10000, // 10 seconds
-      maxAttempts: 20, // +20 seconds
-    });
+    let paymentRequest: BrcodePaymentRequest;
 
-    if (result.status === 'failed') {
-      throw new Error('Pix Payment failed');
+    // Handle manually input Pix details
+    if (this.pixTransferDetails) {
+      const { pixKey, value, name, taxId } = this.pixTransferDetails;
+
+      // Construct the payment request
+      paymentRequest = {
+        pixKey,
+        amount: value,
+        exchangeAsset: 'BRL', // Ensure the payment asset is BRL
+        currency: 'BRL', // Specify the currency explicitly
+        taxIdCountry: 'BRA', // Country code for Brazil
+        name,
+        taxId,
+        description: 'Payment via Emigro Wallet',
+      };
+    } else {
+      // Handle scanned payment with PixKey
+      const pixPayment = this.scannedPayment as PixPayment;
+
+      // Ensure the scanned payment has a PixKey
+      if (!pixPayment.pixKey) {
+        throw new Error('No pixKey found in scannedPayment');
+      }
+
+      // Construct the payment request
+      paymentRequest = {
+        pixKey: pixPayment.pixKey,
+        amount: this.transaction.to.value, // Value from transaction details
+        exchangeAsset: 'BRL', // Payment asset
+        currency: 'BRL', // Currency
+        taxIdCountry: 'BRA', // Brazil country code
+        name: pixPayment.merchantName,
+        taxId: pixPayment.taxId,
+        description: pixPayment.infoAdicional || 'Payment via Emigro Wallet',
+      };
     }
 
-    return result;
+    // Log the final payment request
+    console.log('[payPix] Final Payment Request:', paymentRequest);
+
+    try {
+      // Send the payment request via the Pix API
+      const result = await pixApi.createBrcodePayment(paymentRequest);
+
+      // Log the response from the API
+      console.log('[payPix] API Response:', result);
+
+      // Wait for the final status of the transaction
+      return await waitTransaction({
+        transactionId: result.id,
+        fetchFn: pixApi.getBrcodePayment,
+        initialDelay: 10000, // 10 seconds delay before first status check
+        maxAttempts: 20, // Retry up to 20 times
+      });
+    } catch (error) {
+      // Log API errors
+      console.error('[payPix] API Error:', error.response?.data || error.message);
+      console.error('[payPix] Payload:', paymentRequest);
+
+      // Re-throw the error after logging
+      throw error;
+    }
+  } catch (error) {
+    // Log any general errors during execution
+    console.error('[payPix] General Error:', error.message || error);
+    throw error;
   }
+}
+
+
+
+
+
 }
 
 export const paymentStore = new PaymentStore();

@@ -45,6 +45,7 @@ export const Payments = () => {
               testID="request-payment"
             />
           </ButtonGroup>
+          {/* Removing it temporarilly
           <ButtonGroup space="4xl" className="mt-8">
             <CircularButton
               icon={CopyIcon}
@@ -52,6 +53,17 @@ export const Payments = () => {
               size="lg"
               textSize="lg"
               onPress={() => router.push('/payments/pix/copia-e-cola')}
+              testID="pix-copia-e-cola"
+            />
+          </ButtonGroup>
+          */}
+          <ButtonGroup space="4xl" className="mt-8">
+            <CircularButton
+              icon={CopyIcon}
+              label="Pix Transfer"
+              size="lg"
+              textSize="lg"
+              onPress={() => router.push('/payments/pix/transfer')}
               testID="pix-copia-e-cola"
             />
           </ButtonGroup>
