@@ -17,6 +17,7 @@ import { BrcodePaymentRequest, BrcodePaymentResponse, PixPaymentPreview } from '
 export const brcodePaymentPreview = async (brcode: string): Promise<PixPaymentPreview> => {
   try {
     const res = await api().post('/pix/payment-preview', { brcode });
+    console.log('Payment Preview Response:', res.data);
     return res.data;
   } catch (error: any) {
     if (error.response) {

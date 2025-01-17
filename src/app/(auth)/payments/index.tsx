@@ -45,7 +45,7 @@ export const Payments = () => {
               testID="request-payment"
             />
           </ButtonGroup>
-          {/* Removing it temporarilly
+
           <ButtonGroup space="4xl" className="mt-8">
             <CircularButton
               icon={CopyIcon}
@@ -56,7 +56,7 @@ export const Payments = () => {
               testID="pix-copia-e-cola"
             />
           </ButtonGroup>
-          */}
+          {/* Removing it temporarilly
           <ButtonGroup space="4xl" className="mt-8">
             <CircularButton
               icon={CopyIcon}
@@ -67,6 +67,7 @@ export const Payments = () => {
               testID="pix-copia-e-cola"
             />
           </ButtonGroup>
+          */}
         </VStack>
         <AssetListActionSheet
           assets={availableAssets}

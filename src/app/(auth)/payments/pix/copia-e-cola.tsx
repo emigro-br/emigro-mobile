@@ -11,7 +11,6 @@ import { Heading } from '@/components/ui/heading';
 import { Textarea, TextareaInput } from '@/components/ui/textarea';
 import { VStack } from '@/components/ui/vstack';
 import { InvalidPixError, paymentStore } from '@/stores/PaymentStore';
-import { sessionStore } from '@/stores/SessionStore'; // Ensure sessionStore is imported
 
 export const PastePixCode = () => {
   const router = useRouter();
@@ -25,51 +24,30 @@ export const PastePixCode = () => {
 
   const handlePaste = async () => {
     const text = (await Clipboard.getStringAsync()).trim();
-    console.log('Clipboard text:', text); // Debug
-    const pix = parsePix(text);
-    console.log('Parsed Pix:', pix); // Debug
-    if (!hasError(pix)) {
-      setBrCode(text);
-    } else {
-      console.error('Pix parsing error:', pix);
+    if (text) {
+      const pix = parsePix(text);
+      if (!hasError(pix)) {
+        setBrCode(text);
+      }
     }
   };
 
   const handleContinue = async () => {
     setIsChecking(true);
-    setError(''); // Reset errors
-
     try {
-      // Ensure sessionStore token is valid
-      const accessToken = sessionStore?.accessToken;
-      if (!accessToken) {
-        setError('Authentication token is missing. Please login again.');
-        setIsChecking(false);
-        return;
-      }
-
-      // Ensure the token is properly set in the paymentStore for use in API calls
-      paymentStore.token = accessToken;
-
-      console.log('Access Token handleContinue (PaymentStore):', paymentStore.token); // Debug
-      console.debug('Authorization Token in preview (SessionStore):', accessToken);
-
-      // Call the payment preview
       const payment = await paymentStore.preview(brCode);
-      console.log('Payment preview response handleContinue:', payment); // Debug
       paymentStore.setScannedPayment(payment);
-      //router.push('/payments/confirm');
-      router.push('/pix/payment-preview');
+      router.push('/payments/confirm');
+      setError(''); // Reset error
     } catch (error) {
-      console.error('Error previewing payment:', error.response?.data || error.message);
-      if (error.response?.status === 401) {
-        setError('Unauthorized: Please check your access token or login again.');
+      if (error instanceof InvalidPixError) {
+        setError('Invalid Pix code');
       } else {
-        setError('An error occurred while checking this payment.');
+        console.warn('Error previewing payment:', error);
+        setError('An error occurred while checking this payment');
       }
-    } finally {
-      setIsChecking(false);
     }
+    setIsChecking(false);
   };
 
   return (

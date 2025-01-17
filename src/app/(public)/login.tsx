@@ -1,6 +1,7 @@
-import React, { useRef, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+// src/app/public/login.tsx
 
+import React, { useRef, useState, useEffect } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'expo-router';
 
 import { EmailInputControl } from '@/components/inputs/controls/EmailInputControl';
@@ -42,49 +43,53 @@ const Login = () => {
     },
   });
 
-const onSubmit: SubmitHandler<FormData> = async (data) => {
-  setApiError(null);
-  setIsLoggingIn(true);
-  try {
-    const { email, password } = data;
+  useEffect(() => {
+    // Log the Backend URL to the console when the component mounts
+    console.log('Backend URL:', process.env.EXPO_PUBLIC_BACKEND_URL);
+  }, []);
 
-    // Sign in the user
-    await sessionStore.signIn(email, password);
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    setApiError(null);
+    setIsLoggingIn(true);
+    try {
+      const { email, password } = data;
 
-    // Fetch the user profile
-    await sessionStore.fetchProfile();
-    const userId = sessionStore.user?.id;
+      // Sign in the user
+      await sessionStore.signIn(email, password);
 
-    console.log('UserID:', userId); // Log the user ID for debugging
+      // Fetch the user profile
+      await sessionStore.fetchProfile();
+      const userId = sessionStore.user?.id;
 
-    // Comment out the KYC status check and redirection
-    // if (userId) {
-    //   const kycResponse = await checkKycStatus(userId);
-    //   console.log('KYC Response:', kycResponse); // Debugging log
+      console.log('UserID:', userId); // Log the user ID for debugging
 
-    //   if (!kycResponse.kycVerified) {
-    //     console.log('User KYC not verified, redirecting to KYC screen...');
-    //     router.replace('/profile/kyc');
-    //     return;
-    //   }
-    // }
+      // Comment out the KYC status check and redirection
+      // if (userId) {
+      //   const kycResponse = await checkKycStatus(userId);
+      //   console.log('KYC Response:', kycResponse); // Debugging log
 
-    // Redirect to home
-    router.replace('/');
-  } catch (error) {
-    if (error instanceof BadRequestException) {
-      console.warn('Error:', error);
-      setApiError('Invalid login or password');
-    } else if (error instanceof Error) {
-      setApiError(error.message);
-    } else {
-      setApiError('An unknown error occurred');
+      //   if (!kycResponse.kycVerified) {
+      //     console.log('User KYC not verified, redirecting to KYC screen...');
+      //     router.replace('/profile/kyc');
+      //     return;
+      //   }
+      // }
+
+      // Redirect to home
+      router.replace('/');
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        console.warn('Error:', error);
+        setApiError('Invalid login or password');
+      } else if (error instanceof Error) {
+        setApiError(error.message);
+      } else {
+        setApiError('An unknown error occurred');
+      }
+    } finally {
+      setIsLoggingIn(false);
     }
-  } finally {
-    setIsLoggingIn(false);
-  }
-};
-
+  };
 
   const { isDirty, isValid } = formState;
   const isDisabled = !isDirty || !isValid || isLoggingIn;
@@ -130,6 +135,7 @@ const onSubmit: SubmitHandler<FormData> = async (data) => {
               </Text>
             </Link>
           </HStack>
+
         </VStack>
       </VStack>
     </Box>
