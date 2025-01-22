@@ -42,7 +42,6 @@ export class PaymentStore {
     makeAutoObservable(this, {
       transaction: observable,
       setTransaction: action,
-      //
       scannedPayment: observable,
       setScannedPayment: action,
     });
@@ -64,14 +63,17 @@ export class PaymentStore {
     this.setScannedPayment(undefined);
   }
 
+  /**
+   * Preview a Pix or Emigro code by parsing and/or calling our brcodePaymentPreview API
+   */
   async preview(brCode: string): Promise<Payment | PixPayment> {
     const pix = parsePix(brCode);
     if (hasError(pix) || pix.type === PixElementType.INVALID) {
       throw new InvalidPixError(brCode);
     }
 
+    // If it's an "Emigro" code
     if (pix.merchantCategoryCode === emigroCategoryCode && pix.type === PixElementType.STATIC) {
-      // It's Emigro a Payment
       const { merchantName, merchantCity, transactionAmount, infoAdicional } = pix;
       return {
         brCode,
@@ -84,10 +86,10 @@ export class PaymentStore {
       } as Payment;
     }
 
+    // Otherwise call our backend's Payment Preview
     const res = await pixApi.brcodePaymentPreview(brCode);
 
-    const assetCode = isoToCrypto[res.currency as keyof typeof isoToCrypto] ?? CryptoAsset.BRZ; // Pix is aways in BRL/BRZ
-
+    const assetCode = isoToCrypto[res.currency as keyof typeof isoToCrypto] ?? CryptoAsset.BRZ;
     const pixPayment: PixPayment = {
       brCode,
       merchantName: res.name,
@@ -95,31 +97,33 @@ export class PaymentStore {
       transactionAmount: res.amount,
       pixKey: res.pixKey,
       assetCode,
-      taxId: res.taxId,
+      taxId: res.taxId,  // can be undefined or a string
       bankName: res.bankName,
       txid: res.txId,
     };
     return pixPayment;
   }
 
+  /**
+   * Pay (non-Pix) transaction
+   */
   async pay() {
     const { from, to, idempotencyKey } = this.transaction!;
-    // map to dto
     const data: CreatePaymentTransaction = {
       destinationAddress: to.wallet,
       sendAssetCode: from.asset,
       destAssetCode: to.asset,
       destAmount: to.value,
       sendMax: from.value,
-      idempotencyKey,
+      idempotencyKey: idempotencyKey!,
     };
 
     let result = await paymentTransaction(data);
     result = await waitTransaction({
       transactionId: result.id,
       fetchFn: getTransaction,
-      initialDelay: 3000, // 3 seconds
-      maxAttempts: 25, // +25 seconds
+      initialDelay: 3000,
+      maxAttempts: 25,
     });
 
     if (result.status === 'failed') {
@@ -129,32 +133,45 @@ export class PaymentStore {
     return result;
   }
 
+  /**
+   * Pay a Pix transaction
+   */
   async payPix() {
     if (!this.scannedPayment) {
       throw new Error('No payment scanned');
     }
-
     if (!this.transaction) {
       throw new Error('No transaction set');
     }
 
     const pixPayment = this.scannedPayment as PixPayment;
+
+    // Build request object for backend,
+    // omit taxId if it's empty/undefined using spread
     const paymentRequest: BrcodePaymentRequest = {
       brcode: pixPayment.brCode,
-      amount: this.transaction.to.value, // Brazilian Real value
-      exchangeAsset: this.transaction.from.asset, // selected Asset
+      amount: this.transaction.to.value,
+      exchangeAsset: this.transaction.from.asset,
       name: pixPayment.merchantName,
-      taxId: pixPayment.taxId || '',
+      ...(pixPayment.taxId ? { taxId: pixPayment.taxId } : {}),
       description: pixPayment.infoAdicional || 'Payment via Emigro Wallet',
     };
+
+    console.log('[payPix] -> Sending BrcodePaymentRequest:', paymentRequest);
+
     let result = await pixApi.createBrcodePayment(paymentRequest);
 
+    console.log('[payPix] -> createBrcodePayment() result:', result);
+
+    // wait for transaction to confirm
     result = await waitTransaction({
       transactionId: result.id,
       fetchFn: pixApi.getBrcodePayment,
-      initialDelay: 10000, // 10 seconds
-      maxAttempts: 20, // +20 seconds
+      initialDelay: 10000,
+      maxAttempts: 20,
     });
+
+    console.log('[payPix] -> final transaction result:', result);
 
     if (result.status === 'failed') {
       throw new Error('Pix Payment failed');

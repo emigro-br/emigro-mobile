@@ -20,7 +20,6 @@ export const api = (config: CreateAxiosDefaults = {}): AxiosInstance => {
   // Alter defaults after instance has been created
   if (sessionStore.session) {
     instance.defaults.headers.common['Authorization'] = `Bearer ${sessionStore.accessToken}`;
-    console.debug('Access Token:', sessionStore.accessToken); // Log the token REMOVE IN PRODUCTION
   }
 
   withRefreshTokenInterceptor(instance, sessionStore.refresh);

@@ -1,78 +1,94 @@
+// src/services/emigro/pix.ts
+
 import { api } from './api';
 import { BrcodePaymentRequest, BrcodePaymentResponse, PixPaymentPreview } from './types';
 
-// export const dictKey = async (key: string): Promise<DictKey> => {
-//   const res = await api().get(`/transaction/dict-key/${key}`);
-//   return res.data;
-// };
+// Helper logs
+function logRequest(endpoint: string, payload: any) {
+  console.log(`[${endpoint}] Request:`, JSON.stringify(payload, null, 2));
+}
+function logResponse(endpoint: string, response: any) {
+  console.log(`[${endpoint}] Response:`, JSON.stringify(response, null, 2));
+}
 
-// COMENTINTD TO DEBUG ERROR
-//export const brcodePaymentPreview = async (brcode: string): Promise<PixPaymentPreview> => {
-//  const res = await api().post('/pix/payment-preview', {
-//    brcode,
-//  });
-//  return res.data;
-//};
-
+/**
+ * BR Code Payment Preview
+ * Calls: POST /pix/payment-preview
+ */
 export const brcodePaymentPreview = async (brcode: string): Promise<PixPaymentPreview> => {
+  const endpoint = 'POST /pix/payment-preview';
+  const payload = { brcode };
+  logRequest(endpoint, payload);
+
   try {
-    const res = await api().post('/pix/payment-preview', { brcode });
-    console.log('Payment Preview Response:', res.data);
+    const res = await api().post('/pix/payment-preview', payload);
+    logResponse(endpoint, res.data);
     return res.data;
   } catch (error: any) {
     if (error.response) {
-      console.error('Error status:', error.response.status); // HTTP status
-      console.error('Error headers:', error.response.headers); // Response headers
-      console.error('Error data:', error.response.data); // Response body
+      console.error(`[${endpoint}] Error status:`, error.response.status);
+      console.error(`[${endpoint}] Error headers:`, error.response.headers);
+      console.error(`[${endpoint}] Error data:`, error.response.data);
     } else if (error.request) {
-      console.error('No response received:', error.request); // Network request made but no response
+      console.error(`[${endpoint}] No response received:`, error.request);
     } else {
-      console.error('Error setting up request:', error.message); // Error in request setup
+      console.error(`[${endpoint}] Error in setup:`, error.message);
     }
-    throw error; // Re-throw to propagate error handling
+    throw error;
   }
 };
 
-
-
-//export const createBrcodePayment = async (data: BrcodePaymentRequest): Promise<BrcodePaymentResponse> => {
-//  const timeout = 15 * 1000; // some transactions may take longer
-//  const res = await api({ timeout }).post('/pix/brcode-payment', data);
-//  return res.data;
-//};
-
-
+/**
+ * Create a new Brcode Payment
+ * Calls: POST /pix/brcode-payment
+ */
 export const createBrcodePayment = async (
   data: BrcodePaymentRequest,
 ): Promise<BrcodePaymentResponse> => {
-  console.log('Raw Payment Request Data:', data); // Debugging
+  const endpoint = 'POST /pix/brcode-payment';
+  logRequest(endpoint, data);
 
-  // Convert your frontend data into exactly what the NestJS backend expects
-  const formattedData = {
-    // If you have a brcode, optionally send it
-    brcode: data.brcode,
-    // Or if you rely on pixKey
-    pixKey: data.pixKey,
-    amount: data.amount,
-    exchangeAsset: data.exchangeAsset, // Must match a valid enum in the backend
-    name: data.name,
-    taxId: data.taxId,
-    description: data.description,
-    // idempotencyKey: data.idempotencyKey, // optional if you want
-  };
-
-  console.log('Formatted Payment Request:', JSON.stringify(formattedData, null, 2)); // Debugging
-
-  const timeout = 15_000; // Allow for longer transactions
-  // Send the single object (NOT an array) to the correct backend route
-  const res = await api({ timeout }).post('/pix/brcode-payment', formattedData);
-  return res.data;
+  const timeout = 15_000;
+  try {
+    const res = await api({ timeout }).post('/pix/brcode-payment', data);
+    logResponse(endpoint, res.data);
+    return res.data;
+  } catch (error: any) {
+    if (error.response) {
+      console.error(`[${endpoint}] Error status:`, error.response.status);
+      console.error(`[${endpoint}] Error headers:`, error.response.headers);
+      console.error(`[${endpoint}] Error data:`, error.response.data);
+    } else if (error.request) {
+      console.error(`[${endpoint}] No response received:`, error.request);
+    } else {
+      console.error(`[${endpoint}] Error in setup:`, error.message);
+    }
+    throw error;
+  }
 };
 
-
-
-
+/**
+ * Get Brcode Payment Status
+ * Calls: GET /pix/brcode-payment/{transactionId}
+ */
 export const getBrcodePayment = async (transactionId: string): Promise<BrcodePaymentResponse> => {
-  const res = await api().get(`/pix/brcode-payment/${transactionId}`);
-  return res.data;
+  const endpoint = `GET /pix/brcode-payment/${transactionId}`;
+  console.log(`[${endpoint}] Request (no body).`);
+
+  try {
+    const res = await api().get(`/pix/brcode-payment/${transactionId}`);
+    logResponse(endpoint, res.data);
+    return res.data;
+  } catch (error: any) {
+    if (error.response) {
+      console.error(`[${endpoint}] Error status:`, error.response.status);
+      console.error(`[${endpoint}] Error headers:`, error.response.headers);
+      console.error(`[${endpoint}] Error data:`, error.response.data);
+    } else if (error.request) {
+      console.error(`[${endpoint}] No response received:`, error.request);
+    } else {
+      console.error(`[${endpoint}] Error in setup:`, error.message);
+    }
+    throw error;
+  }
 };

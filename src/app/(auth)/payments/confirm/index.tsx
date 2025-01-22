@@ -36,7 +36,8 @@ export const ConfirmPayment = () => {
   const insets = useSafeAreaInsets();
   const path = usePathname();
   const { scannedPayment } = paymentStore;
-  // try to get the asset from the scanned payment if has balance, otherwise use USDC
+
+  // Choose an initial asset if user has enough balance; otherwise fallback to USDC
   const initialAsset =
     scannedPayment?.assetCode && balanceStore.get(scannedPayment?.assetCode) > scannedPayment.transactionAmount
       ? scannedPayment.assetCode
@@ -51,10 +52,12 @@ export const ConfirmPayment = () => {
 
   const isPix = scannedPayment && 'pixKey' in scannedPayment;
 
+  // 1. Re-fetch a quote if user changes asset or amount
   const handleFetchQuote = async () => {
     if (!selectedAsset || !scannedPayment || !requestedAmount) {
       return;
     }
+    // If from-asset == payment's asset, no quote needed
     if (scannedPayment.assetCode === selectedAsset) {
       setPaymentQuote(requestedAmount);
       return;
@@ -69,11 +72,9 @@ export const ConfirmPayment = () => {
     };
     const quote = await fetchQuote(data);
 
-    // no quotes found
     if (quote === null) {
       return;
     }
-
     setPaymentQuote(quote.source_amount);
   };
 
@@ -81,6 +82,7 @@ export const ConfirmPayment = () => {
     handleFetchQuote().catch(console.warn);
   }, [selectedAsset, requestedAmount]);
 
+  // If no scannedPayment, just show a loading
   if (!scannedPayment) {
     return <LoadingScreen />;
   }
@@ -91,13 +93,14 @@ export const ConfirmPayment = () => {
       return;
     }
 
+    // Build the transaction object
     const transaction = {
       from: {
         asset: selectedAsset,
-        value: Number(paymentQuote), // FIXME: check where is  string
+        value: Number(paymentQuote),
       },
       to: {
-        wallet: scannedPayment.walletKey!, // TODO: for pix is the Emigro wallet in the server side
+        wallet: scannedPayment.walletKey!,
         asset: scannedPayment.assetCode,
         value: requestedAmount,
       },
@@ -112,9 +115,9 @@ export const ConfirmPayment = () => {
   const handleConfirmPayment = async () => {
     setIsProcessing(true);
     try {
-      let result: any; // FIXME: try to define the type
+      let result: any;
 
-      // TODO: move to paymentStore
+      // If it's Pix => payPix(), else => pay()
       if (isPix) {
         result = await paymentStore.payPix();
       } else {
@@ -129,7 +132,7 @@ export const ConfirmPayment = () => {
         throw new Error(TRANSACTION_ERROR_MESSAGE);
       }
     } catch (error) {
-      let message;
+      let message: string;
       if (error instanceof Error) {
         message = error.message;
       } else {
@@ -145,6 +148,7 @@ export const ConfirmPayment = () => {
     }
   };
 
+  // Show PIN screen if required
   if (showPinScreen) {
     return (
       <Box className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
@@ -158,7 +162,7 @@ export const ConfirmPayment = () => {
             handleConfirmPayment();
           }}
           onPinFail={(error) => {
-            console.warn('Error on pay transfer', error); // FIXME:
+            console.warn('Error on pay transfer', error);
             setShowPinScreen(false);
           }}
         />
@@ -166,9 +170,9 @@ export const ConfirmPayment = () => {
     );
   }
 
+  // Restrict assets if it's Pix (no ARS/EUROC quotes, etc.)
   let allowedAssets = balanceStore.currentAssets();
   if (isPix) {
-    // TODO: there is no quotes for ARS/EUROC for BRZ in the DEX. So, keep only BRZ and USDC for Pix
     allowedAssets = allowedAssets.filter((asset) => [CryptoAsset.BRZ, CryptoAsset.USDC].includes(asset));
   }
 
@@ -179,9 +183,12 @@ export const ConfirmPayment = () => {
 
   const balance = balanceStore.get(selectedAsset);
   const hasBalance = paymentQuote ? paymentQuote < balance : true;
-
   const isPayDisabled = !paymentQuote || !hasBalance || isProcesing;
   const isAmountEditable = scannedPayment.transactionAmount === 0;
+
+  // Hide "for merchantName" if empty or fallback
+  const merchantName = scannedPayment.merchantName?.trim() ?? '';
+  const hideName = !merchantName || merchantName === 'Emigro Solucoes de Pagamento LTDA';
 
   return (
     <>
@@ -192,7 +199,7 @@ export const ConfirmPayment = () => {
         onClose={() => setShowEditAmount(false)}
         tagline="Enter the amount you want to pay"
         initialAmount={requestedAmount}
-        asset={AssetToCurrency[scannedPayment.assetCode] as FiatCurrency} //TODO: improve this
+        asset={AssetToCurrency[scannedPayment.assetCode] as FiatCurrency}
         onSave={(amount) => setRequestedAmount(amount)}
       />
 
@@ -220,19 +227,21 @@ export const ConfirmPayment = () => {
             </HStack>
 
             <VStack space="3xl">
-              <Box>
-                <Text size="lg" numberOfLines={1} ellipsizeMode="tail">
-                  for{' '}
-                  <Text bold size="lg">
-                    {scannedPayment.merchantName}
+              {!hideName && (
+                <Box>
+                  <Text size="lg" numberOfLines={1} ellipsizeMode="tail">
+                    for{' '}
+                    <Text bold size="lg">
+                      {scannedPayment.merchantName}
+                    </Text>
                   </Text>
-                </Text>
-                {scannedPayment.merchantCity && (
-                  <Text>
-                    in <Text>{scannedPayment.merchantCity}</Text>
-                  </Text>
-                )}
-              </Box>
+                  {scannedPayment.merchantCity && (
+                    <Text>
+                      in <Text>{scannedPayment.merchantCity}</Text>
+                    </Text>
+                  )}
+                </Box>
+              )}
 
               {scannedPayment.infoAdicional && (
                 <Center>
@@ -286,7 +295,7 @@ export const ConfirmPayment = () => {
             </Text>
             <Button size="lg" onPress={handlePressPay} disabled={isPayDisabled}>
               {isProcesing && <ButtonSpinner className="mr-1" />}
-              <ButtonText>{isProcesing ? 'Processing...' : 'Pay'} </ButtonText>
+              <ButtonText>{isProcesing ? 'Processing...' : 'Pay'}</ButtonText>
             </Button>
           </VStack>
         </Box>
@@ -295,34 +304,78 @@ export const ConfirmPayment = () => {
   );
 };
 
+/** 
+ * Sub-components for Pix or Stellar
+ */
+
+// Fallbacks you want to hide in the StaticPix UI
+const fallbackName = 'Emigro Solucoes de Pagamento LTDA';
+const fallbackTaxId = '55479337000115';
+
+// If you also have a fallback "minimum" amount from Transfero, e.g., 1.58:
+const fallbackAmount = 0;
+
 interface StaticPixProps {
   pix: PixPayment;
 }
 
-const StaticPix = ({ pix }: StaticPixProps) => (
-  <VStack space="md">
-    <HStack className="justify-between">
-      <Text bold>CPF/CNPJ: </Text>
-      <Text>{pix.taxId}</Text>
-    </HStack>
-    <HStack className="justify-between">
-      <Text bold>Institution: </Text>
-      <Text numberOfLines={2} ellipsizeMode="tail" className="w-2/3 text-right">
-        {pix.bankName}
-      </Text>
-    </HStack>
-    <HStack className="justify-between">
-      <Text bold>Pix Key: </Text>
-      <Text>{pix.pixKey}</Text>
-    </HStack>
-    <HStack className="justify-between">
-      <Text bold>Identifier: </Text>
-      <Text numberOfLines={1} ellipsizeMode="tail">
-        {pix.txid}
-      </Text>
-    </HStack>
-  </VStack>
-);
+const StaticPix = ({ pix }: StaticPixProps) => {
+  // Trim them to avoid trailing space mismatch
+  const pixName = pix.merchantName?.trim() ?? '';
+  const pixTaxId = pix.taxId?.trim() ?? '';
+
+  // If name or taxId is the fallback, we skip that line
+  const hideName = pixName === fallbackName;
+  const hideTaxId = pixTaxId === fallbackTaxId;
+
+  // If you want to hide the fallback amount
+  const hideAmount = pix.amount === fallbackAmount;
+
+  return (
+    <VStack space="md">
+      {/* If taxId is fallback, hide that row */}
+      {!hideTaxId && pixTaxId && (
+        <HStack className="justify-between">
+          <Text bold>CPF/CNPJ: </Text>
+          <Text>{pixTaxId}</Text>
+        </HStack>
+      )}
+
+      {/* If the name is fallback, hide the row */}
+      {!hideName && pixName && (
+        <HStack className="justify-between">
+          <Text bold>Name: </Text>
+          <Text>{pixName}</Text>
+        </HStack>
+      )}
+
+      {/* If you want to hide fallback amounts, do it here
+      {!hideAmount && (
+        <HStack className="justify-between">
+          <Text bold>Amount:</Text>
+          <Text>{pix.amount}</Text>
+        </HStack>
+      )} */}
+
+      <HStack className="justify-between">
+        <Text bold>Institution: </Text>
+        <Text numberOfLines={2} ellipsizeMode="tail" className="w-2/3 text-right">
+          {pix.bankName}
+        </Text>
+      </HStack>
+      <HStack className="justify-between">
+        <Text bold>Pix Key: </Text>
+        <Text>{pix.pixKey}</Text>
+      </HStack>
+      <HStack className="justify-between">
+        <Text bold>Identifier: </Text>
+        <Text numberOfLines={1} ellipsizeMode="tail">
+          {pix.txid}
+        </Text>
+      </HStack>
+    </VStack>
+  );
+};
 
 interface StellarPayProps {
   pay: Payment;
@@ -338,10 +391,6 @@ const StellarPay = ({ pay }: StellarPayProps) => (
       <Text bold>Wallet Key:</Text>
       <Text>{maskWallet(pay.walletKey!)}</Text>
     </HStack>
-    {/* <HStack justifyContent="space-between">
-      <Text bold>Identifier:</Text>
-      <Text>{pix.txid}</Text>
-    </HStack> */}
   </VStack>
 );
 
