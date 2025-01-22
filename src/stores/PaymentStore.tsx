@@ -167,8 +167,8 @@ export class PaymentStore {
     result = await waitTransaction({
       transactionId: result.id,
       fetchFn: pixApi.getBrcodePayment,
-      initialDelay: 10000,
-      maxAttempts: 20,
+      initialDelay: 30000,  // e.g. 20 seconds
+      maxAttempts: 30,
     });
 
     console.log('[payPix] -> final transaction result:', result);
