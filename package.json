@@ -4,7 +4,9 @@
   "version": "1.10.6",
   "main": "expo-router/entry",
   "scripts": {
-    "preinstall": "npx npm-force-resolutions"
+    "preinstall": "npx npm-force-resolutions",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
