@@ -18,10 +18,6 @@ export const CustomWebView = ({ url, onMessage, onClose }: Props) => {
 
   const webviewRef = useRef<WebView | null>(null);
 
-  /**
-   * Inject a small JS patch that overrides `window.postMessage` with RN's postMessage
-   * so we can intercept events from the web page.
-   */
   const injectedJavaScript = `
     (function() {
       var originalPostMessage = window.postMessage;
@@ -30,19 +26,15 @@ export const CustomWebView = ({ url, onMessage, onClose }: Props) => {
       };
       window.postMessage = patchedPostMessage;
     })();
-    true; // note: this is required, or you'll sometimes get a silent failure
+    true;
   `;
 
   const handleClose = () => {
     console.log('[CustomWebView] handleClose triggered');
-    // Stop the WebView from continuing to load
     webviewRef.current?.stopLoading();
     onClose?.();
   };
 
-  /**
-   * Additional event callbacks to log what's happening:
-   */
   const handleLoadStart = (navState: WebViewNavigation) => {
     console.log('[CustomWebView] onLoadStart ->', navState.url);
   };
@@ -65,10 +57,6 @@ export const CustomWebView = ({ url, onMessage, onClose }: Props) => {
     console.error('[CustomWebView] onHttpError ->', statusCode, description);
   };
 
-  /**
-   * Some providers block RN default user-agent.
-   * Overriding to a typical mobile Chrome or Safari user agent can help.
-   */
   const customUserAgent =
     Platform.OS === 'android'
       ? 'Mozilla/5.0 (Linux; Android 10; KadoRNApp) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Mobile Safari/537.36'
@@ -76,7 +64,6 @@ export const CustomWebView = ({ url, onMessage, onClose }: Props) => {
 
   return (
     <Box className="flex-1">
-      {/* A simple top bar with a Close button */}
       <HStack className="px-2">
         <Button onPress={handleClose} variant="link">
           <ButtonText>Close</ButtonText>
@@ -89,23 +76,25 @@ export const CustomWebView = ({ url, onMessage, onClose }: Props) => {
         source={{ uri: url }}
         testID="custom-webview"
 
-        // Enable cookies and JS/DOM storage
-        sharedCookiesEnabled
         javaScriptEnabled
         domStorageEnabled
-        userAgent={customUserAgent}
+        sharedCookiesEnabled
+        thirdPartyCookiesEnabled
+        originWhitelist={['*']}
+        allowsInlineMediaPlayback
+        allowsBackForwardNavigationGestures
+        mixedContentMode="always"
+        useWebKit={true}
 
-        // Inject our JS patch
+        userAgent={customUserAgent}
         injectedJavaScript={injectedJavaScript}
 
-        // Logging event handlers
         onLoadStart={handleLoadStart}
         onLoadProgress={handleLoadProgress}
         onLoadEnd={handleLoadEnd}
         onError={handleError}
         onHttpError={handleHttpError}
 
-        // The message event callback from the web page
         onMessage={(event) => {
           console.log('[CustomWebView] onMessage ->', event.nativeEvent.data);
           onMessage?.(event);
@@ -118,7 +107,6 @@ export const CustomWebView = ({ url, onMessage, onClose }: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // If you want a top padding below the status bar
     paddingTop: Constants.statusBarHeight,
   },
 });
