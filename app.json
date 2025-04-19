@@ -69,6 +69,9 @@
 	  },
       "config": {
         "usesNonExemptEncryption": false
+      },
+      "entitlements": {
+        "com.apple.developer.apns-environment": "production"
       }
     },
     "android": {
@@ -77,8 +80,7 @@
         "android.permission.RECORD_AUDIO"
       ],
       "package": "co.emigro.app",
-      "versionCode": 159,
-      "versionName": "1.10.11"
+      "versionCode": 159
     },
     "extra": {
       "eas": {
