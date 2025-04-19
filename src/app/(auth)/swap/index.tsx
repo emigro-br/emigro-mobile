@@ -19,7 +19,7 @@ import { CryptoAsset } from '@/types/assets';
 import { CurrencyToAsset } from '@/utils/assets';
 
 import { AssetSwap } from './AssetSwap';
-import { SwapType } from './types';
+import { SwapType } from '@/types/swap';
 
 export const Swap = () => {
   const router = useRouter();

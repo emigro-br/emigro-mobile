@@ -1,55 +1,38 @@
 {
   "extends": "expo/tsconfig.base",
-  "allowSyntheticDefaultImports": true,
-  "jsx": "react-native",
-  "lib": [
-    "dom",
-    "esnext"
-  ],
-  "include": [
-    "./config/**/*",
-    "./src/**/*",
-    "./global.css",
-    "./nativewind-env.d.ts",
-    "nativewind-env.d.ts"
-  ],
-  "experimentalDecorators": true,
-  "emitDecoratorMetadata": true,
-  "moduleResolution": "node",
-  "module": "commonjs",
-  "noEmit": true,
-  "target": "es6",
-  "skipLibCheck": true,
-  "resolveJsonModule": true,
-  "strict": true,
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react-native",
+    "lib": ["dom", "esnext"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "noEmit": true,
+    "target": "es6",
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
     "baseUrl": "./",
     "strict": true,
-    "module": "es6",
     "types": [
       "@testing-library/jest-native",
       "jest",
       "node"
     ],
     "paths": {
-      "test-utils": [
-        "src/__utils__/test-utils"
-      ],
-      "@/assets/*": [
-        "assets/*"
-      ],
-      "@/config/*": [
-        "config/*"
-      ],
-      "@/mocks/*": [
-        "src/__mocks__/*"
-      ],
-      "@/global.css": [
-        "global.css"
-      ],
-      "@/*": [
-        "src/*"
-      ]
+      "test-utils": ["src/__utils__/test-utils"],
+      "@/assets/*": ["assets/*"],
+      "@/config/*": ["config/*"],
+      "@/mocks/*": ["src/__mocks__/*"],
+      "@/global.css": ["global.css"],
+      "@/*": ["src/*"]
     }
-  }
+  },
+  "include": [
+    "./config/**/*",
+    "./src/**/*",
+    "./global.css",
+    "./nativewind-env.d.ts",
+    "nativewind-env.d.ts"
+  ]
 }

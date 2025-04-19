@@ -12,7 +12,7 @@ import { VStack } from '@/components/ui/vstack';
 import { CryptoAsset } from '@/types/assets';
 import { iconFor, symbolFor, truncateToTwoDecimals } from '@/utils/assets';
 
-import { SwapType } from './types';
+import { SwapType } from '@/types/swap';
 
 type Props = {
   asset: CryptoAsset;
@@ -192,3 +192,5 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
 });
+
+export default AssetSwap;
