@@ -1,34 +1,31 @@
-import { useEffect, useState } from 'react';
-import * as Sentry from '@sentry/react-native';
-import { isRunningInExpoGo } from 'expo';
-import { Slot, SplashScreen, useNavigationContainerRef } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { LogBox } from 'react-native';
 import * as Updates from 'expo-updates';
+import { SplashScreen, Slot, useNavigationContainerRef } from 'expo-router';
+import { isRunningInExpoGo } from 'expo';
+import * as Sentry from '@sentry/react-native';
+
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import '@/global.css';
 
+// Optional: Silence specific warnings
+LogBox.ignoreLogs([
+  '`new NativeEventEmitter()` was called with a non-null argument',
+]);
+
+// Prevent splash from auto-hiding until we're ready
 SplashScreen.preventAutoHideAsync();
 
+// Setup Sentry (guarded)
+const sentryDsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
 const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
 
-async function onFetchUpdateAsync() {
-  try {
-    const update = await Updates.checkForUpdateAsync();
-    if (update.isAvailable) {
-      await Updates.fetchUpdateAsync();
-      await Updates.reloadAsync();
-    }
-  } catch (error) {
-    console.warn(`Error fetching latest Expo update: ${error}`);
-  }
-}
-
-const sentryDsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
 if (sentryDsn) {
   Sentry.init({
     dsn: sentryDsn,
+    debug: __DEV__,
     environment: __DEV__ ? 'development' : 'production',
-    sampleRate: 1.0,
-    tracesSampleRate: 0.5,
+    tracesSampleRate: 1.0,
     integrations: [
       new Sentry.ReactNativeTracing({
         routingInstrumentation,
@@ -38,28 +35,36 @@ if (sentryDsn) {
   });
 }
 
-// ✅ Default export — this is what fixes the routing error!
-export default function Layout() {
-  const [appIsReady, setAppIsReady] = useState(false);
-  const ref = useNavigationContainerRef();
+function AppLayout() {
+  const [isReady, setIsReady] = useState(false);
+  const navRef = useNavigationContainerRef();
 
   useEffect(() => {
-    routingInstrumentation.registerNavigationContainer(ref);
-  }, [ref]);
+    routingInstrumentation.registerNavigationContainer(navRef);
+  }, [navRef]);
 
   useEffect(() => {
     async function prepare() {
-      if (!__DEV__) {
-        await onFetchUpdateAsync();
+      try {
+        if (!__DEV__) {
+          const update = await Updates.checkForUpdateAsync();
+          if (update.isAvailable) {
+            await Updates.fetchUpdateAsync();
+            await Updates.reloadAsync();
+          }
+        }
+      } catch (err) {
+        console.warn('[UPDATES] Failed to fetch updates', err);
+      } finally {
+        await SplashScreen.hideAsync();
+        setIsReady(true);
       }
-      await SplashScreen.hideAsync();
-      setAppIsReady(true);
     }
 
     prepare();
   }, []);
 
-  if (!appIsReady) return null;
+  if (!isReady) return null;
 
   return (
     <GluestackUIProvider mode="light">
@@ -67,3 +72,5 @@ export default function Layout() {
     </GluestackUIProvider>
   );
 }
+
+export default Sentry.wrap(AppLayout);

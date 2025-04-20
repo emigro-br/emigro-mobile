@@ -70,9 +70,9 @@
       "config": {
         "usesNonExemptEncryption": false
       },
-      "entitlements": {
-        "com.apple.developer.apns-environment": "production"
-      }
+      //"entitlements": {
+      //  "com.apple.developer.apns-environment": "production"
+      //}
     },
     "android": {
       "permissions": [
