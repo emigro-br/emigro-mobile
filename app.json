@@ -3,7 +3,7 @@
     "name": "Emigro",
     "slug": "emigro-mobile",
     "owner": "emigro",
-    "version": "1.10.11",
+    "version": "1.10.6",
     "description": "The traveler's digital wallet",
     "orientation": "portrait",
     "scheme": "emigro",
@@ -24,15 +24,13 @@
         "expo-build-properties",
         {
           "android": {
-            "minSdkVersion": 35,
-            "compileSdkVersion": 35,
-            "targetSdkVersion": 35,
-            //"buildToolsVersion": "35.0.0",
-            "versionName": "1.10.11",
-            "versionCode": 159
+            "minSdkVersion": 34,
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "buildToolsVersion": "34.0.0"
           },
           "ios": {
-            "deploymentTarget": "15.1"
+            "deploymentTarget": "13.4"
           }
         }
       ],
@@ -63,30 +61,24 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "co.emigro.app",
-      "buildNumber": "102",
-	  "infoPlist": {
-	    "NSLocationWhenInUseUsageDescription": "We use your location to enhance your experience and show relevant information nearby."
-	  },
       "config": {
         "usesNonExemptEncryption": false
-      },
-      //"entitlements": {
-      //  "com.apple.developer.apns-environment": "production"
-      //}
+      }
     },
     "android": {
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "co.emigro.app",
-      "versionCode": 159
+      "package": "co.emigro.app"
     },
     "extra": {
       "eas": {
         "projectId": "d84d8915-cdac-448c-bf38-fc1ebcbe8eac"
       }
     },
-    "runtimeVersion": "1.10.11"
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
   }
 }
