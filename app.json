@@ -3,7 +3,7 @@
     "name": "Emigro",
     "slug": "emigro-mobile",
     "owner": "emigro",
-    "version": "1.10.6",
+    "version": "1.10.12",
     "description": "The traveler's digital wallet",
     "orientation": "portrait",
     "scheme": "emigro",
@@ -64,6 +64,13 @@
       "bitcode": false,
       "config": {
         "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "NSCameraUsageDescription": "We need camera access to scan your ID for verification and QRCode Payments.",
+        "NSLocationWhenInUseUsageDescription": "Location is used for secure identity verification.",
+        "NSPhotoLibraryUsageDescription": "Photo access is used to upload ID documents and QRCode Payments.",
+        "NFCReaderUsageDescription": "NFC is used to read data from supported ID documents.",
+        "NSMicrophoneUsageDescription": "Microphone access is used for video verification purposes."
       }
     },
     "android": {
