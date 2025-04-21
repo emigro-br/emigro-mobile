@@ -61,6 +61,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "co.emigro.app",
+      "bitcode": false,
       "config": {
         "usesNonExemptEncryption": false
       }
