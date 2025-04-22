@@ -121,6 +121,7 @@ useEffect(() => {
               testID="bank-currency-button"
             />
 
+{/*
             <ListTile
               leading={<CheckCircle />}
               title="Verify Identity"
@@ -130,6 +131,7 @@ useEffect(() => {
               disabled={kycVerified}
               className={kycVerified ? 'opacity-50' : ''}
             />
+*/}
 
             <Button
               onPress={() => router.push('/profile/delete-account')}

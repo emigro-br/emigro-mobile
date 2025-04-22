@@ -19,14 +19,18 @@ export const CustomWebView = ({ url, onMessage, onClose }: Props) => {
 
   const webviewRef = useRef<WebView | null>(null);
 
-  useEffect(() => {
-    if (Platform.OS === 'ios') {
-      WebBrowser.openBrowserAsync(url).then(() => {
-        // Optional: you could trigger onClose after they dismiss the browser
+useEffect(() => {
+  if (Platform.OS === 'ios') {
+    WebBrowser.openBrowserAsync(url)
+      .then(() => {
+        // Only close AFTER the user dismisses Safari
         onClose?.();
+      })
+      .catch((e) => {
+        console.error('[WebBrowser] Error launching Safari:', e);
       });
-    }
-  }, [url]);
+  }
+}, [url]);
 
   const injectedJavaScript = `
     (function() {

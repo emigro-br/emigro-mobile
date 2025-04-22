@@ -46,11 +46,16 @@ export const AssetForOperation = () => {
         isOpen={!!currencyForDeposit}
         title="Your wallet is empty. Would you like to deposit in it?"
         onClose={() => setCurrencyForDeposit(null)}
-        onAction={() => {
-          setCurrencyForDeposit(null);
-          router.dismissAll();
-          router.push(`/ramp/deposit/${currencyForDeposit}`);
-        }}
+onAction={() => {
+  const selected = currencyForDeposit;
+  setCurrencyForDeposit(null);
+
+  // Give Safari time to start or settle any system UI
+  setTimeout(() => {
+    router.dismissAll();
+    router.push(`/ramp/deposit/${selected}`);
+  }, 300); // slight delay = safety
+}}
       />
       <Box className="flex-1">
         <VStack space="md" className="p-4">
