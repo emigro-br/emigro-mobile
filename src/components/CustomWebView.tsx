@@ -19,18 +19,20 @@ export const CustomWebView = ({ url, onMessage, onClose }: Props) => {
 
   const webviewRef = useRef<WebView | null>(null);
 
-useEffect(() => {
-  if (Platform.OS === 'ios') {
-    WebBrowser.openBrowserAsync(url)
-      .then(() => {
-        // Only close AFTER the user dismisses Safari
-        onClose?.();
-      })
-      .catch((e) => {
-        console.error('[WebBrowser] Error launching Safari:', e);
-      });
-  }
-}, [url]);
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      const redirectUri = 'emigro://onramp-complete';
+
+      WebBrowser.openAuthSessionAsync(url, redirectUri)
+        .then((result) => {
+          console.log('[WebBrowser] Safari finished:', result);
+          onClose?.(); // Only call this after Safari closes
+        })
+        .catch((e) => {
+          console.error('[WebBrowser] Error launching Safari:', e);
+        });
+    }
+  }, [url]);
 
   const injectedJavaScript = `
     (function() {
@@ -76,7 +78,7 @@ useEffect(() => {
       ? 'Mozilla/5.0 (Linux; Android 10; KadoRNApp) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Mobile Safari/537.36'
       : 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile Safari/605.1.15';
 
-  // On iOS, skip WebView entirely
+  // Skip WebView on iOS — use Safari View Controller instead
   if (Platform.OS === 'ios') return null;
 
   return (
