@@ -25,6 +25,10 @@ import { FiatCurrency } from '@/types/assets';
 import { fiatsFromCryptoCodes } from '@/utils/assets';
 import { maskWallet } from '@/utils/masks';
 
+import { Image } from 'react-native';
+import StellarIcon from '@/assets/images/chains/stellar.png';
+import BaseIcon from '@/assets/images/chains/base.png';
+
 const Profile = observer(() => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -44,6 +48,23 @@ useEffect(() => {
   fetchKycStatus();
 }, []);
 
+
+useEffect(() => {
+  console.log('[DEBUG] Full sessionStore snapshot:', JSON.stringify({
+    user: sessionStore.user,
+    profile: sessionStore.profile,
+    preferences: sessionStore.preferences,
+    session: sessionStore.session,
+    evmWallet: sessionStore.evmWallet,
+    justLoggedIn: sessionStore.justLoggedIn,
+  }, null, 2));
+}, []);
+console.log('[Profile] Stellar:', publicKey);
+useEffect(() => {
+  console.log('[DEBUG] evmWallet (on render):', sessionStore.evmWallet);
+}, [sessionStore.evmWallet]);
+
+
   const handleVerifyIdentity = () => {
     if (!kycVerified) {
       router.push('/profile/kyc');
@@ -54,19 +75,17 @@ useEffect(() => {
     await sessionStore.clear();
   };
 
-  const copyToClipboard = async () => {
-    if (publicKey) {
-      await Clipboard.setStringAsync(publicKey);
-      toast.show({
-        render: ({ id }) => (
-          <Toast nativeID={`toast${id}`} action="muted" variant="solid">
-            <ToastDescription>Copied to clipboard</ToastDescription>
-          </Toast>
-        ),
-      });
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    }
-  };
+const copyToClipboard = async (value: string) => {
+  await Clipboard.setStringAsync(value);
+  toast.show({
+    render: ({ id }) => (
+      <Toast nativeID={`toast${id}`} action="muted" variant="solid">
+        <ToastDescription>Copied to clipboard</ToastDescription>
+      </Toast>
+    ),
+  });
+  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+};
 
   const profileInfo = sessionStore.profile;
   if (!profileInfo) {
@@ -87,12 +106,51 @@ useEffect(() => {
             <Heading size="xl" className="py-2">
               {fullName}
             </Heading>
-            {publicKey && (
-              <Button size="md" variant="link" action="primary" onPress={copyToClipboard}>
-                <ButtonText>{maskWallet(publicKey)}</ButtonText>
-                <ButtonIcon as={CopyIcon} className="ml-2" />
-              </Button>
-            )}
+{publicKey && (
+  <VStack space="md">
+    {/* 🔸 Separator */}
+    <Box className="border-b border-gray-200 my-1" />
+    
+    {/* 🔹 Stellar Wallet */}
+    <ListTile
+      leading={
+        <Image
+          source={StellarIcon}
+          style={{ width: 32, height: 32, borderRadius: 0 }}
+        />
+      }
+      title="Stellar"
+      subtitle={maskWallet(publicKey)}
+      trailing={
+        <Button size="sm" variant="link" action="primary" onPress={() => copyToClipboard(publicKey)}>
+          <ButtonIcon as={CopyIcon} />
+        </Button>
+      }
+    />
+
+    {/* 🔸 Separator */}
+    <Box className="border-b border-gray-200 my-1" />
+
+    {/* 🔸 EVM Wallet (Base chain) */}
+    {sessionStore.evmWallet?.publicAddress && (
+      <ListTile
+        leading={
+          <Image
+            source={BaseIcon}
+            style={{ width: 32, height: 32, borderRadius: 0 }}
+          />
+        }
+        title="Base (EVM)"
+        subtitle={maskWallet(sessionStore.evmWallet.publicAddress)}
+        trailing={
+          <Button size="sm" variant="link" action="primary" onPress={() => copyToClipboard(sessionStore.evmWallet.publicAddress)}>
+            <ButtonIcon as={CopyIcon} />
+          </Button>
+        }
+      />
+    )}
+  </VStack>
+)}
           </Center>
 
           <VStack space="xl">

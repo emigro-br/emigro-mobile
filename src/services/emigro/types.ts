@@ -42,6 +42,9 @@ export type User = {
   status: string;
   createdAt: string;
   updatedAt: string;
+  evmWallet?: {
+    publicAddress: string;
+  };
   preferences: Record<string, any>;
 };
 

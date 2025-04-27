@@ -1,78 +1,127 @@
 import React, { useState } from 'react';
-
+import { Image, Pressable } from 'react-native';
 import { Stack, useLocalSearchParams, usePathname, useRouter } from 'expo-router';
 
-import { CardAssetList } from '@/components/AssetList';
-import { SimpleModal } from '@/components/modals/SimpleModal';
 import { Box } from '@/components/ui/box';
-import { Heading } from '@/components/ui/heading';
-import { ChevronRightIcon, Icon } from '@/components/ui/icon';
 import { VStack } from '@/components/ui/vstack';
-import { balanceStore } from '@/stores/BalanceStore';
-import { CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
-import { AssetToCurrency, CurrencyToAsset, truncateToTwoDecimals } from '@/utils/assets';
+import { HStack } from '@/components/ui/hstack';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
+import { Button, ButtonText } from '@/components/ui/button';
 
-const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+import BaseIcon from '@/assets/images/chains/base.png';
+import StellarIcon from '@/assets/images/chains/stellar.png';
+import USDCIcon from '@/assets/images/icons/usdc-icon.png';
+import ETHIcon from '@/assets/images/icons/ethereum.png';
 
-export const AssetForOperation = () => {
-  const router = useRouter();
-  const path = usePathname();
+const CHAINS = ['base', 'stellar'] as const;
+type ChainType = typeof CHAINS[number];
+
+const AssetForOperation = () => {
   const { kind } = useLocalSearchParams();
-  const [currencyForDeposit, setCurrencyForDeposit] = useState<FiatCurrency | null>(null);
+  const path = usePathname();
+  const router = useRouter();
 
-  const capitalized = capitalize(kind as string);
+  const [selectedChain, setSelectedChain] = useState<ChainType | null>(null);
+  const [selectedCurrency, setSelectedCurrency] = useState<'USDC' | 'ETH' | null>(null);
 
-  const myCurrencies = balanceStore
-    .currentAssets()
-    .filter((asset) => asset !== CryptoAsset.XLM) // disable XLM ramps
-    .filter((asset) => asset !== CryptoAsset.BRZ) // FIXME: Transfero SEP24 is not implemented
-    .map((asset) => AssetToCurrency[asset])
-    .filter((a) => a !== undefined) as FiatCurrency[];
+  const capitalizedKind = kind ? `${kind[0].toUpperCase()}${kind.slice(1)}` : 'Ramp';
 
-  const renderSubtitle = (currency: CryptoOrFiat) => {
-    const asset = CurrencyToAsset[currency as FiatCurrency];
-    const balance = balanceStore.get(asset);
-    return `${truncateToTwoDecimals(balance)} ${asset}`;
+  const handleContinue = () => {
+    if (selectedCurrency && selectedChain) {
+      router.push(`${path}/${selectedCurrency.toLowerCase()}?chain=${selectedChain}`);
+    }
   };
+
+  const renderOptionCard = ({
+    name,
+    icon,
+    isSelected,
+    isDisabled,
+    onPress,
+    borderColor = '#e5e7eb',
+  }: {
+    name: string;
+    icon: any;
+    isSelected: boolean;
+    isDisabled: boolean;
+    borderColor?: string;
+    onPress?: () => void;
+  }) => (
+    <Pressable
+      onPress={onPress}
+      disabled={isDisabled}
+      style={{
+        opacity: isDisabled ? 0.4 : 1,
+        borderWidth: isSelected ? 2 : 1,
+        borderColor: isSelected ? borderColor : '#e5e7eb',
+        borderRadius: 12,
+        padding: 12,
+        backgroundColor: isSelected ? '#fff5f5' : '#ffffff',
+        marginBottom: 10,
+      }}
+    >
+      <HStack align="center" space="md">
+        <Image source={icon} style={{ width: 28, height: 28, resizeMode: 'contain' }} />
+        <Text size="md" className="font-semibold">{name}</Text>
+      </HStack>
+
+    </Pressable>
+  );
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: capitalized,
-        }}
-      />
-      <SimpleModal
-        isOpen={!!currencyForDeposit}
-        title="Your wallet is empty. Would you like to deposit in it?"
-        onClose={() => setCurrencyForDeposit(null)}
-onAction={() => {
-  const selected = currencyForDeposit;
-  setCurrencyForDeposit(null);
+      <Stack.Screen options={{ title: capitalizedKind }} />
 
-  // Give Safari time to start or settle any system UI
-  setTimeout(() => {
-    router.dismissAll();
-    router.push(`/ramp/deposit/${selected}`);
-  }, 300); // slight delay = safety
-}}
-      />
-      <Box className="flex-1">
-        <VStack space="md" className="p-4">
-          <Heading size="xl">{capitalized} money</Heading>
-          <CardAssetList
-            data={myCurrencies}
-            trailing={<Icon as={ChevronRightIcon} size="md" />}
-            renderSubtitle={renderSubtitle}
-            onPress={(currency) => {
-              const asset = CurrencyToAsset[currency as FiatCurrency];
-              if (kind === 'withdraw' && balanceStore.get(asset) <= 0.01) {
-                setCurrencyForDeposit(currency as FiatCurrency);
-              } else {
-                router.push(`${path}/${currency}`);
-              }
-            }}
-          />
+      <Box className="flex-1 bg-white">
+        <VStack className="p-4" space="lg">
+          <Heading size="xl">{capitalizedKind} money</Heading>
+
+          {/* Chain selection */}
+          <Text className="font-medium mb-2">Choose a network</Text>
+          {CHAINS.map((chain) => {
+            const icon = chain === 'base' ? BaseIcon : StellarIcon;
+            const isSelected = selectedChain === chain;
+            return renderOptionCard({
+              name: chain.toUpperCase(),
+              icon,
+              isSelected,
+              isDisabled: false,
+              onPress: () => {
+                setSelectedChain(chain);
+                setSelectedCurrency(null); // reset currency when chain changes
+              },
+              borderColor: '#ef4444', // red
+            });
+          })}
+
+          {/* Currency selection */}
+          <Text className="font-medium mt-6 mb-2">Select a currency</Text>
+          {renderOptionCard({
+            name: 'USDC',
+            icon: USDCIcon,
+            isSelected: selectedCurrency === 'USDC',
+            isDisabled: !selectedChain,
+            onPress: () => setSelectedCurrency('USDC'),
+            borderColor: '#ef4444',
+          })}
+          {renderOptionCard({
+            name: 'ETH',
+            icon: ETHIcon,
+            isSelected: selectedCurrency === 'ETH',
+            isDisabled: selectedChain !== 'base',
+            onPress: () => selectedChain === 'base' && setSelectedCurrency('ETH'),
+            borderColor: '#ef4444',
+          })}
+
+          {/* Continue */}
+          <Button
+            onPress={handleContinue}
+            disabled={!selectedChain || !selectedCurrency}
+            className="mt-6"
+          >
+            <ButtonText>Continue</ButtonText>
+          </Button>
         </VStack>
       </Box>
     </>

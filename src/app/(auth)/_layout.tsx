@@ -27,29 +27,31 @@ export function AppLayout() {
       if (!hasPin) {
         router.replace('/onboarding/pin');
       } else {
+		  
+		  console.log('[AppLayout] 🔓 Locking logic is DISABLED for testing.');
+		  
         // disable lock in development
-        if (__DEV__) {
-          return;
-        }
+        //if (__DEV__) {
+        //  return;
+        //}
 
         // lock when app is loaded
-        router.replace('/unlock');
+        //router.replace('/unlock');
 
         // lock when app is in background
-        const handleAppStateChange = (nextAppState: AppStateStatus) => {
-          // Android = background, iOS = inactive
-          if (nextAppState === 'background' || nextAppState === 'inactive') {
-            router.replace('/lock');
-          } else if (nextAppState === 'active') {
-            router.replace('/unlock');
-          }
-        };
+        //const handleAppStateChange = (nextAppState: AppStateStatus) => {
+        //  if (nextAppState === 'background' || nextAppState === 'inactive') {
+        //    router.replace('/lock');
+        //  } else if (nextAppState === 'active') {
+        //    router.replace('/unlock');
+        //  }
+        //};
 
         // Subscribe to app state changes
-        const subscription = AppState.addEventListener('change', handleAppStateChange);
-        return () => {
-          subscription.remove();
-        };
+        //const subscription = AppState.addEventListener('change', handleAppStateChange);
+        //return () => {
+        //  subscription.remove();
+        //};
       }
     }
   }, [isLogged, securityStore.pin]);

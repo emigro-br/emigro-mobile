@@ -1,195 +1,154 @@
 import React, { useState } from 'react';
+import { Image, Pressable, TextInput } from 'react-native';
 import {
   Stack,
-  useFocusEffect,
-  useGlobalSearchParams,
   useLocalSearchParams,
-  usePathname,
+  useGlobalSearchParams,
   useRouter,
 } from 'expo-router';
 
-import { Sep24TransactionHistoryContainer } from '@/components/Sep24TransactionHistory';
-import { OpenURLModal } from '@/components/modals/OpenURLModal';
 import { Box } from '@/components/ui/box';
-import { Button, ButtonText } from '@/components/ui/button';
-import { Heading } from '@/components/ui/heading';
-import { ScrollView } from '@/components/ui/scroll-view';
-import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
-import { AssetInput } from '@/components/AssetInput';
+import { HStack } from '@/components/ui/hstack';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
+import { Button, ButtonText } from '@/components/ui/button';
+
+import BaseIcon from '@/assets/images/chains/base.png';
+import StellarIcon from '@/assets/images/chains/stellar.png';
+import USDCIcon from '@/assets/images/icons/usdc-icon.png';
+import ETHIcon from '@/assets/images/icons/ethereum.png';
 
 import { sessionStore } from '@/stores/SessionStore';
-import { balanceStore } from '@/stores/BalanceStore';
-import { OperationKind } from '@/services/emigro/anchors';
-import { CurrencyToAsset, fiatByCode, symbolFor } from '@/utils/assets';
-import { FiatCurrency } from '@/types/assets';
 import { api } from '@/services/emigro/api';
 
-const OperationRouter = () => {
-  console.log('[OperationRouter] Rendering...');
-
-  const { kind } = useGlobalSearchParams();
-  const { currency } = useLocalSearchParams<{ currency: FiatCurrency }>();
-
-  console.log('[OperationRouter] kind:', kind, 'currency:', currency);
-
-  if (!currency) {
-    console.error('[OperationRouter] ❌ Missing currency param, throwing Error...');
-    throw new Error('Currency is required');
-  }
-
-  if (kind === 'deposit') {
-    return <Deposit currency={currency} />;
-  } else if (kind === 'withdraw') {
-    return <Withdraw currency={currency} />;
-  } else {
-    console.error('[OperationRouter] ❌ Invalid kind operation:', kind);
-    throw new Error('Invalid kind operation: ' + kind);
-  }
+const iconMap = {
+  BRL: require('@/assets/images/icons/brl-icon.png'),
+  USDC: USDCIcon,
+  ETH: ETHIcon,
 };
 
-type KindProps = { currency: FiatCurrency };
-
-const Deposit = ({ currency }: KindProps) => {
-  return <OperationHome title="Deposit" kind={OperationKind.DEPOSIT} currency={currency} />;
-};
-
-const Withdraw = ({ currency }: KindProps) => {
-  return <OperationHome title="Withdraw" kind={OperationKind.WITHDRAW} currency={currency} />;
-};
-
-type LayoutProps = {
-  title: string;
-  kind: OperationKind;
-  currency: string; // e.g., "USD"
-};
-
-const OperationHome = ({ title, kind, currency }: LayoutProps) => {
-  console.log('[OperationHome] Rendering...', { title, kind, currency });
+const OperationScreen = () => {
+  const { currency } = useLocalSearchParams<{ currency: string }>();
+  const { chain, kind } = useGlobalSearchParams();
 
   const router = useRouter();
-  const path = usePathname();
-  const [isOpenUrlModal, setIsOpenUrlModal] = useState(false);
-  const [fiatAmount, setFiatAmount] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [onrampUrl, setOnrampUrl] = useState<string | null>(null);
-
-  // Force refresh transaction history
-  const [refreshedAt, setRefreshedAt] = useState<Date>(new Date());
-
-  console.log('[OperationHome] path:', path);
-
-  // Convert the currency to a known fiat object
-  const fiat = fiatByCode[currency as FiatCurrency];
-  const asset = CurrencyToAsset[fiat.code as FiatCurrency];
-  const balance = balanceStore.get(asset);
-
-  // Get user details
   const userId = sessionStore.user?.id;
-  const walletAddress = sessionStore.user?.publicKey;
 
-  console.log('[OperationHome] Derived fiat:', fiat, 'asset:', asset, 'balance:', balance);
-  console.log('[OperationHome] User ID:', userId, 'Wallet Address:', walletAddress);
+  const asset = currency?.toUpperCase() as 'USDC' | 'ETH';
+  const network = chain as 'base' | 'stellar';
+  const [selectedCurrency, setSelectedCurrency] = useState<'BRL' | 'USDC' | 'ETH'>('BRL');
+  const [inputAmount, setInputAmount] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      setRefreshedAt(new Date());
-    }, [])
+  const handleSubmit = async () => {
+    const payload = {
+      userId,
+      fiatAmount: Number(inputAmount),
+      fiatCurrency: selectedCurrency,
+      asset,
+      chain: network,
+    };
+
+    console.log('[handleSubmit] Payload:', payload);
+
+    try {
+      setLoading(true);
+      const res = await api().post('/coinbase/onramp', payload);
+      const { onrampUrl } = res.data;
+
+      router.push({
+        pathname: `/ramp/deposit/${currency}/webview`,
+        params: { url: encodeURIComponent(onrampUrl) },
+      });
+    } catch (err) {
+      console.error('❌ Error submitting transaction', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const secondCurrency = asset;
+
+  const renderOptionCard = (label: 'BRL' | 'USDC' | 'ETH') => (
+    <Pressable
+      onPress={() => setSelectedCurrency(label)}
+      style={{
+        opacity: 1,
+        borderWidth: selectedCurrency === label ? 2 : 1,
+        borderColor: selectedCurrency === label ? '#ef4444' : '#e5e7eb',
+        borderRadius: 12,
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        backgroundColor: selectedCurrency === label ? '#fff5f5' : '#ffffff',
+        flexDirection: 'row',
+        alignItems: 'center',
+      }}
+    >
+      <Image
+        source={iconMap[label]}
+        style={{ width: 20, height: 20, marginRight: 8, resizeMode: 'contain' }}
+      />
+      <Text size="md" className="font-semibold">{label}</Text>
+    </Pressable>
   );
 
-  /**
-   * ✅ FIXED: Creates an Onramp session and ensures URL is passed correctly.
-   */
-const handleNewTransaction = async () => {
-  if (!userId || !walletAddress || !fiatAmount) {
-    console.error('[handleNewTransaction] ❌ Missing required data:', {
-      userId, walletAddress, fiatAmount, currency
-    });
-    return;
-  }
-
-  console.log('[handleNewTransaction] 🔵 Creating Coinbase Onramp session...');
-  setLoading(true);
-
-  try {
-    const response = await api().post('/coinbase/onramp', {
-      userId,
-      walletAddress,
-      fiatAmount,
-      fiatCurrency: currency,
-    });
-
-    console.log('[handleNewTransaction] ✅ Response:', response.data);
-
-    const { onrampUrl } = response.data;
-
-    if (!onrampUrl) {
-      console.error('[handleNewTransaction] ❌ No Onramp URL received');
-      return;
-    }
-
-    console.log('[handleNewTransaction] ✅ Coinbase URL:', onrampUrl);
-
-    // ✅ Ensure the URL is properly encoded before passing it
-    const encodedUrl = encodeURIComponent(onrampUrl);
-
-    // ✅ Navigate to WebView with the correct params
-    router.push({
-      pathname: `/ramp/deposit/${currency}/webview`,
-      params: { url: encodedUrl },
-    });
-  } catch (error) {
-    console.error('[handleNewTransaction] ❌ Error:', error);
-  } finally {
-    setLoading(false);
-  }
-};
-
+  const labelText = {
+    BRL: 'Insert the amount you would like to deposit in Brazilian Reals (BRL)',
+    USDC: 'Insert the amount you would like to deposit in USDC',
+    ETH: 'Insert the amount you would like to deposit in Ethereum',
+  };
 
   return (
     <>
-      <Stack.Screen options={{ title, headerBackTitleVisible: false }} />
+      <Stack.Screen options={{ title: 'Deposit' }} />
 
-      <OpenURLModal
-        isOpen={isOpenUrlModal}
-        onClose={() => setIsOpenUrlModal(false)}
-        onConfirm={() => {
-          if (!onrampUrl) {
-            console.error('[OpenURLModal] ❌ No URL set, cannot proceed.');
-            return;
-          }
-          console.log('[OpenURLModal] 🚀 Navigating to WebView:', onrampUrl);
-router.push({
-  pathname: `/ramp/deposit/${currency}/webview`,
-  params: { url: encodeURIComponent(onrampUrl) }, // ✅ Ensure URL is encoded correctly
-});
-        }}
-        testID="open-url-modal"
-      />
+      <Box className="flex-1 bg-white">
+        <VStack className="p-4 space-y-4">
+          <Heading size="xl" className="text-center">Depositing {asset}</Heading>
 
-      <ScrollView className="flex-1 bg-white">
-        <Box className="flex-1">
-          <VStack space="md" className="p-4">
-            <Heading size="xl">{title} in {fiat.name}</Heading>
-            <Text bold className="mb-2">Balance: {symbolFor(asset, balance)}</Text>
+          <Text className="text-gray-600 text-center">
+            {labelText[selectedCurrency]}
+          </Text>
 
-            <AssetInput
-              asset={currency}
-              value={fiatAmount}
-              onChangeValue={setFiatAmount}
-              precision={2}
-            />
+{/* <HStack justify="center" align="center" space="md" className="mt-2">
+  <Box style={{ marginHorizontal: 6, flex: 1 }}>
+    {renderOptionCard('BRL')}
+  </Box>
+   <Box style={{ marginHorizontal: 6, flex: 1  }}>
+    {renderOptionCard(secondCurrency)}
+  </Box> 
+</HStack> */}
 
-            <Button variant="outline" onPress={handleNewTransaction} disabled={loading || !fiatAmount}>
-              <ButtonText>{loading ? 'Loading...' : 'Pay with Coinbase'}</ButtonText>
-            </Button>
+          <TextInput
+            placeholder={`Enter amount in ${selectedCurrency}`}
+            value={inputAmount}
+            onChangeText={setInputAmount}
+            keyboardType="decimal-pad"
+            style={{
+              borderColor: '#e5e7eb',
+              borderWidth: 1,
+              borderRadius: 12,
+              padding: 16,
+              fontSize: 20,
+              textAlign: 'center',
+              marginTop: 20,
+            }}
+          />
 
-            <Sep24TransactionHistoryContainer asset={asset} kind={kind} refreshedAt={refreshedAt} />
-          </VStack>
-        </Box>
-      </ScrollView>
+          <Button
+            className="mt-4"
+            disabled={!inputAmount || !userId}
+            onPress={handleSubmit}
+          >
+            <ButtonText>
+              {loading ? 'Loading...' : 'Pay with Coinbase'}
+            </ButtonText>
+          </Button>
+        </VStack>
+      </Box>
     </>
   );
 };
 
-export default OperationRouter;
+export default OperationScreen;

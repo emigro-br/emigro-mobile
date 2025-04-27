@@ -17,6 +17,15 @@ export class SessionStore {
   profile: UserProfile | null = null;
   preferences: UserPreferences | null = null;
 
+  evmWallet: { publicAddress: string } | null = null;
+
+isUserInitialized = false;
+
+setEvmWallet(wallet: { publicAddress: string } | null) {
+  console.log('[SessionStore] Set EVM wallet:', wallet);
+  this.evmWallet = wallet;
+}
+
   private authKeys: string[] = [
     'auth.accessToken',
     'auth.refreshToken',
@@ -52,6 +61,9 @@ export class SessionStore {
       // loggedIn
       justLoggedIn: observable,
       setJustLoggedIn: action,
+
+      // evmWallet
+      evmWallet: observable, // ✅ added
     });
   }
 
@@ -70,9 +82,18 @@ export class SessionStore {
     this.session = session;
   }
 
-  setUser(user: User | null) {
-    this.user = user;
+setUser(user: User | null) {
+  console.log('[SessionStore] setUser called with:', user);
+
+  this.user = user;
+
+  if ((user as any)?.evmWallet !== undefined) {
+    console.log('[SessionStore] Updating evmWallet from user:', user.evmWallet);
+    this.evmWallet = (user as any).evmWallet;
+  } else {
+    console.log('[SessionStore] Preserving existing evmWallet (no override)');
   }
+}
 
   setProfile(profile: UserProfile | null) {
     this.profile = profile;
@@ -89,6 +110,7 @@ export class SessionStore {
   async fetchUser() {
     console.debug('Fetching user...');
     const user = await getUser();
+    console.log('[fetchUser] API returned user:', user);
     if (user) {
       // update user and preferences in memory to keep the app in sync
       this.setUser(user);
@@ -135,11 +157,16 @@ export class SessionStore {
   }
 
   async saveUser(user: User) {
-    await Promise.all([
-      SecureStore.setItemAsync(this.userKey, JSON.stringify(user)),
-      // SecureStore has value limit, so we prefer to save preferences separately
-      SecureStore.setItemAsync(this.preferencesKey, JSON.stringify(user.preferences ?? {})),
-    ]);
+const userToStore = {
+  ...user,
+  evmWallet: this.evmWallet,
+};
+
+await Promise.all([
+  SecureStore.setItemAsync(this.userKey, JSON.stringify(userToStore)),
+  SecureStore.setItemAsync(this.preferencesKey, JSON.stringify(user.preferences ?? {})),
+]);
+    this.evmWallet = (user as any)?.evmWallet ?? null; // ✅ added
   }
 
   async saveProfile(profile: UserProfile) {
@@ -156,16 +183,28 @@ export class SessionStore {
     this.setPreferences(merged);
   }
 
-  load = async (): Promise<AuthSession | null> => {
-    const session = await this.loadSession();
-    this.setSession(session as AuthSession);
-    if (session) {
-      this.loadUser(); // load user in background
-      this.loadProfile(); // load profile in background
-      this.loadPreferences(); // load preferences in background
-    }
-    return session;
-  };
+load = async (): Promise<AuthSession | null> => {
+  const session = await this.loadSession();
+  this.setSession(session as AuthSession);
+  if (session) {
+    await this.loadUser();         // 🔄 MUST be awaited
+    await this.loadProfile();      // optional, but cleaner
+    await this.loadPreferences();  // optional
+    await this.loadEvmWallet();    // ✅ this now runs last for real
+  }
+  return session;
+};
+
+async loadEvmWallet(): Promise<void> {
+  const evmWallet = await SecureStore.getItemAsync('user.evmWallet');
+  if (evmWallet) {
+    console.log('[SessionStore] Loaded EVM wallet from storage:', evmWallet);
+    this.setEvmWallet(JSON.parse(evmWallet));
+  } else {
+    console.log('[SessionStore] No EVM wallet found in storage');
+    this.setEvmWallet(null);
+  }
+}
 
   async loadSession(): Promise<AuthSession | null> {
     const session: Partial<AuthSession> = {};
@@ -191,13 +230,19 @@ export class SessionStore {
     return session as AuthSession;
   }
 
-  async loadUser(): Promise<User | null> {
-    const user = await SecureStore.getItemAsync(this.userKey);
-    if (user) {
-      this.setUser(JSON.parse(user));
+async loadUser(): Promise<User | null> {
+  const user = await SecureStore.getItemAsync(this.userKey);
+  if (user) {
+    const parsedUser = JSON.parse(user);
+    this.setUser(parsedUser);
+
+    // 🟢 Restore wallet if it was stored with user (future-proof)
+    if (parsedUser.evmWallet) {
+      this.setEvmWallet(parsedUser.evmWallet);
     }
-    return this.user;
   }
+  return this.user;
+}
 
   async loadProfile(): Promise<UserProfile | null> {
     const profile = await SecureStore.getItemAsync(this.profileKey);
@@ -230,27 +275,31 @@ export class SessionStore {
 
     this.setJustLoggedIn(false);
 
-	// Temporarily disable clearing PIN
+    // Temporarily disable clearing PIN
     // securityStore.clearPin();
   }
 
-  signIn = async (email: string, password: string) => {
-    const { session, user } = await signIn(email, password);
-    this.setUser(user);
-    this.setPreferences(user.preferences);
-    this.saveUser(user);
+signIn = async (email: string, password: string) => {
+  const { session, user } = await signIn(email, password);
+  console.log('[signIn] user returned from API:', user);
 
-    this.setSession(session);
-    this.save(session);
-    this.setJustLoggedIn(true);
+  this.setUser(user);
+  this.setPreferences(user.preferences);
+  this.saveUser(user);
 
-    // Fetch the user data in background
-    this.fetchProfile();
-  };
+  this.setSession(session);
+  this.save(session);
+  this.setJustLoggedIn(true);
 
-  async signOut() {
-    await this.clear();
+  // 🟢 SET EVM WALLET HERE
+  this.setEvmWallet(user.evmWallet ?? null);
+  if (user.evmWallet) {
+    await SecureStore.setItemAsync('user.evmWallet', JSON.stringify(user.evmWallet));
   }
+
+  // Fetch the user data in background
+  this.fetchProfile();
+};
 
   refresh = async () => {
     if (!this.session) {

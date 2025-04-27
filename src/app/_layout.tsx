@@ -4,7 +4,6 @@ import * as Updates from 'expo-updates';
 import { SplashScreen, Slot, useNavigationContainerRef } from 'expo-router';
 import { isRunningInExpoGo } from 'expo';
 import * as Sentry from '@sentry/react-native';
-import * as Linking from 'expo-linking';
 
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 import '@/global.css';
@@ -43,21 +42,6 @@ function AppLayout() {
   useEffect(() => {
     routingInstrumentation.registerNavigationContainer(navRef);
   }, [navRef]);
-
-  // ✅ Deep link listener for Safari onramp completion
-  useEffect(() => {
-    const sub = Linking.addEventListener('url', ({ url }) => {
-      console.log('[DeepLink] Received URL:', url);
-
-      if (url.startsWith('emigro://onramp-complete')) {
-        // 🔄 Coinbase login completed, now you can refresh session or navigate
-        console.log('[DeepLink] Coinbase onramp complete');
-        // You could also navigate here, if needed
-      }
-    });
-
-    return () => sub.remove();
-  }, []);
 
   useEffect(() => {
     async function prepare() {

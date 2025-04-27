@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, Platform } from 'react-native';
+import { StyleSheet, Platform, Linking } from 'react-native';
 import { WebView, WebViewMessageEvent, WebViewNavigation } from 'react-native-webview';
 import Constants from 'expo-constants';
-import * as WebBrowser from 'expo-web-browser';
 
 import { Box } from '@/components/ui/box';
 import { Button, ButtonText } from '@/components/ui/button';
@@ -19,18 +18,19 @@ export const CustomWebView = ({ url, onMessage, onClose }: Props) => {
 
   const webviewRef = useRef<WebView | null>(null);
 
-useEffect(() => {
-  if (Platform.OS === 'ios') {
-    WebBrowser.openBrowserAsync(url)
-      .then(() => {
-        // Only close AFTER the user dismisses Safari
-        onClose?.();
-      })
-      .catch((e) => {
-        console.error('[WebBrowser] Error launching Safari:', e);
+  // ✅ iOS: Open Coinbase in external Safari for stability
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      Linking.openURL(url).catch((err) => {
+        console.error('[Linking] Failed to open URL:', err);
       });
-  }
-}, [url]);
+
+      // Optional: auto-close the WebView after a few seconds
+      //setTimeout(() => {
+      //  onClose?.();
+      //}, 3000);
+    }
+  }, [url]);
 
   const injectedJavaScript = `
     (function() {
@@ -76,7 +76,7 @@ useEffect(() => {
       ? 'Mozilla/5.0 (Linux; Android 10; KadoRNApp) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Mobile Safari/537.36'
       : 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile Safari/605.1.15';
 
-  // On iOS, skip WebView entirely
+  // ❌ Don't render WebView at all on iOS
   if (Platform.OS === 'ios') return null;
 
   return (

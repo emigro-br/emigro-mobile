@@ -17,6 +17,8 @@ export const api = (config: CreateAxiosDefaults = {}): AxiosInstance => {
     ...config,
   });
 
+console.log(`[API] Connecting to: ${instance.defaults.baseURL}`);
+
   // Alter defaults after instance has been created
   if (sessionStore.session) {
     instance.defaults.headers.common['Authorization'] = `Bearer ${sessionStore.accessToken}`;
