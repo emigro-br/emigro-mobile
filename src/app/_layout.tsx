@@ -1,22 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { LogBox } from 'react-native';
+import { useEffect, useState } from 'react';
+import { LogBox, View } from 'react-native';
 import * as Updates from 'expo-updates';
 import { SplashScreen, Slot, useNavigationContainerRef } from 'expo-router';
 import { isRunningInExpoGo } from 'expo';
 import * as Sentry from '@sentry/react-native';
 
-import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
+import { ThemeProvider } from '@/__utils__/ThemeProvider';
 import '@/global.css';
 
-// Optional: Silence specific warnings
 LogBox.ignoreLogs([
-  '`new NativeEventEmitter()` was called with a non-null argument',
+  'new NativeEventEmitter() was called with a non-null argument',
 ]);
 
-// Prevent splash from auto-hiding until we're ready
 SplashScreen.preventAutoHideAsync();
 
-// Setup Sentry (guarded)
 const sentryDsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
 const routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
 
@@ -64,12 +61,14 @@ function AppLayout() {
     prepare();
   }, []);
 
-  if (!isReady) return null;
+  if (!isReady) {
+    return <View className="flex-1 bg-background-0" />;
+  }
 
   return (
-    <GluestackUIProvider mode="light">
+    <ThemeProvider>
       <Slot />
-    </GluestackUIProvider>
+    </ThemeProvider>
   );
 }
 

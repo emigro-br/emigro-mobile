@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { useColorScheme } from 'react-native';
 
 import { Button, ButtonIcon } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -20,6 +21,9 @@ interface Props {
 
 export const WalletBalances = ({ userBalance, hide = false }: Props) => {
   const router = useRouter();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   return (
     <VStack space="sm" testID="wallet-balances">
       <HStack className="justify-between">
@@ -28,10 +32,15 @@ export const WalletBalances = ({ userBalance, hide = false }: Props) => {
           <ButtonIcon as={AddIcon} className="text-primary-500" />
         </Button>
       </HStack>
-      <Card variant="flat">
+
+      <Card
+        variant="flat"
+        style={{
+          backgroundColor: isDark ? 'rgba(255, 255, 255, 0.15)' : undefined, // 5% white transparent
+        }}
+      >
         <VStack space="lg">
           {userBalance?.map(({ balance, assetCode, deprecated }, index) => {
-            // don't show deprecated assets
             if (deprecated) {
               return null;
             }

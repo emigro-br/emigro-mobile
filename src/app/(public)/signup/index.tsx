@@ -1,32 +1,22 @@
-import React, { useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import React, { useState, useRef } from 'react';
+import { Animated, Pressable, TextInput } from 'react-native';
+import { SubmitHandler, useForm, Controller } from 'react-hook-form';
+import { useRouter } from 'expo-router';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import { useRouter } from 'expo-router';
-
-import { EmailInputControl } from '@/components/inputs/controls/EmailInputControl';
-import { PasswordInputControl } from '@/components/inputs/controls/PasswordInputControl';
-import { TextInputControl } from '@/components/inputs/controls/TextInputControl';
 import { Box } from '@/components/ui/box';
-import { Button, ButtonText } from '@/components/ui/button';
-import {
-  FormControl,
-  FormControlError,
-  FormControlErrorIcon,
-  FormControlErrorText,
-} from '@/components/ui/form-control';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
-import { AlertCircleIcon } from '@/components/ui/icon';
-import { Link } from '@/components/ui/link';
-import { ScrollView } from '@/components/ui/scroll-view';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
+import { Link } from '@/components/ui/link';
+import { ScrollView } from '@/components/ui/scroll-view';
+import { FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText } from '@/components/ui/form-control';
+import { AlertCircleIcon } from '@/components/ui/icon';
 import { signUp } from '@/services/emigro/auth';
 import { RegisterUserRequest, Role } from '@/services/emigro/types';
 import { BadRequestException } from '@/types/errors';
 
-// for react-hook-form
 type FormData = {
   firstName: string;
   lastName: string;
@@ -35,10 +25,12 @@ type FormData = {
   role: Role;
 };
 
-export const CreateAccount = () => {
+const CreateAccount = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+
   const { control, handleSubmit } = useForm<FormData>({
     defaultValues: {
       firstName: '',
@@ -49,25 +41,33 @@ export const CreateAccount = () => {
     },
   });
 
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const animatePress = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, { toValue: 0.96, duration: 100, useNativeDriver: true }),
+      Animated.timing(scaleAnim, { toValue: 1, duration: 100, useNativeDriver: true }),
+    ]).start();
+  };
+
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setIsLoading(true);
     setApiError(null);
-    const defaultErrorMesssage = 'An error occurred while creating your account. Please try again.';
+    const defaultErrorMessage = 'An error occurred while creating your account. Please try again.';
     try {
       const registerData: RegisterUserRequest = { ...data };
       const { externalId } = await signUp(registerData);
       if (!externalId) {
-        throw new Error(defaultErrorMesssage);
+        throw new Error(defaultErrorMessage);
       }
       router.push({ pathname: '/signup/confirm', params: { email: data.email, externalId } });
     } catch (error) {
       if (error instanceof BadRequestException) {
-        console.warn('Error', error);
-        setApiError(defaultErrorMesssage);
+        setApiError(defaultErrorMessage);
       } else if (error instanceof Error) {
         setApiError(error.message);
       } else {
-        setApiError(defaultErrorMesssage);
+        setApiError(defaultErrorMessage);
       }
     } finally {
       setIsLoading(false);
@@ -75,17 +75,130 @@ export const CreateAccount = () => {
   };
 
   return (
-    <KeyboardAwareScrollView contentContainerStyle={{ flex: 1 }}>
+    <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <ScrollView className="bg-white flex-1">
-        <Box className="flex-1">
-          <VStack space="lg" className="p-4">
-            <Heading size="xl">Sign up to Emigro</Heading>
-            <VStack space="xl">
-              <TextInputControl control={control} name="firstName" label="First Name" placeholder="e.g. John" />
-              <TextInputControl control={control} name="lastName" label="Last Name" placeholder="e.g. Doe" />
-              <EmailInputControl control={control} name="email" />
-              <PasswordInputControl control={control} name="password" validationFull />
+        <Box className="flex-1 p-6 justify-center">
+          <VStack space="lg">
+            <Heading size="xl" className="text-black text-center mb-6">
+              Sign up to Emigro
+            </Heading>
 
+            <VStack space="xl">
+              {/* First Name */}
+              <Controller
+                control={control}
+                name="firstName"
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    placeholder="First Name"
+                    placeholderTextColor="black"
+                    value={value}
+                    onChangeText={onChange}
+                    onFocus={() => setFocusedField('firstName')}
+                    onBlur={() => setFocusedField(null)}
+                    style={{
+                      backgroundColor: 'white',
+                      borderRadius: 30,
+                      paddingVertical: 12,
+                      paddingHorizontal: 20,
+                      fontSize: 16,
+                      textAlign: 'center',
+                      color: 'black',
+                      borderWidth: 1,
+                      borderColor: focusedField === 'firstName' ? '#ff0033' : '#ccc',
+                    }}
+                  />
+                )}
+              />
+
+              {/* Last Name */}
+              <Controller
+                control={control}
+                name="lastName"
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    placeholder="Last Name"
+                    placeholderTextColor="black"
+                    value={value}
+                    onChangeText={onChange}
+                    onFocus={() => setFocusedField('lastName')}
+                    onBlur={() => setFocusedField(null)}
+                    style={{
+                      backgroundColor: 'white',
+                      borderRadius: 30,
+                      paddingVertical: 12,
+                      paddingHorizontal: 20,
+                      fontSize: 16,
+                      textAlign: 'center',
+                      color: 'black',
+                      borderWidth: 1,
+                      borderColor: focusedField === 'lastName' ? '#ff0033' : '#ccc',
+                    }}
+                  />
+                )}
+              />
+
+              {/* Email */}
+              <Controller
+                control={control}
+                name="email"
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    placeholder="Email"
+                    placeholderTextColor="black"
+                    value={value}
+                    onChangeText={onChange}
+                    keyboardType="email-address"
+                    onFocus={() => setFocusedField('email')}
+                    onBlur={() => setFocusedField(null)}
+                    style={{
+                      backgroundColor: 'white',
+                      borderRadius: 30,
+                      paddingVertical: 12,
+                      paddingHorizontal: 20,
+                      fontSize: 16,
+                      textAlign: 'center',
+                      color: 'black',
+                      borderWidth: 1,
+                      borderColor: focusedField === 'email' ? '#ff0033' : '#ccc',
+                    }}
+                  />
+                )}
+              />
+
+              {/* Password */}
+              <Controller
+                control={control}
+                name="password"
+                rules={{ required: true }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    placeholder="Password"
+                    placeholderTextColor="black"
+                    value={value}
+                    onChangeText={onChange}
+                    secureTextEntry
+                    onFocus={() => setFocusedField('password')}
+                    onBlur={() => setFocusedField(null)}
+                    style={{
+                      backgroundColor: 'white',
+                      borderRadius: 30,
+                      paddingVertical: 12,
+                      paddingHorizontal: 20,
+                      fontSize: 16,
+                      textAlign: 'center',
+                      color: 'black',
+                      borderWidth: 1,
+                      borderColor: focusedField === 'password' ? '#ff0033' : '#ccc',
+                    }}
+                  />
+                )}
+              />
+
+              {/* API Error */}
               {apiError && (
                 <FormControl isInvalid={!!apiError}>
                   <FormControlError>
@@ -95,17 +208,30 @@ export const CreateAccount = () => {
                 </FormControl>
               )}
 
-              <Button onPress={handleSubmit(onSubmit)} disabled={isLoading} size="xl" testID="create-button">
-                <ButtonText>{isLoading ? 'Creating account...' : 'Create Account'}</ButtonText>
-              </Button>
-              <HStack className="justify-center">
-                <Text size="lg">Already have an account?</Text>
+              {/* Create Account Button */}
+              <Pressable onPressIn={animatePress} onPress={handleSubmit(onSubmit)} disabled={isLoading}>
+                <Animated.View
+                  style={{ transform: [{ scale: scaleAnim }] }}
+                  className={`bg-primary-500 rounded-full py-4 items-center justify-center mt-4 ${isLoading ? 'opacity-50' : ''}`}
+                >
+                  <Text className="text-white font-bold text-lg">
+                    {isLoading ? 'Creating account...' : 'Create Account'}
+                  </Text>
+                </Animated.View>
+              </Pressable>
+
+              {/* Sign In link */}
+              <HStack className="justify-center mt-6">
+                <Text size="md" className="text-black">
+                  Already have an account?
+                </Text>
                 <Link onPress={() => router.replace('/login')}>
-                  <Text size="lg" bold className="text-primary-500 ml-2">
+                  <Text size="md" bold className="text-primary-500 ml-2">
                     Sign in
                   </Text>
                 </Link>
               </HStack>
+
             </VStack>
           </VStack>
         </Box>

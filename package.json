@@ -72,15 +72,17 @@
     "expo-splash-screen": "~0.27.6",
     "expo-status-bar": "~1.12.1",
     "expo-updates": "~0.25.26",
+    "expo-web-browser": "~13.0.3",
     "lucide-react-native": "^0.367.0",
     "mobx": "^6.12.0",
     "mobx-react-lite": "^4.0.5",
-    "nativewind": "^4.0.36",
+    "nativewind": "^4.1.23",
     "pix-utils": "^2.5.0",
     "promise": "^8.3.0",
     "react": "18.2.0",
     "react-hook-form": "^7.51.4",
     "react-native": "0.74.5",
+    "react-native-css-interop": "^0.1.22",
     "react-native-currency-input": "^1.1.1",
     "react-native-dropdown-select-list": "^2.0.4",
     "react-native-element-dropdown": "^2.10.1",
@@ -95,8 +97,7 @@
     "react-native-screens": "3.31.1",
     "react-native-svg": "15.2.0",
     "react-native-webview": "13.8.6",
-    "tailwindcss": "^3.4.6",
-    "expo-web-browser": "~13.0.3"
+    "tailwindcss": "^3.4.6"
   },
   "devDependencies": {
     "@babel/core": "^7.23.2",

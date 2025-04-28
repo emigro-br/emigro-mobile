@@ -10,7 +10,8 @@
     "./config/**/*",
     "./src/**/*",
     "./global.css",
-    "./nativewind-env.d.ts"
+    "./nativewind-env.d.ts",
+    "nativewind-env.d.ts"
   ],
   "experimentalDecorators": true,
   "emitDecoratorMetadata": true,
@@ -25,18 +26,30 @@
     "baseUrl": "./",
     "strict": true,
     "module": "es6",
-    "types":["@testing-library/jest-native", "jest", "node"],
+    "types": [
+      "@testing-library/jest-native",
+      "jest",
+      "node"
+    ],
     "paths": {
-      "test-utils": ["src/__utils__/test-utils"],
+      "test-utils": [
+        "src/__utils__/test-utils"
+      ],
       "@/assets/*": [
         "assets/*"
       ],
       "@/config/*": [
         "config/*"
       ],
-      "@/mocks/*": ["src/__mocks__/*"],
-      "@/global.css": ["global.css"],
-      "@/*": ["src/*"]
+      "@/mocks/*": [
+        "src/__mocks__/*"
+      ],
+      "@/global.css": [
+        "global.css"
+      ],
+      "@/*": [
+        "src/*"
+      ]
     }
   }
 }

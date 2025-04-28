@@ -1,30 +1,19 @@
-// src/app/public/login.tsx
-
-import React, { useRef, useState, useEffect } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import React, { useRef, useState } from 'react';
+import { Animated, Pressable, TextInput } from 'react-native';
+import { SubmitHandler, useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'expo-router';
 
-import { EmailInputControl } from '@/components/inputs/controls/EmailInputControl';
-import { PasswordInputControl } from '@/components/inputs/controls/PasswordInputControl';
 import { Box } from '@/components/ui/box';
-import { Button, ButtonText } from '@/components/ui/button';
-import {
-  FormControl,
-  FormControlError,
-  FormControlErrorIcon,
-  FormControlErrorText,
-} from '@/components/ui/form-control';
 import { Heading } from '@/components/ui/heading';
 import { HStack } from '@/components/ui/hstack';
-import { AlertCircleIcon } from '@/components/ui/icon';
-import { Link, LinkText } from '@/components/ui/link';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
+import { Link, LinkText } from '@/components/ui/link';
 import { sessionStore } from '@/stores/SessionStore';
-import { checkKycStatus } from '@/services/emigro/users'; // Importing checkKycStatus
 import { BadRequestException } from '@/types/errors';
+import { FormControl, FormControlError, FormControlErrorIcon, FormControlErrorText } from '@/components/ui/form-control';
+import { AlertCircleIcon } from '@/components/ui/icon';
 
-// for react-hook-form
 type FormData = {
   email: string;
   password: string;
@@ -32,54 +21,32 @@ type FormData = {
 
 const Login = () => {
   const router = useRouter();
-  const emailRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
-  const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [focusedField, setFocusedField] = useState<'email' | 'password' | null>(null);
+
   const { control, handleSubmit, formState } = useForm<FormData>({
-    defaultValues: {
-      email: '',
-      password: '',
-    },
+    defaultValues: { email: '', password: '' },
   });
 
-  useEffect(() => {
-    // Log the Backend URL to the console when the component mounts
-    console.log('Backend URL:', process.env.EXPO_PUBLIC_BACKEND_URL);
-  }, []);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const animatePress = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, { toValue: 0.96, duration: 100, useNativeDriver: true }),
+      Animated.timing(scaleAnim, { toValue: 1, duration: 100, useNativeDriver: true }),
+    ]).start();
+  };
 
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setApiError(null);
     setIsLoggingIn(true);
     try {
-      const { email, password } = data;
-
-      // Sign in the user
-      await sessionStore.signIn(email, password);
-
-      // Fetch the user profile
+      await sessionStore.signIn(data.email, data.password);
       await sessionStore.fetchProfile();
-      const userId = sessionStore.user?.id;
-
-      console.log('UserID:', userId); // Log the user ID for debugging
-
-      // Comment out the KYC status check and redirection
-      // if (userId) {
-      //   const kycResponse = await checkKycStatus(userId);
-      //   console.log('KYC Response:', kycResponse); // Debugging log
-
-      //   if (!kycResponse.kycVerified) {
-      //     console.log('User KYC not verified, redirecting to KYC screen...');
-      //     router.replace('/profile/kyc');
-      //     return;
-      //   }
-      // }
-
-      // Redirect to home
       router.replace('/');
     } catch (error) {
       if (error instanceof BadRequestException) {
-        console.warn('Error:', error);
         setApiError('Invalid login or password');
       } else if (error instanceof Error) {
         setApiError(error.message);
@@ -95,27 +62,78 @@ const Login = () => {
   const isDisabled = !isDirty || !isValid || isLoggingIn;
 
   return (
-    <Box className="flex-1 bg-white">
-      <VStack space="lg" className="p-4">
-        <Heading size="xl">Sign in to Emigro</Heading>
-        <VStack space="2xl">
-          <EmailInputControl
+    <Box className="flex-1 bg-white justify-center">
+      <VStack space="lg" className="p-6">
+        <Heading size="xl" className="text-black text-center mb-6">
+          Sign in to Emigro
+        </Heading>
+
+        <VStack space="xl">
+          {/* Email input */}
+          <Controller
             control={control}
             name="email"
-            mRef={emailRef}
-            onSubmitEditing={() => passwordRef?.current?.focus()}
+            rules={{ required: true }}
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                placeholder="Email"
+                placeholderTextColor="black"
+                value={value}
+                onChangeText={onChange}
+                onFocus={() => setFocusedField('email')}
+                onBlur={() => setFocusedField(null)}
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: 30,
+                  paddingVertical: 12,
+                  paddingHorizontal: 20,
+                  fontSize: 16,
+                  textAlign: 'center',
+                  color: 'black',
+                  borderWidth: 1,
+                  borderColor: focusedField === 'email' ? '#ff0033' : '#ccc', // DARKER BORDER (#ccc) and RED on focus
+                }}
+              />
+            )}
           />
-          <PasswordInputControl
+
+          {/* Password input */}
+          <Controller
             control={control}
             name="password"
-            mRef={passwordRef}
-            onSubmitEditing={handleSubmit(onSubmit)}
+            rules={{ required: true }}
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                placeholder="Password"
+                placeholderTextColor="black"
+                value={value}
+                onChangeText={onChange}
+                secureTextEntry
+                onFocus={() => setFocusedField('password')}
+                onBlur={() => setFocusedField(null)}
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: 30,
+                  paddingVertical: 12,
+                  paddingHorizontal: 20,
+                  fontSize: 16,
+                  textAlign: 'center',
+                  color: 'black',
+                  borderWidth: 1,
+                  borderColor: focusedField === 'password' ? '#ff0033' : '#ccc', // DARKER BORDER (#ccc) and RED on focus
+                }}
+              />
+            )}
           />
 
-          <Link onPress={() => router.push('/password-recovery')} testID="forgot-password-link">
-            <LinkText className="text-primary-500 no-underline text-right">Forgot your password?</LinkText>
+          {/* Forgot password */}
+          <Link onPress={() => router.push('/password-recovery')}>
+            <LinkText className="text-primary-500 text-right mt-2">
+              Forgot your password?
+            </LinkText>
           </Link>
 
+          {/* API Error */}
           {apiError && (
             <FormControl isInvalid>
               <FormControlError>
@@ -124,18 +142,30 @@ const Login = () => {
               </FormControlError>
             </FormControl>
           )}
-          <Button onPress={handleSubmit(onSubmit)} disabled={isDisabled} size="xl" testID="signin-button">
-            <ButtonText>{isLoggingIn ? 'Signing in...' : 'Sign in'}</ButtonText>
-          </Button>
-          <HStack className="justify-center">
-            <Text size="lg">Don't have an account?</Text>
+
+          {/* Sign in button */}
+          <Pressable onPressIn={animatePress} onPress={handleSubmit(onSubmit)} disabled={isDisabled}>
+            <Animated.View
+              style={{ transform: [{ scale: scaleAnim }] }}
+              className={`bg-primary-500 rounded-full py-4 items-center justify-center mt-4 ${isDisabled ? 'opacity-50' : ''}`}
+            >
+              <Text className="text-white font-bold text-lg">
+                {isLoggingIn ? 'Signing in...' : 'Sign in'}
+              </Text>
+            </Animated.View>
+          </Pressable>
+
+          {/* Sign up link */}
+          <HStack className="justify-center mt-6">
+            <Text size="md" className="text-black">
+              Don't have an account?
+            </Text>
             <Link onPress={() => router.replace('/signup')}>
-              <Text size="lg" bold className="text-primary-500 ml-2">
+              <Text size="md" bold className="text-primary-500 ml-2">
                 Sign up
               </Text>
             </Link>
           </HStack>
-
         </VStack>
       </VStack>
     </Box>
