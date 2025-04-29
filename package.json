@@ -130,7 +130,6 @@
     "jest-mock-console": "^2.0.0",
     "jscodeshift": "^0.15.2",
     "lint-staged": "^15.2.2",
-    "patch-package": "^8.0.0",
     "prettier": "^3.3.3",
     "react-native-dotenv": "^3.4.2",
     "react-test-renderer": "^18.2.0",
