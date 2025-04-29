@@ -37,7 +37,6 @@ export const ConfirmPayment = () => {
   const path = usePathname();
   const { scannedPayment } = paymentStore;
 
-  // Choose an initial asset if user has enough balance; otherwise fallback to USDC
   const initialAsset =
     scannedPayment?.assetCode && balanceStore.get(scannedPayment?.assetCode) > scannedPayment.transactionAmount
       ? scannedPayment.assetCode
@@ -52,12 +51,10 @@ export const ConfirmPayment = () => {
 
   const isPix = scannedPayment && 'pixKey' in scannedPayment;
 
-  // 1. Re-fetch a quote if user changes asset or amount
   const handleFetchQuote = async () => {
     if (!selectedAsset || !scannedPayment || !requestedAmount) {
       return;
     }
-    // If from-asset == payment's asset, no quote needed
     if (scannedPayment.assetCode === selectedAsset) {
       setPaymentQuote(requestedAmount);
       return;
@@ -82,7 +79,6 @@ export const ConfirmPayment = () => {
     handleFetchQuote().catch(console.warn);
   }, [selectedAsset, requestedAmount]);
 
-  // If no scannedPayment, just show a loading
   if (!scannedPayment) {
     return <LoadingScreen />;
   }
@@ -93,7 +89,6 @@ export const ConfirmPayment = () => {
       return;
     }
 
-    // Build the transaction object
     const transaction = {
       from: {
         asset: selectedAsset,
@@ -117,7 +112,6 @@ export const ConfirmPayment = () => {
     try {
       let result: any;
 
-      // If it's Pix => payPix(), else => pay()
       if (isPix) {
         result = await paymentStore.payPix();
       } else {
@@ -148,10 +142,9 @@ export const ConfirmPayment = () => {
     }
   };
 
-  // Show PIN screen if required
   if (showPinScreen) {
     return (
-      <Box className="flex-1 bg-white" style={{ paddingTop: insets.top }}>
+      <Box className="flex-1 bg-[#0a0a0a]" style={{ paddingTop: insets.top }}>
         <PinScreen
           tagline="Enter your PIN code"
           btnLabel="Confirm"
@@ -170,7 +163,6 @@ export const ConfirmPayment = () => {
     );
   }
 
-  // Restrict assets if it's Pix (no ARS/EUROC quotes, etc.)
   let allowedAssets = balanceStore.currentAssets();
   if (isPix) {
     allowedAssets = allowedAssets.filter((asset) => [CryptoAsset.BRZ, CryptoAsset.USDC].includes(asset));
@@ -186,7 +178,6 @@ export const ConfirmPayment = () => {
   const isPayDisabled = !paymentQuote || !hasBalance || isProcesing;
   const isAmountEditable = scannedPayment.transactionAmount === 0;
 
-  // Hide "for merchantName" if empty or fallback
   const merchantName = scannedPayment.merchantName?.trim() ?? '';
   const hideName = !merchantName || merchantName === 'Emigro Solucoes de Pagamento LTDA';
 
@@ -203,11 +194,11 @@ export const ConfirmPayment = () => {
         onSave={(amount) => setRequestedAmount(amount)}
       />
 
-      <ScrollView className="flex-1 bg-white">
+      <ScrollView className="flex-1 bg-[#0a0a0a]">
         <Box className="flex-1" style={{ paddingTop: insets.top }}>
           <VStack space="lg" className="p-4">
             <HStack className="justify-between">
-              <Heading size="xl">Review the payment</Heading>
+              <Heading size="xl" className="text-white">Review the payment</Heading>
               <ModalCloseButton onPress={() => router.dismiss()} testID="close-button" className="mt--4">
                 <Icon as={CloseIcon} size="xl" />
               </ModalCloseButton>
@@ -215,7 +206,7 @@ export const ConfirmPayment = () => {
 
             <HStack className="items-center">
               <Pressable onPress={() => isAmountEditable && setShowEditAmount(true)}>
-                <Text size="4xl" bold className="text-typography-800" testID="amount">
+                <Text size="4xl" bold className="text-white" testID="amount">
                   {symbolFor(scannedPayment.assetCode, requestedAmount)}
                 </Text>
               </Pressable>
@@ -229,14 +220,14 @@ export const ConfirmPayment = () => {
             <VStack space="3xl">
               {!hideName && (
                 <Box>
-                  <Text size="lg" numberOfLines={1} ellipsizeMode="tail">
+                  <Text size="lg" numberOfLines={1} ellipsizeMode="tail" className="text-white">
                     for{' '}
-                    <Text bold size="lg">
+                    <Text bold size="lg" className="text-white">
                       {scannedPayment.merchantName}
                     </Text>
                   </Text>
                   {scannedPayment.merchantCity && (
-                    <Text>
+                    <Text className="text-white">
                       in <Text>{scannedPayment.merchantCity}</Text>
                     </Text>
                   )}
@@ -257,12 +248,12 @@ export const ConfirmPayment = () => {
 
             <Divider />
 
-            <Text>Select the account</Text>
+            <Text className="text-white">Select the account</Text>
             <Card variant="filled" className="pb-2">
               <HStack>
                 <Box className="w-1/4">
                   <Dropdown
-                    selectedTextStyle={{ fontWeight: '500' }}
+                    selectedTextStyle={{ fontWeight: '500', color: 'white' }}
                     data={dropdownValues}
                     value={selectedAsset}
                     labelField="label"
@@ -273,7 +264,7 @@ export const ConfirmPayment = () => {
                   />
                 </Box>
                 <Box className="w-3/4">
-                  <Text className="text-right py-1" testID="quote">
+                  <Text className="text-right py-1 text-white" testID="quote">
                     {paymentQuote && symbolFor(selectedAsset, paymentQuote)}
                   </Text>
                 </Box>
@@ -290,12 +281,14 @@ export const ConfirmPayment = () => {
               </HStack>
             </Card>
 
-            <Text size="xs">
+            <Text size="xs" className="text-white">
               The seller will receive the exact value he set. The quantity that will be sent is computed automatically.
             </Text>
             <Button size="lg" onPress={handlePressPay} disabled={isPayDisabled}>
               {isProcesing && <ButtonSpinner className="mr-1" />}
-              <ButtonText>{isProcesing ? 'Processing...' : 'Pay'}</ButtonText>
+              <ButtonText className="text-lg text-white">
+                {isProcesing ? 'Processing...' : 'Pay'}
+              </ButtonText>
             </Button>
           </VStack>
         </Box>
@@ -304,15 +297,9 @@ export const ConfirmPayment = () => {
   );
 };
 
-/** 
- * Sub-components for Pix or Stellar
- */
-
-// Fallbacks you want to hide in the StaticPix UI
+/** Sub-components for Pix or Stellar */
 const fallbackName = 'Emigro Solucoes de Pagamento LTDA';
 const fallbackTaxId = '55479337000115';
-
-// If you also have a fallback "minimum" amount from Transfero, e.g., 1.58:
 const fallbackAmount = 0;
 
 interface StaticPixProps {
@@ -320,56 +307,40 @@ interface StaticPixProps {
 }
 
 const StaticPix = ({ pix }: StaticPixProps) => {
-  // Trim them to avoid trailing space mismatch
   const pixName = pix.merchantName?.trim() ?? '';
   const pixTaxId = pix.taxId?.trim() ?? '';
 
-  // If name or taxId is the fallback, we skip that line
   const hideName = pixName === fallbackName;
   const hideTaxId = pixTaxId === fallbackTaxId;
-
-  // If you want to hide the fallback amount
   const hideAmount = pix.amount === fallbackAmount;
 
   return (
     <VStack space="md">
-      {/* If taxId is fallback, hide that row */}
       {!hideTaxId && pixTaxId && (
         <HStack className="justify-between">
-          <Text bold>CPF/CNPJ: </Text>
-          <Text>{pixTaxId}</Text>
+          <Text bold className="text-white">CPF/CNPJ:</Text>
+          <Text className="text-white">{pixTaxId}</Text>
         </HStack>
       )}
-
-      {/* If the name is fallback, hide the row */}
       {!hideName && pixName && (
         <HStack className="justify-between">
-          <Text bold>Name: </Text>
-          <Text>{pixName}</Text>
+          <Text bold className="text-white">Name:</Text>
+          <Text className="text-white">{pixName}</Text>
         </HStack>
       )}
-
-      {/* If you want to hide fallback amounts, do it here
-      {!hideAmount && (
-        <HStack className="justify-between">
-          <Text bold>Amount:</Text>
-          <Text>{pix.amount}</Text>
-        </HStack>
-      )} */}
-
       <HStack className="justify-between">
-        <Text bold>Institution: </Text>
-        <Text numberOfLines={2} ellipsizeMode="tail" className="w-2/3 text-right">
+        <Text bold className="text-white">Institution:</Text>
+        <Text numberOfLines={2} ellipsizeMode="tail" className="w-2/3 text-right text-white">
           {pix.bankName}
         </Text>
       </HStack>
       <HStack className="justify-between">
-        <Text bold>Pix Key: </Text>
-        <Text>{pix.pixKey}</Text>
+        <Text bold className="text-white">Pix Key:</Text>
+        <Text className="text-white">{pix.pixKey}</Text>
       </HStack>
       <HStack className="justify-between">
-        <Text bold>Identifier: </Text>
-        <Text numberOfLines={1} ellipsizeMode="tail">
+        <Text bold className="text-white">Identifier:</Text>
+        <Text numberOfLines={1} ellipsizeMode="tail" className="text-white">
           {pix.txid}
         </Text>
       </HStack>
@@ -384,12 +355,12 @@ interface StellarPayProps {
 const StellarPay = ({ pay }: StellarPayProps) => (
   <VStack space="md">
     <HStack className="justify-between">
-      <Text bold>Institution:</Text>
-      <Text>Stellar Network</Text>
+      <Text bold className="text-white">Institution:</Text>
+      <Text className="text-white">Stellar Network</Text>
     </HStack>
     <HStack className="justify-between">
-      <Text bold>Wallet Key:</Text>
-      <Text>{maskWallet(pay.walletKey!)}</Text>
+      <Text bold className="text-white">Wallet Key:</Text>
+      <Text className="text-white">{maskWallet(pay.walletKey!)}</Text>
     </HStack>
   </VStack>
 );

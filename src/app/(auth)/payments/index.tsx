@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 import { Stack, useRouter } from 'expo-router';
 import { HandCoinsIcon, QrCodeIcon } from 'lucide-react-native';
 
@@ -24,9 +23,10 @@ export const Payments = () => {
     <>
       <Stack.Screen options={{ title: 'Payments', header: () => <EmigroHeader /> }} />
 
-      <Box className="flex-1 bg-white">
+      <Box className="flex-1 bg-background-0 dark:bg-background-900">
         <VStack space="lg" className="p-4">
           <Heading>Pick Your Payment Method</Heading>
+
           <ButtonGroup space="4xl" className="mt-8">
             <CircularButton
               icon={QrCodeIcon}
@@ -56,7 +56,8 @@ export const Payments = () => {
               testID="pix-copia-e-cola"
             />
           </ButtonGroup>
-          {/* Removing it temporarilly
+
+          {/* Temporarily removed feature
           <ButtonGroup space="4xl" className="mt-8">
             <CircularButton
               icon={CopyIcon}
@@ -64,11 +65,12 @@ export const Payments = () => {
               size="lg"
               textSize="lg"
               onPress={() => router.push('/payments/pix/transfer')}
-              testID="pix-copia-e-cola"
+              testID="pix-transfer"
             />
           </ButtonGroup>
           */}
         </VStack>
+
         <AssetListActionSheet
           assets={availableAssets}
           isOpen={assetListOpen}

@@ -29,24 +29,36 @@ export const RequestPayment = () => {
   return (
     <>
       <Stack.Screen options={{ title: 'Request Payment' }} />
-      <Box className="flex-1 bg-white">
+      <Box className="flex-1 bg-[#0a0a0a]">
         <VStack space="lg" className="p-4">
-          <Heading>How much will you request?</Heading>
+          <Heading size="xl" className="text-center" style={{ color: '#ffffff' }}>
+            How much will you request?
+          </Heading>
+
           <Box>
-            <AssetInput asset={asset} value={value} onChangeValue={setValue} size="4xl" testID="asset-input" />
-            <HStack>
+            <AssetInput
+              asset={asset}
+              value={value}
+              onChangeValue={setValue}
+              size="4xl"
+              testID="asset-input"
+            />
+            <HStack className="justify-center mt-2">
               <Button variant="link" size="sm" onPress={() => handleGenerateQRCode(0)}>
-                <ButtonText>Request open amount</ButtonText>
+                <ButtonText className="text-white">Request open amount</ButtonText>
               </Button>
             </HStack>
           </Box>
+
           <Button
             onPress={() => handleGenerateQRCode(value!)}
             size="xl"
             disabled={!value}
             testID="generate-qr-code-button"
+            className="mt-6 rounded-full"
+            style={{ height: 56 }}
           >
-            <ButtonText>Generate QR Code</ButtonText>
+            <ButtonText className="text-lg text-white">Generate QR Code</ButtonText>
           </Button>
         </VStack>
       </Box>

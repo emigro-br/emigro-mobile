@@ -22,6 +22,9 @@ export type CryptoOrFiat = CryptoAsset | FiatCurrency;
 
 type AssetType = 'crypto' | 'fiat';
 
+// NEW: Chain type
+export type Chain = 'ethereum' | 'polygon' | 'solana' | 'base' | 'binance-smart-chain' | 'stellar' | undefined;
+
 export class Asset {
   type: AssetType;
   code: string;
@@ -29,23 +32,35 @@ export class Asset {
   symbol: string;
   icon: string;
   currency?: string;
+  chain?: Chain; // NEW
 
-  constructor(type: string, code: string, name: string, symbol: string, currency: string | undefined, icon: string) {
-    this.type = type as AssetType;
+  constructor(
+    type: AssetType,
+    code: string,
+    name: string,
+    symbol: string,
+    currency: string | undefined,
+    icon: string,
+    chain?: Chain // NEW
+  ) {
+    this.type = type;
     this.code = code;
     this.name = name;
     this.symbol = symbol;
     this.currency = currency;
     this.icon = icon;
+    this.chain = chain;
   }
 }
 
+// Function to return allowed crypto assets
 export const cryptoAssets = () => {
   const allAssets = Object.values(CryptoAsset);
   const excludedAssets = __DEV__ ? [] : [CryptoAsset.SRT, CryptoAsset.XLM];
   return allAssets.filter((asset) => !excludedAssets.includes(asset));
 };
 
+// Function to return allowed fiat currencies
 export const fiatCurrencies = () => {
   const allCurrencies = Object.values(FiatCurrency);
   const excludedCurrencies = __DEV__ ? [] : [FiatCurrency.SRT];

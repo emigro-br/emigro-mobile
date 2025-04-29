@@ -80,7 +80,7 @@ const OperationScreen = () => {
         borderRadius: 12,
         paddingVertical: 10,
         paddingHorizontal: 16,
-        backgroundColor: selectedCurrency === label ? '#fff5f5' : '#ffffff',
+        backgroundColor: selectedCurrency === label ? '#ffffff10' : '#0a0a0a',
         flexDirection: 'row',
         alignItems: 'center',
       }}
@@ -89,7 +89,13 @@ const OperationScreen = () => {
         source={iconMap[label]}
         style={{ width: 20, height: 20, marginRight: 8, resizeMode: 'contain' }}
       />
-      <Text size="md" className="font-semibold">{label}</Text>
+      <Text
+        size="md"
+        className="font-semibold"
+        style={{ color: '#ffffff' }}
+      >
+        {label}
+      </Text>
     </Pressable>
   );
 
@@ -103,28 +109,31 @@ const OperationScreen = () => {
     <>
       <Stack.Screen options={{ title: 'Deposit' }} />
 
-      <Box className="flex-1 bg-white">
+      <Box className="flex-1 bg-[#0a0a0a]">
         <VStack className="p-4 space-y-4">
-          <Heading size="xl" className="text-center">Depositing {asset}</Heading>
+          <Heading size="xl" className="text-center" style={{ color: '#ffffff' }}>
+            Depositing {asset}
+          </Heading>
 
-          <Text className="text-gray-600 text-center">
+          <Text className="text-gray-400 text-center">
             {labelText[selectedCurrency]}
           </Text>
 
-{/* <HStack justify="center" align="center" space="md" className="mt-2">
-  <Box style={{ marginHorizontal: 6, flex: 1 }}>
-    {renderOptionCard('BRL')}
-  </Box>
-   <Box style={{ marginHorizontal: 6, flex: 1  }}>
-    {renderOptionCard(secondCurrency)}
-  </Box> 
-</HStack> */}
+          {/* <HStack justify="center" align="center" space="md" className="mt-2">
+            <Box style={{ marginHorizontal: 6, flex: 1 }}>
+              {renderOptionCard('BRL')}
+            </Box>
+            <Box style={{ marginHorizontal: 6, flex: 1 }}>
+              {renderOptionCard(secondCurrency)}
+            </Box>
+          </HStack> */}
 
           <TextInput
             placeholder={`Enter amount in ${selectedCurrency}`}
             value={inputAmount}
             onChangeText={setInputAmount}
             keyboardType="decimal-pad"
+            placeholderTextColor="#a1a1aa"
             style={{
               borderColor: '#e5e7eb',
               borderWidth: 1,
@@ -132,16 +141,18 @@ const OperationScreen = () => {
               padding: 16,
               fontSize: 20,
               textAlign: 'center',
+              color: '#ffffff',
               marginTop: 20,
             }}
           />
 
           <Button
-            className="mt-4"
+            className="mt-6 rounded-full"
+            style={{ height: 56 }}
             disabled={!inputAmount || !userId}
             onPress={handleSubmit}
           >
-            <ButtonText>
+            <ButtonText className="text-lg text-white">
               {loading ? 'Loading...' : 'Pay with Coinbase'}
             </ButtonText>
           </Button>

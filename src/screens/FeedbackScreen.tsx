@@ -16,8 +16,15 @@ type Props = {
   onContinue: () => void;
 };
 
-export const FeedbackScreen = ({ title, message, action = 'success', btnLabel = 'Continue', onContinue }: Props) => {
+export const FeedbackScreen = ({
+  title,
+  message,
+  action = 'success',
+  btnLabel = 'Continue',
+  onContinue,
+}: Props) => {
   const insets = useSafeAreaInsets();
+
   const renderIcon = () => {
     let iconProps = { as: CheckCircleIcon, className: 'text-success-500' };
     if (action === 'error') {
@@ -32,29 +39,29 @@ export const FeedbackScreen = ({ title, message, action = 'success', btnLabel = 
 
   return (
     <Box
-      className=" flex-1 bg-white justify-between "
+      className="flex-1 bg-[#0a0a0a] justify-center"
       style={{
         paddingBottom: insets.bottom,
         paddingTop: insets.top,
       }}
     >
-      <VStack space="lg" className="px-4">
+      <VStack space="lg" className="px-6 items-center">
         {renderIcon()}
         {title && (
-          <Heading size="2xl" testID="feedback-title">
+          <Heading size="2xl" className="text-white text-center" testID="feedback-title">
             {title}
           </Heading>
         )}
         {message && (
-          <Text size="xl" testID="feedback-message">
+          <Text size="xl" className="text-gray-400 text-center" testID="feedback-message">
             {message}
           </Text>
         )}
       </VStack>
-      <Box>
-        <Divider />
-        <Button size="lg" onPress={onContinue} testID="action-button" className="m-4">
-          <ButtonText>{btnLabel}</ButtonText>
+      <Box className="mt-10 px-4">
+        <Divider className="bg-gray-800" />
+        <Button size="lg" onPress={onContinue} testID="action-button" className="mt-6 rounded-full">
+          <ButtonText className="text-lg text-white">{btnLabel}</ButtonText>
         </Button>
       </Box>
     </Box>

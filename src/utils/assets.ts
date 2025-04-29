@@ -1,15 +1,19 @@
+// src/utils/assets.ts
+
 // https://uxwing.com/
 import argentineFlag from '@/assets/images/icons/argentina-flag-round-circle-icon.png';
 import arsIcon from '@/assets/images/icons/ars-icon.png';
 import brazilFlag from '@/assets/images/icons/brazil-flag-round-circle-icon.png';
-// Digital assets
 import brzIcon from '@/assets/images/icons/brz-icon.png';
 import eurcIcon from '@/assets/images/icons/eurc-icon.png';
 import euroFlag from '@/assets/images/icons/european-union-flag-round-circle-icon.png';
 import xlmIcon from '@/assets/images/icons/stellar-xlm-icon.png';
 import usaFlag from '@/assets/images/icons/usa-flag-round-circle-icon.png';
 import usdcIcon from '@/assets/images/icons/usdc-icon.png';
-import { Asset, CryptoAsset, CryptoOrFiat, FiatCurrency } from '@/types/assets';
+import { Asset, CryptoAsset, CryptoOrFiat, FiatCurrency, Chain } from '@/types/assets';
+import baseIcon from '@/assets/images/chains/base.png';
+import stellarIcon from '@/assets/images/chains/stellar.png';
+import ethIcon from '@/assets/images/icons/ethereum.png';
 
 // TODO: fetch those data from the Emigro API
 const cryptosData = [
@@ -19,6 +23,7 @@ const cryptosData = [
   { type: 'crypto', code: 'EURC', name: 'Euro Coin', icon: eurcIcon, symbol: '€', currency: 'EUR' },
   { type: 'crypto', code: 'BRZ', name: 'Brazilian Digital Token', icon: brzIcon, symbol: 'R$', currency: 'BRL' },
   { type: 'crypto', code: 'ARS', name: 'Peso Argentino Digital', icon: arsIcon, symbol: '$', currency: 'ARS' },
+   { type: 'crypto', code: 'ETH', name: 'Ethereum', icon: ethIcon, symbol: 'Ξ' },
 ];
 
 const fiatsData = [
@@ -32,6 +37,7 @@ const fiatsData = [
 export const stablecoins = cryptosData.map(
   ({ type, code, name, icon, symbol, currency }) => new Asset(type, code, name, symbol, currency, icon),
 );
+
 export const currencies = fiatsData.map(
   ({ type, code, name, icon, symbol }) => new Asset(type, code, name, symbol, undefined, icon),
 );
@@ -47,6 +53,7 @@ export const fiatByCrypto: Record<string, Asset> = stablecoins.reduce((acc, asse
 export const allCryptoCodesToObjs = (cryptos: CryptoAsset[]): Asset[] => {
   return cryptos.map((crypto) => cryptoCodeToObj(crypto)).filter((a) => a !== undefined) as Asset[];
 };
+
 export const cryptoCodeToObj = (asset: CryptoAsset): Asset => cryptosData.find((a) => a.code === asset) as Asset;
 export const fiatCodeToObj = (asset: FiatCurrency): Asset => currencies.find((a) => a.code === asset) as Asset;
 
@@ -89,7 +96,7 @@ export const AssetToSymbol = {
 
 // https://en.wikipedia.org/wiki/ISO_4217
 export const fiatToIso = {
-  XLM: '000', // non oficial
+  XLM: '000', // non official
   [FiatCurrency.EUR]: '978',
   [FiatCurrency.USD]: '840',
   [FiatCurrency.BRL]: '986',
@@ -147,4 +154,31 @@ export const iconFor = (asset: CryptoOrFiat, type?: string) => {
   }
   const assetObj = allAssets.find((a) => a.code === asset);
   return assetObj?.icon;
+};
+
+// ADDITIONS BELOW
+
+// Chain mapping per CryptoAsset
+export const chainFor: Record<CryptoAsset, Chain | undefined> = {
+  [CryptoAsset.ARS]: undefined,
+  [CryptoAsset.BRZ]: undefined,
+  [CryptoAsset.EURC]: undefined,
+  [CryptoAsset.USDC]: 'base', // default USDC on Base
+  [CryptoAsset.SRT]: undefined,
+  [CryptoAsset.XLM]: 'stellar',
+};
+
+// Function to get chain icon
+export const chainIconFor = (chain?: Chain) => {
+  if (!chain) return undefined;
+
+  const icons: Record<string, any> = {
+    base: baseIcon,
+    stellar: stellarIcon,
+    // polygon: polygonIcon, (if you add in future)
+    // ethereum: ethereumIcon,
+    // binance-smart-chain: bscIcon,
+  };
+
+  return icons[chain];
 };

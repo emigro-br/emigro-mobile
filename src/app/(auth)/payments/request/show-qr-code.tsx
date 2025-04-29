@@ -39,7 +39,6 @@ type PaymentRequest = CreateStaticPixParams & {
   transactionAmount: number;
   transactionCurrency: string;
   merchantCategoryCode: string;
-  // countryCode: 'BR',
 };
 
 const buildMerchantName = (profile: UserProfile): string => {
@@ -48,14 +47,11 @@ const buildMerchantName = (profile: UserProfile): string => {
 
 const encodeQRCode = (profile: UserProfile, asset: CryptoAsset, amount: number): string => {
   const fiat = asset === 'XLM' ? 'XLM' : AssetToCurrency[asset];
-  // EmvMaiSchema.BC_GUI = 'br.gov.bcb.pix'; // FIXME: we have to fork pix-utils to change this
-
   const walletKey = sessionStore.publicKey!;
 
   const request: PaymentRequest = {
     merchantName: buildMerchantName(profile).substring(0, 25),
     merchantCity: profile.address?.substring(0, 15) ?? 'São Paulo',
-    // infoAdicional: profile.sub, // FIXME: parsing error when add both large infoAdicional and pixKey
     pixKey: walletKey,
     transactionAmount: amount,
     transactionCurrency: fiatToIso[fiat],
@@ -63,7 +59,6 @@ const encodeQRCode = (profile: UserProfile, asset: CryptoAsset, amount: number):
   };
 
   const pix = createStaticPix(request).throwIfError();
-
   const brcode = pix.toBRCode();
   return brcode;
 };
@@ -74,7 +69,6 @@ export const RequestWithQRCode = () => {
   const insets = useSafeAreaInsets();
   const toast = useToast();
 
-  // prevent back navigation
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true);
     return () => backHandler.remove();
@@ -88,16 +82,13 @@ export const RequestWithQRCode = () => {
   const value = parseFloat(params.value);
   const profile = sessionStore.profile!;
   let encodedCode = '';
+
   try {
     encodedCode = encodeQRCode(profile, asset, value);
   } catch (error) {
     Sentry.withScope(function (scope) {
       scope.setLevel('warning');
-      scope.setExtras({
-        profile,
-        asset,
-        value,
-      });
+      scope.setExtras({ profile, asset, value });
       Sentry.captureException(error);
     });
 
@@ -108,6 +99,7 @@ export const RequestWithQRCode = () => {
         </Toast>
       ),
     });
+
     router.back();
     return null;
   }
@@ -123,6 +115,7 @@ export const RequestWithQRCode = () => {
         </Toast>
       ),
     });
+
     router.dismiss();
   };
 
@@ -137,28 +130,39 @@ export const RequestWithQRCode = () => {
         }}
       />
 
-      <Box className=" flex-1 bg-white " style={{ paddingTop: insets.top }}>
+      <Box className="flex-1 bg-[#0a0a0a]" style={{ paddingTop: insets.top }}>
         <VStack space="lg" className="p-4">
           <HStack className="justify-between">
-            <Heading size="xl">Request with QR Code</Heading>
+            <Heading size="xl" className="text-white">
+              Request with QR Code
+            </Heading>
             <ModalCloseButton onPress={() => router.dismiss()} testID="close-button" className="mt--4">
               <Icon as={CloseIcon} size="xl" />
             </ModalCloseButton>
           </HStack>
-          <Text>Show this QR code or copy and share with who will make this payment</Text>
+
+          <Text className="text-gray-400">
+            Show this QR code or copy and share with who will make this payment
+          </Text>
+
           <Center testID="qr-code" className="my-4">
             <QRCode value={encodedCode} size={QRCodeSize.SMALL} />
           </Center>
 
           <Box className="mb-2">
-            <Text bold>Requested value</Text>
-            <Text size="4xl" bold className="text-typography-800">
+            <Text bold className="text-white">
+              Requested value
+            </Text>
+            <Text size="4xl" bold className="text-white">
               {symbolFor(asset as CryptoAsset, value)}
             </Text>
-            <Text>For {buildMerchantName(profile)}</Text>
+            <Text className="text-gray-400">
+              For {buildMerchantName(profile)}
+            </Text>
           </Box>
-          <Button onPress={() => handleCopyAndClose()} size="xl">
-            <ButtonText>Copy & Close</ButtonText>
+
+          <Button onPress={() => handleCopyAndClose()} size="xl" className="mt-6 rounded-full" style={{ height: 56 }}>
+            <ButtonText className="text-lg text-white">Copy & Close</ButtonText>
           </Button>
         </VStack>
       </Box>
