@@ -128,3 +128,4 @@ This will trigger the CI/CD pipeline to build and publish the new version to Tes
 - Ensure all changes are thoroughly tested before merging into the preview branch.
 - Monitor the build and deployment process in [GitHub Actions](https://github.com/emigro-br/emigro-mobile/actions) and [Expo Dashboard](https://expo.dev/accounts/emigro) to ensure there are no issues.
 - Check the new release in the [Google Play Console](https://play.google.com/console/u/0/developers/7584002803657299601/app/4974697401918909765/app-dashboard) and [App Store Connect](https://appstoreconnect.apple.com/apps/6475793514/distribution)
+"// force rebuild" 
