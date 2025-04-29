@@ -11,8 +11,7 @@
         "EXPO_PUBLIC_BACKEND_URL": "https://zmrppah95q.us-east-1.awsapprunner.com",
         "EXPO_PUBLIC_GEOCODE_BASE_URL": "https://nominatim.openstreetmap.org/search"
       },
-      "channel": "development",
-      "clearCache": true
+      "channel": "development"
     },
     "development-simulator": {
       "extends": "development",
@@ -32,13 +31,11 @@
         "image": "latest",
         "resourceClass": "m-medium"
       },
-      "channel": "production",
-      "clearCache": true
+      "channel": "production"
     },
     "preview": {
       "extends": "production",
-      "channel": "preview",
-      "clearCache": true
+      "channel": "preview"
     }
   },
   "submit": {
