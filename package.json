@@ -12,8 +12,7 @@
     "test:watch": "jest --watchAll",
     "test:cov": "jest --coverage",
     "test": "jest",
-    "prepare": "husky install",
-    "postinstall": "patch-package"
+    "prepare": "husky install"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx}": [
