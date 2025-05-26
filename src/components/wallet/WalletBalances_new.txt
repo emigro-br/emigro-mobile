@@ -1,0 +1,217 @@
+import { useRouter } from 'expo-router';
+import { useColorScheme, Pressable, Animated, Easing } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+
+import { Card } from '@/components/ui/card';
+import { Heading } from '@/components/ui/heading';
+import { VStack } from '@/components/ui/vstack';
+import { Text } from '@/components/ui/text';
+import { Balance } from '@/services/emigro/types';
+import { Asset } from '@/types/assets';
+import { AssetListTile } from '../AssetListTile';
+import { Settings, RefreshCw } from 'lucide-react-native';
+import { observer } from 'mobx-react-lite';
+import { sessionStore } from '@/stores/SessionStore';
+
+import usdcIcon from '@/assets/images/icons/usdc-icon.png';
+import ethIcon from '@/assets/images/icons/ethereum.png';
+
+interface Props {
+  userBalance: Balance[];
+  hide?: boolean;
+  loading?: boolean;
+  onRefresh?: () => void;
+}
+
+const defaultAssets: Asset[] = [
+  new Asset('crypto', 'USDC', 'USD Coin (Stellar)', '$', 'USD', usdcIcon, 'stellar'),
+  new Asset('crypto', 'USDC', 'USD Coin (Base)', '$', 'USD', usdcIcon, 'base'),
+  new Asset('crypto', 'ETH', 'Ethereum', 'Ξ', undefined, ethIcon, 'base'),
+];
+
+export const WalletBalances = observer(({ userBalance, hide = false, loading = false, onRefresh }: Props) => {
+  const router = useRouter();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
+  const publicAddress = sessionStore.evmWallet?.publicAddress ?? '';
+
+  const rotateAnim = useRef(new Animated.Value(0)).current;
+  const [balances, setBalances] = useState<Record<string, number>>({});
+
+  // Animation
+  useEffect(() => {
+    if (loading) {
+      Animated.loop(
+        Animated.timing(rotateAnim, {
+          toValue: 1,
+          duration: 1000,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        })
+      ).start();
+    } else {
+      rotateAnim.stopAnimation();
+      rotateAnim.setValue(0);
+    }
+  }, [loading]);
+
+  const spin = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+
+  // Fetch ETH native balance manually (no ethers.js)
+  async function fetchEthBalance(address: string): Promise<number> {
+    try {
+      const response = await fetch('https://base-rpc.publicnode.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'eth_getBalance',
+          params: [address, 'latest'],
+          id: 1,
+        }),
+      });
+      const json = await response.json();
+      const balanceWei = parseInt(json.result, 16);
+      return balanceWei / 1e18;
+    } catch (error) {
+      console.error('[WalletBalances] Failed to fetch ETH balance:', error);
+      return 0;
+    }
+  }
+
+  // Load all balances at once
+  async function loadBalances() {
+    const loadedBalances: Record<string, number> = {};
+
+    for (const asset of defaultAssets) {
+      if (asset.code === 'ETH') {
+        loadedBalances[asset.code] = await fetchEthBalance(publicAddress);
+      } else {
+        const matches = userBalance.filter((b) => b.assetCode === asset.code);
+        if (!matches.length) {
+          loadedBalances[asset.code] = 0;
+        } else {
+          if (asset.chain === 'stellar') {
+            const stellarBalance = matches.find((b) => !b.network || b.network?.toLowerCase() === 'stellar');
+            loadedBalances[asset.code] = stellarBalance ? Number(stellarBalance.balance) : 0;
+          } else {
+            const match = matches.find((b) => {
+              const network = b.network?.toLowerCase();
+              const chain = asset.chain?.toLowerCase();
+              return network === chain;
+            });
+            loadedBalances[asset.code] = match ? Number(match.balance) : 0;
+          }
+        }
+      }
+    }
+
+    console.log('[WalletBalances] Final loaded balances:', loadedBalances);
+    setBalances(loadedBalances);
+  }
+
+  useEffect(() => {
+    if (publicAddress) {
+      loadBalances();
+    }
+  }, [publicAddress]);
+
+  const formatChainName = (chain?: string) => {
+    if (!chain) return undefined;
+    return chain.charAt(0).toUpperCase() + chain.slice(1);
+  };
+
+  return (
+    <VStack space="md" testID="wallet-balances">
+      {/* Header */}
+      <VStack
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingRight: 8,
+        }}
+      >
+        <Heading>Assets</Heading>
+        <Pressable
+          onPress={() => {
+            console.log('[WalletBalances] Reload clicked');
+            loadBalances();
+            onRefresh?.();
+          }}
+          style={{ padding: 4 }}
+        >
+          <Animated.View style={{ transform: [{ rotate: spin }] }}>
+            <RefreshCw size={20} color="#999" />
+          </Animated.View>
+        </Pressable>
+      </VStack>
+
+      {/* List */}
+      <VStack space="sm">
+        {defaultAssets.map((asset, index) => {
+          const balance = balances[asset.code] ?? 0;
+          const decimals = asset.code === 'ETH' ? 6 : 2;
+
+          return (
+            <Card
+              key={index}
+              variant="flat"
+              style={{
+                backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.1)',
+                borderRadius: 16,
+                paddingVertical: 8,
+                paddingHorizontal: 16,
+              }}
+            >
+              <AssetListTile
+                asset={asset}
+                subtitle={
+                  formatChainName(asset.chain) && (
+                    <Text size="sm" weight="normal" color="textSecondary" style={{ marginTop: -5 }}>
+                      {formatChainName(asset.chain)}
+                    </Text>
+                  )
+                }
+                trailing={
+                  <Text size="md" weight="semibold">
+                    {hide ? '****' : `${asset.symbol} ${balance.toFixed(decimals)}`}
+                  </Text>
+                }
+              />
+            </Card>
+          );
+        })}
+
+        {/* Manage assets */}
+        <Pressable onPress={() => router.push('/wallet/manage')} testID="manage-assets-button">
+          <Card
+            variant="flat"
+            style={{
+              borderStyle: 'dashed',
+              borderWidth: 2,
+              borderColor: isDark ? 'rgba(255, 255, 255, 0.5)' : '#ccc',
+              backgroundColor: 'transparent',
+              borderRadius: 16,
+              paddingVertical: 16,
+              paddingHorizontal: 16,
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'row',
+              gap: 8,
+            }}
+          >
+            <Text size="md" weight="medium">
+              Manage assets
+            </Text>
+            <Settings size={20} color="#fff" />
+          </Card>
+        </Pressable>
+      </VStack>
+    </VStack>
+  );
+});

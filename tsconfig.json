@@ -1,0 +1,55 @@
+{
+  "extends": "expo/tsconfig.base",
+  "allowSyntheticDefaultImports": true,
+  "jsx": "react-native",
+  "lib": [
+    "dom",
+    "esnext"
+  ],
+  "include": [
+    "./config/**/*",
+    "./src/**/*",
+    "./global.css",
+    "./nativewind-env.d.ts",
+    "nativewind-env.d.ts"
+  ],
+  "experimentalDecorators": true,
+  "emitDecoratorMetadata": true,
+  "moduleResolution": "node",
+  "module": "commonjs",
+  "noEmit": true,
+  "target": "es6",
+  "skipLibCheck": true,
+  "resolveJsonModule": true,
+  "strict": true,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "strict": true,
+    "module": "es6",
+    "types": [
+      "@testing-library/jest-native",
+      "jest",
+      "node"
+    ],
+    "paths": {
+      "test-utils": [
+        "src/__utils__/test-utils"
+      ],
+      "@/assets/*": [
+        "assets/*"
+      ],
+      "@/config/*": [
+        "config/*"
+      ],
+      "@/mocks/*": [
+        "src/__mocks__/*"
+      ],
+      "@/global.css": [
+        "global.css"
+      ],
+      "@/*": [
+        "src/*"
+      ]
+    }
+  }
+}

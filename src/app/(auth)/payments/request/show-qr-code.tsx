@@ -1,0 +1,173 @@
+import { useEffect } from 'react';
+import { BackHandler } from 'react-native';
+import QRCode from 'react-native-qrcode-svg';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import * as Sentry from '@sentry/react-native';
+import * as Clipboard from 'expo-clipboard';
+import * as Haptics from 'expo-haptics';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { createStaticPix } from 'pix-utils';
+import { CreateStaticPixParams } from 'pix-utils/dist/main/types/pixCreate';
+
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+import { Center } from '@/components/ui/center';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { CloseIcon, Icon } from '@/components/ui/icon';
+import { ModalCloseButton } from '@/components/ui/modal';
+import { Text } from '@/components/ui/text';
+import { Toast, ToastDescription, useToast } from '@/components/ui/toast';
+import { VStack } from '@/components/ui/vstack';
+import { UserProfile } from '@/services/emigro/types';
+import { sessionStore } from '@/stores/SessionStore';
+import { emigroCategoryCode } from '@/types/PixPayment';
+import { CryptoAsset } from '@/types/assets';
+import { AssetToCurrency, fiatToIso, symbolFor } from '@/utils/assets';
+
+const enum QRCodeSize {
+  SMALL = 200,
+  MEDIUM = 250,
+  LARGE = 300,
+}
+
+type PaymentRequest = CreateStaticPixParams & {
+  merchantName: string;
+  merchantCity?: string;
+  pixKey: string;
+  transactionAmount: number;
+  transactionCurrency: string;
+  merchantCategoryCode: string;
+};
+
+const buildMerchantName = (profile: UserProfile): string => {
+  return `${profile.given_name || ''} ${profile.family_name || ''}`.trim() || 'Unknown';
+};
+
+const encodeQRCode = (profile: UserProfile, asset: CryptoAsset, amount: number): string => {
+  const fiat = asset === 'XLM' ? 'XLM' : AssetToCurrency[asset];
+  const walletKey = sessionStore.publicKey!;
+
+  const request: PaymentRequest = {
+    merchantName: buildMerchantName(profile).substring(0, 25),
+    merchantCity: profile.address?.substring(0, 15) ?? 'São Paulo',
+    pixKey: walletKey,
+    transactionAmount: amount,
+    transactionCurrency: fiatToIso[fiat],
+    merchantCategoryCode: emigroCategoryCode,
+  };
+
+  const pix = createStaticPix(request).throwIfError();
+  const brcode = pix.toBRCode();
+  return brcode;
+};
+
+export const RequestWithQRCode = () => {
+  const router = useRouter();
+  const params = useLocalSearchParams<{ asset: CryptoAsset; value: string }>();
+  const insets = useSafeAreaInsets();
+  const toast = useToast();
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true);
+    return () => backHandler.remove();
+  }, []);
+
+  if (!params.asset || !params.value) {
+    return null;
+  }
+
+  const asset = params.asset as CryptoAsset;
+  const value = parseFloat(params.value);
+  const profile = sessionStore.profile!;
+  let encodedCode = '';
+
+  try {
+    encodedCode = encodeQRCode(profile, asset, value);
+  } catch (error) {
+    Sentry.withScope(function (scope) {
+      scope.setLevel('warning');
+      scope.setExtras({ profile, asset, value });
+      Sentry.captureException(error);
+    });
+
+    toast.show({
+      render: ({ id }) => (
+        <Toast nativeID={`toast-${id}`} action="error" variant="solid">
+          <ToastDescription>Failed to generate QR code</ToastDescription>
+        </Toast>
+      ),
+    });
+
+    router.back();
+    return null;
+  }
+
+  const handleCopyAndClose = async () => {
+    await Clipboard.setStringAsync(encodedCode);
+    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+    toast.show({
+      render: ({ id }) => (
+        <Toast nativeID={`toast-${id}`} action="info" variant="solid">
+          <ToastDescription>Copied to clipboard</ToastDescription>
+        </Toast>
+      ),
+    });
+
+    router.dismiss();
+  };
+
+  return (
+    <>
+      <Stack.Screen
+        options={{
+          title: 'Request with QR Code',
+          headerBackTitleVisible: false,
+          animation: 'slide_from_bottom',
+          headerShown: false,
+        }}
+      />
+
+      <Box className="flex-1 bg-[#0a0a0a]" style={{ paddingTop: insets.top }}>
+        <VStack space="lg" className="p-4">
+          <HStack className="justify-between">
+            <Heading size="xl" className="text-white">
+              Request with QR Code
+            </Heading>
+            <ModalCloseButton onPress={() => router.dismiss()} testID="close-button" className="mt--4">
+              <Icon as={CloseIcon} size="xl" />
+            </ModalCloseButton>
+          </HStack>
+
+          <Text className="text-gray-400">
+            Show this QR code or copy and share with who will make this payment
+          </Text>
+
+          <Center testID="qr-code" className="my-4">
+            <QRCode value={encodedCode} size={QRCodeSize.SMALL} />
+          </Center>
+
+          <Box className="mb-2">
+            <Text bold className="text-white">
+              Requested value
+            </Text>
+            <Text size="4xl" bold className="text-white">
+              {symbolFor(asset as CryptoAsset, value)}
+            </Text>
+            <Text className="text-gray-400">
+              For {buildMerchantName(profile)}
+            </Text>
+          </Box>
+
+          <Button onPress={() => handleCopyAndClose()} size="xl" className="mt-6 rounded-full" style={{ height: 56 }}>
+            <ButtonText className="text-lg text-white">Copy & Close</ButtonText>
+          </Button>
+        </VStack>
+      </Box>
+    </>
+  );
+};
+
+export default RequestWithQRCode;

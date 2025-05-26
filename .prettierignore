@@ -1,0 +1,5 @@
+build
+dist
+src/assets
+src/components/ui
+**/*.json

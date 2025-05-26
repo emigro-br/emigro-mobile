@@ -1,0 +1,376 @@
+import { useEffect, useState } from 'react';
+import { Dropdown } from 'react-native-element-dropdown';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import * as Sentry from '@sentry/react-native';
+import { Stack, usePathname, useRouter } from 'expo-router';
+
+import { InputAmountActionSheet } from '@/components/InputAmountActionSheet';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonSpinner, ButtonText } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Center } from '@/components/ui/center';
+import { Divider } from '@/components/ui/divider';
+import { Heading } from '@/components/ui/heading';
+import { HStack } from '@/components/ui/hstack';
+import { CloseIcon, Icon } from '@/components/ui/icon';
+import { ModalCloseButton } from '@/components/ui/modal';
+import { Pressable } from '@/components/ui/pressable';
+import { ScrollView } from '@/components/ui/scroll-view';
+import { Text } from '@/components/ui/text';
+import { VStack } from '@/components/ui/vstack';
+import { TRANSACTION_ERROR_MESSAGE } from '@/constants/errorMessages';
+import { LoadingScreen } from '@/screens/Loading';
+import { PinScreen } from '@/screens/PinScreen';
+import { IQuoteRequest, fetchQuote } from '@/services/emigro/quotes';
+import { balanceStore } from '@/stores/BalanceStore';
+import { paymentStore } from '@/stores/PaymentStore';
+import { securityStore } from '@/stores/SecurityStore';
+import { Payment, PixPayment } from '@/types/PixPayment';
+import { CryptoAsset, FiatCurrency } from '@/types/assets';
+import { AssetToCurrency, symbolFor } from '@/utils/assets';
+import { maskWallet } from '@/utils/masks';
+
+export const ConfirmPayment = () => {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const path = usePathname();
+  const { scannedPayment } = paymentStore;
+
+  const initialAsset =
+    scannedPayment?.assetCode && balanceStore.get(scannedPayment?.assetCode) > scannedPayment.transactionAmount
+      ? scannedPayment.assetCode
+      : CryptoAsset.USDC;
+
+  const [isProcesing, setIsProcessing] = useState(false);
+  const [showPinScreen, setShowPinScreen] = useState(false);
+  const [showEditAmount, setShowEditAmount] = useState(false);
+  const [requestedAmount, setRequestedAmount] = useState<number>(scannedPayment?.transactionAmount ?? 0);
+  const [selectedAsset, setSelectedAsset] = useState<CryptoAsset>(initialAsset);
+  const [paymentQuote, setPaymentQuote] = useState<number | null>(scannedPayment?.transactionAmount ?? null);
+
+  const isPix = scannedPayment && 'pixKey' in scannedPayment;
+
+  const handleFetchQuote = async () => {
+    if (!selectedAsset || !scannedPayment || !requestedAmount) return;
+
+    if (scannedPayment.assetCode === selectedAsset) {
+      console.log('[ConfirmPayment][handleFetchQuote] Same asset, no quote needed');
+      setPaymentQuote(requestedAmount);
+      return;
+    }
+
+    console.log('[ConfirmPayment][handleFetchQuote] Fetching quote:', {
+      from: selectedAsset,
+      to: scannedPayment.assetCode,
+      amount: requestedAmount,
+    });
+
+    setPaymentQuote(null);
+    const data: IQuoteRequest = {
+      from: selectedAsset,
+      to: scannedPayment.assetCode,
+      amount: `${requestedAmount}`,
+      type: 'strict_receive',
+    };
+    const quote = await fetchQuote(data);
+
+    if (quote === null) {
+      console.warn('[ConfirmPayment][handleFetchQuote] Quote fetch returned null');
+      return;
+    }
+
+    setPaymentQuote(quote.source_amount);
+    console.log('[ConfirmPayment][handleFetchQuote] Quote received:', quote.source_amount);
+  };
+
+  useEffect(() => {
+    handleFetchQuote().catch(console.warn);
+  }, [selectedAsset, requestedAmount]);
+
+  if (!scannedPayment) {
+    console.warn('[ConfirmPayment] No scannedPayment found');
+    return <LoadingScreen />;
+  }
+
+  const handlePressPay = () => {
+    if (!paymentQuote) {
+      console.warn('[ConfirmPayment][handlePressPay] Payment quote not available');
+      return;
+    }
+
+    const transaction = {
+      from: {
+        asset: selectedAsset,
+        value: Number(paymentQuote),
+      },
+      to: {
+        wallet: scannedPayment.walletKey!,
+        asset: scannedPayment.assetCode,
+        value: requestedAmount,
+      },
+      rate: paymentQuote / requestedAmount,
+      fees: 0,
+    };
+
+    console.log('[ConfirmPayment][handlePressPay] Transaction prepared:', transaction);
+    paymentStore.setTransaction(transaction);
+    setShowPinScreen(true);
+  };
+
+  const handleConfirmPayment = async () => {
+    setIsProcessing(true);
+    try {
+      let result;
+
+      if (isPix) {
+        console.log('[ConfirmPayment][handleConfirmPayment] Executing Pix payment');
+        result = await paymentStore.payPix();
+      } else {
+        console.log('[ConfirmPayment][handleConfirmPayment] Executing standard payment');
+        result = await paymentStore.pay();
+      }
+
+      console.log('[ConfirmPayment][handleConfirmPayment] Payment result:', result);
+
+      if (result.status === 'paid' || result.transactionHash) {
+        router.replace(`${path}/success`);
+      } else if (["created", "pending"].includes(result.status)) {
+        router.replace(`${path}/waiting`);
+      } else {
+        throw new Error(TRANSACTION_ERROR_MESSAGE);
+      }
+    } catch (error) {
+      console.error('[ConfirmPayment][handleConfirmPayment] Payment error:', error);
+      Sentry.captureException(error);
+      const message = error instanceof Error ? error.message : TRANSACTION_ERROR_MESSAGE;
+      router.replace({ pathname: `${path}/error`, params: { error: message } });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  if (showPinScreen) {
+    return (
+      <Box className="flex-1 bg-[#0a0a0a]" style={{ paddingTop: insets.top }}>
+        <PinScreen
+          tagline="Enter your PIN code"
+          btnLabel="Confirm"
+          autoSubmit
+          verifyPin={async (pin) => await securityStore.verifyPin(pin)}
+          onPinSuccess={() => {
+            setShowPinScreen(false);
+            handleConfirmPayment();
+          }}
+          onPinFail={(error) => {
+            console.warn('Error on pay transfer', error);
+            setShowPinScreen(false);
+          }}
+        />
+      </Box>
+    );
+  }
+
+  let allowedAssets = balanceStore.currentAssets();
+  if (isPix) {
+    allowedAssets = allowedAssets.filter((asset) => [CryptoAsset.BRZ, CryptoAsset.USDC].includes(asset));
+  }
+
+  const dropdownValues = allowedAssets.map((asset) => ({
+    label: asset,
+    value: asset,
+  }));
+
+  const balance = balanceStore.get(selectedAsset);
+  const hasBalance = paymentQuote ? paymentQuote < balance : true;
+  const isPayDisabled = !paymentQuote || !hasBalance || isProcesing;
+  const isAmountEditable = scannedPayment.transactionAmount === 0;
+
+  const merchantName = scannedPayment.merchantName?.trim() ?? '';
+  const hideName = !merchantName || merchantName === 'Emigro Solucoes de Pagamento LTDA';
+
+  return (
+    <>
+      <Stack.Screen options={{ title: 'Confirm Payment', headerBackTitleVisible: false }} />
+
+      <InputAmountActionSheet
+        isOpen={showEditAmount}
+        onClose={() => setShowEditAmount(false)}
+        tagline="Enter the amount you want to pay"
+        initialAmount={requestedAmount}
+        asset={AssetToCurrency[scannedPayment.assetCode] as FiatCurrency}
+        onSave={(amount) => setRequestedAmount(amount)}
+      />
+
+      <ScrollView className="flex-1 bg-[#0a0a0a]">
+        <Box className="flex-1" style={{ paddingTop: insets.top }}>
+          <VStack space="lg" className="p-4">
+            <HStack className="justify-between">
+              <Heading size="xl" className="text-white">Review the payment</Heading>
+              <ModalCloseButton onPress={() => router.dismiss()} testID="close-button" className="mt--4">
+                <Icon as={CloseIcon} size="xl" />
+              </ModalCloseButton>
+            </HStack>
+
+            <HStack className="items-center">
+              <Pressable onPress={() => isAmountEditable && setShowEditAmount(true)}>
+                <Text size="4xl" bold className="text-white" testID="amount">
+                  {symbolFor(scannedPayment.assetCode, requestedAmount)}
+                </Text>
+              </Pressable>
+              {isAmountEditable && (
+                <Button variant="link" onPress={() => setShowEditAmount(true)} className="ml-2">
+                  <ButtonText>Edit</ButtonText>
+                </Button>
+              )}
+            </HStack>
+
+            <VStack space="3xl">
+              {!hideName && (
+                <Box>
+                  <Text size="lg" numberOfLines={1} ellipsizeMode="tail" className="text-white">
+                    for{' '}
+                    <Text bold size="lg" className="text-white">
+                      {scannedPayment.merchantName}
+                    </Text>
+                  </Text>
+                  {scannedPayment.merchantCity && (
+                    <Text className="text-white">
+                      in <Text>{scannedPayment.merchantCity}</Text>
+                    </Text>
+                  )}
+                </Box>
+              )}
+
+              {scannedPayment.infoAdicional && (
+                <Center>
+                  <Card variant="filled" className="bg-background-100">
+                    <Text className="text-center">{scannedPayment.infoAdicional}</Text>
+                  </Card>
+                </Center>
+              )}
+
+              {isPix && <StaticPix pix={scannedPayment as PixPayment} />}
+              {!isPix && <StellarPay pay={scannedPayment} />}
+            </VStack>
+
+            <Divider />
+
+            <Text className="text-white">Select the account</Text>
+            <Card variant="filled" className="pb-2">
+              <HStack>
+                <Box className="w-1/4">
+                  <Dropdown
+                    selectedTextStyle={{ fontWeight: '500', color: 'white' }}
+                    data={dropdownValues}
+                    value={selectedAsset}
+                    labelField="label"
+                    valueField="value"
+                    onChange={(selectedItem) => setSelectedAsset(selectedItem.value)}
+                    disable={isProcesing}
+                    testID="select-account"
+                  />
+                </Box>
+                <Box className="w-3/4">
+                  <Text className="text-right py-1 text-white" testID="quote">
+                    {paymentQuote && symbolFor(selectedAsset, paymentQuote)}
+                  </Text>
+                </Box>
+              </HStack>
+              <HStack className="justify-between">
+                <Text size="xs" className={hasBalance ? 'text-typography-500' : 'text-red-500'} testID="balance">
+                  Balance: {symbolFor(selectedAsset, balance)}
+                </Text>
+                {!hasBalance && (
+                  <Text size="xs" className="text-red-500">
+                    exceeds balance
+                  </Text>
+                )}
+              </HStack>
+            </Card>
+
+            <Text size="xs" className="text-white">
+              The seller will receive the exact value he set. The quantity that will be sent is computed automatically.
+            </Text>
+            <Button size="lg" onPress={handlePressPay} disabled={isPayDisabled}>
+              {isProcesing && <ButtonSpinner className="mr-1" />}
+              <ButtonText className="text-lg text-white">
+                {isProcesing ? 'Processing...' : 'Pay'}
+              </ButtonText>
+            </Button>
+          </VStack>
+        </Box>
+      </ScrollView>
+    </>
+  );
+};
+
+/** Sub-components for Pix or Stellar */
+const fallbackName = 'Emigro Solucoes de Pagamento LTDA';
+const fallbackTaxId = '55479337000115';
+const fallbackAmount = 0;
+
+interface StaticPixProps {
+  pix: PixPayment;
+}
+
+const StaticPix = ({ pix }: StaticPixProps) => {
+  const pixName = pix.merchantName?.trim() ?? '';
+  const pixTaxId = pix.taxId?.trim() ?? '';
+
+  const hideName = pixName === fallbackName;
+  const hideTaxId = pixTaxId === fallbackTaxId;
+  const hideAmount = pix.amount === fallbackAmount;
+
+  return (
+    <VStack space="md">
+      {!hideTaxId && pixTaxId && (
+        <HStack className="justify-between">
+          <Text bold className="text-white">CPF/CNPJ:</Text>
+          <Text className="text-white">{pixTaxId}</Text>
+        </HStack>
+      )}
+      {!hideName && pixName && (
+        <HStack className="justify-between">
+          <Text bold className="text-white">Name:</Text>
+          <Text className="text-white">{pixName}</Text>
+        </HStack>
+      )}
+      <HStack className="justify-between">
+        <Text bold className="text-white">Institution:</Text>
+        <Text numberOfLines={2} ellipsizeMode="tail" className="w-2/3 text-right text-white">
+          {pix.bankName}
+        </Text>
+      </HStack>
+      <HStack className="justify-between">
+        <Text bold className="text-white">Pix Key:</Text>
+        <Text className="text-white">{pix.pixKey}</Text>
+      </HStack>
+      <HStack className="justify-between">
+        <Text bold className="text-white">Identifier:</Text>
+        <Text numberOfLines={1} ellipsizeMode="tail" className="text-white">
+          {pix.txid}
+        </Text>
+      </HStack>
+    </VStack>
+  );
+};
+
+interface StellarPayProps {
+  pay: Payment;
+}
+
+const StellarPay = ({ pay }: StellarPayProps) => (
+  <VStack space="md">
+    <HStack className="justify-between">
+      <Text bold className="text-white">Institution:</Text>
+      <Text className="text-white">Stellar Network</Text>
+    </HStack>
+    <HStack className="justify-between">
+      <Text bold className="text-white">Wallet Key:</Text>
+      <Text className="text-white">{maskWallet(pay.walletKey!)}</Text>
+    </HStack>
+  </VStack>
+);
+
+export default ConfirmPayment;

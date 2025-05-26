@@ -1,0 +1,89 @@
+{
+  "expo": {
+    "name": "Emigro",
+    "slug": "emigro-mobile",
+    "owner": "emigro",
+    "version": "1.2.0",
+    "description": "The traveler's digital wallet",
+    "orientation": "portrait",
+    "scheme": "emigro",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "light",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Access to the camera is required to scan QR codes for payments."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 34,
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
+            "buildToolsVersion": "34.0.0"
+          },
+          "ios": {
+            "deploymentTarget": "15.1"
+          }
+        }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "emigro",
+          "project": "emigro-mobile"
+        }
+      ],
+      "expo-secure-store",
+      "expo-router",
+      "expo-web-browser",
+      "expo-localization"
+    ],
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/d84d8915-cdac-448c-bf38-fc1ebcbe8eac",
+      "enabled": true,
+      "fallbackToCacheTimeout": 0,
+      "checkAutomatically": "ON_LOAD"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "co.emigro.app",
+      "bitcode": false,
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "NSCameraUsageDescription": "We need camera access to scan QRCode Payments.",
+        "NSLocationWhenInUseUsageDescription": "This app uses your location to provide personalized content.",
+        "NSPhotoLibraryUsageDescription": "Photo access is used to QRCode Payments."
+      }
+    },
+    "android": {
+      "permissions": [
+        "android.permission.CAMERA"
+      ],
+      "package": "co.emigro.app"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "d84d8915-cdac-448c-bf38-fc1ebcbe8eac"
+      }
+    },
+    "runtimeVersion": "1.2.0"
+  }
+}
