@@ -20,10 +20,10 @@ export const Welcome = () => {
         <Center className="mt-20">
           <Image source={emigroLogo} alt="Emigro logo" className="h-20 w-80 mb-10" />
           <Text size="2xl" bold className="text-white mb-2 text-center">
-            The Traveler's Digital Wallet
+            Borderless finance for nomads
           </Text>
           <Text size="lg" className="text-white text-center">
-            Instant cross-border payments
+            
           </Text>
         </Center>
 
