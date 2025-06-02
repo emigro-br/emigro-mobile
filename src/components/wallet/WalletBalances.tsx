@@ -1,3 +1,5 @@
+// walletbalance
+
 import React, { useEffect, useState } from 'react';
 import { useColorScheme, ActivityIndicator, View, Pressable, Image } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
