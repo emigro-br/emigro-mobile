@@ -132,6 +132,10 @@ export class SessionStore {
     return await checkKycStatus(this.user.id);
   }
 
+  async updateStartupMode(mode: 'wallet' | 'payment') {
+    await this.updatePreferences({ startupMode: mode });
+  }
+  
   get isTokenExpired(): boolean {
     return !this.session || this.session.tokenExpirationDate < new Date();
   }

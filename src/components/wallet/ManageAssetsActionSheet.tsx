@@ -121,8 +121,22 @@ const ManageAssetsActionSheetComponent = ({ walletId, isOpen, onClose }: Props) 
     const asset = assets.find(a => a.assetId === assetId);
     if (!asset) return;
 
+    // 🚫 Prevent disabling the default asset
+    const isDefaultAsset =
+      asset.assetId === '1e90df0a-2920-11f0-8f36-02ee245cdcb3' &&
+      asset.chainId === '05c65d14-291c-11f0-8f36-02ee245cdcb3';
+
+    if (isDefaultAsset && asset.isEnabled) {
+      Alert.alert(
+        'Not allowed',
+        `${asset.name} is the default asset for this wallet and cannot be disabled.`
+      );
+      return;
+    }
+
     const action = asset.isEnabled ? 'disable' : 'enable';
     console.log(`[ComponentsWallet][ManageAssetsActionSheet] 🟢 Toggle request for ${asset.name} (${action})`);
+
 
     const confirmed = await confirmToggle(
       `Do you want to ${action} ${asset.name} in your ${chain?.name} wallet?`
@@ -175,7 +189,7 @@ const ManageAssetsActionSheetComponent = ({ walletId, isOpen, onClose }: Props) 
           {icon && (
             <Image
               source={icon}
-              style={{ width: 28, height: 28, resizeMode: 'contain', marginRight: 12 }}
+              style={{ width: 42, height: 42, resizeMode: 'contain', marginRight: 12 }}
             />
           )}
 		  <Box style={{ flexShrink: 1 }}>
@@ -243,7 +257,14 @@ const ManageAssetsActionSheetComponent = ({ walletId, isOpen, onClose }: Props) 
         {/* Drag Indicator */}
         <Box style={{ alignItems: 'center', paddingTop: 12, paddingBottom: 8 }}>
           <ActionsheetDragIndicatorWrapper>
-            <ActionsheetDragIndicator />
+		  <ActionsheetDragIndicator
+		    style={{
+		      width: 80,
+		      height: 8,
+		      borderRadius: 3,
+		      backgroundColor: '#555',
+		    }}
+		  />
           </ActionsheetDragIndicatorWrapper>
         </Box>
 

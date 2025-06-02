@@ -1,3 +1,5 @@
+//src/app/(auth)/payments/scan.tsx
+
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

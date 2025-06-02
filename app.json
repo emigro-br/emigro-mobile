@@ -3,7 +3,7 @@
     "name": "Emigro",
     "slug": "emigro-mobile",
     "owner": "emigro",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "The traveler's digital wallet",
     "orientation": "portrait",
     "scheme": "emigro",
@@ -44,12 +44,13 @@
       "expo-secure-store",
       "expo-router",
       "expo-web-browser",
-      "expo-localization"
+      "expo-localization",
+      "expo-notifications"
     ],
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#141414"
     },
     "updates": {
       "url": "https://u.expo.dev/d84d8915-cdac-448c-bf38-fc1ebcbe8eac",
@@ -70,12 +71,15 @@
       "infoPlist": {
         "NSCameraUsageDescription": "We need camera access to scan QRCode Payments.",
         "NSLocationWhenInUseUsageDescription": "This app uses your location to provide personalized content.",
-        "NSPhotoLibraryUsageDescription": "Photo access is used to QRCode Payments."
+        "NSPhotoLibraryUsageDescription": "Photo access is used to QRCode Payments.",
+        "NSUserTrackingUsageDescription": "Send you notifications about app updates and payments status.",
+        "UIBackgroundModes": ["remote-notification"]
       }
     },
     "android": {
       "permissions": [
-        "android.permission.CAMERA"
+        "android.permission.CAMERA",
+        "NOTIFICATIONS"
       ],
       "package": "co.emigro.app"
     },
@@ -84,6 +88,6 @@
         "projectId": "d84d8915-cdac-448c-bf38-fc1ebcbe8eac"
       }
     },
-    "runtimeVersion": "2.0.0"
+    "runtimeVersion": "2.1.0"
   }
 }

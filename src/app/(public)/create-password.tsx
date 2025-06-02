@@ -1,5 +1,12 @@
 import { useState } from 'react';
-import { Keyboard, TextInput } from 'react-native';
+import {
+  Keyboard,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { Toast } from '@/components/Toast';
@@ -97,7 +104,12 @@ export const CreateNewPassword = () => {
     toast.show({
       duration: 10000,
       render: ({ id }) => (
-        <Toast id={id} title="Failed on create new password" description={message} action="error" />
+        <Toast
+          id={id}
+          title="Failed to create new password"
+          description={message}
+          action="error"
+        />
       ),
     });
   };
@@ -121,79 +133,89 @@ export const CreateNewPassword = () => {
   const isValidForm = formError === '';
 
   return (
-    <Box className="flex-1 bg-black justify-center">
-      <VStack space="lg" className="p-6">
-        <Heading size="xl" className="text-white text-center mb-6">
-          Create New Password
-        </Heading>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+          <Box className="flex-1 bg-black justify-center">
+            <VStack space="lg" className="p-6">
+              <Heading size="xl" className="text-white text-center mb-6">
+                Create New Password
+              </Heading>
 
-        <Text className="text-white text-center mb-4">
-          Enter your new password and confirm it.
-        </Text>
+              <Text className="text-white text-center mb-4">
+                Enter your new password and confirm it.
+              </Text>
 
-        <TextInput
-          placeholder={`At least ${minPasswordLength} characters`}
-          placeholderTextColor="#888"
-          secureTextEntry
-          autoCapitalize="none"
-          value={password}
-          onChangeText={setPassword}
-          style={{
-            backgroundColor: '#1a1a1a',
-            borderRadius: 30,
-            paddingVertical: 12,
-            paddingHorizontal: 20,
-            fontSize: 16,
-            textAlign: 'center',
-            color: 'white',
-            borderWidth: 1,
-            borderColor: '#333',
-            marginBottom: 16,
-          }}
-        />
+              <TextInput
+                placeholder={`At least ${minPasswordLength} characters`}
+                placeholderTextColor="#888"
+                secureTextEntry
+                autoCapitalize="none"
+                value={password}
+                onChangeText={setPassword}
+                style={{
+                  backgroundColor: '#1a1a1a',
+                  borderRadius: 30,
+                  paddingVertical: 12,
+                  paddingHorizontal: 20,
+                  fontSize: 16,
+                  textAlign: 'center',
+                  color: 'white',
+                  borderWidth: 1,
+                  borderColor: '#333',
+                  marginBottom: 16,
+                }}
+              />
 
-        <TextInput
-          placeholder="Confirm password"
-          placeholderTextColor="#888"
-          secureTextEntry
-          autoCapitalize="none"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          style={{
-            backgroundColor: '#1a1a1a',
-            borderRadius: 30,
-            paddingVertical: 12,
-            paddingHorizontal: 20,
-            fontSize: 16,
-            textAlign: 'center',
-            color: 'white',
-            borderWidth: 1,
-            borderColor: '#333',
-            marginBottom: 16,
-          }}
-        />
+              <TextInput
+                placeholder="Confirm password"
+                placeholderTextColor="#888"
+                secureTextEntry
+                autoCapitalize="none"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                style={{
+                  backgroundColor: '#1a1a1a',
+                  borderRadius: 30,
+                  paddingVertical: 12,
+                  paddingHorizontal: 20,
+                  fontSize: 16,
+                  textAlign: 'center',
+                  color: 'white',
+                  borderWidth: 1,
+                  borderColor: '#333',
+                  marginBottom: 16,
+                }}
+              />
 
-        {password.length > 0 && !isValidForm && (
-          <FormControl isInvalid>
-            <FormControlError>
-              <FormControlErrorIcon as={AlertCircleIcon} />
-              <FormControlErrorText>{formError}</FormControlErrorText>
-            </FormControlError>
-          </FormControl>
-        )}
+              {password.length > 0 && !isValidForm && (
+                <FormControl isInvalid>
+                  <FormControlError>
+                    <FormControlErrorIcon as={AlertCircleIcon} />
+                    <FormControlErrorText>{formError}</FormControlErrorText>
+                  </FormControlError>
+                </FormControl>
+              )}
 
-        <Button
-          size="xl"
-          className="rounded-full bg-primary-500 mt-4"
-          onPress={handleCreatePassword}
-          disabled={!isValidForm || isSending}
-        >
-          <ButtonText className="text-white font-bold text-lg">
-            {isSending ? 'Validating...' : 'Create new password'}
-          </ButtonText>
-        </Button>
-      </VStack>
-    </Box>
+              <Button
+                size="xl"
+                className="rounded-full bg-primary-500 mt-4"
+                onPress={handleCreatePassword}
+                disabled={!isValidForm || isSending}
+              >
+                <ButtonText className="text-white font-bold text-lg">
+                  {isSending ? 'Validating...' : 'Create new password'}
+                </ButtonText>
+              </Button>
+            </VStack>
+          </Box>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 

@@ -1,226 +1,489 @@
-import React, { useEffect, useState } from 'react';
+// src/app/(auth)/swap/index.tsx
 
+import React, { useEffect, useRef, useState } from 'react';
 import { Stack, useRouter } from 'expo-router';
+import {
+  TextInput,
+  Pressable,
+  Image,
+  View,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView
+} from 'react-native';
 
 import { Box } from '@/components/ui/box';
-import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
-import { Center } from '@/components/ui/center';
-import { Heading } from '@/components/ui/heading';
-import { HStack } from '@/components/ui/hstack';
-import { RepeatIcon } from '@/components/ui/icon';
-import { Spinner } from '@/components/ui/spinner';
-import { Text } from '@/components/ui/text';
+import { Button, ButtonText } from '@/components/ui/button';
 import { VStack } from '@/components/ui/vstack';
-import { IQuoteRequest, fetchQuote } from '@/services/emigro/quotes';
-import { balanceStore } from '@/stores/BalanceStore';
-import { sessionStore } from '@/stores/SessionStore';
-import { swapStore as bloc } from '@/stores/SwapStore';
+import { HStack } from '@/components/ui/hstack';
+import { Text } from '@/components/ui/text';
+import { useFocusEffect } from 'expo-router';
+import { useCallback } from 'react';
+
 import { CryptoAsset } from '@/types/assets';
-import { CurrencyToAsset } from '@/utils/assets';
+import { balanceStore } from '@/stores/BalanceStore';
+import { swapStore as bloc } from '@/stores/SwapStore';
+import { fetchQuote, IQuoteRequest } from '@/services/emigro/quotes';
+import { assetIconMap } from '@/utils/assetIcons';
 
-import { AssetSwap } from './AssetSwap';
-import { SwapType } from '@/types/swap';
+import { chainIconMap } from '@/utils/chainIconMap';
+import { useChainStore } from '@/stores/ChainStore';
+import { sessionStore } from '@/stores/SessionStore';
+import { SelectAssetActionSheet } from './SelectAssetActionSheet';
 
-export const Swap = () => {
+import { fetchUniswapQuote } from '@/services/emigro/uniswap';
+import { toBaseUnits } from '@/utils/token.utils';
+
+const getAssetIcon = (asset: string | { symbol?: string } | null | undefined) => {
+  const symbol =
+    typeof asset === 'string'
+      ? asset
+      : typeof asset?.symbol === 'string'
+      ? asset.symbol
+      : undefined;
+
+  if (!symbol) return require('@/assets/images/icons/default.png');
+  return assetIconMap[symbol.toLowerCase()] || require('@/assets/images/icons/default.png');
+};
+
+const Swap = () => {
   const router = useRouter();
-  const myAssetss: CryptoAsset[] = balanceStore.currentAssets().filter((asset) => asset !== CryptoAsset.BRZ); // BRZ has no avaliable offers on DEX
-  const [active, setActive] = useState<SwapType>(SwapType.SELL);
-  const [sellAsset, setSellAsset] = useState<CryptoAsset>(myAssetss[0]);
-  const [buyAsset, setBuyAsset] = useState<CryptoAsset>(myAssetss.length > 1 ? myAssetss[1] : myAssetss[0]); // just a protection for empty wallet
-  const [sellValue, setSellValue] = useState(0);
-  const [buyValue, setBuyValue] = useState(0);
+  const assets: CryptoAsset[] = balanceStore.currentAssets();
+
+  const [sellAsset, setSellAsset] = useState<CryptoAsset>(CryptoAsset.USDC);
+  const [buyAsset, setBuyAsset] = useState<CryptoAsset | null>(null); // <-- updated
+  const [sellValue, setSellValue] = useState('');
+  const [buyValue, setBuyValue] = useState('');
   const [rate, setRate] = useState<number | null>(null);
   const [fetchingRate, setFetchingRate] = useState(false);
 
-  // TODO: disable the not active input while fetching the rate
-  const fetchRate = async () => {
-    if (!sellAsset || !buyAsset) {
-      return;
-    }
-    if (sellAsset === buyAsset) {
-      setRate(1);
-      return 1;
-    }
-    if (!sellValue) {
-      // using the last rate value when the sellValue is 0 (empty)
-      return;
-    }
+  const inputRef = useRef<TextInput>(null);
+  
+  const { user } = sessionStore;
+  const wallets = user?.wallets ?? [];
+  const chains = useChainStore((state) => state.chains);
 
-    setFetchingRate(true);
-    setRate(null);
-    const sourceAmount = sellValue > 0 ? sellValue : 1;
-    const data: IQuoteRequest = {
-      from: sellAsset,
-      to: buyAsset,
-      amount: `${sourceAmount.toFixed(2)}`,
-      type: 'strict_send',
-    };
-    const quote = await fetchQuote(data);
-    if (!quote) {
-      return;
-    }
-    const destinationAmount = quote.destination_amount;
-    const rate = sourceAmount / destinationAmount;
-    setRate(rate);
-    return rate;
-  };
+  const [selectedWalletId, setSelectedWalletId] = useState(wallets[0]?.id ?? null);
+  
+  const [isAssetSheetOpen, setIsAssetSheetOpen] = useState(false);
+  const [selectingSellAsset, setSelectingSellAsset] = useState(true);
+  
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchRate()
-      .catch(() => {
-        setRate(null);
-        setBuyValue(0);
-      })
-      .finally(() => setFetchingRate(false));
-  }, [sellValue, sellAsset, buyAsset]); // will update the rate when the assets change
+    inputRef.current?.focus();
+  }, []);
+  
+  const fetchQuote = async (retry = 0): Promise<void> => {
+    const parsedValue = Number(sellValue);
+    const isValid =
+      parsedValue > 0 &&
+      sellAsset?.assetId &&
+      (buyAsset?.assetId || buyAsset?.id) &&
+      sellAsset.assetId !== (buyAsset?.assetId ?? buyAsset?.id);
 
-  useEffect(() => {
-    // use USDC as the default sell asset if it is in the wallet
-    const sellAsset = myAssetss.includes(CryptoAsset.USDC) ? CryptoAsset.USDC : myAssetss[0];
-    let buyAsset = myAssetss[1];
-
-    // use the preferences to set the initial buy asset
-    if (sessionStore.preferences?.fiatsWithBank?.length) {
-      const fiat = sessionStore.preferences.fiatsWithBank[0]; // use the first fiat
-      const asset = CurrencyToAsset[fiat];
-      // ensure that the asset exists in the wallet
-      buyAsset = myAssetss.includes(asset) ? asset : buyAsset;
+    if (!isValid) {
+      console.warn('[swap index][fetchQuote] Skipping fetch due to invalid input');
+      return;
     }
 
-    // set the initial assets
-    setSellAsset(sellAsset);
-    setBuyAsset(buyAsset);
-  }, [sessionStore.preferences]);
+    try {
+      setFetchingRate(true);
 
-  const onChangeAsset = (asset: CryptoAsset, type: SwapType) => {
-    if (type === SwapType.SELL) {
-      if (asset === buyAsset) {
-        setBuyAsset(sellAsset);
+      const decimals = sellAsset.decimals ?? 6;
+      const amountInBaseUnits = toBaseUnits(sellValue, decimals);
+
+      const quoteReq: IQuoteRequest = {
+        fromAssetId: sellAsset.assetId,
+        toAssetId: buyAsset.assetId ?? buyAsset.id,
+        amount: amountInBaseUnits,
+        maxSlippageBps: '100',
+      };
+
+      console.log('[swap index][fetchQuote] 🚀 Sending:', quoteReq);
+      const quote = await fetchUniswapQuote(quoteReq);
+
+      const destinationAmount = Number(quote.amountOut);
+      const humanReadable = destinationAmount / 10 ** quote.toDecimals;
+
+      setBuyValue(humanReadable.toFixed(6));
+      setRate(parsedValue / humanReadable);
+
+      console.log('[swap index][fetchQuote] ✅ Result:', quote);
+    } catch (err) {
+      console.error(`[swap index][fetchQuote] ❌ Error on attempt ${retry + 1}:`, err);
+
+      if (retry < 4) {
+        // wait 500ms * 2^retry before retrying
+        const delay = 500 * 2 ** retry;
+        await new Promise(res => setTimeout(res, delay));
+        return fetchQuote(retry + 1);
       }
-      setSellAsset(asset);
-    } else {
-      if (asset === sellAsset) {
-        setSellAsset(buyAsset);
-      }
-      setBuyAsset(asset);
+
+      setBuyValue('');
+      setRate(null);
+    } finally {
+      setFetchingRate(false);
     }
   };
 
-  useEffect(() => {
-    if (!rate) return;
 
-    const calculateNewSellValue = (buyValue: number) => buyValue * rate;
-    const calculateNewBuyValue = (sellValue: number) => sellValue / rate;
+  // Fetch once on mount with interval
+  useFocusEffect(
+    useCallback(() => {
+      const interval = setInterval(() => {
+        fetchQuote();
+      }, 5000);
 
-    switch (active) {
-      case SwapType.SELL: {
-        // Update buyValue based on sellValue
-        const newBuyValue = calculateNewBuyValue(sellValue);
-        setBuyValue(newBuyValue);
-        break;
-      }
-      case SwapType.BUY: {
-        // Update sellValue based on buyValue
-        const newSellValue = calculateNewSellValue(buyValue);
-        setSellValue(newSellValue);
-        break;
-      }
-      default:
-        break;
-    }
-  }, [sellValue, rate]);
+      return () => {
+        console.log('[swap index] 🔁 Clearing interval on blur');
+        clearInterval(interval);
+      };
+    }, [sellAsset, buyAsset, sellValue])
+  );
+
+
+
+
+
+
 
   const handleSwitch = () => {
-    // switch assets
-    const temp = sellAsset;
-    setSellAsset(buyAsset);
-    setBuyAsset(temp);
+    const newSellAsset = buyAsset ?? null;
+    const newBuyAsset = sellAsset ?? null;
 
-    // switch values
-    if (active === SwapType.SELL) {
-      setSellValue(sellValue);
-    } else {
-      setBuyValue(buyValue);
-    }
+    setSellAsset(newSellAsset);
+    setBuyAsset(newBuyAsset);
 
-    // switch rate
-    if (rate) {
-      setRate(1 / rate);
-    }
+    setSellValue('');
+    setBuyValue('');
+    setRate(null);
+
+    setTimeout(() => inputRef.current?.focus(), 50);
   };
 
-  const handlePress = () => {
-    bloc.setSwap({ fromAsset: sellAsset, toAsset: buyAsset, fromValue: sellValue, toValue: buyValue, rate: rate! });
-    router.push('/swap/review');
+
+  const handleReview = () => {
+    if (!buyAsset || !selectedWalletId) {
+      console.warn('[swap index][handleReview] ❌ Missing buyAsset or selectedWalletId');
+      return;
+    }
+
+    const amountIn = toBaseUnits(sellValue, sellAsset.decimals ?? 6);
+
+    const tokenIn = sellAsset.contractAddress || sellAsset.address || sellAsset.tokenAddress;
+    const tokenOut = buyAsset.contractAddress || buyAsset.address || buyAsset.tokenAddress;
+
+    // ✅ Get the numeric chainId from the selected wallet
+    const selectedWallet = wallets.find(w => w.id === selectedWalletId);
+	const chain = chains.find(c => c.id === selectedWallet?.chainId);
+	const chainId = chain?.id;
+
+    if (!tokenIn || !tokenOut) {
+      console.error('[swap index][handleReview] ❌ Missing tokenIn or tokenOut', {
+        tokenIn,
+        tokenOut,
+      });
+      setErrorMessage('Missing token information.');
+      return;
+    }
+
+	if (!chainId) {
+	  console.error('[swap index][handleReview] ❌ Missing chainId:', chainId);
+	  setErrorMessage('Invalid chain ID for selected wallet.');
+	  return;
+	}
+
+	console.log('[swap index][handleReview] ✅ Pushing to /swap/status with params:', {
+	  walletId: selectedWalletId,
+	  chainId,
+	  tokenIn,
+	  tokenOut,
+	  amountIn,
+	});
+
+	router.push({
+	  pathname: '/swap/status',
+	  params: {
+	    walletId: selectedWalletId,
+	    chainId,
+	    tokenIn,
+	    tokenOut,
+	    amountIn,
+	  },
+	});
   };
 
-  const isButtonDisabled =
-    fetchingRate ||
-    sellAsset === buyAsset ||
-    sellValue <= 0 ||
-    buyValue <= 0 ||
-    sellValue > balanceStore.get(sellAsset);
 
+
+
+  const DEFAULT_CHAIN_ID = '05c65d14-291c-11f0-8f36-02ee245cdcb3';
+  const DEFAULT_ASSET_ID = '1e90df0a-2920-11f0-8f36-02ee245cdcb3';
+
+  useEffect(() => {
+    const baseWallet = wallets.find(w => w.chainId === DEFAULT_CHAIN_ID);
+    const walletId = baseWallet?.id;
+
+    if (!walletId) return;
+
+    const balances = balanceStore.walletBalances[walletId];
+    const usdc = balances?.find(a => a.assetId === DEFAULT_ASSET_ID);
+
+    if (walletId && usdc) {
+      setSelectedWalletId(walletId);
+      setSellAsset(usdc);
+    } else if (!balances) {
+      // Fetch if not already done
+      balanceStore.fetchWalletBalance(walletId, { force: true });
+    }
+  }, [wallets, balanceStore.walletBalances]);
+
+
+  const handleChainChange = (walletId: string) => {
+    setSelectedWalletId(walletId);
+    // Reset on chain change
+    setSellAsset(null);
+    setBuyAsset(null);
+    setSellValue('');
+    setBuyValue('');
+    setRate(null);
+  };
+  
+  const renderSelectableCard = (
+    value: string,
+    selected: string | null,
+    onSelect: (v: string) => void,
+    iconSrc?: any,
+    displayLabel?: string
+  ) => {
+    const isSelected = selected === value;
+    return (
+      <Pressable
+        key={value}
+        onPress={() => onSelect(value)}
+        style={{
+          borderWidth: 2,
+          borderColor: isSelected ? '#ff4d4d' : '#3c3c3c',
+          backgroundColor: isSelected ? '#fe0055' : '#2e2e2e',
+          borderRadius: 12,
+          paddingVertical: 8,
+          paddingHorizontal: 12,
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginRight: 8,
+        }}
+      >
+        {iconSrc && (
+          <Image
+            source={iconSrc}
+            style={{ width: 18, height: 18, marginRight: 6 }}
+          />
+        )}
+        <Text style={{ color: '#fff', fontSize: 14 }}>
+          {(displayLabel ?? value).toUpperCase()}
+        </Text>
+      </Pressable>
+    );
+  };
+  
+  useEffect(() => {
+    const parsed = Number(sellValue);
+
+    if (
+      !isNaN(parsed) &&
+      parsed > 0 &&
+      sellAsset?.assetId &&
+      (buyAsset?.assetId || buyAsset?.id) &&
+      sellAsset.assetId !== (buyAsset?.assetId ?? buyAsset?.id)
+    ) {
+      fetchQuote();
+    }
+  }, [sellValue, sellAsset, buyAsset]);
+
+  
   return (
     <>
       <Stack.Screen options={{ title: 'Swap' }} />
-      <Box className="flex-1 bg-white">
-        <VStack space="sm" className="p-4">
-          <Heading size="xl">Sell {sellAsset}</Heading>
-          <AssetSwap
-            sellOrBuy={SwapType.SELL}
-            asset={sellAsset}
-            value={sellValue}
-            balance={balanceStore.get(sellAsset)}
-            assets={myAssetss}
-            onChangeAsset={(asset) => onChangeAsset(asset, SwapType.SELL)}
-            onChangeValue={(value) => setSellValue(value)}
-            isActive={active === SwapType.SELL}
-            onFocus={() => setActive(SwapType.SELL)}
-            testID="sell-box"
-          />
-          <Center className="my-0.5">
-            <Button onPress={handleSwitch} testID="arrowIcon" variant="outline" className="rounded-full h-10 w-10">
-              <ButtonIcon as={RepeatIcon} className="text-primary-500" />
-            </Button>
-          </Center>
-          <AssetSwap
-            sellOrBuy={SwapType.BUY}
-            asset={buyAsset}
-            value={buyValue}
-            balance={balanceStore.get(buyAsset)}
-            assets={myAssetss}
-            onChangeAsset={(asset) => onChangeAsset(asset, SwapType.BUY)}
-            onChangeValue={(value) => setBuyValue(value)}
-            isActive={active === SwapType.BUY}
-            // onFocus={() => setActive(SwapType.BUY)}
-            testID="buy-box"
-          />
-          <Box className="my-1.5 ml-1">
-            {fetchingRate && (
-              <HStack space="md" testID="fetching">
-                <Spinner size="small" className="text-typography-500" />
-                <Text size="xs" className="text-typography-500">
-                  Fetching best price...
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+          <Box className="flex-1 bg-[#141414] pt-6 px-4">
+		  
+		  <HStack className="items-center justify-between mb-4" style={{ paddingHorizontal: 16 }}>
+		    {/* Left arrow */}
+		    <Pressable onPress={() => {/* Scroll left handler */}}>
+		      <Text style={{ color: 'white', fontSize: 18 }}>{'<'}</Text>
+		    </Pressable>
+
+		    {/* Scrollable chain selector */}
+		    <ScrollView
+		      horizontal
+		      showsHorizontalScrollIndicator={false}
+		      contentContainerStyle={{ paddingHorizontal: 8 }}
+		      style={{ flex: 1, marginHorizontal: 8 }}
+		    >
+		      <HStack space="sm">
+		        {wallets.map(w => {
+		          const chain = chains.find(c => c.id === w.chainId);
+		          return renderSelectableCard(
+		            w.id,
+		            selectedWalletId,
+		            handleChainChange,
+		            chainIconMap[chain?.iconUrl ?? ''],
+		            chain?.name ?? 'Unknown'
+		          );
+		        })}
+		      </HStack>
+		    </ScrollView>
+
+		    {/* Fixed gear icon */}
+		    <View style={{ width: 32, alignItems: 'flex-end' }}>
+		      <Pressable onPress={() => console.log('Open settings')}>
+		        <Image
+		          source={require('@/assets/images/icons/gear.png')}
+		          style={{ width: 20, height: 20, tintColor: 'white' }}
+		        />
+		      </Pressable>
+		    </View>
+		  </HStack>
+		  
+            <VStack>
+              {/* Input Container */}
+              <Box className="bg-[#2e2e2e] rounded-2xl p-4">
+                <Text className="text-white mb-1">You Pay</Text>
+                <HStack justify="between" align="center">
+                  <TextInput
+                    ref={inputRef}
+                    autoFocus
+                    className="text-white text-[36px] font-semibold flex-1"
+                    placeholder="0"
+                    placeholderTextColor="#666"
+                    keyboardType="decimal-pad"
+                    value={sellValue}
+                    onChangeText={setSellValue}
+                  />
+				  <Pressable
+				    className="flex-row items-center bg-[#1a1a1a] px-4 py-2 rounded-full ml-3"
+				    style={{
+				      minWidth: 100,
+				      alignSelf: 'flex-start',
+				    }}
+					onPress={() => {
+					  setSelectingSellAsset(true); // or false if it's the receive field
+					  setIsAssetSheetOpen(true);
+					}}
+				  >
+                    <Image
+                      source={getAssetIcon(sellAsset)}
+                      style={{ width: 24, height: 24, marginRight: 6 }}
+                    />
+                    <Text className="text-white mr-1">{sellAsset?.symbol ?? 'Select asset'}</Text>
+                    <Text className="text-white text-lg">˅</Text>
+                  </Pressable>
+                </HStack>
+              </Box>
+
+              {/* Swap button overlapping */}
+			  <View className="items-center -mt-6 z-10">
+			    <Pressable
+			      onPress={handleSwitch}
+			      className="w-16 h-16 rounded-full items-center justify-center"
+			      style={{
+			        backgroundColor: '#fe0055',
+			        borderColor: '#141414',
+			        borderWidth: 6,
+					paddingBottom: 5
+			      }}
+			    >
+			      <Text className="text-white text-3xl">⇅</Text>
+			    </Pressable>
+			  </View>
+
+              {/* Output Container */}
+              <Box className="bg-[#2e2e2e] rounded-2xl p-4 mt-[-26px]">
+                <Text className="text-white mb-1">You Receive</Text>
+                <HStack justify="between" align="center">
+				<ScrollView horizontal showsHorizontalScrollIndicator={false}>
+				  <TextInput
+				    className="text-white text-[36px] font-semibold"
+				    style={{ textAlign: 'left', minWidth: 200 }}
+				    placeholder="0"
+				    placeholderTextColor="#666"
+				    keyboardType="decimal-pad"
+				    value={buyValue}
+				    editable={false}
+				  />
+				</ScrollView>
+				  <Pressable
+				    className="flex-row items-center bg-[#1a1a1a] px-4 py-2 rounded-full ml-3"
+				    style={{
+				      minWidth: 100,
+				      alignSelf: 'flex-start',
+				    }}
+					onPress={() => {
+					  setSelectingSellAsset(false); // or false if it's the receive field
+					  setIsAssetSheetOpen(true);
+					}}
+				  >
+                    <Image
+                      source={getAssetIcon(buyAsset)}
+                      style={{ width: 24, height: 24, marginRight: 6 }}
+                    />
+                    <Text className="text-white mr-1">
+                      {buyAsset?.symbol ?? 'Select asset'}
+                    </Text>
+                    <Text className="text-white text-lg">˅</Text>
+                  </Pressable>
+                </HStack>
+              </Box>
+
+              {/* Price info */}
+              {rate && buyAsset && (
+                <Text className="text-white text-center pt-3">
+                  1 {sellAsset.symbol} ≈ {(1 / rate).toFixed(6)} {buyAsset.symbol}
                 </Text>
-              </HStack>
-            )}
-            {sellAsset && buyAsset && sellValue > 0 && !fetchingRate && rate === null && (
-              <Text size="sm" className="text-error-500">
-                Failed to fetch the rate
-              </Text>
-            )}
-            {!fetchingRate && rate && (
-              <Text size="sm" className="text-black">
-                1 {buyAsset} ≈ {rate.toFixed(6)} {sellAsset}
-              </Text>
-            )}
+              )}
+
+              {/* Review Button */}
+			  <Button
+			    disabled={
+			      fetchingRate ||
+			      !sellValue ||
+			      Number(sellValue) <= 0 ||
+			      !buyAsset ||
+			      sellAsset?.assetId === buyAsset?.assetId ||
+			      !buyValue
+			    }
+			    onPress={handleReview}
+			    className="mt-6 rounded-full"
+			    style={{ backgroundColor: '#fe0055', height: 56 }}
+			  >
+			    <ButtonText className="text-lg text-white">
+			      {fetchingRate ? 'Quoting...' : 'Swap'}
+			    </ButtonText>
+			  </Button>
+
+			  {errorMessage && (
+			    <Text className="text-red-500 text-center mt-2">{errorMessage}</Text>
+			  )}
+            </VStack>
           </Box>
-          <Button onPress={handlePress} disabled={isButtonDisabled} size="xl">
-            <ButtonText>Review order</ButtonText>
-          </Button>
-        </VStack>
-      </Box>
+        </ScrollView>
+      </KeyboardAvoidingView>
+	  <SelectAssetActionSheet
+	    walletId={selectedWalletId ?? ''}
+	    isOpen={isAssetSheetOpen}
+	    onClose={() => setIsAssetSheetOpen(false)}
+	    onSelect={(asset) => {
+	      if (selectingSellAsset) {
+	        setSellAsset(asset);
+	      } else {
+	        setBuyAsset(asset);
+	      }
+	    }}
+	  />
     </>
   );
 };

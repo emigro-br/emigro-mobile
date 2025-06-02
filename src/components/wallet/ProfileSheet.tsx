@@ -1,27 +1,27 @@
 import React from 'react';
 import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  Alert,
-  Clipboard,
-} from 'react-native';
-import Modal from 'react-native-modal';
+  Actionsheet,
+  ActionsheetBackdrop,
+  ActionsheetContent,
+  ActionsheetDragIndicator,
+  ActionsheetDragIndicatorWrapper,
+} from '@/components/ui/actionsheet';
 import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
 import { sessionStore } from '@/stores/SessionStore';
 import { useChainStore } from '@/stores/ChainStore';
 import { chainIconMap } from '@/utils/chainIconMap';
-import { Copy } from 'lucide-react-native';
-import { showToast } from '@/components/ui/toast';
+import { Copy, X } from 'lucide-react-native';
+import { ScrollView, Pressable, Image, Alert, Clipboard } from 'react-native';
+import { Box } from '@/components/ui/box';
+import { Text } from '@/components/ui/text';
 
-type Props = {
-  visible: boolean;
-  onClose: () => void;
-};
 
-export const ProfileSheet = ({ visible, onClose }: Props) => {
+
+const formatAddress = (addr: string) => `${addr.slice(0, 6)}...${addr.slice(-6)}`;
+
+
+export const ProfileSheet = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
   const wallets = sessionStore.user?.wallets ?? [];
   const chains = useChainStore.getState().chains;
 
@@ -30,34 +30,43 @@ export const ProfileSheet = ({ visible, onClose }: Props) => {
     Alert.alert('Copied', 'Wallet address copied to clipboard');
   };
 
-  const formatAddress = (addr: string) =>
-    `${addr.slice(0, 6)}...${addr.slice(-6)}`;
-
   return (
-    <Modal
-      isVisible={visible}
-      animationIn="slideInUp"
-      animationOut="slideOutDown"
-      backdropOpacity={0.6}
-      onBackdropPress={onClose}
-      onBackButtonPress={onClose}
-      style={{ justifyContent: 'flex-end', margin: 0 }}
-    >
-      <View className="flex-1 justify-end bg-black/40">
-        <View className="bg-background-0 rounded-t-3xl px-6 pt-6 pb-10 h-[93%]">
-          {/* Header */}
-          <HStack className="justify-between items-center mb-6">
-            <Text className="text-xl font-bold text-white"></Text>
-            <TouchableOpacity
-              onPress={onClose}
-              className="w-10 h-10 bg-primary-500 rounded-full items-center justify-center"
-            >
-              <Text className="text-white text-2xl">×</Text>
-            </TouchableOpacity>
-          </HStack>
+    <Actionsheet isOpen={visible} onClose={onClose}>
+      <ActionsheetBackdrop />
+      <ActionsheetContent style={{ backgroundColor: '#0a0a0a', borderTopLeftRadius: 24, borderTopRightRadius: 24 }}>
+        <Pressable
+          onPress={onClose}
+          style={{
+            position: 'absolute',
+            top: 12,
+            right: 16,
+            zIndex: 10,
+            width: 34,
+            height: 34,
+            borderRadius: 16,
+            backgroundColor: '#fe0055',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <X color="#fff" size={20} />
+        </Pressable>
 
-          {/* Centered Profile Picture */}
-          <View className="items-center mb-8">
+        <Box style={{ alignItems: 'center', paddingTop: 12, paddingBottom: 8 }}>
+          <ActionsheetDragIndicatorWrapper>
+            <ActionsheetDragIndicator
+              style={{
+                width: 80,
+                height: 8,
+                borderRadius: 3,
+                backgroundColor: '#555',
+              }}
+            />
+          </ActionsheetDragIndicatorWrapper>
+        </Box>
+
+        <ScrollView style={{ paddingHorizontal: 12, paddingBottom: 80, marginTop: 16, width: '100%' }}>
+          <Box style={{ alignItems: 'center', marginBottom: 24 }}>
             <Image
               source={require('@/assets/images/profile-temp.png')}
               style={{
@@ -68,62 +77,57 @@ export const ProfileSheet = ({ visible, onClose }: Props) => {
                 borderColor: '#fe0055',
               }}
             />
-          </View>
+          </Box>
 
-          {/* Wallet addresses with chain icon */}
           <VStack space="md">
             {wallets.map((wallet) => {
               const chain = chains.find((c) => c.id === wallet.chainId);
               const iconKey = chain?.iconUrl ?? '';
               const icon = chainIconMap[iconKey];
 
-              console.log(`[ProfileSheet] chain.iconUrl: ${iconKey}, icon found: ${!!icon}`);
-
               return (
                 <HStack
                   key={wallet.id}
-                  className="bg-background-900 px-4 py-3 rounded-xl items-center justify-between"
+                  style={{
+                    backgroundColor: '#1a1a1a',
+                    paddingVertical: 12,
+                    paddingHorizontal: 16,
+                    borderRadius: 16,
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
                 >
-                  <HStack space="sm" alignItems="center">
+                  <HStack alignItems="center">
                     {icon ? (
-                      <Image
-                        source={icon}
-                        style={{ width: 24, height: 24, marginRight: 8 }}
-                      />
+                      <Image source={icon} style={{ width: 24, height: 24, marginRight: 8 }} />
                     ) : (
-                      <View
-                        style={{
-                          width: 24,
-                          height: 24,
-                          marginRight: 8,
-                          borderRadius: 12,
-                          backgroundColor: '#888',
-                        }}
-                      />
+                      <Box style={{ width: 24, height: 24, marginRight: 8, borderRadius: 12, backgroundColor: '#888' }} />
                     )}
-                    <Text className="text-white font-medium text-sm">
-                      {formatAddress(wallet.publicAddress)}
-                    </Text>
+                    <Text style={{ color: '#fff', fontSize: 16 }}>{formatAddress(wallet.publicAddress)}</Text>
                   </HStack>
-                  <TouchableOpacity
-                    onPress={() => copyToClipboard(wallet.publicAddress)}
-                  >
+                  <Pressable onPress={() => copyToClipboard(wallet.publicAddress)}>
                     <Copy size={18} color="#fff" />
-                  </TouchableOpacity>
+                  </Pressable>
                 </HStack>
               );
             })}
           </VStack>
 
-          {/* Manage chains */}
-          <TouchableOpacity
+          {/*<Pressable
             onPress={() => Alert.alert('Coming soon')}
-            className="mt-6 bg-primary-500/20 py-4 rounded-full items-center"
+            style={{
+              marginTop: 24,
+              backgroundColor: '#fd0055',
+              borderRadius: 999,
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingVertical: 12,
+            }}
           >
-            <Text className="text-white font-bold text-lg">Manage chains</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
+            <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>Manage chains</Text>
+          </Pressable>*/}
+        </ScrollView>
+      </ActionsheetContent>
+    </Actionsheet>
   );
 };

@@ -33,7 +33,7 @@ export const Welcome = () => {
             onPress={() => router.push('/login')}
             variant="solid"
             size="xl"
-            className="rounded-full bg-primary-700"
+            className="rounded-full bg-[#890000]"
           >
             <ButtonText className="text-white">Login</ButtonText>
           </Button>

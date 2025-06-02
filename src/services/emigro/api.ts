@@ -7,7 +7,7 @@ import { CustomError } from '@/types/errors';
 import { AuthSession } from './types';
 
 export const backendUrl = process.env.EXPO_PUBLIC_BACKEND_URL;
-const defaultTimeout = 10000;
+const defaultTimeout = 70000;
 
 export const api = (config: CreateAxiosDefaults = {}): AxiosInstance => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires

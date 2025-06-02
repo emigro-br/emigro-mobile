@@ -78,6 +78,11 @@ const STATUS_MAP = {
     secondmessage: 'Oops...',
     lottie: require('@/assets/lotties/error.json'),
   },
+  e006: {
+    message: 'We were unable to make the payment with your selected token. Please try again or use another token for payment.',
+    secondmessage: 'Oops...',
+    lottie: require('@/assets/lotties/error.json'),
+  },
 };
 
 const fallbackStatus = {
@@ -139,7 +144,7 @@ const StatusScreen = () => {
 
   const statusConfig = STATUS_MAP[status] || fallbackStatus;
 
-  const isComplete = ['f001', 'p005', 'e001', 'e002', 'e003', 'e004'].includes(status);
+  const isComplete = ['f001', 'p005', 'e001', 'e002', 'e003', 'e004', 'e005', 'e006'].includes(status);
   const showButton = true;
 
   return (

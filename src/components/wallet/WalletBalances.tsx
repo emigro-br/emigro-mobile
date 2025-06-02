@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'expo-router';
-import { useColorScheme, Pressable, ActivityIndicator, View } from 'react-native';
+import { useColorScheme, ActivityIndicator, View, Pressable, Image } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { Card } from '@/components/ui/card';
 import { Heading } from '@/components/ui/heading';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
-import { AssetListTile } from '../AssetListTile';
 import { Settings, RefreshCw } from 'lucide-react-native';
 
 import { assetIconMap } from '@/utils/assetIcons';
@@ -16,8 +15,15 @@ import { useWalletBalances } from '@/hooks/useWalletBalances';
 import { fetchFiatQuote } from '@/services/emigro/quotes';
 
 import { ManageAssetsActionSheet } from '@/components/wallet/ManageAssetsActionSheet';
+import { AssetDetailsSheet } from '@/components/wallet/AssetDetailsSheet';
+import { ensurePrimaryCurrencyExists } from '@/services/emigro/userPrimaryCurrency';
+import { fetchPrimaryCurrency } from '@/services/emigro/userPrimaryCurrency';
 
-import { useFocusEffect } from '@react-navigation/native';
+interface PrimaryCurrencyResponse {
+  chainId: string;
+  assetId: string;
+  chainIdOnchain: number;
+}
 
 interface Props {
   walletId: string;
@@ -25,48 +31,42 @@ interface Props {
 }
 
 export const WalletBalances = ({ walletId, hide = false }: Props) => {
-  const router = useRouter();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-
-  console.log('[Component][WalletBalance] 🔄 Rendering WalletBalances component');
-
+  const isDark = useColorScheme() === 'dark';
   const { balances, loading, refresh } = useWalletBalances(walletId);
 
-  console.log('[Component][WalletBalance] useWalletBalances -> balances:', balances);
-  console.log('[Component][WalletBalance] useWalletBalances -> loading:', loading);
-
-  if (balances.length === 0) {
-    console.warn('[Component][WalletBalance] ⚠️ No balances found for walletId:', walletId);
-  }
   const [refreshing, setRefreshing] = useState(false);
   const [quotes, setQuotes] = useState<Record<string, number>>({});
-
+  const [primaryCurrency, setPrimaryCurrency] = useState<PrimaryCurrencyResponse | null>(null);
   const [manageSheetOpen, setManageSheetOpen] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState<any | null>(null);
+  const [isAssetSheetOpen, setAssetSheetOpen] = useState(false);
 
   const bankCurrency = sessionStore.preferences?.fiatsWithBank?.[0] ?? 'USD';
-  
+
   useFocusEffect(
     React.useCallback(() => {
-      console.log('[Component][WalletBalance]  🔁 Screen focused, refreshing...');
-      refresh(); // refresh when screen regains focus
+      refresh();
     }, [walletId])
   );
-  
+
   useEffect(() => {
-	console.log('[Component][WalletBalance] useEffect - fetching chains');
     useChainStore.getState().fetchChains();
   }, []);
 
   useEffect(() => {
+    const loadPrimary = async () => {
+      const currency = await ensurePrimaryCurrencyExists();
+      if (currency) setPrimaryCurrency(currency);
+    };
+    loadPrimary();
+  }, [walletId]);
+
+  useEffect(() => {
     const fetchQuotes = async () => {
       const result: Record<string, number> = {};
-	  console.log('[Component][WalletBalance] Fetching quotes for assets:', balances.map(a => a.symbol));
-	  
       await Promise.all(
         balances.map(async (asset) => {
           const price = await fetchFiatQuote(asset.symbol, bankCurrency);
-		  console.log(`[Component][WalletBalance] Quote for ${asset.symbol}:`, price);
           if (price !== null) result[asset.symbol] = price;
         })
       );
@@ -79,45 +79,33 @@ export const WalletBalances = ({ walletId, hide = false }: Props) => {
   }, [balances, bankCurrency]);
 
   const onRefresh = async () => {
-	console.log('[Component][WalletBalance] onRefresh triggered');
     setRefreshing(true);
     await refresh();
     setRefreshing(false);
   };
 
-  const formatChainName = (chain?: string) => {
-    if (!chain) return undefined;
-    return chain.charAt(0).toUpperCase() + chain.slice(1);
-  };
+  const refreshPrimary = async () => {
+    const currency = await fetchPrimaryCurrency();
+    if (currency) {
+      setPrimaryCurrency(currency);
 
+    }
+  };
+  
   return (
     <VStack space="md" testID="wallet-balances">
-      {/* 🧩 FIXED HEADER LAYOUT */}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: 4,
-        }}
-      >
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
         <Heading>Assets</Heading>
         <Pressable onPress={onRefresh} disabled={refreshing}>
-          <View
-            style={{
-              backgroundColor: '#222',
-              borderRadius: 999,
-              width: 32,
-              height: 32,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            {refreshing ? (
-              <ActivityIndicator size="small" color="#fff" />
-            ) : (
-              <RefreshCw size={16} color="#fff" />
-            )}
+          <View style={{
+            backgroundColor: '#222',
+            borderRadius: 999,
+            width: 32,
+            height: 32,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+            {refreshing ? <ActivityIndicator size="small" color="#fff" /> : <RefreshCw size={16} color="#fff" />}
           </View>
         </Pressable>
       </View>
@@ -127,66 +115,116 @@ export const WalletBalances = ({ walletId, hide = false }: Props) => {
       ) : (
         <VStack space="sm">
           {balances.map((asset, index) => {
-			const balance = asset.balance ?? 0;
-			const isUSDC = asset.symbol === 'USDC';
-			const isETH = asset.symbol === 'ETH';
-			const decimals = isUSDC ? 2 : 8;
-			const formattedBalance = Number(balance).toFixed(decimals);
-			const suffix = !isUSDC && !isETH ? `$${asset.symbol}` : asset.symbol;
-			const balanceDisplay = hide ? '****' : `${formattedBalance} ${suffix}`;
+            const rawBalance = asset.balance ?? '0';
+            const parsedBalance = parseFloat(rawBalance);
+            const isUSDC = asset.symbol === 'USDC';
+            const isETH = asset.symbol === 'ETH';
+            const decimals = isUSDC ? 6 : 8;
+            const formattedBalance = parsedBalance.toFixed(decimals);
+            const suffix = !isUSDC && !isETH ? `$${asset.symbol}` : asset.symbol;
+            const balanceDisplay = hide ? '****' : `${formattedBalance} ${suffix}`;
 
-			const iconKey = asset.iconUrl?.split('/').pop()?.replace('.png', '').toLowerCase() ?? '';
+            const iconKey = asset.iconUrl?.split('/').pop()?.replace('.png', '').toLowerCase() ?? '';
             const icon = assetIconMap[iconKey];
-			console.log('[WalletBalances] 🧩 iconKey:', iconKey, '| iconUrl:', asset.iconUrl);
+
+            const chain = useChainStore.getState().getChainById(asset.chainId);
+            const chainIcon = chain?.icon;
+
+            console.log('Asset:', asset.name || asset.symbol);
+            console.log('Chain ID:', asset.chainId);
+            console.log('Found chain:', chain?.name);
+            console.log('Has chain icon:', !!chainIcon);
 
             const fiatPrice = quotes[asset.symbol];
-            const totalInFiat = fiatPrice ? (Number(balance) * fiatPrice).toFixed(2) : '...';
+            const totalInFiat = fiatPrice ? (parsedBalance * fiatPrice).toFixed(2) : '...';
+
+            const isPrimary = primaryCurrency?.assetId === asset.assetId;
 
             return (
-              <Card
+              <Pressable
                 key={index}
-                variant="flat"
-                style={{
-                  backgroundColor: isDark
-                    ? 'rgba(255, 255, 255, 0.1)'
-                    : 'rgba(255, 255, 255, 0.1)',
-                  borderRadius: 16,
-                  paddingVertical: 8,
-                  paddingHorizontal: 16,
+                onPress={() => {
+                  setSelectedAsset(asset);
+                  setAssetSheetOpen(true);
                 }}
               >
-                <AssetListTile
-                  asset={asset}
-                  icon={icon}
-                  subtitle={
-                    <>
-                      {formatChainName(asset.chain) && (
-                        <Text
-                          size="sm"
-                          weight="normal"
-                          color="textSecondary"
-                          style={{ marginTop: -5 }}
-                        >
-                          {formatChainName(asset.chain)}
-                        </Text>
+                <Card
+                  variant="flat"
+                  style={{
+                    backgroundColor: '#2e2e2e',
+                    borderRadius: 16,
+                    paddingVertical: 12,
+                    paddingHorizontal: 16,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+				
+                  {/* Left: Icon + Asset Name + Balance */}
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ width: 48, height: 48, marginRight: 12, position: 'relative' }}>
+                      {icon && (
+                        <Image
+                          source={icon}
+                          style={{ width: 48, height: 48 }}
+                          resizeMode="contain"
+                        />
                       )}
-                      <Text size="md" weight="semibold" style={{ marginTop: 2 }}>
-                        {balanceDisplay}
-                      </Text>
-                    </>
-                  }
-                  trailing={
-                    <VStack alignItems="flex-end">
-                      <Text size="md">
-                        {totalInFiat}
-                      </Text>
-                      <Text size="sm" color="textSecondary">
-                        {bankCurrency}
-                      </Text>
+                      {chainIcon && (
+                        <Image
+                          source={chainIcon}
+                          style={{
+                            width: 22,
+                            height: 22,
+                            position: 'absolute',
+                            bottom: -2,
+                            right: -2,
+                            borderRadius: 50,
+                            backgroundColor: '#000',
+                          }}
+                          resizeMode="contain"
+                        />
+                      )}
+                    </View>
+
+                    <VStack>
+
+					<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+					  <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+					    {asset.name || asset.symbol}
+					  </Text>
+					  {isPrimary && (
+					    <View
+					      style={{
+					        marginLeft: 6,
+					        backgroundColor: '#444',
+					        paddingHorizontal: 6,
+					        paddingVertical: 2,
+					        borderRadius: 6,
+					      }}
+					    >
+					      <Text size="xs" weight="bold" style={{ color: '#fff' }}>
+					        Primary
+					      </Text>
+					    </View>
+					  )}
+					</View>
+
+
+                      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
+                        <Text size="sm" style={{ color: '#ccc' }}>{balanceDisplay}</Text>
+                      </View>
                     </VStack>
-                  }
-                />
-              </Card>
+                  </View>
+
+                  {/* Right: Fiat Value + Currency */}
+                  <VStack alignItems="flex-end">
+                    <Text size="md" style={{ color: '#fff' }}>{totalInFiat}</Text>
+                    <Text size="sm" style={{ color: '#aaa' }}>{bankCurrency}</Text>
+                  </VStack>
+                </Card>
+              </Pressable>
             );
           })}
 
@@ -207,24 +245,30 @@ export const WalletBalances = ({ walletId, hide = false }: Props) => {
                 gap: 8,
               }}
             >
-              <Text size="md" weight="medium">
-                Manage assets
-              </Text>
+              <Text size="md" weight="medium">Manage assets</Text>
               <Settings size={20} color="#fff" />
             </Card>
           </Pressable>
         </VStack>
       )}
-	  <ManageAssetsActionSheet
-	    isOpen={manageSheetOpen}
-	    onClose={async (refreshNeeded) => {
-	      setManageSheetOpen(false);
-	      if (refreshNeeded) {
-	        console.log('[WalletBalances] 🔁 Refreshing after changes...');
-	        await refresh(); // make sure refresh updates the hook state
-	      }
+
+      <ManageAssetsActionSheet
+        isOpen={manageSheetOpen}
+        onClose={async (refreshNeeded) => {
+          setManageSheetOpen(false);
+          if (refreshNeeded) await refresh();
+        }}
+        walletId={walletId}
+      />
+
+	  <AssetDetailsSheet
+	    isOpen={isAssetSheetOpen}
+	    onClose={() => {
+	      setAssetSheetOpen(false);
+	      refreshPrimary();
 	    }}
-	    walletId={walletId}
+	    asset={selectedAsset}
+	    onPrimaryCurrencyChanged={refreshPrimary}
 	  />
     </VStack>
   );

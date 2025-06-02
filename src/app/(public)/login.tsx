@@ -1,5 +1,14 @@
 import React, { useRef, useState } from 'react';
-import { Animated, Pressable, TextInput } from 'react-native';
+import {
+  Animated,
+  Pressable,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import { SubmitHandler, useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'expo-router';
 
@@ -67,113 +76,129 @@ const Login = () => {
   const isDisabled = !isDirty || !isValid || isLoggingIn;
 
   return (
-    <Box className="flex-1 bg-black justify-center">
-      <VStack space="lg" className="p-6">
-        <Heading size="xl" className="text-white text-center mb-6">
-          Sign in to Emigro
-        </Heading>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+          <Box className="flex-1 bg-black justify-center">
+            <VStack space="lg" className="p-6">
+              <Heading size="xl" className="text-white text-center mb-6">
+                Sign in to Emigro
+              </Heading>
 
-        <VStack space="xl">
-          {/* Email input */}
-          <Controller
-            control={control}
-            name="email"
-            rules={{ required: true }}
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                placeholder="Email"
-                placeholderTextColor="#888"
-                value={value}
-                onChangeText={onChange}
-                onFocus={() => setFocusedField('email')}
-                onBlur={() => setFocusedField(null)}
-                style={{
-                  backgroundColor: '#1a1a1a',
-                  borderRadius: 30,
-                  paddingVertical: 12,
-                  paddingHorizontal: 20,
-                  fontSize: 16,
-                  textAlign: 'center',
-                  color: 'white',
-                  borderWidth: 1,
-                  borderColor: focusedField === 'email' ? '#ff0033' : '#333',
-                }}
-              />
-            )}
-          />
+              <VStack space="xl">
+                {/* Email input */}
+                <Controller
+                  control={control}
+                  name="email"
+                  rules={{ required: true }}
+                  render={({ field: { onChange, value } }) => (
+                    <TextInput
+                      placeholder="Email"
+                      placeholderTextColor="#888"
+                      value={value}
+                      onChangeText={onChange}
+                      onFocus={() => setFocusedField('email')}
+                      onBlur={() => setFocusedField(null)}
+                      style={{
+                        backgroundColor: '#1a1a1a',
+                        borderRadius: 30,
+                        paddingVertical: 12,
+                        paddingHorizontal: 20,
+                        fontSize: 16,
+                        textAlign: 'center',
+                        color: 'white',
+                        borderWidth: 1,
+                        borderColor: focusedField === 'email' ? '#ff0033' : '#333',
+                      }}
+                    />
+                  )}
+                />
 
-          {/* Password input */}
-          <Controller
-            control={control}
-            name="password"
-            rules={{ required: true }}
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                placeholder="Password"
-                placeholderTextColor="#888"
-                value={value}
-                onChangeText={onChange}
-                secureTextEntry
-                onFocus={() => setFocusedField('password')}
-                onBlur={() => setFocusedField(null)}
-                style={{
-                  backgroundColor: '#1a1a1a',
-                  borderRadius: 30,
-                  paddingVertical: 12,
-                  paddingHorizontal: 20,
-                  fontSize: 16,
-                  textAlign: 'center',
-                  color: 'white',
-                  borderWidth: 1,
-                  borderColor: focusedField === 'password' ? '#ff0033' : '#333',
-                }}
-              />
-            )}
-          />
+                {/* Password input */}
+                <Controller
+                  control={control}
+                  name="password"
+                  rules={{ required: true }}
+                  render={({ field: { onChange, value } }) => (
+                    <TextInput
+                      placeholder="Password"
+                      placeholderTextColor="#888"
+                      value={value}
+                      onChangeText={onChange}
+                      secureTextEntry
+                      onFocus={() => setFocusedField('password')}
+                      onBlur={() => setFocusedField(null)}
+                      style={{
+                        backgroundColor: '#1a1a1a',
+                        borderRadius: 30,
+                        paddingVertical: 12,
+                        paddingHorizontal: 20,
+                        fontSize: 16,
+                        textAlign: 'center',
+                        color: 'white',
+                        borderWidth: 1,
+                        borderColor: focusedField === 'password' ? '#ff0033' : '#333',
+                      }}
+                    />
+                  )}
+                />
 
-          {/* Forgot password */}
-          <Link onPress={() => router.push('/password-recovery')}>
-            <LinkText className="text-primary-500 text-right mt-2">Forgot your password?</LinkText>
-          </Link>
+                {/* Forgot password */}
+                <Link onPress={() => router.push('/password-recovery')}>
+                  <LinkText className="text-primary-500 text-right mt-2">
+                    Forgot your password?
+                  </LinkText>
+                </Link>
 
-          {/* API Error */}
-          {apiError && (
-            <FormControl isInvalid>
-              <FormControlError>
-                <FormControlErrorIcon as={AlertCircleIcon} />
-                <FormControlErrorText>{apiError}</FormControlErrorText>
-              </FormControlError>
-            </FormControl>
-          )}
+                {/* API Error */}
+                {apiError && (
+                  <FormControl isInvalid>
+                    <FormControlError>
+                      <FormControlErrorIcon as={AlertCircleIcon} />
+                      <FormControlErrorText>{apiError}</FormControlErrorText>
+                    </FormControlError>
+                  </FormControl>
+                )}
 
-          {/* Sign in button */}
-          <Pressable onPressIn={animatePress} onPress={handleSubmit(onSubmit)} disabled={isDisabled}>
-            <Animated.View
-              style={{ transform: [{ scale: scaleAnim }] }}
-              className={`bg-primary-500 rounded-full py-4 items-center justify-center mt-4 ${
-                isDisabled ? 'opacity-50' : ''
-              }`}
-            >
-              <Text className="text-white font-bold text-lg">
-                {isLoggingIn ? 'Signing in...' : 'Sign in'}
-              </Text>
-            </Animated.View>
-          </Pressable>
+                {/* Sign in button */}
+                <Pressable
+                  onPressIn={animatePress}
+                  onPress={handleSubmit(onSubmit)}
+                  disabled={isDisabled}
+                >
+                  <Animated.View
+                    style={{ transform: [{ scale: scaleAnim }] }}
+                    className={`bg-primary-500 rounded-full py-4 items-center justify-center mt-4 ${
+                      isDisabled ? 'opacity-50' : ''
+                    }`}
+                  >
+                    <Text className="text-white font-bold text-lg">
+                      {isLoggingIn ? 'Signing in...' : 'Sign in'}
+                    </Text>
+                  </Animated.View>
+                </Pressable>
 
-          {/* Sign up link */}
-          <HStack className="justify-center mt-6">
-            <Text size="md" className="text-white">
-              Don't have an account?
-            </Text>
-            <Link onPress={() => router.replace('/signup')}>
-              <Text size="md" bold className="text-primary-500 ml-2">
-                Sign up
-              </Text>
-            </Link>
-          </HStack>
-        </VStack>
-      </VStack>
-    </Box>
+                {/* Sign up link */}
+                <HStack className="justify-center mt-6">
+                  <Text size="md" className="text-white">
+                    Don't have an account?
+                  </Text>
+                  <Link onPress={() => router.replace('/signup')}>
+                    <Text size="md" bold className="text-primary-500 ml-2">
+                      Sign up
+                    </Text>
+                  </Link>
+                </HStack>
+              </VStack>
+            </VStack>
+          </Box>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 

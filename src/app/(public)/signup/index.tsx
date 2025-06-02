@@ -21,6 +21,7 @@ import { AlertCircleIcon } from '@/components/ui/icon';
 import { signUp } from '@/services/emigro/auth';
 import { RegisterUserRequest, Role } from '@/services/emigro/types';
 import { BadRequestException } from '@/types/errors';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 
 type FormData = {
   firstName: string;
@@ -91,10 +92,10 @@ const CreateAccount = () => {
   });
 
   return (
-    <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }}>
-      <ScrollView className="bg-black flex-1">
-        <Box className="flex-1 p-6 justify-center">
-          <VStack space="lg">
+	<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+	  <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+	    <Box className="flex-1 bg-black p-6 justify-center">
+	      <VStack space="lg">
             <Heading size="xl" className="text-white text-center mb-6">
               Sign up to Emigro
             </Heading>
@@ -207,13 +208,13 @@ const CreateAccount = () => {
                   <Text size="md" bold className="text-primary-500 ml-2">
                     Sign in
                   </Text>
-                </Link>
-              </HStack>
-            </VStack>
-          </VStack>
-        </Box>
-      </ScrollView>
-    </KeyboardAwareScrollView>
+				              </Link>
+				            </HStack>
+				          </VStack>
+				        </VStack>
+				      </Box>
+				    </KeyboardAwareScrollView>
+				  </TouchableWithoutFeedback>
   );
 };
 

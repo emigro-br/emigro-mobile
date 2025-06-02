@@ -11,13 +11,15 @@ import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { sessionStore } from '@/stores/SessionStore';
 import { useWalletBalances } from '@/hooks/useWalletBalances';
-import PixIcon from '@/assets/icons/pix-icon.png'; // ✅ Your image icon
+import PixIcon from '@/assets/icons/pix-icon.png';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const Payments = () => {
   const router = useRouter();
   const [assetListOpen, setAssetListOpen] = useState(false);
   const walletId = sessionStore.session?.walletId;
   const { balances } = useWalletBalances(walletId);
+  const insets = useSafeAreaInsets();
 
   const PaymentOption = ({
     title,
@@ -27,7 +29,7 @@ export const Payments = () => {
   }: {
     title: string;
     subtitle: string;
-    icon: any; // Accepts image or component
+    icon: any;
     onPress: () => void;
   }) => (
     <TouchableOpacity
@@ -74,40 +76,54 @@ export const Payments = () => {
   return (
     <>
       <Stack.Screen options={{ title: 'Payments', header: () => <EmigroHeader /> }} />
-      <Box className="flex-1 bg-black px-4 pt-6">
+      <Box className="flex-1 bg-black px-4" style={{ paddingTop: insets.top + 8 }}>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 32 }}
         >
-		<View style={{ alignItems: 'center', marginTop: 12, marginBottom: 8 }}>
-		  <Heading size="2xl" className="text-white" style={{ textAlign: 'center' }}>
-		    Pick Your Payment Method
-		  </Heading>
-		  <Text size="md" color="textSecondary" style={{ textAlign: 'center', marginTop: 4 }}>
-		    Choose how you’d like to send or receive
-		  </Text>
-		</View>
-
+          <View style={{ alignItems: 'center', marginTop: 12, marginBottom: 8 }}>
+            <Heading size="2xl" className="text-white" style={{ textAlign: 'center' }}>
+              Pick Your Payment Method
+            </Heading>
+            <Text size="md" color="textSecondary" style={{ textAlign: 'center', marginTop: 4 }}>
+              Choose how you’d like to send or receive
+            </Text>
+          </View>
 
           <View style={{ marginTop: 32 }}>
+		  
+		  <PaymentOption
+		    icon={(props) => <QrCodeIcon {...props} />}
+		    title="Fast QR Payment"
+		    subtitle="Instant pay with your primary token"
+		    onPress={() => router.push('/payments/fast')}
+		  />
+		  
             <PaymentOption
               icon={(props) => <QrCodeIcon {...props} />}
               title="Scan to Pay"
-              subtitle="Quick QR scan to complete your payment."
+              subtitle="Scan QR Code to make a customizable payment"
               onPress={() => router.push('/payments/scan')}
             />
+
+
+
+            <PaymentOption
+              icon={PixIcon}
+              title="Pix Copia e Cola"
+              subtitle="Paste a PIX code to make a payment"
+              onPress={() => router.push('/payments/pix/copia-e-cola')}
+            />
+
+			{/*
             <PaymentOption
               icon={(props) => <HandCoinsIcon {...props} />}
               title="Request Payment"
               subtitle="Generate a code and receive payments easily"
               onPress={() => setAssetListOpen(true)}
             />
-            <PaymentOption
-              icon={PixIcon}
-              title="Pix Copia e Cola"
-              subtitle="Paste a PIX code to make a payment instantly"
-              onPress={() => router.push('/payments/pix/copia-e-cola')}
-            />
+			*/}
+
           </View>
         </ScrollView>
 

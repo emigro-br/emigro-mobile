@@ -2,7 +2,8 @@ import { View, Platform } from 'react-native';
 import * as IconsOutline from 'react-native-heroicons/outline';
 import * as IconsSolid from 'react-native-heroicons/solid';
 import { Tabs } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context'; // ✅ Import safe area hook
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { QrCodeIcon } from 'lucide-react-native';
 import { useTheme } from '@/__utils__/ThemeProvider';
 
 export const unstable_settings = {
@@ -71,6 +72,8 @@ export default function TabLayout() {
           ),
         }}
       />
+
+
       <Tabs.Screen
         name="profile"
         options={{

@@ -1,3 +1,5 @@
+//src/app/(auth)/payments/pix/copia-e-cola.tsx
+
 import { useEffect, useState } from 'react';
 import * as Clipboard from 'expo-clipboard';
 import { Stack, useRouter } from 'expo-router';

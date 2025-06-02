@@ -22,12 +22,27 @@ import { LoadingScreen } from '@/screens/Loading';
 import { sessionStore } from '@/stores/SessionStore';
 import { Asset, fiatCurrencies } from '@/types/assets';
 
+import { useCameraPermissions } from 'expo-camera';
+
+import { StartupModeSheet } from '@/components/StartupModeSheet';
+
+
+import * as Notifications from 'expo-notifications';
+import * as Linking from 'expo-linking';
+
 const Profile = observer(() => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const toast = useToast();
   const [assetListOpen, setAssetListOpen] = useState(false);
   const [kycVerified, setKycVerified] = useState(false);
+  const [modeSheetOpen, setModeSheetOpen] = useState(false);
+  
+  
+  const [cameraPermission] = useCameraPermissions();
+  const cameraStatus: 'granted' | 'denied' | 'undetermined' =
+    cameraPermission?.status ?? 'undetermined';
+  const [notificationStatus, setNotificationStatus] = useState<'granted' | 'denied' | 'undetermined'>('undetermined');
 
   useEffect(() => {
     const fetchKycStatus = async () => {
@@ -74,6 +89,15 @@ const Profile = observer(() => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
 
+  useEffect(() => {
+    const fetchPermissions = async () => {
+      const notif = await Notifications.getPermissionsAsync();
+      setNotificationStatus(notif.granted ? 'granted' : 'denied');
+    };
+    fetchPermissions();
+  }, []);
+
+  
   const profileInfo = sessionStore.profile;
   if (!profileInfo) {
     return <LoadingScreen />;
@@ -96,11 +120,12 @@ const Profile = observer(() => {
   );
 
   return (
+	<>
     <ScrollView
       style={{ paddingTop: insets.top }}
       className="flex-1 bg-background-0 dark:bg-background-900"
     >
-      <Box className="flex-1 justify-between">
+      <Box className="flex-1 justify-between" style={{ paddingTop: insets.top + 8 }}>
         <VStack space="3xl" className="p-4">
           <Center>
             <Avatar size="xl" className="bg-primary-300 rounded-full">
@@ -115,13 +140,13 @@ const Profile = observer(() => {
           </Center>
 
           <VStack space="xl">
-            <ListTile
+            {/*<ListTile
               leading={<Icon as={User} />}
               title="Personal Info"
               trailing={<Icon as={ChevronRightIcon} />}
               onPress={() => router.push('/profile/personal-info')}
               testID="personal-info-button"
-            />
+            />*/}
 
             <ListTile
               leading={<Icon as={Lock} />}
@@ -155,6 +180,30 @@ const Profile = observer(() => {
             />
             */}
 
+			<ListTile
+			  leading={<Icon as={CheckCircle} />}
+			  title={`Startup Mode: ${sessionStore.preferences?.startupMode ?? 'wallet'}`}
+			  subtitle="Choose the default screen when launching the app"
+			  trailing={<Icon as={ChevronRightIcon} />}
+			  onPress={() => setModeSheetOpen(true)}
+			/>
+			
+			<ListTile
+			  leading={<Icon as={CheckCircle} />}
+			  title="Camera Access"
+			  subtitle={cameraStatus === 'granted' ? 'Enabled' : 'Not enabled'}
+			  trailing={<Icon as={ChevronRightIcon} />}
+			  onPress={() => Linking.openSettings()}
+			/>
+
+			<ListTile
+			  leading={<Icon as={CheckCircle} />}
+			  title="Notification Access"
+			  subtitle={notificationStatus === 'granted' ? 'Enabled' : 'Not enabled'}
+			  trailing={<Icon as={ChevronRightIcon} />}
+			  onPress={() => Linking.openSettings()}
+			/>
+			
             <Button
               onPress={() => router.push('/profile/delete-account')}
               variant="link"
@@ -191,6 +240,8 @@ const Profile = observer(() => {
         }}
       />
     </ScrollView>
+	<StartupModeSheet isOpen={modeSheetOpen} onClose={() => setModeSheetOpen(false)} />
+	</>
   );
 });
 

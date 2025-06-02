@@ -1,3 +1,5 @@
+// src/app/(auth)/(tabs)/wallet/index.tsx
+
 import React, { useState } from 'react';
 import { RefreshControl, View } from 'react-native';
 
@@ -20,6 +22,7 @@ import { AnnouncementScroll } from '@/components/wallet/AnnouncementScroll';
 export const Wallet = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [hide, setHide] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(Date.now());
 
   const { user } = sessionStore;
   const hasWallets = user?.wallets?.length > 0;
@@ -30,8 +33,9 @@ export const Wallet = () => {
       if (hasWallets) {
         console.log('[Wallet] Fetching user balance...');
         balanceStore.fetchUserBalance().catch(console.warn);
+        setRefreshTrigger(Date.now()); // 🔁 trigger refresh for WalletHeaderCard
       }
-    }, [hasWallets]),
+    }, [hasWallets])
   );
 
   const onRefresh = React.useCallback(async () => {
@@ -41,6 +45,7 @@ export const Wallet = () => {
     try {
       console.log('[Wallet] Refreshing user balance...');
       await balanceStore.fetchUserBalance({ force: true }).catch(console.warn);
+      setRefreshTrigger(Date.now());
     } finally {
       setRefreshing(false);
     }
@@ -68,15 +73,17 @@ export const Wallet = () => {
             />
           }
         >
-          <WalletHeaderCard hide={hide} toggleHide={toggleHide} />
+          <WalletHeaderCard
+            hide={hide}
+            toggleHide={toggleHide}
+            refreshTrigger={refreshTrigger}
+          />
           <AnnouncementScroll />
-		  <WalletTransactions />
+          <WalletTransactions />
 
           <VStack space="lg" className="p-4">
             {/* Wallet balances if wallet ID exists */}
-            {walletId && (
-              <WalletBalances walletId={walletId} hide={hide} />
-            )}
+            {walletId && <WalletBalances walletId={walletId} hide={hide} />}
 
             {/* Show CreateWallet only if there are no wallets */}
             {!hasWallets && <CreateWallet />}

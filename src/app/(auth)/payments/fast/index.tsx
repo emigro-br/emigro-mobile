@@ -1,0 +1,386 @@
+import React, { useCallback, useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
+import {
+  CameraView,
+  PermissionResponse,
+  PermissionStatus,
+  useCameraPermissions,
+} from 'expo-camera';
+import { Stack, useRouter } from 'expo-router';
+import { PixElementType, hasError, parsePix } from 'pix-utils';
+
+import { Box } from '@/components/ui/box';
+import { Center } from '@/components/ui/center';
+import { Pressable } from '@/components/ui/pressable';
+import { Text } from '@/components/ui/text';
+import { View } from '@/components/ui/view';
+import { INVALID_QR_CODE } from '@/constants/errorMessages';
+import { LoadingScreen } from '@/screens/Loading';
+import { api } from '@/services/emigro/api';
+import { sessionStore } from '@/stores/SessionStore';
+import { brCodeFromMercadoPagoUrl } from '@/utils/pix';
+import { fetchQuote, fetchFiatQuote } from '@/services/emigro/quotes';
+import uuid from 'react-native-uuid';
+
+import { useRef } from 'react';
+import { Animated } from 'react-native';
+
+import { assetIconMap } from '@/utils/assetIcons';
+import { chainIconMap } from '@/utils/chainIconMap';
+import { useChainStore } from '@/stores/ChainStore';
+import { Image } from 'react-native';
+
+const FastQRCodeScreen = () => {
+  const router = useRouter();
+  const [primaryAsset, setPrimaryAsset] = useState(null);
+  const [primaryChain, setPrimaryChain] = useState(null);
+
+  useEffect(() => {
+    const fetchPrimary = async () => {
+      try {
+        console.log('[FastQRCode] 🔄 Fetching primary currency...');
+        const res = await api().get('/user/primary-currency');
+        const primary = res.data;
+        console.log('[FastQRCode] 🪙 Primary currency response:', primary);
+
+        const assetRes = await api().get(`/assets/${primary.assetId}`);
+        const asset = assetRes.data;
+        console.log('[FastQRCode] 📦 Asset data:', asset);
+
+        // ✅ FIXED: no api(true), just api()
+        console.log('[FastQRCode] 🌐 Requesting chain info from:', `/chains/${primary.chainId}`);
+        const chainRes = await api().get(`/chains/${primary.chainId}`);
+        const chain = chainRes.data;
+        console.log('[FastQRCode] 🔗 Chain data:', chain);
+
+        const assetIcon = assetIconMap[asset.symbol.toLowerCase()];
+		const chainIcon = chain.iconUrl
+		  ? chainIconMap[chain.iconUrl.toLowerCase()]
+		  : null;
+
+        setPrimaryAsset({
+          symbol: asset.symbol,
+          icon: assetIcon,
+        });
+
+        setPrimaryChain({
+          name: chain.name ?? '',
+          icon: chainIcon,
+        });
+
+        console.log('[FastQRCode] ✅ Set primaryAsset:', {
+          symbol: asset.symbol,
+          icon: assetIcon,
+        });
+
+        console.log('[FastQRCode] ✅ Set primaryChain:', {
+          name: chain.name ?? '',
+          icon: chainIcon,
+        });
+      } catch (e) {
+        console.warn('[FastQRCode] ❌ Failed to fetch primary asset info:', e);
+      }
+    };
+
+    fetchPrimary();
+  }, []);
+
+
+
+
+
+  
+  return (
+	<>
+	<Stack.Screen options={{ headerShown: false }} />
+    <FastQRCodeScanner
+	onCancel={() => {
+	  router.push('/wallet');
+	}}
+	primaryAsset={primaryAsset}
+	primaryChain={primaryChain}
+	isLoading={!primaryAsset || !primaryChain}
+      onScanSuccess={async (pixPayload) => {
+        try {
+          console.log('[FastQRCode] ✅ Scanned payload:', pixPayload);
+
+          const userId = sessionStore.user?.id;
+          if (!userId) throw new Error('User not logged in');
+
+          const res = await api().get('/user/primary-currency');
+          const primary = res.data;
+
+          console.log('[FastQRCode] 🪙 Primary currency:', primary);
+
+          const assetRes = await api().get(`/assets/${primary.assetId}`);
+          console.log('[FastQRCode] 🧾 Full asset response:', assetRes.data);
+
+          const tokenAddress = assetRes.data.contractAddress;
+          const decimals = assetRes.data.decimals;
+          const assetSymbol = assetRes.data.symbol;
+
+          let quotedAmount;
+
+          try {
+            const brlAmount = pixPayload.transactionAmount.toFixed(2);
+            console.log('[FastQRCode] 🛰 Fetching BRL → USDC quote...', {
+              from: 'BRL',
+              to: 'USDC',
+              amount: brlAmount,
+              type: 'strict_send',
+            });
+
+            const toUsdc = await fetchQuote({
+              from: 'BRL',
+              to: 'USDC',
+              amount: brlAmount,
+              type: 'strict_send',
+            });
+
+            console.log('[FastQRCode] 📡 Quote response:', toUsdc);
+
+            const usdcAmount = toUsdc?.destination_amount;
+            console.log('[FastQRCode] 💵 USDC amount:', usdcAmount);
+
+            if (isNaN(usdcAmount)) throw new Error('USDC quote returned NaN');
+
+            if (assetSymbol === 'USDC') {
+              quotedAmount = usdcAmount;
+            } else {
+              console.log(`[FastQRCode] 🔁 Fetching USD → ${assetSymbol} price`);
+              const tokenPrice = await fetchFiatQuote(assetSymbol, 'USD');
+              if (!tokenPrice) throw new Error('Token price not found');
+
+              quotedAmount = usdcAmount / tokenPrice;
+              console.log('[FastQRCode] 🔁 Converted token amount:', quotedAmount);
+            }
+          } catch (err) {
+            console.error('[FastQRCode] ❌ Quote fetch failed:', err);
+            throw new Error('Quote fetch failed');
+          }
+
+          if (!quotedAmount || isNaN(quotedAmount)) {
+            throw new Error('Quoted amount is invalid');
+          }
+
+          const rawAmount = Math.floor(quotedAmount * Math.pow(10, decimals)).toString();
+
+          const payload = {
+            paymentId: `${Date.now()}_${uuid.v4()}`,
+            token: tokenAddress,
+            amount: rawAmount,
+            usePaymaster: true,
+            chainId: primary.chainIdOnchain,
+            walletId: sessionStore.user.circleWallet?.circleWalletId,
+            assetId: primary.assetId,
+            tokenSymbol: assetSymbol,
+            rawBrcode: pixPayload.brCode,
+            transferoTxid: pixPayload.txid,
+            taxId: pixPayload.taxId ?? '55479337000115',
+            name: pixPayload.merchantName ?? '',
+            pixKey: pixPayload.pixKey ?? '',
+            fiatAmount: pixPayload.transactionAmount.toFixed(6),
+            toTokenAmount: quotedAmount.toFixed(6),
+          };
+
+          console.log('[FastQRCode] 📦 Payload to send:', payload);
+
+          const response = await api().post('/evm/create-escrow-evm', payload);
+          console.log('[FastQRCode] ✅ Escrow created:', response.data);
+
+          router.replace({ pathname: '/payments/confirm/status', params: { id: payload.paymentId } });
+        } catch (error) {
+          console.error('[FastQRCode] ❌ Failed to process payment:', error);
+        }
+      }}
+    />
+	</>
+  );
+};
+
+
+const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain, isLoading }) => {
+  const insets = useSafeAreaInsets();
+  const [cameraPermission, setCameraPermission] = useState<PermissionResponse | null>(null);
+  const [cameraReady, setCameraReady] = useState(false);
+  const [isScanned, setIsScanned] = useState(false);
+  const isScannedRef = useRef(false);
+  const [error, setError] = useState('');
+
+  const [permission] = useCameraPermissions();
+  
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const animatePress = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, { toValue: 0.96, duration: 100, useNativeDriver: true }),
+      Animated.timing(scaleAnim, { toValue: 1, duration: 100, useNativeDriver: true }),
+    ]).start();
+  };
+  
+  useEffect(() => setCameraPermission(permission), [permission]);
+
+  useFocusEffect(useCallback(() => {
+    setIsScanned(false);
+    isScannedRef.current = false;
+    setError('');
+  }, []));
+
+  const parseQRCode = (scanned: string) => {
+    console.log('[FastQRCode] 🔍 Raw QR code scanned:', scanned);
+
+    if (scanned.startsWith('https://qr.mercadopago.com')) {
+      const merchantName = 'Mercado Pago';
+      const merchantCity = '';
+      scanned = brCodeFromMercadoPagoUrl(scanned, merchantName, merchantCity);
+      console.log('[FastQRCode] 🔁 Converted MercadoPago brCode:', scanned);
+    }
+
+    const pix = parsePix(scanned);
+    console.log('[FastQRCode] 📤 Parsed pix data:', pix);
+
+    if (hasError(pix) || pix.type === PixElementType.INVALID) throw new Error(INVALID_QR_CODE);
+    return { ...pix, brCode: scanned };
+  };
+
+  const handleBarCodeScanned = async ({ data }) => {
+    console.log('[FastQRCode] 📸 Barcode detected:', data);
+
+    if (isScannedRef.current) return;
+    isScannedRef.current = true;
+
+    setIsScanned(true);
+    try {
+      const pixPayload = parseQRCode(data);
+      await onScanSuccess(pixPayload);
+    } catch (err) {
+      console.warn('[FastQRCode] ❌ Invalid QR:', err);
+      setError(INVALID_QR_CODE);
+      setIsScanned(false);
+	  isScannedRef.current = false;
+    }
+  };
+
+  if (isLoading || isScanned || cameraPermission?.status === PermissionStatus.UNDETERMINED) {
+    return <LoadingScreen />;
+  }
+
+  if (!cameraPermission?.granted) {
+    return (
+      <Box className="flex-1 justify-center">
+        <Center>
+          <Text size="lg" className="text-white text-center px-4">
+            Camera access was denied. Please enable it in your device settings.
+          </Text>
+        </Center>
+      </Box>
+    );
+  }
+
+  if (isScanned) return <LoadingScreen />;
+
+  return (
+    <>
+	<Stack.Screen options={{ headerShown: false, animation: 'slide_from_bottom' }} />
+	<Box className="flex-1">
+	  <CameraView
+	    style={styles.camera}
+	    onCameraReady={() => {
+	      console.log('[FastQRCode] 📷 Camera ready');
+	      setCameraReady(true);
+	    }}
+	    onBarcodeScanned={handleBarCodeScanned}
+	    barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+		enableZoomGesture={false}
+	  >
+
+	    {/* QR Scan Area */}
+	    {cameraReady && (
+	      <View style={styles.rectangleContainer}>
+	        <View style={styles.rectangle} />
+	        <Text className="text-white mt-4 text-xl">Scan QR to Pay</Text>
+	        {error ? <Text className="text-red-500 mt-2">{error}</Text> : null}
+	      </View>
+	    )}
+
+	    {/* Return to App Button (animated) */}
+		<View style={{ marginBottom: 60, alignItems: 'center' }}>
+		  <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+		    <Pressable
+		      onPressIn={animatePress}
+		      onPress={onCancel}
+		      className="bg-primary-500 rounded-full py-4 px-12 items-center justify-center mb-4"
+		    >
+		      <Text className="text-white font-bold text-lg">See "My Wallet"</Text>
+		    </Pressable>
+		  </Animated.View>
+
+		  {(primaryAsset?.symbol || primaryChain?.name) && (
+		    <View style={{ alignItems: 'center' }}>
+		      <Text style={{ color: '#aaa', fontSize: 18, marginBottom: 4, fontWeight: '600' }}>
+		        Your primary currency is
+		      </Text>
+
+		      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+		        {primaryAsset?.icon && (
+		          <Image
+		            source={primaryAsset.icon}
+		            style={{ width: 20, height: 20, marginRight: 6 }}
+		            resizeMode="contain"
+		          />
+		        )}
+		        {primaryAsset?.symbol && (
+		          <Text style={{ color: '#aaa', fontSize: 16, marginRight: 6 }}>
+		            {primaryAsset.symbol} on
+		          </Text>
+		        )}
+		        {primaryChain?.icon && (
+		          <Image
+		            source={primaryChain.icon}
+		            style={{ width: 20, height: 20, marginRight: 6 }}
+		            resizeMode="contain"
+		          />
+		        )}
+		        {primaryChain?.name && (
+		          <Text style={{ color: '#aaa', fontSize: 16 }}>
+		            {primaryChain.name}
+		          </Text>
+		        )}
+		      </View>
+		    </View>
+		  )}
+
+		</View>
+
+	  </CameraView>
+	</Box>
+
+
+    </>
+  );
+};
+
+const styles = StyleSheet.create({
+  camera: { flex: 1 },
+  topBar: { flexDirection: 'row', backgroundColor: 'transparent' },
+  rectangleContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  rectangle: {
+    height: 220,
+    width: 220,
+    borderWidth: 4,
+    borderColor: '#FFFFFF',
+    borderRadius: 15,
+    borderStyle: 'dashed',
+  },
+  returnButtonContainer: {
+    paddingBottom: 20,       // margin bottom space
+    width: '100%',           // full width container for centering
+    alignItems: 'center',    // center horizontally
+    justifyContent: 'flex-end', // align to bottom of container if needed
+    backgroundColor: 'transparent', // ensure no background blocking touches
+  },
+  
+});
+
+export default FastQRCodeScreen;

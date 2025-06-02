@@ -35,6 +35,8 @@ const Transfers = () => {
   const [selectedAsset, setSelectedAsset] = useState<any | null>(null);
   const [recipientAddress, setRecipientAddress] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  
+  const [addressError, setAddressError] = useState('');
 
   const chains = useChainStore((state) => state.chains);
   
@@ -55,22 +57,35 @@ const Transfers = () => {
     return chains.find(c => c.id === id)?.name ?? 'Unknown';
   };
 
+  const isValidEvmAddress = (address: string): boolean => {
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
+  };
+  
   const handleContinueToAmount = () => {
+    if (!isValidEvmAddress(recipientAddress)) {
+      setAddressError('Please enter a valid EVM address.');
+      return;
+    }
+
+    setAddressError('');
     setModalVisible(false);
-	router.push({
-	  pathname: '/transfers/amount',
-	  params: {
-	    assetId: selectedAsset.assetId,
-	    symbol: selectedAsset.symbol,
-	    name: selectedAsset.name,
-	    balance: selectedAsset.balance,
-	    chainId: selectedAsset.chainId,
-	    recipientAddress,
-	    walletId,
-	  },
-	});
+    router.push({
+      pathname: '/transfers/amount',
+      params: {
+        assetId: selectedAsset.assetId,
+        symbol: selectedAsset.symbol,
+        name: selectedAsset.name,
+        balance: selectedAsset.balance,
+        chainId: selectedAsset.chainId,
+        recipientAddress,
+        walletId,
+      },
+    });
   };
 
+  
+
+  
   return (
     <>
 	<Stack.Screen options={{ title: 'Transfer' }} />
@@ -172,7 +187,10 @@ const Transfers = () => {
 
 		      <TextInput
 		        value={recipientAddress}
-		        onChangeText={setRecipientAddress}
+				onChangeText={(text) => {
+				  setRecipientAddress(text);
+				  if (addressError) setAddressError('');
+				}}
 		        placeholder="0x123...abcd"
 		        placeholderTextColor="#888"
 		        style={{
@@ -185,7 +203,12 @@ const Transfers = () => {
 		          borderColor: '#333',
 		        }}
 		      />
-
+			  {addressError ? (
+			    <Text size="sm" color="red" className="mb-3">
+			      {addressError}
+			    </Text>
+			  ) : null}
+			  
 		      {/* ✅ Continue Button (styled) */}
 		      <Button
 		        className="mt-2 rounded-full"

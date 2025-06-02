@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { View, Animated, Easing } from 'react-native';
+import { View, Animated, Easing, ActivityIndicator } from 'react-native';
 
 import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
-import { Icon, EyeIcon, EyeOffIcon, AddIcon, ArrowRightIcon, RepeatIcon } from '@/components/ui/icon';
+import {
+  Icon,
+  EyeIcon,
+  EyeOffIcon,
+  AddIcon,
+  ArrowRightIcon,
+  RepeatIcon,
+} from '@/components/ui/icon';
 import { Pressable } from '@/components/ui/pressable';
 import { WalletActionButton } from '@/components/wallet/WalletActionButton';
 
@@ -17,9 +24,10 @@ import { symbolFor } from '@/utils/assets';
 type Props = {
   hide: boolean;
   toggleHide: () => void;
+  refreshTrigger: number;
 };
 
-export const WalletHeaderCard = ({ hide, toggleHide }: Props) => {
+export const WalletHeaderCard = ({ hide, toggleHide, refreshTrigger }: Props) => {
   const router = useRouter();
   const fadeAnim = useState(new Animated.Value(0))[0];
 
@@ -37,6 +45,8 @@ export const WalletHeaderCard = ({ hide, toggleHide }: Props) => {
       if (!balances.length) return;
 
       setLoading(true);
+      fadeAnim.setValue(0); // reset animation
+
       let sum = 0;
 
       await Promise.all(
@@ -53,7 +63,13 @@ export const WalletHeaderCard = ({ hide, toggleHide }: Props) => {
                 sum += quote * rawBalance;
               }
             } catch (err) {
-              console.warn('[WalletHeaderCard] ⚠️ Quote fetch failed for', asset.symbol, '->', bankCurrency, err);
+              console.warn(
+                '[WalletHeaderCard] ⚠️ Quote fetch failed for',
+                asset.symbol,
+                '->',
+                bankCurrency,
+                err
+              );
             }
           }
         })
@@ -72,7 +88,7 @@ export const WalletHeaderCard = ({ hide, toggleHide }: Props) => {
     };
 
     fetchTotal();
-  }, [balances, bankCurrency]);
+  }, [balances, bankCurrency, refreshTrigger]);
 
   return (
     <VStack className="bg-primary-500 rounded-3xl m-4 p-6 space-y-6">
@@ -80,10 +96,10 @@ export const WalletHeaderCard = ({ hide, toggleHide }: Props) => {
         <VStack className="items-start">
           <Text className="text-white font-bold mb-1">Total Balance</Text>
 
-          {loading || totalFiat === null || hide ? (
-            <Text className="text-white text-2xl font-bold mt-2">
-              {hide ? '****' : 'Loading...'}
-            </Text>
+          {hide ? (
+            <Text className="text-white text-2xl font-bold mt-2">****</Text>
+          ) : loading || totalFiat === null ? (
+            <ActivityIndicator size="large" color="#ffffff" style={{ marginTop: 8 }} />
           ) : (
             <Animated.View style={{ opacity: fadeAnim }}>
               <Text className="text-white text-5xl font-extrabold mt-2">
@@ -93,15 +109,34 @@ export const WalletHeaderCard = ({ hide, toggleHide }: Props) => {
           )}
         </VStack>
 
-        <Pressable onPress={toggleHide} className="p-3 rounded-full" style={{ backgroundColor: '#ff7189' }}>
+        <Pressable
+          onPress={toggleHide}
+          className="p-3 rounded-full"
+          style={{ backgroundColor: '#ff7189' }}
+        >
           <Icon as={hide ? EyeOffIcon : EyeIcon} className="text-black text-2xl" />
         </Pressable>
       </HStack>
 
       <HStack className="justify-around pt-4 mt-2">
-        <WalletActionButton label="Deposit" bg="white" icon={AddIcon} onPress={() => router.push('/ramp/deposit')} />
-        <WalletActionButton label="Send" bg="white" icon={ArrowRightIcon} onPress={() => router.push('/transfers')} />
-        <WalletActionButton label="Swap" bg="white" icon={RepeatIcon} onPress={() => router.push('/swap')} />
+        <WalletActionButton
+          label="Deposit"
+          bg="white"
+          icon={AddIcon}
+          onPress={() => router.push('/ramp/deposit')}
+        />
+        <WalletActionButton
+          label="Send"
+          bg="white"
+          icon={ArrowRightIcon}
+          onPress={() => router.push('/transfers')}
+        />
+        <WalletActionButton
+          label="Swap"
+          bg="white"
+          icon={RepeatIcon}
+          onPress={() => router.push('/swap')}
+        />
       </HStack>
     </VStack>
   );

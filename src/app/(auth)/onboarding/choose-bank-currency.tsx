@@ -28,7 +28,7 @@ export const ChooseBankCurrencyScreen = () => {
     sessionStore.updatePreferences({
       fiatsWithBank: [currency],
     });
-    router.navigate('./pin');
+    router.navigate('./permissions');
   };
 
   return <ChooseBankCurrency currencies={currencies} onContinue={handleContinue} />;

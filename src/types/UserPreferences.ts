@@ -6,4 +6,5 @@ export type UserPreferences = {
   // currency: FiatCurrency;
   fiatsWithBank?: FiatCurrency[];
   themePreference?: 'dark' | 'light' | 'system';
+  startupMode?: 'wallet' | 'payment';
 };

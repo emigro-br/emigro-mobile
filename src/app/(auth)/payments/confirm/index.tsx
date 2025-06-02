@@ -80,6 +80,55 @@ const ConfirmPayment = () => {
   const filteredAssetsForTempWallet = balances.filter(
     (b) => b.chainId === tempChain?.id && b.isActive
   );
+
+  const fetchConvertedQuote = async () => {
+    if (!scannedPayment?.transactionAmount || !asset?.symbol) return;
+
+    try {
+      const amount = scannedPayment.transactionAmount.toFixed(2);  // e.g., "0.01"
+      const isUSDC = asset.symbol === 'USDC';
+
+      const toUsdc = await fetchQuote({
+        from: 'BRL',
+        to: 'USDC',
+        amount,
+        type: 'strict_send',
+      });
+
+      const rawUsdc = parseFloat(toUsdc.destination_amount ?? '0');
+      const usdcWithFees = rawUsdc + platformFee;
+      setUsdcAmountForBackend(usdcWithFees);
+
+      if (isUSDC) {
+        const slip = rawUsdc * 0.002;
+        const finalUsdc = rawUsdc + slip + platformFee;
+        setBaseAmount(rawUsdc);
+        setSlippage(slip);
+        setUsdQuote(finalUsdc.toFixed(6));
+        return;
+      }
+
+      const res = await api().get('/quote', {
+        params: { asset: asset.symbol, fiat: 'USD' },
+      });
+
+      const pricePerUnit = parseFloat(res.data.price ?? '0');
+      const tokenAmount = rawUsdc / pricePerUnit;
+      const slip = tokenAmount * 0.01;
+      const finalToken = tokenAmount + slip + platformFee;
+
+      setBaseAmount(tokenAmount);
+      setSlippage(slip);
+      setUsdQuote(finalToken.toFixed(10));
+    } catch (error) {
+      console.error('[ConfirmPayment][fetchConvertedQuote] ❌ Quote fetch failed:', error);
+      setUsdQuote(null);
+      setBaseAmount(null);
+      setSlippage(null);
+      setUsdcAmountForBackend(null);
+    }
+  };
+
   
   if (chain && chain.is_active === false) {
     console.warn('[ConfirmPayment] Chain is not active:', chain.name);
@@ -119,70 +168,18 @@ const ConfirmPayment = () => {
 	
 
   useEffect(() => {
-    const fetchConvertedQuote = async () => {
-      if (!scannedPayment?.transactionAmount || !asset?.symbol) return;
-
-      try {
-        const amount = scannedPayment.transactionAmount.toFixed(2);  // e.g., "0.01"
-        const isUSDC = asset.symbol === 'USDC';
-
-        // ←—— Step 1: BRL → USDC ———→
-        const toUsdc = await fetchQuote({
-          from: 'BRL',
-          to: 'USDC',
-          amount,
-          type: 'strict_send',
-        });
-        console.log('[ConfirmPayment][fetchConvertedQuote] BRL→USDC fetchQuote response:', toUsdc);
-
-        const rawUsdc = parseFloat(toUsdc.destination_amount ?? '0');
-        console.log('[ConfirmPayment][fetchConvertedQuote] rawUsdc (BRL→USDC):', rawUsdc);
-
-        // 🔥 This is the value we ALWAYS send to backend → in USDC
-        const usdcWithFees = rawUsdc + platformFee;
-        setUsdcAmountForBackend(usdcWithFees);
-        console.log('[ConfirmPayment][fetchConvertedQuote] usdcWithFees (toTokenAmount):', usdcWithFees);
-
-        if (isUSDC) {
-          const slip = rawUsdc * 0.002;
-          const finalUsdc = rawUsdc + slip + platformFee;
-          console.log('[ConfirmPayment][fetchConvertedQuote] USDC slippage:', slip, 'USDC final with fees:', finalUsdc);
-
-          setBaseAmount(rawUsdc);
-          setSlippage(slip);
-          setUsdQuote(finalUsdc.toFixed(6));
-          return;
-        }
-
-        // ←—— Step 2: Convert USDC → token for display purposes only ———→
-        const res = await api().get('/quote', {
-          params: { asset: asset.symbol, fiat: 'USD' },
-        });
-        const pricePerUnit = parseFloat(res.data.price ?? '0');
-        console.log(`[ConfirmPayment][fetchConvertedQuote] USD→${asset.symbol} pricePerUnit:`, pricePerUnit);
-
-        const tokenAmount = rawUsdc / pricePerUnit;
-        const slip = tokenAmount * 0.01;
-        const finalToken = tokenAmount + slip + platformFee;
-        console.log('[ConfirmPayment][fetchConvertedQuote] tokenAmount (raw):', tokenAmount);
-        console.log('[ConfirmPayment][fetchConvertedQuote] token slippage:', slip, 'token final with fees:', finalToken);
-
-        setBaseAmount(tokenAmount);
-        setSlippage(slip);
-        setUsdQuote(finalToken.toFixed(10));
-      } catch (error) {
-        console.error('[ConfirmPayment][fetchConvertedQuote] ❌ Quote fetch failed:', error);
-        setUsdQuote(null);
-        setBaseAmount(null);
-        setSlippage(null);
-        setUsdcAmountForBackend(null);
-      }
-    };
-
     fetchConvertedQuote();
   }, [scannedPayment.transactionAmount, asset?.symbol]);
 
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log('[ConfirmPayment] 🔄 Refreshing quote...');
+      fetchConvertedQuote();
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval); // Clean up on unmount
+  }, [asset?.symbol, scannedPayment.transactionAmount]);
 
 
 
@@ -287,6 +284,14 @@ const ConfirmPayment = () => {
 	const quoteGasFee = async () => {
 	  if (!asset?.symbol || !chain?.nativeSymbol) {
 	    console.warn('[GasFee] Missing asset or chain.nativeSymbol');
+	    return;
+	  }
+
+	  // ✅ Short-circuit for sponsored gas
+	  if (chain.gasFeeSponsored === 1) {
+	    console.log('[GasFee] Chain has sponsored gas. Setting gas fee to 0.');
+	    setGasFeeEth(0);
+	    setGasFeeInUsdc(0);
 	    return;
 	  }
 
@@ -474,6 +479,18 @@ const ConfirmPayment = () => {
   const filteredAssets = balances.filter(b => b.chainId === chain.id && b.isActive);
   console.log('[ConfirmPayment] filteredAssets:', filteredAssets.length, filteredAssets);
 
+  
+  
+  
+  const [quoteCountdown, setQuoteCountdown] = useState(30);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setQuoteCountdown(prev => (prev === 1 ? 30 : prev - 1));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+  
   return (
     <>
 	<Stack.Screen options={{ title: 'Review the payment', headerBackTitleVisible: false }} />
@@ -608,7 +625,7 @@ const ConfirmPayment = () => {
 
 
 	    {/* Details */}
-		{chain.supportsPaymaster && (
+		{chain.supportsPaymaster && chain.gasFeeSponsored !== 1 && (
 			<HStack className="justify-between items-center mt-5">
 			  <Text className="text-white">Gas fee currency</Text>
 			  <HStack space="sm" className="bg-white rounded-md overflow-hidden">
@@ -643,7 +660,7 @@ const ConfirmPayment = () => {
 	    {/* Quote Timer */}
 
 	    <Text className="text-white text-sm text-center text-lg">
-	      New quote in <Text className="font-bold">20</Text> seconds
+	      New quote in <Text className="font-bold">{quoteCountdown}</Text> seconds
 	    </Text>
 
 	    {/* Cancel */}

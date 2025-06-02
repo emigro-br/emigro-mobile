@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, Platform, Linking } from 'react-native';
+import { StyleSheet, Platform } from 'react-native';
 import { WebView, WebViewMessageEvent, WebViewNavigation } from 'react-native-webview';
+import * as WebBrowser from 'expo-web-browser';
 import Constants from 'expo-constants';
 
 import { Box } from '@/components/ui/box';
@@ -20,13 +21,16 @@ export const CustomWebView = ({ url, onMessage, onClose }: Props) => {
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
-      console.log('[CustomWebView] Opening URL with Linking:', url);
-      Linking.openURL(url)
+      console.log('[CustomWebView] Opening in-app browser for iOS:', url);
+      WebBrowser.openBrowserAsync(url)
+        .then(() => {
+          console.log('[CustomWebView] In-app browser closed');
+        })
         .catch((err) => {
-          console.error('[CustomWebView] Linking failed:', err);
+          console.error('[CustomWebView] WebBrowser error:', err);
         })
         .finally(() => {
-          onClose?.(); // Callback after attempt
+          onClose?.();
         });
     }
   }, [url]);
@@ -75,6 +79,7 @@ export const CustomWebView = ({ url, onMessage, onClose }: Props) => {
       ? 'Mozilla/5.0 (Linux; Android 10; KadoRNApp) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Mobile Safari/537.36'
       : 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.4 Mobile Safari/605.1.15';
 
+  // Don't render WebView on iOS because we're using the in-app browser
   if (Platform.OS === 'ios') return null;
 
   return (
