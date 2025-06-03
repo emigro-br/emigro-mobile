@@ -101,7 +101,43 @@ function AppLayout() {
 
         await sessionStore.load();
         setMode(sessionStore.preferences?.startupMode || 'wallet');
+		// ✅ Register push device after session is ready
+		registerForPushNotificationsAsync().then(async (token) => {
+		  if (!token) {
+		    console.warn('[PUSH] No push token received');
+		    return;
+		  }
 
+		  const payload = {
+		    expo_push_token: token,
+		    device_type: Platform.OS,
+		    device_name: Device.deviceName,
+		    app_version: Constants.expoConfig?.version,
+		    os_version: Device.osVersion,
+		  };
+
+		  console.log('[PUSH] Sending device payload:', payload);
+
+		  try {
+			const apiWithAuth = api({
+			  headers: {
+			    Authorization: `Bearer ${sessionStore.accessToken}`,
+			  },
+			});
+
+			const response = await apiWithAuth.post('/notifications/register-device', payload);
+		    console.log('[PUSH] Token sent to backend ✅', response.data);
+		  } catch (err: any) {
+		    if (err.response) {
+		      console.warn('[PUSH] Register device failed - status:', err.response.status);
+		      console.warn('[PUSH] Register device failed - data:', err.response.data);
+		    } else {
+		      console.warn('[PUSH] Register device failed:', err.message ?? err);
+		    }
+		    // 🔁 Keep app flow alive — don't throw or block
+		  }
+		});
+		
         if (!__DEV__) {
           const update = await Updates.checkForUpdateAsync();
           if (update.isAvailable) {
@@ -143,30 +179,6 @@ function AppLayout() {
       router.replace('/(auth)/payments/fast');
     }
   }, [isReady, mode, router]);
-
-  // Push notifications
-  useEffect(() => {
-    registerForPushNotificationsAsync().then(async (token) => {
-      if (!token) {
-        console.warn('[PUSH] No push token received');
-        return;
-      }
-
-      try {
-        const response = await api().post('/notifications/register-device', {
-          expo_push_token: token,
-          device_type: Platform.OS,
-          device_name: Device.deviceName,
-          app_version: Constants.expoConfig?.version,
-          os_version: Device.osVersion,
-        });
-
-        console.log('[PUSH] Token sent to backend ✅', response.data);
-      } catch (err: any) {
-        console.error('[PUSH] Register device failed:', err?.response?.data ?? err.message ?? err);
-      }
-    });
-  }, []);
 
   if (isBlocked) {
     return <VersionLockScreen message={blockMessage} storeUrl={storeUrl} />;

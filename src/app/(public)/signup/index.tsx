@@ -1,8 +1,16 @@
 import React, { useState, useRef } from 'react';
-import { Animated, Pressable, TextInput } from 'react-native';
+import {
+  Animated,
+  Pressable,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import { SubmitHandler, useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'expo-router';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import { Box } from '@/components/ui/box';
 import { Heading } from '@/components/ui/heading';
@@ -10,7 +18,6 @@ import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
 import { Link } from '@/components/ui/link';
-import { ScrollView } from '@/components/ui/scroll-view';
 import {
   FormControl,
   FormControlError,
@@ -21,7 +28,7 @@ import { AlertCircleIcon } from '@/components/ui/icon';
 import { signUp } from '@/services/emigro/auth';
 import { RegisterUserRequest, Role } from '@/services/emigro/types';
 import { BadRequestException } from '@/types/errors';
-import { Keyboard, TouchableWithoutFeedback } from 'react-native';
+
 
 type FormData = {
   firstName: string;
@@ -92,9 +99,14 @@ const CreateAccount = () => {
   });
 
   return (
-	<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-	  <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-	    <Box className="flex-1 bg-black p-6 justify-center">
+	<KeyboardAvoidingView
+	  style={{ flex: 1 }}
+	  behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+	  keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
+	>
+	  <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+	    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
+	      <Box className="flex-1 bg-black p-6 justify-center">
 	      <VStack space="lg">
             <Heading size="xl" className="text-white text-center mb-6">
               Sign up to Emigro
@@ -212,9 +224,10 @@ const CreateAccount = () => {
 				            </HStack>
 				          </VStack>
 				        </VStack>
-				      </Box>
-				    </KeyboardAwareScrollView>
-				  </TouchableWithoutFeedback>
+						      </Box>
+						    </ScrollView>
+						  </TouchableWithoutFeedback>
+						</KeyboardAvoidingView>
   );
 };
 

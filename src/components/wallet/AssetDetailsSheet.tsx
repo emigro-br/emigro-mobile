@@ -165,10 +165,23 @@ export const AssetDetailsSheet = ({ isOpen, onClose, asset }: Props) => {
             <Text style={{ color: '#fff', fontSize: 32, fontWeight: 'bold' }}>{asset.symbol}</Text>
           </Box>
 
-          <View style={{ alignItems: 'center', marginBottom: 8 }}>
-            <Text style={{ color: '#fff', fontSize: 28, fontWeight: 'bold', marginBottom: 8 }}>{displayBalance}</Text>
-            <Text style={{ color: '#aaa', fontSize: 18 }}>${asset.symbol}</Text>
-          </View>
+		  <View style={{ alignItems: 'center', marginBottom: 8, maxWidth: '100%' }}>
+		    <Text
+		      style={{
+		        color: '#fff',
+		        fontSize: 28,
+		        fontWeight: 'bold',
+		        marginBottom: 8,
+		        textAlign: 'center',
+		      }}
+		      numberOfLines={1}
+		      adjustsFontSizeToFit
+		      minimumFontScale={0.8}
+		    >
+		      {displayBalance}
+		    </Text>
+		    <Text style={{ color: '#aaa', fontSize: 18, textAlign: 'center' }}>${asset.symbol}</Text>
+		  </View>
 
           {!isPrimary && (
             <Pressable

@@ -194,7 +194,7 @@ const ManageAssetsActionSheetComponent = ({ walletId, isOpen, onClose }: Props) 
           )}
 		  <Box style={{ flexShrink: 1 }}>
 		    <Text style={{ color: '#fff', fontSize: 16 }}>
-		      <Text style={{ fontWeight: 'bold', fontSize: 17 }}>{asset.name}</Text> ({asset.symbol})
+		      <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{asset.name}</Text> ({asset.symbol})
 		    </Text>
 		    <Text size="xs" style={{ color: '#aaa', marginTop: 2, fontSize: 12 }}>
 		      {asset.contractAddress?.trim()
