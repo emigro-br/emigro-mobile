@@ -116,46 +116,54 @@ function AppLayout() {
 		    os_version: Device.osVersion,
 		  };
 
-		  const maxAttempts = 3;
-		  let attempt = 0;
-
-		  while (attempt < maxAttempts) {
-		    attempt++;
-
-		    const tokenReady = sessionStore.accessToken;
-		    if (!tokenReady) {
-		      console.warn(`[PUSH] Attempt ${attempt}: Access token not ready, waiting...`);
-		      await new Promise((r) => setTimeout(r, 1000));
-		      continue;
+		  try {
+		    // ⏳ Wait for valid session (JWT and user ID present)
+		    while (!sessionStore.user?.id || !sessionStore.accessToken) {
+		      console.warn('[PUSH] Waiting for session to be ready...');
+		      await new Promise((res) => setTimeout(res, 500));
 		    }
 
-		    const apiWithAuth = api({
-		      headers: {
-		        Authorization: `Bearer ${tokenReady}`,
-		      },
-		    });
+		    const maxAttempts = 3;
+		    let attempt = 0;
 
-		    try {
-		      await apiWithAuth.post('/notifications/debug/log', {
-		        tag: 'TestFlight push registration (attempt ' + attempt + ')',
-		        token,
-		        payload,
+		    while (attempt < maxAttempts) {
+		      attempt++;
+
+		      const apiWithAuth = api({
+		        headers: {
+		          Authorization: `Bearer ${sessionStore.accessToken}`,
+		        },
 		      });
 
-		      const res = await apiWithAuth.post('/notifications/register-device', payload);
-		      console.log('[PUSH] Token sent to backend ✅', res.data);
-		      break; // ✅ success, stop trying
-		    } catch (err: any) {
-		      if (err.response?.status === 401) {
-		        console.warn(`[PUSH] Attempt ${attempt}: Unauthorized — will retry`);
-		        await new Promise((r) => setTimeout(r, 1000));
-		      } else {
-		        console.warn('[PUSH] Register device failed:', err.message ?? err);
-		        break; // other error, don't retry
+		      try {
+		        await apiWithAuth.post('/notifications/debug/log', {
+		          tag: `TestFlight push registration (attempt ${attempt})`,
+		          token,
+		          payload,
+		        });
+
+		        const res = await apiWithAuth.post('/notifications/register-device', payload);
+		        console.log('[PUSH] Token sent to backend ✅', res.data);
+		        break; // ✅ success
+		      } catch (err: any) {
+		        if (err.response?.status === 401) {
+		          console.warn(`[PUSH] Attempt ${attempt}: Unauthorized — will retry`);
+		          await new Promise((r) => setTimeout(r, 1000));
+		        } else {
+		          console.warn('[PUSH] Register device failed:', err.message ?? err);
+		          break; // 🚫 do not retry on other errors
+		        }
 		      }
 		    }
+		  } catch (e) {
+		    console.error('[PUSH] Unexpected error during registration:', e);
+		    Sentry.captureException(e);
+		  } finally {
+		    console.log('[PUSH] Push registration flow finished');
 		  }
 		});
+
+
 
 
 		
