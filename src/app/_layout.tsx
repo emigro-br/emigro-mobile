@@ -16,6 +16,16 @@ import { api } from '@/services/emigro/api';
 import VersionLockScreen from '@/screens/VersionLock';
 import { sessionStore } from '@/stores/SessionStore';
 
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
 LogBox.ignoreLogs([
   'new NativeEventEmitter() was called with a non-null argument',
 ]);
