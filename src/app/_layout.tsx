@@ -116,34 +116,47 @@ function AppLayout() {
 		    os_version: Device.osVersion,
 		  };
 
-		  console.log('[PUSH] Sending device payload:', payload);
+		  const maxAttempts = 3;
+		  let attempt = 0;
 
-		  try {
+		  while (attempt < maxAttempts) {
+		    attempt++;
+
+		    const tokenReady = sessionStore.accessToken;
+		    if (!tokenReady) {
+		      console.warn(`[PUSH] Attempt ${attempt}: Access token not ready, waiting...`);
+		      await new Promise((r) => setTimeout(r, 1000));
+		      continue;
+		    }
+
 		    const apiWithAuth = api({
 		      headers: {
-		        Authorization: `Bearer ${sessionStore.accessToken}`,
+		        Authorization: `Bearer ${tokenReady}`,
 		      },
 		    });
 
-		    // 🔍 SEND DEBUG LOG TO BACKEND
-		    await apiWithAuth.post('/notifications/debug/log', {
-		      tag: 'TestFlight push registration',
-		      token,
-		      payload,
-		    });
+		    try {
+		      await apiWithAuth.post('/notifications/debug/log', {
+		        tag: 'TestFlight push registration (attempt ' + attempt + ')',
+		        token,
+		        payload,
+		      });
 
-		    // 📦 Send actual registration payload
-		    const response = await apiWithAuth.post('/notifications/register-device', payload);
-		    console.log('[PUSH] Token sent to backend ✅', response.data);
-		  } catch (err: any) {
-		    if (err.response) {
-		      console.warn('[PUSH] Register device failed - status:', err.response.status);
-		      console.warn('[PUSH] Register device failed - data:', err.response.data);
-		    } else {
-		      console.warn('[PUSH] Register device failed:', err.message ?? err);
+		      const res = await apiWithAuth.post('/notifications/register-device', payload);
+		      console.log('[PUSH] Token sent to backend ✅', res.data);
+		      break; // ✅ success, stop trying
+		    } catch (err: any) {
+		      if (err.response?.status === 401) {
+		        console.warn(`[PUSH] Attempt ${attempt}: Unauthorized — will retry`);
+		        await new Promise((r) => setTimeout(r, 1000));
+		      } else {
+		        console.warn('[PUSH] Register device failed:', err.message ?? err);
+		        break; // other error, don't retry
+		      }
 		    }
 		  }
 		});
+
 
 		
         if (!__DEV__) {
