@@ -1,3 +1,5 @@
+// src/components/wallet/ProfileSheet
+
 import React from 'react';
 import {
   Actionsheet,

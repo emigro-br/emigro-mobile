@@ -26,9 +26,22 @@ import { useCameraPermissions } from 'expo-camera';
 
 import { StartupModeSheet } from '@/components/StartupModeSheet';
 
+import { useUserRewardPoints } from '@/hooks/useUserRewardPoints';
+import { Image } from 'react-native';
+
 
 import * as Notifications from 'expo-notifications';
 import * as Linking from 'expo-linking';
+
+import { HStack } from '@/components/ui/hstack';
+import { useChainStore } from '@/stores/ChainStore';
+import { balanceStore } from '@/stores/BalanceStore';
+import { Image as RNImage } from 'react-native';
+import { useWalletBalances } from '@/hooks/useWalletBalances';
+import { View } from 'react-native';
+
+import { ProfileSheet } from '@/components/wallet/ProfileSheet';
+import { Pressable } from 'react-native';
 
 const Profile = observer(() => {
   const router = useRouter();
@@ -37,13 +50,31 @@ const Profile = observer(() => {
   const [assetListOpen, setAssetListOpen] = useState(false);
   const [kycVerified, setKycVerified] = useState(false);
   const [modeSheetOpen, setModeSheetOpen] = useState(false);
-  
-  
+ 
   const [cameraPermission] = useCameraPermissions();
   const cameraStatus: 'granted' | 'denied' | 'undetermined' =
     cameraPermission?.status ?? 'undetermined';
   const [notificationStatus, setNotificationStatus] = useState<'granted' | 'denied' | 'undetermined'>('undetermined');
+  
+  const { points, loading: loadingPoints } = useUserRewardPoints();
+  
+  const [profileSheetVisible, setProfileSheetVisible] = useState(false);
 
+  // 📌 Get active chains from balances
+   const walletId = sessionStore.user?.wallets?.[0]?.id ?? '';
+  const { balances } = useWalletBalances(walletId);
+
+  const userChains = Array.from(
+    new Set(balances.map((b) => b.chainId).filter(Boolean))
+  );
+
+  const chains = useChainStore((s) => s.chains);
+  const chainIcons = userChains
+    .map((chainId) => chains.find((c) => c.id === chainId || c.chainId === chainId)?.icon)
+    .filter(Boolean);
+
+
+	
   useEffect(() => {
     const fetchKycStatus = async () => {
       const { kycVerified } = await sessionStore.checkKycStatus();
@@ -119,6 +150,11 @@ const Profile = observer(() => {
     new Asset('fiat', code, code, code, code, iconMap[code] ?? '')
   );
 
+  useEffect(() => {
+    balanceStore.fetchUserBalance({ force: true });
+    useChainStore.getState().fetchChains(); // Zustand store call
+  }, []);
+  
   return (
 	<>
     <ScrollView
@@ -134,12 +170,121 @@ const Profile = observer(() => {
             <Heading size="xl" className="py-2">
               {fullName}
             </Heading>
+			
+			<Box className="flex-row justify-between mt-2 gap-x-4">
+			  {/* First Box - Chains */}
+			  <Pressable onPress={() => setProfileSheetVisible(true)} style={{ flex: 1 }}>
+			    <Box className="p-4 rounded-2xl" style={{ backgroundColor: '#2e2e2e' }}>
+			      <View style={{ height: 32, marginBottom: 22, flexDirection: 'row' }}>
+			        {chainIcons.slice(0, 3).map((icon, idx) => (
+			          <RNImage
+			            key={idx}
+			            source={icon}
+			            style={{
+			              width: 32,
+			              height: 32,
+			              borderRadius: 32,
+			              marginLeft: idx === 0 ? 0 : -8,
+			              borderWidth: 2,
+			              borderColor: '#2e2e2e',
+			            }}
+			            resizeMode="contain"
+			          />
+			        ))}
+			        {chainIcons.length > 3 && (
+			          <Text style={{ color: 'white', fontSize: 12, marginLeft: 6, alignSelf: 'center' }}>
+			            +{chainIcons.length - 3}
+			          </Text>
+			        )}
+			      </View>
 
+			      <Text className="font-bold text-left text-gray-300 mb-1">Wallets</Text>
+			      <Text className="text-sm text-left text-white">
+			        {chainIcons.length} {chainIcons.length === 1 ? 'chain' : 'chains'}
+			      </Text>
+			    </Box>
+			  </Pressable>
+
+
+			  {/* Second Box - EmiPoints */}
+			  <Box className="p-4 rounded-2xl flex-1" style={{ backgroundColor: '#2e2e2e' }}>
+			    <Image
+			      source={require('@/assets/images/icons/emipoint-icon-red.png')}
+			      style={{ width: 32, height: 32, marginBottom: 22 }}
+			    />
+			    <Text className="font-bold text-left text-gray-300 mb-1">EmiPoints</Text>
+			    <Text className="text-sm text-left text-muted-foreground text-white">
+			      {loadingPoints ? '...' : `${points?.toFixed(2)} EmiPoints`}
+			    </Text>
+			  </Box>
+			</Box>
+
+			
             {/* 🔸 Separator */}
-            <Box className="border-b border-gray-200 my-1" />
+			<Box style={{ height: 1, width: '100%', backgroundColor: 'white', opacity: 0.2, marginTop: 26, marginBottom: 6 }} />
           </Center>
 
-          <VStack space="xl">
+		  <VStack space="xl">
+		    <Box style={{ backgroundColor: '#2e2e2e' }} className="rounded-2xl p-4">
+		      <ListTile
+		        leading={<Icon as={Lock} />}
+		        title="Configure your PIN"
+		        trailing={<Icon as={ChevronRightIcon} />}
+		        onPress={() => router.push('/settings/configure-pin')}
+		        testID="configure-pin-button"
+		      />
+		    </Box>
+
+		    <Box style={{ backgroundColor: '#2e2e2e' }} className="rounded-2xl p-4">
+		      <ListTile
+		        leading={<Icon as={Coins} />}
+		        title={`Bank account currency: ${bankCurrency.length > 0 ? bankCurrency[0] : 'not set'}`}
+		        trailing={<Icon as={ChevronRightIcon} />}
+		        onPress={() => {
+		          console.log('[Profile] User tapped currency selector');
+		          setAssetListOpen(true);
+		        }}
+		        testID="bank-currency-button"
+		      />
+		    </Box>
+
+		    <Box style={{ backgroundColor: '#2e2e2e' }} className="rounded-2xl p-4">
+		      <ListTile
+		        leading={<Icon as={CheckCircle} />}
+		        title={`Startup Mode: ${sessionStore.preferences?.startupMode ?? 'wallet'}`}
+		        trailing={<Icon as={ChevronRightIcon} />}
+		        onPress={() => setModeSheetOpen(true)}
+		      />
+		    </Box>
+
+		    <Box style={{ backgroundColor: '#2e2e2e' }} className="rounded-2xl p-4">
+		      <ListTile
+		        leading={<Icon as={CheckCircle} />}
+		        title="Camera Access"
+		        subtitle={cameraStatus === 'granted' ? 'Enabled' : 'Not enabled'}
+		        trailing={<Icon as={ChevronRightIcon} />}
+		        onPress={() => Linking.openSettings()}
+		      />
+		    </Box>
+
+		    <Box style={{ backgroundColor: '#2e2e2e' }} className="rounded-2xl p-4">
+		      <ListTile
+		        leading={<Icon as={CheckCircle} />}
+		        title="Notification Access"
+		        subtitle={notificationStatus === 'granted' ? 'Enabled' : 'Not enabled'}
+		        trailing={<Icon as={ChevronRightIcon} />}
+		        onPress={() => Linking.openSettings()}
+		      />
+		    </Box>
+
+			<Box style={{ backgroundColor: '#2e2e2e' }} className="rounded-2xl p-4">
+			  <Button onPress={handleLogout} variant="link" action="negative">
+			    <ButtonText>Logout</ButtonText>
+			  </Button>
+
+			</Box>
+		  
+
             {/*<ListTile
               leading={<Icon as={User} />}
               title="Personal Info"
@@ -147,26 +292,6 @@ const Profile = observer(() => {
               onPress={() => router.push('/profile/personal-info')}
               testID="personal-info-button"
             />*/}
-
-            <ListTile
-              leading={<Icon as={Lock} />}
-              title="Configure your PIN"
-              trailing={<Icon as={ChevronRightIcon} />}
-              onPress={() => router.push('/settings/configure-pin')}
-              testID="configure-pin-button"
-            />
-
-            <ListTile
-              leading={<Icon as={Coins} />}
-              title={`Bank account currency: ${bankCurrency.length > 0 ? bankCurrency[0] : 'not set'}`}
-              subtitle="Used for deposit and withdraw"
-              trailing={<Icon as={ChevronRightIcon} />}
-              onPress={() => {
-                console.log('[Profile] User tapped currency selector');
-                setAssetListOpen(true);
-              }}
-              testID="bank-currency-button"
-            />
 
             {/* 
             <ListTile
@@ -180,29 +305,6 @@ const Profile = observer(() => {
             />
             */}
 
-			<ListTile
-			  leading={<Icon as={CheckCircle} />}
-			  title={`Startup Mode: ${sessionStore.preferences?.startupMode ?? 'wallet'}`}
-			  subtitle="Choose the default screen when launching the app"
-			  trailing={<Icon as={ChevronRightIcon} />}
-			  onPress={() => setModeSheetOpen(true)}
-			/>
-			
-			<ListTile
-			  leading={<Icon as={CheckCircle} />}
-			  title="Camera Access"
-			  subtitle={cameraStatus === 'granted' ? 'Enabled' : 'Not enabled'}
-			  trailing={<Icon as={ChevronRightIcon} />}
-			  onPress={() => Linking.openSettings()}
-			/>
-
-			<ListTile
-			  leading={<Icon as={CheckCircle} />}
-			  title="Notification Access"
-			  subtitle={notificationStatus === 'granted' ? 'Enabled' : 'Not enabled'}
-			  trailing={<Icon as={ChevronRightIcon} />}
-			  onPress={() => Linking.openSettings()}
-			/>
 			
             <Button
               onPress={() => router.push('/profile/delete-account')}
@@ -213,17 +315,14 @@ const Profile = observer(() => {
             >
               <ButtonText>Delete account</ButtonText>
             </Button>
+			
+			<Text size="sm">
+			  version {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})
+			</Text>
           </VStack>
         </VStack>
 
-        <Box className="items-center mb-12">
-          <Button onPress={handleLogout} variant="link" action="negative">
-            <ButtonText>Logout</ButtonText>
-          </Button>
-          <Text size="sm">
-            version {Application.nativeApplicationVersion} ({Application.nativeBuildVersion})
-          </Text>
-        </Box>
+
       </Box>
 
       <AssetListActionSheet
@@ -241,6 +340,7 @@ const Profile = observer(() => {
       />
     </ScrollView>
 	<StartupModeSheet isOpen={modeSheetOpen} onClose={() => setModeSheetOpen(false)} />
+	<ProfileSheet visible={profileSheetVisible} onClose={() => setProfileSheetVisible(false)} />
 	</>
   );
 });

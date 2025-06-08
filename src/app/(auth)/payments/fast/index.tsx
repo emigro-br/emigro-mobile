@@ -32,10 +32,13 @@ import { chainIconMap } from '@/utils/chainIconMap';
 import { useChainStore } from '@/stores/ChainStore';
 import { Image } from 'react-native';
 
+import { useIsFocused } from '@react-navigation/native';
+
 const FastQRCodeScreen = () => {
   const router = useRouter();
   const [primaryAsset, setPrimaryAsset] = useState(null);
   const [primaryChain, setPrimaryChain] = useState(null);
+  
 
   useEffect(() => {
     const fetchPrimary = async () => {
@@ -211,6 +214,8 @@ const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain
 
   const [permission] = useCameraPermissions();
   
+  const isFocused = useIsFocused();
+  
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const animatePress = () => {
     Animated.sequence([
@@ -283,6 +288,7 @@ const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain
   return (
     <>
 	<Stack.Screen options={{ headerShown: false, animation: 'slide_from_bottom' }} />
+	{isFocused && (
 	<Box className="flex-1">
 	  <CameraView
 	    style={styles.camera}
@@ -355,6 +361,7 @@ const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain
 
 	  </CameraView>
 	</Box>
+	)}
 
 
     </>

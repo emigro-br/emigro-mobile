@@ -140,89 +140,126 @@ export const AssetDetailsSheet = ({ isOpen, onClose, asset }: Props) => {
           </ActionsheetDragIndicatorWrapper>
         </Box>
 
-        <ScrollView style={{ paddingHorizontal: 16, paddingBottom: 80, marginTop: 16, width: '100%' }}>
-          <Box style={{ alignItems: 'center', marginBottom: 20 }}>
-            <View style={{ width: 110, height: 110, position: 'relative', marginBottom: 24 }}>
-              {icon && (
-                <Image source={icon} style={{ width: 110, height: 110 }} resizeMode="contain" />
-              )}
-              {chainIcon && (
-                <Image
-                  source={chainIcon}
-                  style={{
-                    width: 48,
-                    height: 48,
-                    position: 'absolute',
-                    bottom: -4,
-                    right: -4,
-                    borderRadius: 100,
-                    backgroundColor: '#000',
-                  }}
-                  resizeMode="contain"
-                />
-              )}
-            </View>
-            <Text style={{ color: '#fff', fontSize: 32, fontWeight: 'bold' }}>{asset.symbol}</Text>
-          </Box>
+		<ScrollView
+		  style={{ marginTop: 16, width: '100%' }}
+		  contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 80, flexGrow: 1 }}
+		>
+		  <Box style={{ alignItems: 'center', marginBottom: 20 }}>
+		    <View style={{ width: 110, height: 110, position: 'relative', marginBottom: 24 }}>
+		      {icon && (
+		        <Image source={icon} style={{ width: 110, height: 110 }} resizeMode="contain" />
+		      )}
+		      {chainIcon && (
+		        <Image
+		          source={chainIcon}
+		          style={{
+		            width: 48,
+		            height: 48,
+		            position: 'absolute',
+		            bottom: -4,
+		            right: -4,
+		            borderRadius: 100,
+		            backgroundColor: '#000',
+		          }}
+		          resizeMode="contain"
+		        />
+		      )}
+		    </View>
 
-		  <View style={{ alignItems: 'center', marginBottom: 8, maxWidth: '100%' }}>
+		    <View style={{ paddingHorizontal: 16, marginBottom: 0 }}>
+		      <Text
+		        style={{
+		          color: '#fff',
+		          fontSize: 28,
+		          fontWeight: 'bold',
+		          textAlign: 'center',
+		          lineHeight: 34,
+		          includeFontPadding: false,
+		          textAlignVertical: 'center',
+				  padding: 0,
+				  margin: 0,
+		        }}
+		        allowFontScaling
+		        numberOfLines={1}
+		        adjustsFontSizeToFit
+		        minimumFontScale={0.7}
+		      >
+		        {asset.symbol}
+		      </Text>
+		    </View>
+		  </Box>
+
+		  <View style={{ paddingHorizontal: 16, marginBottom: 12, marginTop: -20 }}>
 		    <Text
 		      style={{
 		        color: '#fff',
-		        fontSize: 28,
+		        fontSize: 26,
 		        fontWeight: 'bold',
-		        marginBottom: 8,
 		        textAlign: 'center',
+		        lineHeight: 32,
+		        includeFontPadding: false,
+		        textAlignVertical: 'center',
 		      }}
+		      allowFontScaling
 		      numberOfLines={1}
 		      adjustsFontSizeToFit
-		      minimumFontScale={0.8}
+		      minimumFontScale={0.7}
 		    >
 		      {displayBalance}
 		    </Text>
-		    <Text style={{ color: '#aaa', fontSize: 18, textAlign: 'center' }}>${asset.symbol}</Text>
+		    <Text
+		      style={{
+		        color: '#aaa',
+		        fontSize: 18,
+		        textAlign: 'center',
+		        lineHeight: 24,
+		      }}
+		    >
+		      ${asset.symbol}
+		    </Text>
 		  </View>
 
-          {!isPrimary && (
-            <Pressable
-              onPress={handleMakePrimary}
-              style={{
-                backgroundColor: '#fe0055',
-                paddingVertical: 12,
-                paddingHorizontal: 24,
-                borderRadius: 8,
-                alignSelf: 'center',
-                marginTop: 8,
-                marginBottom: 8,
-              }}
-            >
-              <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Make it primary</Text>
-            </Pressable>
-          )}
+		  {!isPrimary && (
+		    <Pressable
+		      onPress={handleMakePrimary}
+		      style={{
+		        backgroundColor: '#fe0055',
+		        paddingVertical: 12,
+		        paddingHorizontal: 24,
+		        borderRadius: 8,
+		        alignSelf: 'center',
+		        marginTop: 8,
+		        marginBottom: 8,
+		      }}
+		    >
+		      <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Make it primary</Text>
+		    </Pressable>
+		  )}
 
-          <View style={{ backgroundColor: '#1e1e1e', padding: 16, borderRadius: 12, marginTop: 16 }}>
-            <Text style={{ color: '#ccc', marginBottom: 5 }}>Chain: {chain?.name || asset.chainId}</Text>
+		  <View style={{ backgroundColor: '#1e1e1e', padding: 16, borderRadius: 12, marginTop: 16 }}>
+		    <Text style={{ color: '#ccc', marginBottom: 5 }}>Chain: {chain?.name || asset.chainId}</Text>
 
-            {quote !== null && quote !== 0 && (
-              <Text style={{ color: '#ccc', marginBottom: 5 }}>
-                1 {sessionStore.preferences?.fiatsWithBank?.[0] ?? 'USD'} = {(1 / quote).toFixed(6)} {asset.symbol}
-              </Text>
-            )}
+		    {quote !== null && quote !== 0 && (
+		      <Text style={{ color: '#ccc', marginBottom: 5 }}>
+		        1 {sessionStore.preferences?.fiatsWithBank?.[0] ?? 'USD'} = {(1 / quote).toFixed(6)} {asset.symbol}
+		      </Text>
+		    )}
 
-            {fullAsset && (
-              <>
-                <Text style={{ color: '#aaa', marginBottom: 5 }}>Name: {fullAsset.name}</Text>
-                <Text style={{ color: '#aaa', marginBottom: 5 }}>Symbol: {fullAsset.symbol}</Text>
-                <Text style={{ color: '#aaa', marginBottom: 5 }}>
-                  Contract Address:{' '}
-                  {fullAsset.contractAddress
-                    ? `${fullAsset.contractAddress.slice(0, 8)}...${fullAsset.contractAddress.slice(-8)}`
-                    : 'Native'}
-                </Text>
-              </>
-            )}
-          </View>
-        </ScrollView>
+		    {fullAsset && (
+		      <>
+		        <Text style={{ color: '#aaa', marginBottom: 5 }}>Name: {fullAsset.name}</Text>
+		        <Text style={{ color: '#aaa', marginBottom: 5 }}>Symbol: {fullAsset.symbol}</Text>
+		        <Text style={{ color: '#aaa', marginBottom: 5 }}>
+		          Contract Address:{' '}
+		          {fullAsset.contractAddress
+		            ? `${fullAsset.contractAddress.slice(0, 8)}...${fullAsset.contractAddress.slice(-8)}`
+		            : 'Native'}
+		        </Text>
+		      </>
+		    )}
+		  </View>
+		</ScrollView>
+
       </ActionsheetContent>
     </Actionsheet>
   );

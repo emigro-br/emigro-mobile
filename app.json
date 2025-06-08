@@ -11,7 +11,8 @@
     "userInterfaceStyle": "light",
     "platforms": [
       "ios",
-      "android"
+      "android",
+      "web"
     ],
     "plugins": [
       [

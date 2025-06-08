@@ -119,13 +119,21 @@ function AppLayout() {
 		  console.log('[PUSH] Sending device payload:', payload);
 
 		  try {
-			const apiWithAuth = api({
-			  headers: {
-			    Authorization: `Bearer ${sessionStore.accessToken}`,
-			  },
-			});
+		    const apiWithAuth = api({
+		      headers: {
+		        Authorization: `Bearer ${sessionStore.accessToken}`,
+		      },
+		    });
 
-			const response = await apiWithAuth.post('/notifications/register-device', payload);
+		    // 🔍 SEND DEBUG LOG TO BACKEND
+		    await apiWithAuth.post('/notifications/debug/log', {
+		      tag: 'TestFlight push registration',
+		      token,
+		      payload,
+		    });
+
+		    // 📦 Send actual registration payload
+		    const response = await apiWithAuth.post('/notifications/register-device', payload);
 		    console.log('[PUSH] Token sent to backend ✅', response.data);
 		  } catch (err: any) {
 		    if (err.response) {
@@ -134,9 +142,9 @@ function AppLayout() {
 		    } else {
 		      console.warn('[PUSH] Register device failed:', err.message ?? err);
 		    }
-		    // 🔁 Keep app flow alive — don't throw or block
 		  }
 		});
+
 		
         if (!__DEV__) {
           const update = await Updates.checkForUpdateAsync();
