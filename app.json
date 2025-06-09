@@ -3,7 +3,7 @@
     "name": "Emigro",
     "slug": "emigro-mobile",
     "owner": "emigro",
-    "version": "2.1.1",
+    "version": "2.2.0",
     "description": "The traveler's digital wallet",
     "orientation": "portrait",
     "scheme": "emigro",
@@ -26,9 +26,9 @@
         {
           "android": {
             "minSdkVersion": 34,
-            "compileSdkVersion": 34,
-            "targetSdkVersion": 34,
-            "buildToolsVersion": "34.0.0"
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0"
           },
           "ios": {
             "deploymentTarget": "15.1"
@@ -89,6 +89,6 @@
         "projectId": "d84d8915-cdac-448c-bf38-fc1ebcbe8eac"
       }
     },
-    "runtimeVersion": "2.1.1"
+    "runtimeVersion": "2.2.0"
   }
 }

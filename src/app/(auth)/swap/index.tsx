@@ -69,11 +69,33 @@ const Swap = () => {
   const [selectingSellAsset, setSelectingSellAsset] = useState(true);
   
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  
+  const [sellAssetBalance, setSellAssetBalance] = useState<number>(0);
+  const [buyAssetBalance, setBuyAssetBalance] = useState<number>(0);
+  const exceedsBalance = Number(sellValue || 0) > sellAssetBalance;
+
+  const isSwapDisabled =
+    fetchingRate ||
+    !sellValue ||
+    Number(sellValue) <= 0 ||
+    !buyAsset ||
+    sellAsset?.assetId === buyAsset?.assetId ||
+    !buyValue ||
+    exceedsBalance;
 
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
-  
+
+  const sanitizeAsset = (a: any) => ({
+    assetId: a.assetId ?? a.id ?? '',
+    symbol: a.symbol ?? '',
+    decimals: a.decimals ?? 6,
+    name: a.name ?? '',
+    contractAddress: a.contractAddress ?? a.address ?? '',
+    ...a,
+  });
+    
   const fetchQuote = async (retry = 0): Promise<void> => {
     const parsedValue = Number(sellValue);
     const isValid =
@@ -239,6 +261,62 @@ const Swap = () => {
   }, [wallets, balanceStore.walletBalances]);
 
 
+
+  
+  
+  useEffect(() => {
+    if (!sellAsset?.assetId || !selectedWalletId) {
+      console.warn('[swap][index] Skipping sellAsset balance: missing assetId or walletId');
+      setSellAssetBalance(0);
+      return;
+    }
+
+    const balances = balanceStore.walletBalances[selectedWalletId] ?? [];
+    console.log('[swap][index] Checking sellAsset balance for:', sellAsset.assetId, sellAsset.symbol);
+    console.log('[swap][index] Wallet balances:', balances);
+
+    const match = balances.find(b => b.assetId === sellAsset.assetId);
+
+    if (!match) {
+      console.warn('[swap][index] ❌ No match found for sellAsset:', sellAsset.assetId);
+    }
+
+    const rawBalance = match?.balance ?? '0';
+    const humanReadable = Number(rawBalance);
+
+    console.log(`[swap][index] ✅ Computed sellAsset balance: ${humanReadable} ${sellAsset.symbol}`);
+    setSellAssetBalance(humanReadable);
+  }, [sellAsset, selectedWalletId, balanceStore.walletBalances]);
+  useEffect(() => {
+    if (!buyAsset?.assetId || !selectedWalletId) {
+      console.warn('[swap][index] Skipping buyAsset balance: missing assetId or walletId');
+      setBuyAssetBalance(0);
+      return;
+    }
+
+    const balances = balanceStore.walletBalances[selectedWalletId] ?? [];
+    console.log('[swap][index] Checking buyAsset balance for:', buyAsset.assetId, buyAsset.symbol);
+    console.log('[swap][index] Wallet balances:', balances);
+
+    const match = balances.find(b => b.assetId === buyAsset.assetId);
+
+    if (!match) {
+      console.warn('[swap][index] ❌ No match found for buyAsset:', buyAsset.assetId);
+    }
+
+    const rawBalance = match?.balance ?? '0';
+    const humanReadable = Number(rawBalance);
+
+    console.log(`[swap][index] ✅ Computed buyAsset balance: ${humanReadable} ${buyAsset.symbol}`);
+    setBuyAssetBalance(humanReadable);
+  }, [buyAsset, selectedWalletId, balanceStore.walletBalances]);
+
+
+
+  
+  
+
+
   const handleChainChange = (walletId: string) => {
     setSelectedWalletId(walletId);
     // Reset on chain change
@@ -357,7 +435,7 @@ const Swap = () => {
                   <TextInput
                     ref={inputRef}
                     autoFocus
-                    className="text-white text-[36px] font-semibold flex-1"
+					className={`text-[36px] font-semibold flex-1 ${exceedsBalance ? 'text-red-500' : 'text-white'}`}
                     placeholder="0"
                     placeholderTextColor="#666"
                     keyboardType="decimal-pad"
@@ -382,7 +460,14 @@ const Swap = () => {
                     <Text className="text-white mr-1">{sellAsset?.symbol ?? 'Select asset'}</Text>
                     <Text className="text-white text-lg">˅</Text>
                   </Pressable>
+				  
                 </HStack>
+				<Text
+				  className="text-sm mt-2"
+				  style={{ color: exceedsBalance ? '#ff4d4d' : '#999' }}
+				>
+				  Balance: {sellAssetBalance.toFixed(6)} {sellAsset?.symbol}
+				</Text>
               </Box>
 
               {/* Swap button overlapping */}
@@ -437,6 +522,12 @@ const Swap = () => {
                     <Text className="text-white text-lg">˅</Text>
                   </Pressable>
                 </HStack>
+				<Text
+				  className="text-sm mt-2"
+				  style={{ color: '#999' }}
+				>
+				  Balance: {buyAssetBalance.toFixed(6)} {buyAsset?.symbol}
+				</Text>
               </Box>
 
               {/* Price info */}
@@ -448,14 +539,7 @@ const Swap = () => {
 
               {/* Review Button */}
 			  <Button
-			    disabled={
-			      fetchingRate ||
-			      !sellValue ||
-			      Number(sellValue) <= 0 ||
-			      !buyAsset ||
-			      sellAsset?.assetId === buyAsset?.assetId ||
-			      !buyValue
-			    }
+			    disabled={isSwapDisabled}
 			    onPress={handleReview}
 			    className="mt-6 rounded-full"
 			    style={{ backgroundColor: '#fe0055', height: 56 }}
@@ -472,15 +556,19 @@ const Swap = () => {
           </Box>
         </ScrollView>
       </KeyboardAvoidingView>
+
+
 	  <SelectAssetActionSheet
 	    walletId={selectedWalletId ?? ''}
 	    isOpen={isAssetSheetOpen}
 	    onClose={() => setIsAssetSheetOpen(false)}
 	    onSelect={(asset) => {
+	      const clean = sanitizeAsset(asset);
+	      console.log('[swap][index] ✅ Sanitized asset selected:', clean);
 	      if (selectingSellAsset) {
-	        setSellAsset(asset);
+	        setSellAsset(clean);
 	      } else {
-	        setBuyAsset(asset);
+	        setBuyAsset(clean);
 	      }
 	    }}
 	  />

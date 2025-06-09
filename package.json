@@ -1,7 +1,7 @@
 {
   "name": "emigro-mobile",
   "description": "Mobile App for Customers.",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start --dev-client --clear",
@@ -63,8 +63,10 @@
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.1",
+    "eas-cli": "^16.9.0",
     "expo": "~53.0.5",
     "expo-application": "~6.1.4",
+    "expo-av": "~15.1.5",
     "expo-build-properties": "~0.14.6",
     "expo-camera": "~16.1.6",
     "expo-clipboard": "~7.1.4",

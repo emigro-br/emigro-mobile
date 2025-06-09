@@ -15,42 +15,42 @@ import { api } from '@/services/emigro/api';
 const STATUS_MAP = {
   pending: {
     message: 'Starting transaction...',
-    secondmessage: 'Hang tight — we are currently preparing your payment',
+    secondmessage: 'Please, do not leave this screen',
     lottie: require('@/assets/lotties/loading.json'),
   },
   p001: {
     message: 'Starting transaction...',
-    secondmessage: 'Hang tight — we are currently preparing your payment',
+    secondmessage: 'Please, do not leave this screen',
     lottie: require('@/assets/lotties/loading.json'),
   },
   p002: {
     message: 'Approving token allowance...',
-    secondmessage: 'Hang tight — we are currently preparing your payment',
+    secondmessage: 'Please, do not leave this screen',
     lottie: require('@/assets/lotties/loading.json'),
   },
   p003: {
     message: 'Preparing payment...',
-    secondmessage: 'Hang tight — we are currently preparing your payment',
+    secondmessage: 'Please, do not leave this screen',
     lottie: require('@/assets/lotties/loading.json'),
   },
   p004: {
     message: 'Creating payment...',
-    secondmessage: 'Contacting pix provider to finalize payment',
+    secondmessage: 'Please, do not leave this screen',
     lottie: require('@/assets/lotties/loading.json'),
   },
   p005: {
     message: 'Your payment is on the way!',
-    secondmessage: 'Your payment has been accepted and is being processed. The merchant will receive the funds shortly. You may now close this window.',
+    secondmessage: '',
     lottie: require('@/assets/lotties/success.json'),
   },
   s001: {
     message: 'Swaping tokens...',
-    secondmessage: 'Hang tight — we are currently preparing your payment',
+    secondmessage: 'Please, do not leave this screen',
     lottie: require('@/assets/lotties/loading.json'),
   },
   f001: {
     message: 'Payment complete!',
-    secondmessage: 'Your payment has been processed completely!',
+    secondmessage: '',
     lottie: require('@/assets/lotties/success.json'),
   },
   e001: {
@@ -169,11 +169,11 @@ const StatusScreen = () => {
             {statusConfig.secondmessage}
           </Text>
 
-          {id && (
+          {/*{id && (
             <Text className="text-gray-500 mt-3 text-sm text-center">
               <Text className="font-bold text-white">{id}</Text>
             </Text>
-          )}
+          )}*/}
 
           {isComplete && showButton && (
             <Pressable onPressIn={animatePress} onPress={handleGoHome}>

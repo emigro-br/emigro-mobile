@@ -34,6 +34,10 @@ import { Image } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
 
+import * as Haptics from 'expo-haptics';
+import { Audio } from 'expo-av';
+import LottieView from 'lottie-react-native';
+
 const FastQRCodeScreen = () => {
   const router = useRouter();
   const [primaryAsset, setPrimaryAsset] = useState(null);
@@ -89,7 +93,7 @@ const FastQRCodeScreen = () => {
 
     fetchPrimary();
   }, []);
-
+  
 
 
 
@@ -224,6 +228,21 @@ const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain
     ]).start();
   };
   
+  const handleFeedback = async () => {
+    try {
+      // Vibrate device
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+      // Load and play sound
+      const { sound } = await Audio.Sound.createAsync(
+        require('@/assets/sounds/success.mp3') // ✅ Place your sound file here
+      );
+      await sound.playAsync();
+    } catch (err) {
+      console.warn('[FastQRCode] ⚠️ Feedback error:', err);
+    }
+  };
+  
   useEffect(() => setCameraPermission(permission), [permission]);
 
   useFocusEffect(useCallback(() => {
@@ -258,6 +277,7 @@ const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain
     setIsScanned(true);
     try {
       const pixPayload = parseQRCode(data);
+	  await handleFeedback();
       await onScanSuccess(pixPayload);
     } catch (err) {
       console.warn('[FastQRCode] ❌ Invalid QR:', err);
@@ -273,13 +293,24 @@ const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain
 
   if (!cameraPermission?.granted) {
     return (
-      <Box className="flex-1 justify-center">
-        <Center>
-          <Text size="lg" className="text-white text-center px-4">
-            Camera access was denied. Please enable it in your device settings.
-          </Text>
-        </Center>
-      </Box>
+		<Box className="flex-1 bg-background-900 justify-center items-center px-6">
+		  <VStack space="lg" className="items-center">
+		    <Text size="md" className="text-gray-400 text-center text-2xl">
+		      Camera Access Denied
+		    </Text>
+
+		    <LottieView
+		      source={require('@/assets/lotties/error.json')}
+		      autoPlay
+		      loop={false}
+		      style={{ width: 180, height: 180 }}
+		    />
+
+		    <Text size="md" className="text-white text-center mt-2">
+		      Please enable camera permissions in your device settings to scan QR codes.
+		    </Text>
+		  </VStack>
+		</Box>
     );
   }
 
