@@ -93,7 +93,7 @@ const fallbackStatus = {
 
 const StatusScreen = () => {
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, message } = useLocalSearchParams<{ id: string; message?: string }>();
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const [status, setStatus] = useState<keyof typeof STATUS_MAP>('pending');
@@ -101,7 +101,7 @@ const StatusScreen = () => {
 
   useEffect(() => {
     const checkStatus = async () => {
-      if (!id) return;
+      if (!id || id === 'error') return;
 
       try {
         const res = await api().get(`/evm/escrow-evm/${id}`, {
@@ -146,6 +146,14 @@ const StatusScreen = () => {
 
   const isComplete = ['f001', 'p005', 'e001', 'e002', 'e003', 'e004', 'e005', 'e006'].includes(status);
   const showButton = true;
+  
+  const isManualError = id === 'error';
+  const errorMessage = message || 'Something went wrong with your QR code. Please try another.';
+
+  const finalMessage = isManualError ? errorMessage : statusConfig.message;
+  const finalSecondMessage = isManualError ? 'Oops...' : statusConfig.secondmessage;
+  const finalLottie = isManualError ? require('@/assets/lotties/error.json') : statusConfig.lottie;
+
 
   return (
     <>
@@ -154,10 +162,10 @@ const StatusScreen = () => {
         <VStack space="lg" className="items-center">
 		
 		<Text size="md" className="text-gray-400 text-center text-2xl">
-		{statusConfig.message}
+		{finalMessage}
 		</Text>
           <LottieView
-            source={statusConfig.lottie}
+            source={finalLottie}
             autoPlay
             loop={!isComplete}
             style={{ width: 180, height: 180 }}
@@ -166,7 +174,7 @@ const StatusScreen = () => {
 
 
           <Text size="md" className="text-white text-center mt-2">
-            {statusConfig.secondmessage}
+            {finalSecondMessage}
           </Text>
 
           {/*{id && (
