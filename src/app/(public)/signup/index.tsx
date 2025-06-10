@@ -1,3 +1,5 @@
+// src/app/(public)/signup/index.tsx
+
 import React, { useState, useRef } from 'react';
 import {
   Animated,
