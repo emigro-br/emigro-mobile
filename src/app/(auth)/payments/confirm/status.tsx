@@ -144,7 +144,7 @@ const StatusScreen = () => {
 
   const statusConfig = STATUS_MAP[status] || fallbackStatus;
 
-  const isComplete = ['f001', 'p005', 'e001', 'e002', 'e003', 'e004', 'e005', 'e006'].includes(status);
+  const isComplete = ['e001', 'e002', 'e003', 'e004', 'e005', 'e006'].includes(status) || id === 'error';
   const showButton = true;
   
   const isManualError = id === 'error';

@@ -6,7 +6,7 @@ import { CryptoAsset } from '@/types/assets';
 
 export class BalanceStore {
   userBalance: Balance[] = [];
-  totalBalance: number = 0;
+  totalBalance: number | null = null;
   lastUpdate: number | null = null;
 
   walletBalances: Record<string, Balance[]> = {};
@@ -29,7 +29,7 @@ export class BalanceStore {
     this.lastUpdate = Date.now();
   }
 
-  setTotalBalance(total: number): void {
+  setTotalBalance(total: number | null): void {
     console.log('[store][BalanceStore] setTotalBalance - input:', total);
     this.totalBalance = total;
   }
