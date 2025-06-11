@@ -38,8 +38,9 @@
       [
         "@sentry/react-native/expo",
         {
-          "organization": "emigro",
-          "project": "emigro-mobile"
+      "url": "https://sentry.io/",
+      "project": "react-native",
+      "organization": "emigro-5p"
         }
       ],
       "expo-secure-store",

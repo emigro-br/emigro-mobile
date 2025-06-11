@@ -47,19 +47,30 @@ try {
 
   if (sentryDsn && Sentry) {
     console.log('[app/_layout][SENTRY] Initializing...');
+    console.log('[Sentry] DSN from env:', sentryDsn); // ✅ Log DSN for confirmation
+
     Sentry.init({
       dsn: sentryDsn,
       debug: __DEV__,
       environment: __DEV__ ? 'development' : 'production',
-      tracesSampleRate: 1.0,
+      sendDefaultPii: true,
+      replaysSessionSampleRate: 0.1,
+      replaysOnErrorSampleRate: 1,
       integrations: [
         new Sentry.ReactNativeTracing({
           routingInstrumentation,
           enableNativeFramesTracking: !isRunningInExpoGo(),
         }),
+        Sentry.mobileReplayIntegration(),
+        Sentry.feedbackIntegration(),
       ],
     });
+
+    // ✅ Send test events
+    Sentry.captureMessage('✅ Test message from _layout.tsx');
+    Sentry.captureException(new Error('🚨 Test error from _layout.tsx'));
   }
+
 } catch (e) {
   console.error('[app/_layout][SENTRY] Failed to initialize Sentry:', e);
 }

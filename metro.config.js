@@ -1,9 +1,11 @@
-const { getDefaultConfig } = require("expo/metro-config");
 const { withNativeWind } = require("nativewind/metro");
 const exclusionList = require("metro-config/src/defaults/exclusionList");
 const path = require("path");
+const {
+  getSentryExpoConfig
+} = require("@sentry/react-native/metro");
 
-const config = getDefaultConfig(__dirname);
+const config = getSentryExpoConfig(__dirname);
 
 // ✅ Completely block react-native-svg from being loaded on web
 if (process.argv.includes('--web')) {
