@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { Animated, Easing, ActivityIndicator } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import { observer } from 'mobx-react-lite';
 
 import { VStack } from '@/components/ui/vstack';
@@ -31,18 +31,15 @@ type Props = {
 
 const WalletHeaderCardComponent = ({ hide, toggleHide, refreshTrigger }: Props) => {
   const router = useRouter();
-  const fadeAnim = useRef(new Animated.Value(1)).current;
 
   const walletId = sessionStore.user?.wallets?.[0]?.id ?? '';
   const bankCurrency = sessionStore.preferences?.fiatsWithBank?.[0] ?? 'USD';
   const { balances } = useWalletBalances(walletId);
 
-  // ✅ Cache local balance so UI doesn't flash
   const [localBalance, setLocalBalance] = useState<number | null>(
     balanceStore.totalBalance
   );
 
-  // Keep local balance in sync with store
   useEffect(() => {
     if (balanceStore.totalBalance !== null) {
       setLocalBalance(balanceStore.totalBalance);
@@ -57,7 +54,6 @@ const WalletHeaderCardComponent = ({ hide, toggleHide, refreshTrigger }: Props) 
     const fetchTotal = async () => {
       if (!balances.length) return;
 
-      fadeAnim.setValue(0);
       let sum = 0;
 
       await Promise.all(
@@ -79,14 +75,7 @@ const WalletHeaderCardComponent = ({ hide, toggleHide, refreshTrigger }: Props) 
       );
 
       balanceStore.setTotalBalance(sum);
-      setLocalBalance(sum); // Update local value too
-
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-        easing: Easing.out(Easing.ease),
-      }).start();
+      setLocalBalance(sum);
     };
 
     fetchTotal();
@@ -107,11 +96,9 @@ const WalletHeaderCardComponent = ({ hide, toggleHide, refreshTrigger }: Props) 
               style={{ marginTop: 8 }}
             />
           ) : (
-            <Animated.View style={{ opacity: fadeAnim }}>
-              <Text className="text-white text-5xl font-extrabold mt-2">
-                {formattedBalance}
-              </Text>
-            </Animated.View>
+            <Text className="text-white text-5xl font-extrabold mt-2">
+              {formattedBalance}
+            </Text>
           )}
         </VStack>
 

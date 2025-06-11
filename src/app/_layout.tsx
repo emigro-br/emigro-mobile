@@ -38,7 +38,12 @@ let routingInstrumentation: any;
 
 try {
   const sentryDsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
-
+  if (!sentryDsn) {
+    console.warn('[SENTRY] ❌ DSN is missing in production!');
+  } else {
+    console.log('[SENTRY] ✅ DSN is:', sentryDsn);
+  }
+  
   if (Sentry && Sentry.ReactNavigationInstrumentation) {
     routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
   } else {
@@ -86,6 +91,10 @@ function AppLayout() {
   const router = useRouter();
   const hasRedirected = useRef(false);
 
+  useEffect(() => {
+    Sentry.captureException(new Error('🔥 Forced Test Error - Post-init'));
+  }, []);
+  
   useEffect(() => {
     try {
       if (routingInstrumentation && navRef) {

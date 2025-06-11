@@ -100,8 +100,15 @@ const StatusScreen = () => {
   const [transferoTxid, setTransferoTxid] = useState<string | null>(null);
 
   useEffect(() => {
+    let poll: NodeJS.Timeout;
+
     const checkStatus = async () => {
-      if (!id || id === 'error') return;
+		if (!id) return;
+
+		if (id === 'error') {
+		  setStatus('e001'); // Set a known final error status manually
+		  return;
+		}
 
       try {
         const res = await api().get(`/evm/escrow-evm/${id}`, {
@@ -115,21 +122,30 @@ const StatusScreen = () => {
           setTransferoTxid(txid);
         }
 
-        if (escrowStatus && STATUS_MAP[escrowStatus as keyof typeof STATUS_MAP]) {
-          setStatus(escrowStatus);
-        } else {
-          setStatus('pending'); // fallback to pending instead of error for unknown
-        }
+		if (escrowStatus && STATUS_MAP[escrowStatus as keyof typeof STATUS_MAP]) {
+		  setStatus(escrowStatus);
+
+		  const isFinalStatus = ['f001', 'p005', 'e001', 'e002', 'e003', 'e004', 'e005', 'e006'].includes(escrowStatus);
+		  if (isFinalStatus) {
+		    clearInterval(poll);
+		  }
+		} else {
+		  setStatus('pending');
+		}
+
       } catch (err) {
         console.error('[StatusScreen] ❌ Failed to fetch escrow status:', err);
-        setStatus('e001'); // fallback to known error status
+        setStatus('e001');
+        clearInterval(poll);
       }
     };
 
     checkStatus();
-    const poll = setInterval(checkStatus, 4000);
+    poll = setInterval(checkStatus, 4000);
+
     return () => clearInterval(poll);
   }, [id]);
+
 
   const animatePress = () => {
     Animated.sequence([
@@ -144,15 +160,31 @@ const StatusScreen = () => {
 
   const statusConfig = STATUS_MAP[status] || fallbackStatus;
 
-  const isComplete = ['e001', 'e002', 'e003', 'e004', 'e005', 'e006'].includes(status) || id === 'error';
-  const showButton = true;
-  
-  const isManualError = id === 'error';
-  const errorMessage = message || 'Something went wrong with your QR code. Please try another.';
+  // This is the fix: use derived "effectiveStatus" for all logic
+  const effectiveStatus = id === 'error' ? 'e001' : status;
 
-  const finalMessage = isManualError ? errorMessage : statusConfig.message;
-  const finalSecondMessage = isManualError ? 'Oops...' : statusConfig.secondmessage;
-  const finalLottie = isManualError ? require('@/assets/lotties/error.json') : statusConfig.lottie;
+  const isError = ['e001', 'e002', 'e003', 'e004', 'e005', 'e006'].includes(effectiveStatus);
+  const isSuccess = ['f001', 'p005'].includes(effectiveStatus);
+
+
+
+  const isManualError = id === 'error';
+  const finalStatus = isManualError ? 'e001' : status;
+  const statusFromMap = STATUS_MAP[finalStatus] || fallbackStatus;
+
+  const shouldLoop = !['f001', 'p005', 'e001', 'e002', 'e003', 'e004', 'e005', 'e006'].includes(finalStatus);
+  const showButton = !shouldLoop;
+
+  const finalMessage = isManualError
+    ? message || 'Something went wrong with your QR code. Please try another.'
+    : statusFromMap.message;
+
+  const finalSecondMessage = isManualError
+    ? 'Oops...'
+    : statusFromMap.secondmessage;
+
+  const finalLottie = statusFromMap.lottie;
+
 
 
   return (
@@ -164,12 +196,13 @@ const StatusScreen = () => {
 		<Text size="md" className="text-gray-400 text-center text-2xl">
 		{finalMessage}
 		</Text>
-          <LottieView
-            source={finalLottie}
-            autoPlay
-            loop={!isComplete}
-            style={{ width: 180, height: 180 }}
-          />
+		<LottieView
+		  key={finalStatus} // ✅ Forces rerender if needed
+		  source={finalLottie}
+		  autoPlay
+		  loop={shouldLoop}
+		  style={{ width: 180, height: 180 }}
+		/>
 
 
 
@@ -183,7 +216,7 @@ const StatusScreen = () => {
             </Text>
           )}*/}
 
-          {isComplete && showButton && (
+          {showButton && (
             <Pressable onPressIn={animatePress} onPress={handleGoHome}>
               <Animated.View
                 style={{ transform: [{ scale: scaleAnim }] }}
