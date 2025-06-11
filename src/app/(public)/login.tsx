@@ -30,15 +30,7 @@ import {
 } from '@/components/ui/form-control';
 import { AlertCircleIcon } from '@/components/ui/icon';
 
-import * as Google from 'expo-auth-session/providers/google';
-import * as AppleAuthentication from 'expo-apple-authentication';
-import * as WebBrowser from 'expo-web-browser';
-import { useEffect } from 'react';
-import { backendUrl } from '@/services/emigro/api';
-import * as AuthSession from 'expo-auth-session';
-import { Image, View } from 'react-native';
 
-WebBrowser.maybeCompleteAuthSession();
 
 type FormData = {
   email: string;
@@ -59,67 +51,9 @@ const Login = () => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   
   
-
-  // Set your platform-specific Google client IDs
-  const discovery = {
-    authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
-    tokenEndpoint: 'https://oauth2.googleapis.com/token',
-    revocationEndpoint: 'https://oauth2.googleapis.com/revoke',
-  };
   
-  const clientIds = {
-    android: '994789891634-on3kh51cjsdcqndloq6cplqrog63bpah.apps.googleusercontent.com',
-    ios: '994789891634-dtrtj3vq4e3q6odr1me9blgv9e0q7qqs.apps.googleusercontent.com',
-    web: '994789891634-v0rns44ethbtvev4u8q96sdmbec4kclt.apps.googleusercontent.com',
-  };
-
-  // Select clientId per platform
-  const clientId = Platform.select({
-    android: clientIds.android,
-    ios: clientIds.ios,
-    default: clientIds.web,
-  });
-
-  // Dynamically generate correct redirect URI for each platform
-  const redirectUri = AuthSession.makeRedirectUri({
-    scheme: 'emigro',
-    native: 'emigro:/oauthredirect',
-    useProxy: Platform.select({ web: true, default: false }), // true only on web
-  });
-
-  console.log('🔍 Google OAuth redirect URI:', redirectUri);
-
-  const [request, response, promptAsync] = Google.useAuthRequest(
-    {
-      clientId,
-      scopes: ['openid', 'profile', 'email'],
-      redirectUri,
-    },
-    discovery
-  );
-
-  const handleOAuthLogin = async (provider: 'google' | 'apple', token: string) => {
-    try {
-      const res = await fetch(`${backendUrl}/auth/oauth`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ provider, token }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'OAuth login failed');
-
-      await sessionStore.setSession(data.session);
-      await sessionStore.fetchProfile();
-      router.replace('/');
-    } catch (err: any) {
-      setApiError(err.message);
-    }
-  };
-
   
+
   
   
   
@@ -243,65 +177,7 @@ const Login = () => {
 				  </Animated.View>
 				</Pressable>
 				
-				{/* Separator */}
-				<View className="flex-row items-center my-4">
-				  <View className="flex-1 h-px bg-gray-500" />
-				  <Text className="mx-3 text-gray-400 text-sm font-medium">OR LOGIN WITH</Text>
-				  <View className="flex-1 h-px bg-gray-500" />
-				</View>
-				
-				{/* Sign in Google */}
-				<Pressable
-				  onPressIn={animatePress}
-				  onPress={() => promptAsync()}
-				  disabled={!request || isLoggingIn}
-				>
-				  <Animated.View
-				    style={{ transform: [{ scale: scaleAnim }] }}
-				    className={`bg-white rounded-full py-4 items-center justify-center mt-2 ${
-				      (!request || isLoggingIn) ? 'opacity-50' : ''
-				    }`}
-				  >
-				    <View className="flex-row items-center space-x-2">
-					<Image
-					  source={{
-					    uri: 'https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-suite-everything-you-need-know-about-google-newest-0.png',
-					  }}
-					  className="w-6 h-6 mr-3"
-					  resizeMode="contain"
-					/>
-				      <Text className="text-black font-bold text-lg">
-				        {isLoggingIn ? 'Signing in...' : 'Sign in with Google'}
-				      </Text>
-				    </View>
-				  </Animated.View>
-				</Pressable>
 
-
-				{/* {Platform.OS === 'ios' && ( */}
-				  <AppleAuthentication.AppleAuthenticationButton
-				    buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-				    buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-				    cornerRadius={5}
-				    style={{ width: '100%', height: 44, marginTop: 10 }}
-				    onPress={async () => {
-				      try {
-				        const credential = await AppleAuthentication.signInAsync({
-				          requestedScopes: [
-				            AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-				            AppleAuthentication.AppleAuthenticationScope.EMAIL,
-				          ],
-				        });
-
-				        if (credential.identityToken) {
-				          handleOAuthLogin('apple', credential.identityToken);
-				        }
-				      } catch (error) {
-				        console.error(error);
-				      }
-				    }}
-				  />
-				{/* )} */}
 				
                 {/* Forgot password */}
                 <Link onPress={() => router.push('/password-recovery')}>

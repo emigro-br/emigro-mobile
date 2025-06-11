@@ -76,8 +76,18 @@ export class SessionStore {
     await this.updatePreferences({ themePreference: theme });
   }
 
-  setSession(session: AuthSession | null) {
-    this.session = session;
+  setSession(session: Partial<AuthSession> | null) {
+    if (!session) {
+      this.session = null;
+      return;
+    }
+
+    this.session = {
+      accessToken: session.accessToken ?? '',
+      refreshToken: session.refreshToken ?? '',
+      idToken: session.idToken ?? '',
+      tokenExpirationDate: session.tokenExpirationDate ?? new Date(Date.now() + 3600 * 1000), // default: 1 hour
+    };
   }
 
   setUser(user: User | null) {
