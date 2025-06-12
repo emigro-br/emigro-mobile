@@ -22,11 +22,12 @@
     "production": {
       "autoIncrement": true,
       "env": {
-        "NODE_OPTIONS": "--max-old-space-size=4096",
-        "EXPO_PUBLIC_BACKEND_URL": "https://api.emigro.co",
-        "EXPO_PUBLIC_GEOCODE_BASE_URL": "https://nominatim.openstreetmap.org/search",
-        "EXPO_PUBLIC_SENTRY_DSN": "https://3afbbdd8679d1094992fac905ee65bf4@o4509471488344064.ingest.us.sentry.io/4509471491031040",
-"SENTRY_ALLOW_FAILURE": "true"
+    "NODE_OPTIONS": "--max-old-space-size=4096",
+    "EXPO_PUBLIC_BACKEND_URL": "https://api.emigro.co",
+    "EXPO_PUBLIC_GEOCODE_BASE_URL": "https://nominatim.openstreetmap.org/search",
+    "EXPO_PUBLIC_SENTRY_DSN": "https://3afbbdd8679d1094992fac905ee65bf4@o4509471488344064.ingest.us.sentry.io/4509471491031040",
+    "SENTRY_AUTH_TOKEN": "${SENTRY_AUTH_TOKEN}",
+    "SENTRY_ALLOW_FAILURE": "true"
       },
       "ios": {
         "image": "latest",

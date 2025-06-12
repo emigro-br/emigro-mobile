@@ -1,4 +1,4 @@
-// src/app/(auth)/payments/confirm/status.tsx
+// src/app/(auth)/payments/confirm/status
 
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Pressable, Animated } from 'react-native';
