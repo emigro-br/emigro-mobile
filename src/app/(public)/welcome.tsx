@@ -60,13 +60,22 @@ export const Welcome = () => {
     web: '994789891634-v0rns44ethbtvev4u8q96sdmbec4kclt.apps.googleusercontent.com',
   };
 
-  const clientId = Platform.select({
-    android: clientIds.android,
-    ios: clientIds.ios,
-    default: clientIds.web,
-  });
+  const platform = Platform.OS;
 
-  const redirectUri = 'https://api.emigro.co/auth/oauth/callback';
+  const clientId = platform === 'android'
+    ? clientIds.android
+    : platform === 'ios'
+      ? clientIds.ios
+      : clientIds.web;
+
+  // ✅ Dynamically create redirectUri based on platform's clientId
+  const nativeRedirectUri = `com.googleusercontent.apps.${clientId.split('.apps')[0]}:/oauthredirect`;
+
+  const redirectUri = AuthSession.makeRedirectUri({
+    native: nativeRedirectUri,
+    useProxy: false,
+  });
+  
   useEffect(() => {
     const handleDeepLink = ({ url }: { url: string }) => {
       console.log('📡 Deep link received:', url);
@@ -218,7 +227,7 @@ export const Welcome = () => {
 			  className="w-6 h-6 mr-3"
 			  resizeMode="contain"
 			/>
-		      <Text className="text-black font-bold text-lg">
+		      <Text className="text-black font-semibold text-[17px]">
 		        {isLoggingIn ? 'Signing in...' : 'Sign in with Google'}
 		      </Text>
 		    </View>

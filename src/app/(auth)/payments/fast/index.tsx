@@ -130,17 +130,55 @@ const FastQRCodeScreen = () => {
             let quotedAmount;
 
 			try {
-			  const parsedPixDump = JSON.stringify(pixPayload).slice(0, 300); // truncate large payloads
+				const parsedPixDump = JSON.stringify(pixPayload).slice(0, 400); // truncate large payload
 
-			  if (
-			    pixPayload.transactionAmount == null ||
-			    isNaN(pixPayload.transactionAmount) ||
-			    pixPayload.transactionAmount <= 0
-			  ) {
-			    throw new Error(
-			      `Invalid or missing transaction amount in QR code. Received: ${pixPayload.transactionAmount}. Parsed PIX: ${parsedPixDump}`
-			    );
-			  }
+				let transactionAmount = pixPayload.transactionAmount;
+
+				if (
+				  transactionAmount == null ||
+				  isNaN(transactionAmount) ||
+				  transactionAmount <= 0
+				) {
+				  console.warn('[FastQRCode] ⚠️ Falling back to Transfero /payment-preview for dynamic QR');
+
+				  try {
+				    const preview = await api().post('/transfero/payment-preview', {
+				      id: pixPayload.brCode,
+				    });
+
+				    if (
+				      !preview?.data?.amount ||
+				      isNaN(preview.data.amount) ||
+				      preview.data.amount <= 0
+				    ) {
+				      throw new Error(
+				        `Transfero fallback failed or returned invalid amount. Preview: ${JSON.stringify(preview.data)}`
+				      );
+				    }
+
+				    transactionAmount = Number(preview.data.amount);
+				    pixPayload.transactionAmount = transactionAmount;
+				    pixPayload.merchantName = pixPayload.merchantName || preview.data.name;
+				    pixPayload.taxId = pixPayload.taxId || preview.data.taxId;
+
+				    console.log('[FastQRCode] ✅ Fallback succeeded. Amount:', transactionAmount);
+				  } catch (fallbackError) {
+				    throw new Error(
+				      `Fallback to Transfero /payment-preview failed: ${fallbackError?.message}`
+				    );
+				  }
+				}
+
+				if (
+				  transactionAmount == null ||
+				  isNaN(transactionAmount) ||
+				  transactionAmount <= 0
+				) {
+				  throw new Error(
+				    `Invalid or missing transaction amount in QR code (after fallback). Received: ${transactionAmount}. Parsed PIX: ${parsedPixDump}`
+				  );
+				}
+
 
 			  const brlAmount = pixPayload.transactionAmount.toFixed(2);
 
