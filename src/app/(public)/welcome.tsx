@@ -20,6 +20,7 @@ import { backendUrl } from '@/services/emigro/api';
 import * as AuthSession from 'expo-auth-session';
 import { View, Animated, Platform, Pressable } from 'react-native';
 import { useRef, useState } from 'react';
+import googleLogo from '@/assets/images/google-logo.png';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -213,13 +214,14 @@ export const Welcome = () => {
 		  >
 		    <View className="flex-row items-center space-x-2">
 			<Image
-			  source={{
-			    uri: 'https://www.freepnglogos.com/uploads/google-logo-png/google-logo-png-suite-everything-you-need-know-about-google-newest-0.png',
-			  }}
-			  className="w-6 h-6 mr-3"
+			  source={googleLogo}
+			  className="w-5 h-5 mr-3"
 			  resizeMode="contain"
 			/>
-		      <Text className="text-black font-semibold text-[17px]">
+			<Text
+			  className="text-black font-semibold text-[19px]"
+			  style={{ letterSpacing: 0.5 }}
+			>
 		        {isLoggingIn ? 'Signing in...' : 'Sign in with Google'}
 		      </Text>
 		    </View>
