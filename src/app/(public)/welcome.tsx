@@ -29,30 +29,6 @@ export const Welcome = () => {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   
-  useEffect(() => {
-    const handleDeepLink = ({ url }: { url: string }) => {
-      const parsed = Linking.parse(url);
-    const idToken = parsed.queryParams?.id;
-    const accessToken = parsed.queryParams?.access;
-
-    if (idToken && accessToken) {
-      sessionStore.setSession({ idToken, accessToken });
-      sessionStore.fetchProfile();
-      router.replace('/');
-    }
-    };
-
-    const subscription = Linking.addEventListener('url', handleDeepLink);
-
-    // Handle cold start (when app is opened via deep link)
-    Linking.getInitialURL().then((url) => {
-      if (url) handleDeepLink({ url });
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
 
   const clientIds = {
     android: '994789891634-on3kh51cjsdcqndloq6cplqrog63bpah.apps.googleusercontent.com',
@@ -77,24 +53,28 @@ export const Welcome = () => {
   });
   
   useEffect(() => {
-    const handleDeepLink = ({ url }: { url: string }) => {
-      console.log('📡 Deep link received:', url);
-      const parsed = Linking.parse(url);
-      const idToken = parsed.queryParams?.id;
-      const accessToken = parsed.queryParams?.access;
+	const handleDeepLink = async ({ url }: { url: string }) => {
+	  const parsed = Linking.parse(url);
+	  const idToken = parsed.queryParams?.id;
+	  const accessToken = parsed.queryParams?.access;
+	  const isNewUser = parsed.queryParams?.new === 'true';
 
-      if (idToken && accessToken) {
-        sessionStore.setSession({ idToken, accessToken });
+	  if (idToken && accessToken) {
+	    await sessionStore.setSession({ idToken, accessToken });
+	    try {
+	      await sessionStore.fetchProfile();
+	    } catch (e) {
+	      console.warn('Failed to fetch profile after login:', e);
+	    }
 
-        try {
-          sessionStore.fetchProfile();
-        } catch (e) {
-          console.warn('Failed to fetch profile after login:', e);
-        }
+	    if (isNewUser) {
+	      router.replace('/(auth)/onboarding/choose-bank-currency');
+	    } else {
+	      router.replace('/');
+	    }
+	  }
+	};
 
-        router.replace('/');
-      }
-    };
 
     Linking.getInitialURL().then((url) => {
       if (url) handleDeepLink({ url });
@@ -203,14 +183,26 @@ export const Welcome = () => {
 		  onPress={async () => {
 		    try {
 		      const result = await promptAsync();
-		      if (result.type !== 'success') {
-		        console.warn('Google login canceled or failed:', result);
+
+		      if (result.type === 'success' && result.params?.code) {
+		        const code = result.params.code;
+
+		        // Get redirect URL from backend
+		        const res = await fetch(`${backendUrl}/auth/oauth/callback?code=${code}`);
+		        const redirectUrl = await res.text();
+
+		        // Trigger app's deep link handler
+		        Linking.openURL(redirectUrl);
+		      } else {
+		        setApiError('Google login canceled or failed');
 		      }
 		    } catch (e) {
 		      console.error('Error during Google login:', e);
 		      setApiError('Google login failed. Please try again.');
 		    }
 		  }}
+
+
 		  disabled={!request || isLoggingIn}
 		>
 		  <Animated.View
