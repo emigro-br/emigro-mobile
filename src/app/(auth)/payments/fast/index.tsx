@@ -129,51 +129,100 @@ const FastQRCodeScreen = () => {
 
             let quotedAmount;
 
-            try {
-              const brlAmount = pixPayload.transactionAmount.toFixed(2);
-              console.log('[FastQRCode] 🛰 Fetching BRL → USDC quote...', {
-                from: 'BRL',
-                to: 'USDC',
-                amount: brlAmount,
-                type: 'strict_send',
-              });
+			try {
+			  const parsedPixDump = JSON.stringify(pixPayload).slice(0, 300); // truncate large payloads
 
-              const toUsdc = await fetchQuote({
-                from: 'BRL',
-                to: 'USDC',
-                amount: brlAmount,
-                type: 'strict_send',
-              });
+			  if (
+			    pixPayload.transactionAmount == null ||
+			    isNaN(pixPayload.transactionAmount) ||
+			    pixPayload.transactionAmount <= 0
+			  ) {
+			    throw new Error(
+			      `Invalid or missing transaction amount in QR code. Received: ${pixPayload.transactionAmount}. Parsed PIX: ${parsedPixDump}`
+			    );
+			  }
 
-              console.log('[FastQRCode] 📡 Quote response:', toUsdc);
+			  const brlAmount = pixPayload.transactionAmount.toFixed(2);
 
-              const usdcAmount = toUsdc?.destination_amount;
-              console.log('[FastQRCode] 💵 USDC amount:', usdcAmount);
+			  console.log('[FastQRCode] 🛰 Fetching BRL → USDC quote...', {
+			    from: 'BRL',
+			    to: 'USDC',
+			    amount: brlAmount,
+			    type: 'strict_send',
+			  });
 
-              if (isNaN(usdcAmount)) throw new Error('USDC quote returned NaN');
+			  const toUsdc = await fetchQuote({
+			    from: 'BRL',
+			    to: 'USDC',
+			    amount: brlAmount,
+			    type: 'strict_send',
+			  });
 
-              if (assetSymbol === 'USDC') {
-                quotedAmount = usdcAmount;
-              } else {
-                console.log(`[FastQRCode] 🔁 Fetching USD → ${assetSymbol} price`);
-                const tokenPrice = await fetchFiatQuote(assetSymbol, 'USD');
-                if (!tokenPrice) throw new Error('Token price not found');
+			  if (!toUsdc || typeof toUsdc !== 'object') {
+			    const responseDump = JSON.stringify(toUsdc).slice(0, 300);
+			    throw new Error(
+			      `fetchQuote returned null or malformed response: ${responseDump}. Parsed PIX: ${parsedPixDump}`
+			    );
+			  }
 
-                quotedAmount = usdcAmount / tokenPrice;
-                console.log('[FastQRCode] 🔁 Converted token amount:', quotedAmount);
-              }
-            } catch (err) {
-              console.error('[FastQRCode] ❌ Quote fetch failed:', err);
-              Sentry.captureException(err, {
-                tags: { feature: 'quoteConversion' },
-                extra: { pixPayload, assetSymbol },
-              });
-              throw new Error('Quote fetch failed');
-            }
+			  const usdcAmount = Number(toUsdc?.destination_amount);
 
-            if (!quotedAmount || isNaN(quotedAmount)) {
-              throw new Error('Quoted amount is invalid');
-            }
+			  console.log('[FastQRCode] 💵 USDC amount:', usdcAmount);
+
+			  if (!usdcAmount || isNaN(usdcAmount) || usdcAmount <= 0) {
+			    const responseDump = JSON.stringify(toUsdc).slice(0, 300);
+			    throw new Error(
+			      `USDC quote returned invalid amount: ${usdcAmount}. Full response: ${responseDump}. Parsed PIX: ${parsedPixDump}`
+			    );
+			  }
+
+			  if (assetSymbol === 'USDC') {
+			    quotedAmount = usdcAmount;
+			  } else {
+			    console.log(`[FastQRCode] 🔁 Fetching USD → ${assetSymbol} price`);
+
+			    const tokenPrice = await fetchFiatQuote(assetSymbol, 'USD');
+
+			    if (!tokenPrice || isNaN(tokenPrice) || tokenPrice <= 0) {
+			      throw new Error(
+			        `Token price not found or invalid for symbol: ${assetSymbol}. Value: ${tokenPrice}. Parsed PIX: ${parsedPixDump}`
+			      );
+			    }
+
+			    quotedAmount = usdcAmount / tokenPrice;
+
+			    if (!quotedAmount || isNaN(quotedAmount) || quotedAmount <= 0) {
+			      throw new Error(
+			        `Converted token amount is invalid. Result: ${quotedAmount}, USDC: ${usdcAmount}, TokenPrice: ${tokenPrice}. Parsed PIX: ${parsedPixDump}`
+			      );
+			    }
+
+			    console.log('[FastQRCode] 🔁 Converted token amount:', quotedAmount);
+			  }
+
+			} catch (err) {
+			  console.error('[FastQRCode] ❌ Quote fetch failed:', err);
+
+			  Sentry.captureException(err, {
+			    tags: { feature: 'quoteConversion' },
+			    extra: {
+			      pixPayload,
+			      assetSymbol,
+			      transactionAmount: pixPayload?.transactionAmount,
+			    },
+			  });
+
+			  const debugMessage = [
+			    '[QR Quote Error]',
+			    `Message: ${err?.message}`,
+			    `Symbol: ${assetSymbol}`,
+			    `Amount: ${pixPayload?.transactionAmount}`,
+			  ].join(' | ');
+
+			  throw new Error(debugMessage);
+			}
+
+
 
             const rawAmount = Math.floor(quotedAmount * Math.pow(10, decimals)).toString();
 

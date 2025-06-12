@@ -176,11 +176,11 @@ const StatusScreen = () => {
   const showButton = !shouldLoop;
 
   const finalMessage = isManualError
-    ? message || 'Something went wrong with your QR code. Please try another.'
+    ? 'Something went wrong. Please, contact support and inform this error'
     : statusFromMap.message;
 
   const finalSecondMessage = isManualError
-    ? 'Oops...'
+    ? message || 'Something went wrong with your QR code. Please try again or contact support.'
     : statusFromMap.secondmessage;
 
   const finalLottie = statusFromMap.lottie;
