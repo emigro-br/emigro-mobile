@@ -163,7 +163,7 @@ const FastQRCodeScreen = () => {
 				    pixPayload.taxId =
 				      pixPayload.taxId || preview.data.taxId || '55479337000115';
 				    pixPayload.pixKey =
-				      pixPayload.pixKey || preview.data.brCode?.keyId || 'undefined@fallback';
+				      pixPayload.pixKey || preview.data.brCode?.keyId;
 
 				    console.log('[FastQRCode] ✅ Fallback succeeded. Amount:', transactionAmount);
 				  } catch (fallbackError) {

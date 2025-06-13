@@ -172,14 +172,14 @@ export const Welcome = () => {
         
 		
 		{/* Separator */}
-		<View className="flex-row items-center my-4">
+		{/* <View className="flex-row items-center my-4">
 		  <View className="flex-1 h-px bg-white" />
 		  <Text className="mx-3 text-white text-sm font-medium">OR CREATE ACCOUNT / LOGIN WITH</Text>
 		  <View className="flex-1 h-px bg-white" />
-		</View>
+		</View>*/}
 
 		{/* Sign in Google */}
-		<Pressable
+		{/*<Pressable
 		  onPressIn={animatePress}
 		  onPress={async () => {
 		    try {
@@ -254,7 +254,7 @@ export const Welcome = () => {
 		      }}
 		    />
 		  </View>
-		)}
+		)}*/}
 
 		</ButtonGroup>
       </Box>

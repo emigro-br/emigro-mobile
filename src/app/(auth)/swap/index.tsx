@@ -130,6 +130,7 @@ const Swap = () => {
 
       setBuyValue(humanReadable.toFixed(6));
       setRate(parsedValue / humanReadable);
+	  setErrorMessage(null);
 
       console.log('[swap index][fetchQuote] ✅ Result:', quote);
     } catch (err) {
@@ -144,6 +145,7 @@ const Swap = () => {
 
       setBuyValue('');
       setRate(null);
+	  setErrorMessage('Currently, there is no swap available for this pair.');
     } finally {
       setFetchingRate(false);
     }
@@ -180,6 +182,7 @@ const Swap = () => {
     setSellValue('');
     setBuyValue('');
     setRate(null);
+	setErrorMessage(null);
 
     setTimeout(() => inputRef.current?.focus(), 50);
   };
@@ -374,9 +377,11 @@ const Swap = () => {
       (buyAsset?.assetId || buyAsset?.id) &&
       sellAsset.assetId !== (buyAsset?.assetId ?? buyAsset?.id)
     ) {
+      setErrorMessage(null); // ✅ Clear error before new quote attempt
       fetchQuote();
     }
   }, [sellValue, sellAsset, buyAsset]);
+
 
   
   return (
@@ -417,14 +422,14 @@ const Swap = () => {
 		    </ScrollView>
 
 		    {/* Fixed gear icon */}
-		    <View style={{ width: 32, alignItems: 'flex-end' }}>
+		    {/*<View style={{ width: 32, alignItems: 'flex-end' }}>
 		      <Pressable onPress={() => console.log('Open settings')}>
 		        <Image
 		          source={require('@/assets/images/icons/gear.png')}
 		          style={{ width: 20, height: 20, tintColor: 'white' }}
 		        />
 		      </Pressable>
-		    </View>
+		    </View>*/}
 		  </HStack>
 		  
             <VStack>
@@ -537,6 +542,10 @@ const Swap = () => {
                 </Text>
               )}
 
+			  {errorMessage && (
+			    <Text className="text-red-500 text-center mt-2">{errorMessage}</Text>
+			  )}
+			  
               {/* Review Button */}
 			  <Button
 			    disabled={isSwapDisabled}
@@ -549,9 +558,7 @@ const Swap = () => {
 			    </ButtonText>
 			  </Button>
 
-			  {errorMessage && (
-			    <Text className="text-red-500 text-center mt-2">{errorMessage}</Text>
-			  )}
+
             </VStack>
           </Box>
         </ScrollView>
@@ -565,11 +572,16 @@ const Swap = () => {
 	    onSelect={(asset) => {
 	      const clean = sanitizeAsset(asset);
 	      console.log('[swap][index] ✅ Sanitized asset selected:', clean);
-	      if (selectingSellAsset) {
-	        setSellAsset(clean);
-	      } else {
-	        setBuyAsset(clean);
-	      }
+		  setSellValue('');
+		  setBuyValue('');
+		  setRate(null);
+		  setErrorMessage(null);
+
+		  if (selectingSellAsset) {
+		    setSellAsset(clean);
+		  } else {
+		    setBuyAsset(clean);
+		  }
 	    }}
 	  />
     </>
