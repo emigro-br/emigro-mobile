@@ -29,106 +29,51 @@ export const Welcome = () => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
-  
 
-  const clientIds = {
-    android: '994789891634-on3kh51cjsdcqndloq6cplqrog63bpah.apps.googleusercontent.com',
-    ios: '994789891634-dtrtj3vq4e3q6odr1me9blgv9e0q7qqs.apps.googleusercontent.com',
-    web: '994789891634-v0rns44ethbtvev4u8q96sdmbec4kclt.apps.googleusercontent.com',
-  };
-
-  const platform = Platform.OS;
-
-  const clientId = platform === 'android'
-    ? clientIds.android
-    : platform === 'ios'
-      ? clientIds.ios
-      : clientIds.web;
-
-  // ✅ Dynamically create redirectUri based on platform's clientId
-  const nativeRedirectUri = `com.googleusercontent.apps.${clientId.split('.apps')[0]}:/oauthredirect`;
-
+  const clientId = '3sbvb7isvqul6dlfbhakrqgei8';
+  const nativeRedirectUri = 'com.googleusercontent.apps.994789891634-on3kh51cjsdcqndloq6cplqrog63bpah:/oauthredirect';
   const redirectUri = AuthSession.makeRedirectUri({
     native: nativeRedirectUri,
     useProxy: false,
   });
-  
-  useEffect(() => {
-	const handleDeepLink = async ({ url }: { url: string }) => {
-	  const parsed = Linking.parse(url);
-	  const idToken = parsed.queryParams?.id;
-	  const accessToken = parsed.queryParams?.access;
-	  const isNewUser = parsed.queryParams?.new === 'true';
 
-	  if (idToken && accessToken) {
-	    await sessionStore.setSession({ idToken, accessToken });
-	    try {
-	      await sessionStore.fetchProfile();
-	    } catch (e) {
-	      console.warn('Failed to fetch profile after login:', e);
-	    }
-
-	    if (isNewUser) {
-	      router.replace('/(auth)/onboarding/choose-bank-currency');
-	    } else {
-	      router.replace('/');
-	    }
-	  }
-	};
-
-
-    Linking.getInitialURL().then((url) => {
-      if (url) handleDeepLink({ url });
-    });
-
-    const sub = Linking.addEventListener('url', handleDeepLink);
-    return () => sub.remove(); // Clean up listener on unmount
-  }, []);
-
-
-  const discovery = {
-    authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
-    tokenEndpoint: 'https://oauth2.googleapis.com/token',
-    revocationEndpoint: 'https://oauth2.googleapis.com/revoke',
-  };
-
-  const [request, response, promptAsync] = Google.useAuthRequest(
-    {
-      clientId,
-      scopes: ['openid', 'profile', 'email'],
-      redirectUri,
-      responseType: 'code',
-      state: Math.random().toString(36).substring(2),
-    },
-    discovery
-  );
-
-
-  const handleOAuthLogin = async (provider: 'google' | 'apple', token: string) => {
+  const loginWithGoogle = async () => {
+    setIsLoggingIn(true);
     try {
-      const res = await fetch(`${backendUrl}/auth/oauth`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ provider, token }),
-      });
+      const authUrl = `https://us-east-15omuq0klj.auth.us-east-1.amazoncognito.com/oauth2/authorize` +
+        `?client_id=${clientId}` +
+        `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+        `&response_type=code` +
+        `&scope=email%20openid` +
+        `&identity_provider=Google`;
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'OAuth login failed');
+      const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
 
-	  await sessionStore.setSession(data.session);
-	  try {
-	    await sessionStore.fetchProfile();
-	  } catch (e) {
-	    console.warn('Failed to fetch profile after OAuth login:', e);
-	  }
-	  router.replace('/');
-    } catch (err: any) {
-      setApiError(err.message);
+      if (result.type === 'success' && result.url) {
+        const parsed = Linking.parse(result.url);
+        const code = parsed.queryParams?.code;
+
+        if (code) {
+          const response = await fetch(`${backendUrl}/auth/oauth/callback?code=${code}`, {
+            method: 'GET',
+          });
+
+          const redirectUrl = await response.text();
+          Linking.openURL(redirectUrl);
+        } else {
+          setApiError('Authorization code not found.');
+        }
+      } else {
+        setApiError('Login canceled or failed.');
+      }
+    } catch (e) {
+      console.error('OAuth login error', e);
+      setApiError('Something went wrong during login.');
+    } finally {
+      setIsLoggingIn(false);
     }
   };
-  
+
   const animatePress = () => {
     Animated.sequence([
       Animated.timing(scaleAnim, { toValue: 0.96, duration: 100, useNativeDriver: true }),
@@ -144,13 +89,9 @@ export const Welcome = () => {
           <Text size="2xl" bold className="text-white mb-2 text-center">
             Borderless finance for nomads
           </Text>
-          <Text size="lg" className="text-white text-center">
-            
-          </Text>
         </Center>
 
         <ButtonGroup space="md" flexDirection="column">
-          {/* Login Button */}
           <Button
             onPress={() => router.push('/login')}
             variant="solid"
@@ -160,76 +101,40 @@ export const Welcome = () => {
             <ButtonText className="text-white">Login</ButtonText>
           </Button>
 
-          {/* Create Account Button */}
           <Button
             onPress={() => router.push('/signup')}
             variant="outline"
             size="xl"
-            className="rounded-full border-white  py-4 h-14"
+            className="rounded-full border-white py-4 h-14"
           >
             <ButtonText className="text-white">Create Account</ButtonText>
           </Button>
-        
-		
-		{/* Separator */}
-		{/* <View className="flex-row items-center my-4">
-		  <View className="flex-1 h-px bg-white" />
-		  <Text className="mx-3 text-white text-sm font-medium">OR CREATE ACCOUNT / LOGIN WITH</Text>
-		  <View className="flex-1 h-px bg-white" />
-		</View>*/}
 
-		{/* Sign in Google */}
-		{/*<Pressable
-		  onPressIn={animatePress}
-		  onPress={async () => {
-		    try {
-		      const result = await promptAsync();
+          <View className="flex-row items-center my-4">
+            <View className="flex-1 h-px bg-white" />
+            <Text className="mx-3 text-white text-sm font-medium">OR LOGIN WITH</Text>
+            <View className="flex-1 h-px bg-white" />
+          </View>
 
-		      if (result.type === 'success' && result.params?.code) {
-		        const code = result.params.code;
+          <Pressable
+            onPressIn={animatePress}
+            onPress={loginWithGoogle}
+            disabled={isLoggingIn}
+          >
+            <Animated.View
+              style={{ transform: [{ scale: scaleAnim }] }}
+              className={`bg-white rounded-full py-4 items-center justify-center mt-2 ${isLoggingIn ? 'opacity-50' : ''}`}
+            >
+              <View className="flex-row items-center space-x-2">
+                <Image source={googleLogo} className="w-5 h-5 mr-3" resizeMode="contain" />
+                <Text className="text-black font-semibold text-[19px]" style={{ letterSpacing: 0.5 }}>
+                  {isLoggingIn ? 'Signing in...' : 'Sign in with Google'}
+                </Text>
+              </View>
+            </Animated.View>
+          </Pressable>
 
-		        // Get redirect URL from backend
-		        const res = await fetch(`${backendUrl}/auth/oauth/callback?code=${code}`);
-		        const redirectUrl = await res.text();
-
-		        // Trigger app's deep link handler
-		        Linking.openURL(redirectUrl);
-		      } else {
-		        setApiError('Google login canceled or failed');
-		      }
-		    } catch (e) {
-		      console.error('Error during Google login:', e);
-		      setApiError('Google login failed. Please try again.');
-		    }
-		  }}
-
-
-		  disabled={!request || isLoggingIn}
-		>
-		  <Animated.View
-		    style={{ transform: [{ scale: scaleAnim }] }}
-		    className={`bg-white rounded-full py-4 items-center justify-center mt-2 ${
-		      (!request || isLoggingIn) ? 'opacity-50' : ''
-		    }`}
-		  >
-		    <View className="flex-row items-center space-x-2">
-			<Image
-			  source={googleLogo}
-			  className="w-5 h-5 mr-3"
-			  resizeMode="contain"
-			/>
-			<Text
-			  className="text-black font-semibold text-[19px]"
-			  style={{ letterSpacing: 0.5 }}
-			>
-		        {isLoggingIn ? 'Signing in...' : 'Sign in with Google'}
-		      </Text>
-		    </View>
-		  </Animated.View>
-		</Pressable>
-
-
-		{Platform.OS === 'ios' && (
+		{/*{Platform.OS === 'ios' && (
 		  <View style={{ marginTop: 10, borderRadius: 999, overflow: 'hidden' }}>
 		    <AppleAuthentication.AppleAuthenticationButton
 		      buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
@@ -256,9 +161,8 @@ export const Welcome = () => {
 		  </View>
 		)}*/}
 
-		</ButtonGroup>
+        </ButtonGroup>
       </Box>
-	  
     </ImageBackground>
   );
 };
