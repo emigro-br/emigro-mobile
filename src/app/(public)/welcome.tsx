@@ -40,7 +40,7 @@ export const Welcome = () => {
   const loginWithGoogle = async () => {
     setIsLoggingIn(true);
     try {
-      const authUrl = `https://us-east-15omuq0klj.auth.us-east-1.amazoncognito.com/oauth2/authorize` +
+      const authUrl = `https://auth.emigro.co/oauth2/authorize` +
         `?client_id=${clientId}` +
         `&redirect_uri=${encodeURIComponent(redirectUri)}` +
         `&response_type=code` +
@@ -51,31 +51,34 @@ export const Welcome = () => {
 
       const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
 
-      if (result.type === 'success' && result.url) {
-        const parsed = Linking.parse(result.url);
-        const code = parsed.queryParams?.code;
+	  if (result.type === 'success' && result.url) {
+	    const parsed = Linking.parse(result.url);
+	    const query = parsed.queryParams;
 
-        if (code) {
-			const response = await fetch(`${backendUrl}/auth/oauth/callback?code=${code}`, {
-			  method: 'GET',
-			});
-			const data = await response.json();
+	    const idToken = query?.id;
+	    const accessToken = query?.access;
+	    const isNewUser = query?.new === 'true';
 
-			await sessionStore.setSession(data.session);  // 🔁 Store the session
-			await sessionStore.setUser(data.user);        // Optionally, store user
-			await sessionStore.fetchProfile();            // Ensures latest info
+	    if (idToken && accessToken) {
+	      // If needed: POST to backend with access token or store locally
+	      await sessionStore.setSession({
+	        idToken,
+	        accessToken,
+	        // you may want to fetch refreshToken later
+	      });
 
-			if (data.isNewUser) {
-			  router.replace('/onboarding');
-			} else {
-			  router.replace('/');
-			}
-        } else {
-          setApiError('Authorization code not found.');
-        }
-      } else {
-        setApiError('Login canceled or failed.');
-      }
+	      await sessionStore.fetchProfile();
+
+	      if (isNewUser) {
+	        router.replace('/onboarding');
+	      } else {
+	        router.replace('/');
+	      }
+	    } else {
+	      setApiError('Missing token info from redirect.');
+	    }
+	  }
+
     } catch (e) {
       console.error('OAuth login error', e);
       setApiError('Something went wrong during login.');
