@@ -17,8 +17,16 @@ const OAuthRedirect = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let handled = false;
+
     const handleUrl = ({ url }: { url: string }) => {
       console.log('[OAuthRedirect] Handling URL:', url);
+
+      if (!url) {
+        setError('Deep link handler received empty URL.');
+        setLoading(false);
+        return;
+      }
 
       const parsed = Linking.parse(url);
       console.log('[OAuthRedirect] Parsed URL:', parsed);
@@ -28,36 +36,64 @@ const OAuthRedirect = () => {
       const accessToken = query.access as string;
       const isNewUser = query.new === 'true';
 
-      console.log('[OAuthRedirect] Tokens:', { idToken, accessToken, isNewUser });
+      if (!query) {
+        console.warn('[OAuthRedirect] Missing query parameters.');
+        setError('Authentication failed. No query parameters found in redirect URL.');
+      } else if (!idToken && !accessToken) {
+        console.warn('[OAuthRedirect] Missing both id and access tokens.');
+        setError('Authentication failed. Both tokens are missing from the URL.');
+      } else if (!idToken) {
+        console.warn('[OAuthRedirect] Missing id token.');
+        setError('Authentication failed. ID token is missing.');
+      } else if (!accessToken) {
+        console.warn('[OAuthRedirect] Missing access token.');
+        setError('Authentication failed. Access token is missing.');
+      } else {
+        console.log('[OAuthRedirect] Tokens:', { idToken, accessToken, isNewUser });
+        handled = true;
 
-      if (idToken && accessToken) {
         sessionStore.setSession({ idToken, accessToken });
         sessionStore.fetchProfile();
 
         router.replace(
           isNewUser ? '/(auth)/onboarding/choose-bank-currency' : '/'
         );
-      } else {
-        console.warn('[OAuthRedirect] Missing tokens in query params');
-        setError('Authentication failed. Missing login tokens.');
       }
 
       setLoading(false);
     };
 
-    Linking.getInitialURL().then((url) => {
+    const subscription = Linking.addEventListener('url', handleUrl);
+
+    (async () => {
+      const url = await Linking.getInitialURL();
       if (url) {
         handleUrl({ url });
       } else {
-        console.warn('[OAuthRedirect] No initial URL');
-        setError('Login failed. No redirect URL detected.');
+        console.warn('[OAuthRedirect] No initial URL from getInitialURL()');
+      }
+    })();
+
+    const timeout = setTimeout(() => {
+      if (!handled) {
+        if (sessionStore.session?.idToken && sessionStore.session?.accessToken) {
+          console.warn('[OAuthRedirect] No URL received, but session is already set. Redirecting to home.');
+          router.replace('/');
+        } else {
+          console.warn('[OAuthRedirect] Timeout: No deep link and no session.');
+          setError('Login failed. No redirect received within expected time.');
+        }
         setLoading(false);
       }
-    });
+    }, 1500);
 
-    const subscription = Linking.addEventListener('url', handleUrl);
-    return () => subscription.remove();
+    return () => {
+      subscription.remove();
+      clearTimeout(timeout);
+    };
   }, []);
+
+
 
   const animatePress = () => {
     Animated.sequence([
