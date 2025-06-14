@@ -67,6 +67,9 @@
       "supportsTablet": true,
       "bundleIdentifier": "co.emigro.app",
       "bitcode": false,
+  "associatedDomains": [
+    "applinks:auth.emigro.co"
+  ],
       "config": {
         "usesNonExemptEncryption": false
       },

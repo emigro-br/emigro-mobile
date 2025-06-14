@@ -74,25 +74,15 @@ export const Welcome = () => {
 		    return;
 		  }
 
-          if (redirect.startsWith('emigro://')) {
-            const parsedRedirect = Linking.parse(redirect);
-            const idToken = parsedRedirect.queryParams?.id;
-            const accessToken = parsedRedirect.queryParams?.access;
-            const isNewUser = parsedRedirect.queryParams?.new === 'true';
+		  if (redirect.startsWith('emigro://')) {
+		    try {
+		      await Linking.openURL(redirect);
+		    } catch (e) {
+		      console.error('[Login] Failed to open redirect', e);
+		      setApiError('Login failed. Please try again.');
+		    }
+		  }
 
-            if (idToken && accessToken) {
-              await sessionStore.setSession({ idToken, accessToken });
-              await sessionStore.fetchProfile();
-
-              router.replace(
-                isNewUser ? '/(auth)/onboarding/choose-bank-currency' : '/'
-              );
-            } else {
-              setApiError('Missing tokens in backend redirect');
-            }
-          } else {
-            setApiError('Invalid backend redirect response');
-          }
         } else {
           setApiError('Authorization code not found.');
         }

@@ -30,7 +30,14 @@
       },
       "ios": {
         "image": "latest",
-        "resourceClass": "m-medium"
+        "resourceClass": "m-medium",
+        "entitlements": {
+          "com.apple.developer.associated-domains": [
+            "applinks:oauth.emigro.co",
+            "applinks:auth.emigro.co",
+            "applinks:app.emigro.co"
+          ]
+        }
       },
       "channel": "production"
     },
