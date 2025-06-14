@@ -68,7 +68,7 @@
       "bundleIdentifier": "co.emigro.app",
       "bitcode": false,
   "associatedDomains": [
-    "applinks:auth.emigro.co"
+    "applinks:oauth.emigro.co"
   ],
       "config": {
         "usesNonExemptEncryption": false
