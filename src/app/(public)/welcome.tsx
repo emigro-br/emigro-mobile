@@ -38,6 +38,7 @@ export const Welcome = () => {
   });
 
   const loginWithGoogle = async () => {
+	setApiError(null);
     setIsLoggingIn(true);
     try {
       const authUrl =
@@ -58,7 +59,20 @@ export const Welcome = () => {
         if (code) {
           const callbackUrl = `${backendUrl}/auth/oauth/callback?code=${encodeURIComponent(code)}`;
           const response = await fetch(callbackUrl);
-          const redirect = await response.text(); // ex: emigro://oauthredirect?id=...&access=...&new=true
+		  
+		  // Check if the response failed (e.g. 500, 400)
+		  if (!response.ok) {
+		    const message = await response.text(); // optionally show backend error message
+		    setApiError(`Backend error: ${message}`);
+		    return;
+		  }
+		  
+          const redirect = await response.text();
+		  // Check if the redirect is actually a valid URL
+		  if (!redirect.startsWith('emigro://')) {
+		    setApiError('Invalid backend redirect response');
+		    return;
+		  }
 
           if (redirect.startsWith('emigro://')) {
             const parsedRedirect = Linking.parse(redirect);
@@ -87,7 +101,7 @@ export const Welcome = () => {
       }
     } catch (e) {
       console.error('OAuth login error', e);
-      setApiError('Something went wrong during login.');
+      setApiError(e instanceof Error ? e.message : 'Something went wrong during login.');
     } finally {
       setIsLoggingIn(false);
     }
@@ -181,7 +195,11 @@ export const Welcome = () => {
 		    />
 		  </View>
 		)}*/}
-
+		{apiError && (
+		  <Text className="text-red-500 text-center mt-4" size="sm">
+		    {apiError}
+		  </Text>
+		)}
         </ButtonGroup>
       </Box>
     </ImageBackground>
