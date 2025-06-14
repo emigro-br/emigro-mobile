@@ -40,45 +40,51 @@ export const Welcome = () => {
   const loginWithGoogle = async () => {
     setIsLoggingIn(true);
     try {
-      const authUrl = `https://auth.emigro.co/oauth2/authorize` +
+      const authUrl =
+        `https://auth.emigro.co/oauth2/authorize` +
         `?client_id=${clientId}` +
         `&redirect_uri=${encodeURIComponent(redirectUri)}` +
         `&response_type=code` +
         `&scope=email%20openid` +
         `&identity_provider=Google` +
-		`&prompt=select_account`
-		;
+        `&prompt=select_account`;
 
       const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
 
-	  if (result.type === 'success' && result.url) {
-	    const parsed = Linking.parse(result.url);
-	    const query = parsed.queryParams;
+      if (result.type === 'success' && result.url) {
+        const parsed = Linking.parse(result.url);
+        const code = parsed.queryParams?.code;
 
-	    const idToken = query?.id;
-	    const accessToken = query?.access;
-	    const isNewUser = query?.new === 'true';
+        if (code) {
+          const callbackUrl = `${backendUrl}/auth/oauth/callback?code=${encodeURIComponent(code)}`;
+          const response = await fetch(callbackUrl);
+          const redirect = await response.text(); // ex: emigro://oauthredirect?id=...&access=...&new=true
 
-	    if (idToken && accessToken) {
-	      // If needed: POST to backend with access token or store locally
-	      await sessionStore.setSession({
-	        idToken,
-	        accessToken,
-	        // you may want to fetch refreshToken later
-	      });
+          if (redirect.startsWith('emigro://')) {
+            const parsedRedirect = Linking.parse(redirect);
+            const idToken = parsedRedirect.queryParams?.id;
+            const accessToken = parsedRedirect.queryParams?.access;
+            const isNewUser = parsedRedirect.queryParams?.new === 'true';
 
-	      await sessionStore.fetchProfile();
+            if (idToken && accessToken) {
+              await sessionStore.setSession({ idToken, accessToken });
+              await sessionStore.fetchProfile();
 
-	      if (isNewUser) {
-	        router.replace('/onboarding');
-	      } else {
-	        router.replace('/');
-	      }
-	    } else {
-	      setApiError('Missing token info from redirect.');
-	    }
-	  }
-
+              router.replace(
+                isNewUser ? '/(auth)/onboarding/choose-bank-currency' : '/'
+              );
+            } else {
+              setApiError('Missing tokens in backend redirect');
+            }
+          } else {
+            setApiError('Invalid backend redirect response');
+          }
+        } else {
+          setApiError('Authorization code not found.');
+        }
+      } else {
+        setApiError('Login canceled or failed.');
+      }
     } catch (e) {
       console.error('OAuth login error', e);
       setApiError('Something went wrong during login.');
@@ -86,6 +92,8 @@ export const Welcome = () => {
       setIsLoggingIn(false);
     }
   };
+
+
 
   const animatePress = () => {
     Animated.sequence([
