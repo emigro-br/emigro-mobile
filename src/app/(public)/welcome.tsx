@@ -56,12 +56,20 @@ export const Welcome = () => {
         const code = parsed.queryParams?.code;
 
         if (code) {
-          const response = await fetch(`${backendUrl}/auth/oauth/callback?code=${code}`, {
-            method: 'GET',
-          });
+			const response = await fetch(`${backendUrl}/auth/oauth/callback?code=${code}`, {
+			  method: 'GET',
+			});
+			const data = await response.json();
 
-          const redirectUrl = await response.text();
-          Linking.openURL(redirectUrl);
+			await sessionStore.setSession(data.session);  // 🔁 Store the session
+			await sessionStore.setUser(data.user);        // Optionally, store user
+			await sessionStore.fetchProfile();            // Ensures latest info
+
+			if (data.isNewUser) {
+			  router.replace('/onboarding');
+			} else {
+			  router.replace('/');
+			}
         } else {
           setApiError('Authorization code not found.');
         }
