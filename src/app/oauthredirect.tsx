@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'expo-router';
+import { Animated, Pressable } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as Linking from 'expo-linking';
 import LottieView from 'lottie-react-native';
-import { Animated, Pressable } from 'react-native';
 
 import { Box } from '@/components/ui/box';
 import { VStack } from '@/components/ui/vstack';
@@ -12,75 +12,121 @@ import { sessionStore } from '@/stores/SessionStore';
 const OAuthRedirect = () => {
   const router = useRouter();
   const scaleAnim = useRef(new Animated.Value(1)).current;
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const { id, access, new: isNew } = useLocalSearchParams();
 
   useEffect(() => {
     let handled = false;
 
-    const handleUrl = ({ url }: { url: string }) => {
-      console.log('[OAuthRedirect] Handling URL:', url);
+    const handleTokens = ({
+      idToken,
+      accessToken,
+      isNewUser,
+      source,
+    }: {
+      idToken?: string;
+      accessToken?: string;
+      isNewUser?: boolean;
+      source: string;
+    }) => {
+      if (!idToken && !accessToken) {
+        console.warn(`[OAuthRedirect] [${source}] Missing both tokens`);
+        setError('Authentication failed. Both tokens are missing.');
+        return;
+      }
 
+      if (!idToken) {
+        console.warn(`[OAuthRedirect] [${source}] Missing id token`);
+        setError('Authentication failed. ID token is missing.');
+        return;
+      }
+
+      if (!accessToken) {
+        console.warn(`[OAuthRedirect] [${source}] Missing access token`);
+        setError('Authentication failed. Access token is missing.');
+        return;
+      }
+
+      console.log(`[OAuthRedirect] [${source}] Tokens received`, {
+        idToken,
+        accessToken,
+        isNewUser,
+      });
+
+      handled = true;
+
+      sessionStore.setSession({ idToken, accessToken });
+      sessionStore.fetchProfile();
+
+      router.replace(
+        isNewUser ? '/(auth)/onboarding/choose-bank-currency' : '/'
+      );
+    };
+
+    const tryLocalParams = () => {
+      if (id || access) {
+        console.log('[OAuthRedirect] Found tokens in local router params');
+        handleTokens({
+          idToken: id as string,
+          accessToken: access as string,
+          isNewUser: isNew === 'true',
+          source: 'routerParams',
+        });
+        return true;
+      }
+      return false;
+    };
+
+    const handleUrl = ({ url }: { url: string }) => {
+      console.log('[OAuthRedirect] Handling deep link URL:', url);
       if (!url) {
-        setError('Deep link handler received empty URL.');
-        setLoading(false);
+        console.warn('[OAuthRedirect] URL was empty');
+        setError('Deep link handler received an empty URL.');
         return;
       }
 
       const parsed = Linking.parse(url);
-      console.log('[OAuthRedirect] Parsed URL:', parsed);
-
       const query = parsed.queryParams || {};
-      const idToken = query.id as string;
-      const accessToken = query.access as string;
-      const isNewUser = query.new === 'true';
 
-      if (!query) {
-        console.warn('[OAuthRedirect] Missing query parameters.');
-        setError('Authentication failed. No query parameters found in redirect URL.');
-      } else if (!idToken && !accessToken) {
-        console.warn('[OAuthRedirect] Missing both id and access tokens.');
-        setError('Authentication failed. Both tokens are missing from the URL.');
-      } else if (!idToken) {
-        console.warn('[OAuthRedirect] Missing id token.');
-        setError('Authentication failed. ID token is missing.');
-      } else if (!accessToken) {
-        console.warn('[OAuthRedirect] Missing access token.');
-        setError('Authentication failed. Access token is missing.');
-      } else {
-        console.log('[OAuthRedirect] Tokens:', { idToken, accessToken, isNewUser });
-        handled = true;
+      handleTokens({
+        idToken: query.id as string,
+        accessToken: query.access as string,
+        isNewUser: query.new === 'true',
+        source: 'deepLink',
+      });
+    };
 
-        sessionStore.setSession({ idToken, accessToken });
-        sessionStore.fetchProfile();
+    const init = async () => {
+      if (tryLocalParams()) return;
 
-        router.replace(
-          isNewUser ? '/(auth)/onboarding/choose-bank-currency' : '/'
-        );
+      console.log('[OAuthRedirect] No router params found, falling back to getInitialURL()');
+
+      try {
+        const url = await Linking.getInitialURL();
+        if (url) {
+          handleUrl({ url });
+        } else {
+          console.warn('[OAuthRedirect] getInitialURL() returned null');
+        }
+      } catch (err) {
+        console.error('[OAuthRedirect] Failed to get initial URL:', err);
+        setError('Unexpected error while checking redirect URL.');
       }
-
-      setLoading(false);
     };
 
     const subscription = Linking.addEventListener('url', handleUrl);
 
-    (async () => {
-      const url = await Linking.getInitialURL();
-      if (url) {
-        handleUrl({ url });
-      } else {
-        console.warn('[OAuthRedirect] No initial URL from getInitialURL()');
-      }
-    })();
+    init();
 
     const timeout = setTimeout(() => {
       if (!handled) {
         if (sessionStore.session?.idToken && sessionStore.session?.accessToken) {
-          console.warn('[OAuthRedirect] No URL received, but session is already set. Redirecting to home.');
+          console.warn('[OAuthRedirect] Timeout reached, but session exists. Redirecting.');
           router.replace('/');
         } else {
-          console.warn('[OAuthRedirect] Timeout: No deep link and no session.');
+          console.error('[OAuthRedirect] Timeout: No valid redirect and no session');
           setError('Login failed. No redirect received within expected time.');
         }
         setLoading(false);
@@ -93,20 +139,10 @@ const OAuthRedirect = () => {
     };
   }, []);
 
-
-
   const animatePress = () => {
     Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 0.96,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 100,
-        useNativeDriver: true,
-      }),
+      Animated.timing(scaleAnim, { toValue: 0.96, duration: 100, useNativeDriver: true }),
+      Animated.timing(scaleAnim, { toValue: 1, duration: 100, useNativeDriver: true }),
     ]).start();
   };
 

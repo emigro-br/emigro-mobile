@@ -76,11 +76,35 @@ export const Welcome = () => {
 
 		  if (redirect.startsWith('emigro://')) {
 		    try {
-		      await Linking.openURL(redirect);
-		    } catch (e) {
-		      console.error('[Login] Failed to open redirect', e);
-		      setApiError('Login failed. Please try again.');
+		      const parsed = Linking.parse(redirect);
+		      const query = parsed.queryParams;
+
+		      const id = query?.id;
+		      const access = query?.access;
+		      const isNew = query?.new;
+
+		      if (!id || !access) {
+		        setApiError('Missing tokens in redirect URL.');
+		        console.warn('[Login] Redirect missing required tokens:', query);
+		        return;
+		      }
+
+		      // Navigate to oauthredirect screen with tokens
+		      router.replace({
+		        pathname: '/oauthredirect',
+		        params: {
+		          id,
+		          access,
+		          new: isNew,
+		        },
+		      });
+		    } catch (err) {
+		      console.error('[Login] Failed to parse redirect URL:', err);
+		      setApiError('Invalid redirect URL received from backend.');
 		    }
+		  } else {
+		    setApiError('Invalid backend redirect response');
+		    console.warn('[Login] Redirect URL does not start with emigro://');
 		  }
 
         } else {
