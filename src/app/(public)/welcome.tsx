@@ -41,16 +41,20 @@ export const Welcome = () => {
 	setApiError(null);
     setIsLoggingIn(true);
     try {
-      const authUrl =
-        `https://auth.emigro.co/oauth2/authorize` +
-        `?client_id=${clientId}` +
-        `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-        `&response_type=code` +
-        `&scope=email%20openid%20profile` +
-        `&identity_provider=Google` +
-        `&prompt=select_account`;
+		const authUrl =
+		  `https://auth.emigro.co/oauth2/authorize` +
+		  `?client_id=${clientId}` +
+		  `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+		  `&response_type=code` +
+		  `&scope=openid%20email%20profile` +
+		  `&identity_provider=Google` +
+		  `&prompt=consent` +
+		  `&access_type=offline`;
 
-      const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
+		  const result = await WebBrowser.openAuthSessionAsync(
+		    authUrl,
+		    redirectUri
+		  );
 
       if (result.type === 'success' && result.url) {
         const parsed = Linking.parse(result.url);
