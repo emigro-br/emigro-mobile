@@ -85,7 +85,7 @@ export const Welcome = () => {
 
 		      const id = query?.id;
 		      const access = query?.access;
-		      const isNew = query?.new;
+		      const isNewUser = query?.isNewUser;
 
 		      if (!id || !access) {
 		        setApiError('Missing tokens in redirect URL.');
@@ -99,7 +99,7 @@ export const Welcome = () => {
 		        params: {
 		          id,
 		          access,
-		          new: isNew,
+		          isNewUser,
 		        },
 		      });
 		    } catch (err) {

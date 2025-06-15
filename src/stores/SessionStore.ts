@@ -20,6 +20,7 @@ export class SessionStore {
   };
 
   evmWallet: { publicAddress: string } | null = null;
+  @observable cachedRewardPoints: number | null = null;
 
   isUserInitialized = false;
 
@@ -109,7 +110,11 @@ export class SessionStore {
   setJustLoggedIn(justLoggedIn: boolean) {
     this.justLoggedIn = justLoggedIn;
   }
-
+  @action setCachedRewardPoints(points: number) {
+    this.cachedRewardPoints = points;
+    SecureStore.setItemAsync('user.cachedRewardPoints', String(points));
+  }
+  
   setEvmWallet(wallet: { publicAddress: string } | null) {
     //console.log('[SessionStore] Set EVM wallet:', wallet);
     this.evmWallet = wallet;
@@ -191,6 +196,7 @@ export class SessionStore {
       await this.loadUser();
       await this.loadProfile();
       await this.loadPreferences();
+	  await this.loadCachedRewardPoints();
       await this.loadEvmWallet();
     }
     return session;
@@ -256,12 +262,23 @@ export class SessionStore {
     return prefs;
   }
 
+  async loadCachedRewardPoints() {
+    const value = await SecureStore.getItemAsync('user.cachedRewardPoints');
+    if (value) {
+      const parsed = Number(value);
+      if (!isNaN(parsed)) {
+        this.cachedRewardPoints = parsed;
+      }
+    }
+  }
+
   async clear() {
     await Promise.all(this.authKeys.map((key) => SecureStore.deleteItemAsync(key)));
     await SecureStore.deleteItemAsync(this.userKey);
     await SecureStore.deleteItemAsync(this.profileKey);
     await SecureStore.deleteItemAsync(this.preferencesKey);
-
+	await SecureStore.deleteItemAsync('user.cachedRewardPoints');
+	this.cachedRewardPoints = null;
     this.setSession(null);
     this.setUser(null);
     this.setProfile(null);

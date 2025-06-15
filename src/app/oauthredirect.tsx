@@ -15,7 +15,7 @@ const OAuthRedirect = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { id, access, new: isNew } = useLocalSearchParams();
+  const { id, access, isNewUser } = useLocalSearchParams();
 
   useEffect(() => {
     let handled = false;
@@ -61,7 +61,7 @@ const OAuthRedirect = () => {
       sessionStore.fetchProfile();
 
       router.replace(
-        isNewUser ? '/(auth)/onboarding/choose-bank-currency' : '/'
+        isNewUser === 'true' ? '/(auth)/onboarding/choose-bank-currency' : '/'
       );
     };
 
