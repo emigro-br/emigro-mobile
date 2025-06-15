@@ -1,3 +1,5 @@
+// src/app/oauthredirect.tsx
+
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -120,22 +122,29 @@ const OAuthRedirect = () => {
 
     init();
 
-    const timeout = setTimeout(() => {
-      if (!handled) {
-        if (sessionStore.session?.idToken && sessionStore.session?.accessToken) {
-          console.warn('[OAuthRedirect] Timeout reached, but session exists. Redirecting.');
-          router.replace('/');
-        } else {
-          console.error('[OAuthRedirect] Timeout: No valid redirect and no session');
-          setError('Login failed. No redirect received within expected time.');
-        }
-        setLoading(false);
-      }
-    }, 1500);
+	let attempts = 0;
+	const interval = setInterval(() => {
+	  if (
+	    sessionStore.session?.idToken &&
+	    sessionStore.session?.accessToken
+	  ) {
+	    router.replace('/');
+	    clearInterval(interval);
+	    return;
+	  }
+
+	  if (attempts >= 10) {
+	    setError('Login failed. No redirect received within expected time.');
+	    clearInterval(interval);
+	  }
+
+	  attempts += 1;
+	}, 1000);
+
 
     return () => {
       subscription.remove();
-      clearTimeout(timeout);
+      clearInterval(interval);
     };
   }, []);
 

@@ -94,14 +94,7 @@ export const Welcome = () => {
 		      }
 
 		      // Navigate to oauthredirect screen with tokens
-		      router.replace({
-		        pathname: '/oauthredirect',
-		        params: {
-		          id,
-		          access,
-		          isNewUser,
-		        },
-		      });
+			  router.replace(`/oauthredirect?id=${encodeURIComponent(id)}&access=${encodeURIComponent(access)}&isNewUser=${isNewUser}`);
 		    } catch (err) {
 		      console.error('[Login] Failed to parse redirect URL:', err);
 		      setApiError('Invalid redirect URL received from backend.');
