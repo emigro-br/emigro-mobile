@@ -46,7 +46,7 @@ export const Welcome = () => {
         `?client_id=${clientId}` +
         `&redirect_uri=${encodeURIComponent(redirectUri)}` +
         `&response_type=code` +
-        `&scope=email%20openid` +
+        `&scope=email%20openid%20profile` +
         `&identity_provider=Google` +
         `&prompt=select_account`;
 
@@ -145,7 +145,7 @@ export const Welcome = () => {
             onPress={() => router.push('/login')}
             variant="solid"
             size="xl"
-            className="rounded-full bg-[#890000] py-4 h-14"
+            className="rounded-full bg-[#890000] py-4 h-16"
           >
             <ButtonText className="text-white">Login</ButtonText>
           </Button>
@@ -154,7 +154,7 @@ export const Welcome = () => {
             onPress={() => router.push('/signup')}
             variant="outline"
             size="xl"
-            className="rounded-full border-white py-4 h-14"
+            className="rounded-full border-white py-4 h-16"
           >
             <ButtonText className="text-white">Create Account</ButtonText>
           </Button>
