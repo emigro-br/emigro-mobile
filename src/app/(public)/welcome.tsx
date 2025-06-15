@@ -46,7 +46,7 @@ export const Welcome = () => {
 		  `?client_id=${clientId}` +
 		  `&redirect_uri=${encodeURIComponent(redirectUri)}` +
 		  `&response_type=code` +
-		  `&scope=openid%20email%20profile` +
+		  `&scope=openid%20email%20profile%20aws.cognito.signin.user.admin` +
 		  `&identity_provider=Google` +
 		  `&prompt=consent` +
 		  `&access_type=offline`;
