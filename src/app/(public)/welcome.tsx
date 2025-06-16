@@ -212,7 +212,7 @@ export const Welcome = () => {
 		  </View>
 		)}*/}
 		{apiError && (
-		  <Text className="text-red-500 text-center mt-4" size="sm">
+		  <Text className="text-white text-center mt-4" size="sm">
 		    {apiError}
 		  </Text>
 		)}
