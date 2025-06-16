@@ -79,11 +79,22 @@ export const Welcome = () => {
 
           const redirect = await response.text();
 
-          if (!redirect.startsWith('emigro://')) {
-            setApiError('Invalid backend redirect response (missing scheme)');
-            console.warn('[Login] ❌ Invalid redirect:', redirect);
-            return;
-          }
+		  if (!redirect || typeof redirect !== 'string') {
+		    setApiError('No redirect received from backend.');
+		    console.warn('[Login] ❌ No redirect or invalid type:', redirect);
+		    return;
+		  }
+
+		  if (!redirect.startsWith('emigro://')) {
+		    const trimmed = redirect.length > 200 ? redirect.slice(0, 200) + '...' : redirect;
+		    setApiError(`Invalid backend redirect: ${trimmed}`);
+		    console.warn('[Login] ❌ Redirect received, but invalid scheme:', {
+		      expected: 'emigro://',
+		      received: trimmed,
+		    });
+		    return;
+		  }
+
 
           try {
             const parsedRedirect = Linking.parse(redirect);
@@ -99,10 +110,49 @@ export const Welcome = () => {
               return;
             }
 
-            // ✅ Navigate to oauthredirect screen with tokens
-            router.replace(
-              `/oauthredirect?id=${encodeURIComponent(id)}&access=${encodeURIComponent(access)}&isNewUser=${isNewUser}`
-            );
+            // ✅ Authenticated used
+			console.log('[Login] ✅ Received tokens:', {
+			  idTokenPresent: !!id,
+			  accessTokenPresent: !!access,
+			});
+
+			if (!id || !access) {
+			  console.warn('[Login] ❌ Missing tokens:', { id, access });
+			  setApiError('Missing login tokens. Please try again.');
+			  return;
+			}
+
+			try {
+			  sessionStore.setSession({ idToken: id, accessToken: access });
+			  console.log('[Login] ✅ Session set successfully');
+			} catch (err) {
+			  console.error('[Login] ❌ Failed to set session:', err);
+			  setApiError('Could not save session. Please try again.');
+			  return;
+			}
+
+			try {
+			  console.log('[Login] 📥 Fetching user profile...');
+			  await sessionStore.fetchProfile();
+			  console.log('[Login] ✅ Profile fetched successfully');
+			} catch (err) {
+			  console.error('[Login] ❌ Failed to fetch user profile:', err);
+			  setApiError('Could not load your profile. Try again.');
+			  return;
+			}
+
+			const destination = isNewUser === 'true'
+			  ? '/(auth)/onboarding/choose-bank-currency'
+			  : '/';
+
+			try {
+			  console.log(`[Login] 🚀 Redirecting to: ${destination}`);
+			  router.replace(destination);
+			} catch (err) {
+			  console.error('[Login] ❌ Navigation error:', err);
+			  setApiError('Login succeeded, but navigation failed.');
+			}
+			
           } catch (err) {
             console.error('[Login] ❌ Failed to parse redirect URL:', err);
             setApiError('Invalid redirect URL received from backend.');
