@@ -1,9 +1,17 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { ImageBackground, StyleSheet } from 'react-native';
+import {
+  ImageBackground,
+  StyleSheet,
+  View,
+  Animated,
+  Pressable,
+  Platform,
+} from 'react-native';
 
 import emigroLogo from '@/assets/images/emigro-logo.png';
 import backgroundImage from '@/assets/images/background.png';
+import googleLogo from '@/assets/images/google-logo.png';
 
 import { Box } from '@/components/ui/box';
 import { Button, ButtonGroup, ButtonText } from '@/components/ui/button';
@@ -11,16 +19,9 @@ import { Center } from '@/components/ui/center';
 import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
 
-import * as Google from 'expo-auth-session/providers/google';
-import * as AppleAuthentication from 'expo-apple-authentication';
 import * as WebBrowser from 'expo-web-browser';
-import { useEffect } from 'react';
-import * as Linking from 'expo-linking';
-import { backendUrl } from '@/services/emigro/api';
 import * as AuthSession from 'expo-auth-session';
-import { View, Animated, Platform, Pressable } from 'react-native';
-import { useRef, useState } from 'react';
-import googleLogo from '@/assets/images/google-logo.png';
+import * as Linking from 'expo-linking';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -32,6 +33,7 @@ export const Welcome = () => {
 
   const clientId = '3sbvb7isvqul6dlfbhakrqgei8';
   const nativeRedirectUri = 'com.googleusercontent.apps.994789891634-on3kh51cjsdcqndloq6cplqrog63bpah:/oauthredirect';
+
   const redirectUri = AuthSession.makeRedirectUri({
     native: nativeRedirectUri,
     useProxy: false,
@@ -54,76 +56,19 @@ export const Welcome = () => {
 
       const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
 
-      if (result.type === 'success' && result.url) {
-        const parsed = Linking.parse(result.url);
-        const code = parsed.queryParams?.code;
-
-        if (code) {
-          const callbackUrl = `${backendUrl}/auth/oauth/callback?code=${encodeURIComponent(code)}`;
-          let response: Response;
-
-          try {
-            response = await fetch(callbackUrl);
-          } catch (err) {
-            console.error('[Login] 🔥 Fetch to backend failed:', err);
-            setApiError('Network error contacting backend. Check your internet or try again.');
-            return;
-          }
-
-          if (!response.ok) {
-            const message = await response.text();
-            console.warn('[Login] ❌ Backend returned error:', message);
-            setApiError(`Backend error: ${message || 'Something went wrong.'}`);
-            return;
-          }
-
-          const redirect = await response.text();
-
-          if (!redirect.startsWith('emigro://')) {
-            setApiError('Invalid backend redirect response (missing scheme)');
-            console.warn('[Login] ❌ Invalid redirect:', redirect);
-            return;
-          }
-
-          try {
-            const parsedRedirect = Linking.parse(redirect);
-            const query = parsedRedirect.queryParams;
-
-            const id = query?.id;
-            const access = query?.access;
-            const isNewUser = query?.isNewUser;
-
-            if (!id || !access) {
-              setApiError('Missing tokens in redirect URL.');
-              console.warn('[Login] ❌ Missing tokens:', query);
-              return;
-            }
-
-            // ✅ Navigate to oauthredirect screen with tokens
-            router.replace(
-              `/oauthredirect?id=${encodeURIComponent(id)}&access=${encodeURIComponent(access)}&isNewUser=${isNewUser}`
-            );
-          } catch (err) {
-            console.error('[Login] ❌ Failed to parse redirect URL:', err);
-            setApiError('Invalid redirect URL received from backend.');
-          }
-        } else {
-          setApiError('Authorization code not found in redirect.');
-        }
-      } else {
-        console.warn('[Login] ❌ Auth session canceled or failed:', result);
+      if (result.type !== 'success') {
         setApiError('Login canceled or failed.');
+        return;
       }
-    } catch (e) {
-      console.error('[Login] ❌ Unexpected error:', e);
-      setApiError(e instanceof Error ? e.message : 'Unknown login error occurred.');
+
+      // Deep link should trigger app screen. If it doesn’t, our listener will log it.
+    } catch (err) {
+      console.error('[Login] ❌ Unexpected error:', err);
+      setApiError(err instanceof Error ? err.message : 'Unknown login error occurred.');
     } finally {
       setIsLoggingIn(false);
     }
   };
-
-
-
 
   const animatePress = () => {
     Animated.sequence([
@@ -131,6 +76,32 @@ export const Welcome = () => {
       Animated.timing(scaleAnim, { toValue: 1, duration: 100, useNativeDriver: true }),
     ]).start();
   };
+
+  // ✅ Add deep link diagnostics
+  useEffect(() => {
+    const subscription = Linking.addEventListener('url', (event) => {
+      console.log('[Welcome] 🔗 Deep link received (not handled here):', event.url);
+      setApiError(`Deep link received: ${event.url}`);
+    });
+
+    Linking.getInitialURL()
+      .then((url) => {
+        if (url) {
+          console.log('[Welcome] 🔍 Initial URL on start:', url);
+          setApiError(`Initial URL detected: ${url}`);
+        } else {
+          console.log('[Welcome] ❌ No initial URL found');
+        }
+      })
+      .catch((err) => {
+        console.error('[Welcome] ❌ getInitialURL failed:', err);
+        setApiError('Error checking initial URL.');
+      });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   return (
     <ImageBackground source={backgroundImage} style={styles.background} resizeMode="cover">
@@ -167,11 +138,7 @@ export const Welcome = () => {
             <View className="flex-1 h-px bg-white" />
           </View>
 
-          <Pressable
-            onPressIn={animatePress}
-            onPress={loginWithGoogle}
-            disabled={isLoggingIn}
-          >
+          <Pressable onPressIn={animatePress} onPress={loginWithGoogle} disabled={isLoggingIn}>
             <Animated.View
               style={{ transform: [{ scale: scaleAnim }] }}
               className={`bg-white rounded-full py-4 items-center justify-center mt-2 ${isLoggingIn ? 'opacity-50' : ''}`}
@@ -185,37 +152,11 @@ export const Welcome = () => {
             </Animated.View>
           </Pressable>
 
-		{/*{Platform.OS === 'ios' && (
-		  <View style={{ marginTop: 10, borderRadius: 999, overflow: 'hidden' }}>
-		    <AppleAuthentication.AppleAuthenticationButton
-		      buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-		      buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE} // try WHITE for better match
-		      cornerRadius={999} // mimic full-rounded
-		      style={{ width: '100%', height: 56 }} // match height with Google button
-		      onPress={async () => {
-		        try {
-		          const credential = await AppleAuthentication.signInAsync({
-		            requestedScopes: [
-		              AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-		              AppleAuthentication.AppleAuthenticationScope.EMAIL,
-		            ],
-		          });
-
-		          if (credential.identityToken) {
-		            handleOAuthLogin('apple', credential.identityToken);
-		          }
-		        } catch (error) {
-		          console.error(error);
-		        }
-		      }}
-		    />
-		  </View>
-		)}*/}
-		{apiError && (
-		  <Text className="text-red-500 text-center mt-4" size="sm">
-		    {apiError}
-		  </Text>
-		)}
+          {apiError && (
+            <Text className="text-white text-center mt-4 px-2" size="sm">
+              {apiError}
+            </Text>
+          )}
         </ButtonGroup>
       </Box>
     </ImageBackground>

@@ -68,10 +68,7 @@
         "UIBackgroundModes": ["remote-notification"],
         "CFBundleURLTypes": [
           {
-            "CFBundleURLSchemes": [
-              "emigro",
-              "com.googleusercontent.apps.994789891634-on3kh51cjsdcqndloq6cplqrog63bpah"
-            ]
+            "CFBundleURLSchemes": ["emigro"]
           }
         ]
       }
@@ -82,14 +79,9 @@
       "intentFilters": [
         {
           "action": "VIEW",
-          "autoVerify": true,
-          "data": [
-            { "scheme": "emigro", "host": "*" },
-            {
-              "scheme": "com.googleusercontent.apps.994789891634-on3kh51cjsdcqndloq6cplqrog63bpah",
-              "host": "oauthredirect"
-            }
-          ],
+          "data": {
+            "scheme": "emigro"
+          },
           "category": ["BROWSABLE", "DEFAULT"]
         }
       ]
