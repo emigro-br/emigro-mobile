@@ -1,26 +1,19 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
+import { Animated, ImageBackground, Pressable, StyleSheet, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ImageBackground, StyleSheet } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
+import * as Linking from 'expo-linking';
+import * as AuthSession from 'expo-auth-session';
 
 import emigroLogo from '@/assets/images/emigro-logo.png';
 import backgroundImage from '@/assets/images/background.png';
+import googleLogo from '@/assets/images/google-logo.png';
 
 import { Box } from '@/components/ui/box';
 import { Button, ButtonGroup, ButtonText } from '@/components/ui/button';
 import { Center } from '@/components/ui/center';
 import { Image } from '@/components/ui/image';
 import { Text } from '@/components/ui/text';
-
-import * as Google from 'expo-auth-session/providers/google';
-import * as AppleAuthentication from 'expo-apple-authentication';
-import * as WebBrowser from 'expo-web-browser';
-import { useEffect } from 'react';
-import * as Linking from 'expo-linking';
-import { backendUrl } from '@/services/emigro/api';
-import * as AuthSession from 'expo-auth-session';
-import { View, Animated, Platform, Pressable } from 'react-native';
-import { useRef, useState } from 'react';
-import googleLogo from '@/assets/images/google-logo.png';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -32,6 +25,7 @@ export const Welcome = () => {
 
   const clientId = '3sbvb7isvqul6dlfbhakrqgei8';
   const nativeRedirectUri = 'com.googleusercontent.apps.994789891634-on3kh51cjsdcqndloq6cplqrog63bpah:/oauthredirect';
+
   const redirectUri = AuthSession.makeRedirectUri({
     native: nativeRedirectUri,
     useProxy: false,
@@ -52,66 +46,31 @@ export const Welcome = () => {
         `&prompt=consent` +
         `&access_type=offline`;
 
+      console.log('[Login] 🔗 Opening auth URL:', authUrl);
+      console.log('[Login] 📥 Expecting redirect to:', redirectUri);
+
       const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
+      console.log('[Login] 🔄 WebBrowser result:', result);
 
       if (result.type === 'success' && result.url) {
         const parsed = Linking.parse(result.url);
-        const code = parsed.queryParams?.code;
+        console.log('[Login] ✅ Parsed deep link:', parsed);
 
-        if (code) {
-          const callbackUrl = `${backendUrl}/auth/oauth/callback?code=${encodeURIComponent(code)}`;
-          let response: Response;
+        const idToken = parsed.queryParams?.id;
+        const accessToken = parsed.queryParams?.access;
+        const isNewUser = parsed.queryParams?.isNewUser;
 
-          try {
-            response = await fetch(callbackUrl);
-          } catch (err) {
-            console.error('[Login] 🔥 Fetch to backend failed:', err);
-            setApiError('Network error contacting backend. Check your internet or try again.');
-            return;
-          }
-
-          if (!response.ok) {
-            const message = await response.text();
-            console.warn('[Login] ❌ Backend returned error:', message);
-            setApiError(`Backend error: ${message || 'Something went wrong.'}`);
-            return;
-          }
-
-          const redirect = await response.text();
-
-          if (!redirect.startsWith('emigro://')) {
-            setApiError('Invalid backend redirect response (missing scheme)');
-            console.warn('[Login] ❌ Invalid redirect:', redirect);
-            return;
-          }
-
-          try {
-            const parsedRedirect = Linking.parse(redirect);
-            const query = parsedRedirect.queryParams;
-
-            const id = query?.id;
-            const access = query?.access;
-            const isNewUser = query?.isNewUser;
-
-            if (!id || !access) {
-              setApiError('Missing tokens in redirect URL.');
-              console.warn('[Login] ❌ Missing tokens:', query);
-              return;
-            }
-
-            // ✅ Navigate to oauthredirect screen with tokens
-            router.replace(
-              `/oauthredirect?id=${encodeURIComponent(id)}&access=${encodeURIComponent(access)}&isNewUser=${isNewUser}`
-            );
-          } catch (err) {
-            console.error('[Login] ❌ Failed to parse redirect URL:', err);
-            setApiError('Invalid redirect URL received from backend.');
-          }
-        } else {
-          setApiError('Authorization code not found in redirect.');
+        if (!idToken || !accessToken) {
+          setApiError('Missing tokens in redirect URL.');
+          console.warn('[Login] ❌ Missing tokens:', parsed.queryParams);
+          return;
         }
+
+        router.replace(
+          `/oauthredirect?id=${encodeURIComponent(idToken)}&access=${encodeURIComponent(accessToken)}&isNewUser=${isNewUser}`
+        );
       } else {
-        console.warn('[Login] ❌ Auth session canceled or failed:', result);
+        console.warn('[Login] ❌ Auth session cancelled or failed:', result);
         setApiError('Login canceled or failed.');
       }
     } catch (e) {
@@ -121,9 +80,6 @@ export const Welcome = () => {
       setIsLoggingIn(false);
     }
   };
-
-
-
 
   const animatePress = () => {
     Animated.sequence([
@@ -185,37 +141,11 @@ export const Welcome = () => {
             </Animated.View>
           </Pressable>
 
-		{/*{Platform.OS === 'ios' && (
-		  <View style={{ marginTop: 10, borderRadius: 999, overflow: 'hidden' }}>
-		    <AppleAuthentication.AppleAuthenticationButton
-		      buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
-		      buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE} // try WHITE for better match
-		      cornerRadius={999} // mimic full-rounded
-		      style={{ width: '100%', height: 56 }} // match height with Google button
-		      onPress={async () => {
-		        try {
-		          const credential = await AppleAuthentication.signInAsync({
-		            requestedScopes: [
-		              AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-		              AppleAuthentication.AppleAuthenticationScope.EMAIL,
-		            ],
-		          });
-
-		          if (credential.identityToken) {
-		            handleOAuthLogin('apple', credential.identityToken);
-		          }
-		        } catch (error) {
-		          console.error(error);
-		        }
-		      }}
-		    />
-		  </View>
-		)}*/}
-		{apiError && (
-		  <Text className="text-red-500 text-center mt-4" size="sm">
-		    {apiError}
-		  </Text>
-		)}
+          {apiError && (
+            <Text className="text-white text-center mt-4" size="sm">
+              {apiError}
+            </Text>
+          )}
         </ButtonGroup>
       </Box>
     </ImageBackground>

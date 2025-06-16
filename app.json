@@ -9,18 +9,9 @@
     "scheme": "emigro",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "light",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "platforms": ["ios", "android", "web"],
     "plugins": [
-      [
-        "expo-camera",
-        {
-          "cameraPermission": "Access to the camera is required to scan QR codes for payments."
-        }
-      ],
+      ["expo-camera", { "cameraPermission": "Access to the camera is required to scan QR codes for payments." }],
       [
         "expo-build-properties",
         {
@@ -38,9 +29,9 @@
       [
         "@sentry/react-native/expo",
         {
-      "url": "https://sentry.io/",
-      "project": "react-native",
-      "organization": "emigro-5p"
+          "url": "https://sentry.io/",
+          "project": "react-native",
+          "organization": "emigro-5p"
         }
       ],
       "expo-secure-store",
@@ -60,16 +51,12 @@
       "fallbackToCacheTimeout": 0,
       "checkAutomatically": "ON_LOAD"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "co.emigro.app",
       "bitcode": false,
-  "associatedDomains": [
-    "applinks:oauth.emigro.co"
-  ],
+      "associatedDomains": ["applinks:oauth.emigro.co"],
       "config": {
         "usesNonExemptEncryption": false
       },
@@ -78,15 +65,34 @@
         "NSLocationWhenInUseUsageDescription": "This app uses your location to provide personalized content.",
         "NSPhotoLibraryUsageDescription": "Photo access is used to QRCode Payments.",
         "NSUserTrackingUsageDescription": "Send you notifications about app updates and payments status.",
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": ["remote-notification"],
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "emigro",
+              "com.googleusercontent.apps.994789891634-on3kh51cjsdcqndloq6cplqrog63bpah"
+            ]
+          }
+        ]
       }
     },
     "android": {
-      "permissions": [
-        "android.permission.CAMERA",
-        "NOTIFICATIONS"
-      ],
-      "package": "co.emigro.app"
+      "permissions": ["android.permission.CAMERA", "NOTIFICATIONS"],
+      "package": "co.emigro.app",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            { "scheme": "emigro", "host": "*" },
+            {
+              "scheme": "com.googleusercontent.apps.994789891634-on3kh51cjsdcqndloq6cplqrog63bpah",
+              "host": "oauthredirect"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "extra": {
       "eas": {
