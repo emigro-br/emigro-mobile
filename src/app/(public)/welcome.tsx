@@ -123,11 +123,13 @@ export const Welcome = () => {
 			}
 
 			try {
-			  sessionStore.setSession({ idToken: id, accessToken: access });
-			  console.log('[Login] ✅ Session set successfully');
-			} catch (err) {
-			  console.error('[Login] ❌ Failed to set session:', err);
-			  setApiError('Could not save session. Please try again.');
+			  await sessionStore.oauthLoginFromTokens(id, access);
+			} catch (err: any) {
+			  const errMsg = err?.message || 'Unknown error';
+			  const tokenHint = `ID length: ${id?.length ?? 0}, Access length: ${access?.length ?? 0}`;
+			  const errType = err?.constructor?.name || typeof err;
+
+			  setApiError(`Could not save session: (${errType}) ${errMsg}. ${tokenHint}`);
 			  return;
 			}
 

@@ -272,6 +272,12 @@ export class SessionStore {
     }
   }
 
+  async oauthLoginFromTokens(idToken: string, accessToken: string) {
+    const session = { idToken, accessToken };
+    this.setSession(session);
+    await this.save(session);
+  }
+  
   async clear() {
     await Promise.all(this.authKeys.map((key) => SecureStore.deleteItemAsync(key)));
     await SecureStore.deleteItemAsync(this.userKey);
