@@ -1,5 +1,3 @@
-// src/app/oauthredirect.tsx
-
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -11,25 +9,79 @@ import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
 import { sessionStore } from '@/stores/SessionStore';
 
+// Helper to safely extract query values
+const getParam = (p: string | string[] | undefined): string | undefined =>
+  typeof p === 'string' ? p : Array.isArray(p) ? p[0] : undefined;
+
 const OAuthRedirect = () => {
   const router = useRouter();
   const scaleAnim = useRef(new Animated.Value(1)).current;
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { id, access, isNewUser } = useLocalSearchParams();
+  const rawParams = useLocalSearchParams();
+  const idToken = getParam(rawParams.id);
+  const accessToken = getParam(rawParams.access);
+  const isNew = getParam(rawParams.isNewUser);
+
+  const handleUrl = ({ url }: { url: string }) => {
+    console.log('[OAuthRedirect] 🔗 Deep link received:', url);
+    const parsed = Linking.parse(url);
+    const id = getParam(parsed.queryParams?.id);
+    const access = getParam(parsed.queryParams?.access);
+    const isNewUser = getParam(parsed.queryParams?.isNewUser);
+
+    if (!id || !access) {
+      console.warn('[OAuthRedirect] ❌ Missing tokens in deep link:', parsed.queryParams);
+      setError('Login failed: Missing tokens in deep link.');
+      return;
+    }
+
+    handleTokens({
+      idToken: id,
+      accessToken: access,
+      isNewUser: isNewUser === 'true',
+      source: 'deepLink',
+    });
+  };
+
+  const handleTokens = ({
+    idToken,
+    accessToken,
+    isNewUser,
+    source,
+  }: {
+    idToken: string;
+    accessToken: string;
+    isNewUser?: boolean;
+    source: 'routerParams' | 'deepLink';
+  }) => {
+    console.log('[OAuthRedirect] ✅ Tokens received from', source, {
+      idTokenPresent: !!idToken,
+      accessTokenPresent: !!accessToken,
+      isNewUser,
+    });
+
+    try {
+      sessionStore.setSession({ idToken, accessToken });
+
+      router.replace(
+        isNewUser ? '/(auth)/onboarding/choose-bank-currency' : '/'
+      );
+    } catch (e) {
+      console.error('[OAuthRedirect] ❌ Failed to set session:', e);
+      setError('Login failed: Could not save session.');
+    }
+  };
 
   useEffect(() => {
-    let handled = false;
-
     const subscription = Linking.addEventListener('url', handleUrl);
 
     const tryLocalParams = () => {
-      if (id && access) {
-        console.log('[OAuthRedirect] ✅ Found tokens in local router params');
+      if (idToken && accessToken) {
+        console.log('[OAuthRedirect] ✅ Found tokens in router params');
         handleTokens({
-          idToken: id as string,
-          accessToken: access as string,
+          idToken,
+          accessToken,
           isNewUser: isNew === 'true',
           source: 'routerParams',
         });
@@ -39,19 +91,20 @@ const OAuthRedirect = () => {
     };
 
     const init = async () => {
-      const handledLocal = tryLocalParams();
+      const handled = tryLocalParams();
 
-      if (!handledLocal) {
-        console.log('[OAuthRedirect] ❌ No router params, checking getInitialURL()');
+      if (!handled) {
+        console.log('[OAuthRedirect] ❌ No router params, checking getInitialURL...');
         try {
           const url = await Linking.getInitialURL();
           if (url) {
             handleUrl({ url });
           } else {
+            setError('Login failed: No redirect URL received.');
             console.warn('[OAuthRedirect] getInitialURL() returned null');
           }
         } catch (err) {
-          console.error('[OAuthRedirect] Failed to get initial URL:', err);
+          console.error('[OAuthRedirect] 🔥 Failed to get initial URL:', err);
           setError('Unexpected error while checking redirect URL.');
         }
       }
@@ -59,10 +112,9 @@ const OAuthRedirect = () => {
 
     init();
 
-    // Replace setInterval approach with a hard 10s timeout after init
     const timeout = setTimeout(() => {
       if (!sessionStore.session?.idToken || !sessionStore.session?.accessToken) {
-        setError('Login failed. No redirect received within expected time.');
+        setError('Login failed: No redirect received within expected time.');
       }
     }, 10000);
 
@@ -71,7 +123,6 @@ const OAuthRedirect = () => {
       clearTimeout(timeout);
     };
   }, []);
-
 
   const animatePress = () => {
     Animated.sequence([
