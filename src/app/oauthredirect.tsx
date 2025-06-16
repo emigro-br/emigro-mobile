@@ -1,6 +1,8 @@
+// src/app/oauthredirect.tsx
+
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import * as Linking from 'expo-linking';
 import LottieView from 'lottie-react-native';
 
@@ -9,7 +11,6 @@ import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
 import { sessionStore } from '@/stores/SessionStore';
 
-// Helper to safely extract query values
 const getParam = (p: string | string[] | undefined): string | undefined =>
   typeof p === 'string' ? p : Array.isArray(p) ? p[0] : undefined;
 
@@ -17,32 +18,12 @@ const OAuthRedirect = () => {
   const router = useRouter();
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const [error, setError] = useState<string | null>(null);
+  const [hasTried, setHasTried] = useState(false); // For useFocusEffect retry
 
   const rawParams = useLocalSearchParams();
   const idToken = getParam(rawParams.id);
   const accessToken = getParam(rawParams.access);
   const isNew = getParam(rawParams.isNewUser);
-
-  const handleUrl = ({ url }: { url: string }) => {
-    console.log('[OAuthRedirect] 🔗 Deep link received:', url);
-    const parsed = Linking.parse(url);
-    const id = getParam(parsed.queryParams?.id);
-    const access = getParam(parsed.queryParams?.access);
-    const isNewUser = getParam(parsed.queryParams?.isNewUser);
-
-    if (!id || !access) {
-      console.warn('[OAuthRedirect] ❌ Missing tokens in deep link:', parsed.queryParams);
-      setError('Login failed: Missing tokens in deep link.');
-      return;
-    }
-
-    handleTokens({
-      idToken: id,
-      accessToken: access,
-      isNewUser: isNewUser === 'true',
-      source: 'deepLink',
-    });
-  };
 
   const handleTokens = ({
     idToken,
@@ -50,19 +31,29 @@ const OAuthRedirect = () => {
     isNewUser,
     source,
   }: {
-    idToken: string;
-    accessToken: string;
+    idToken?: string;
+    accessToken?: string;
     isNewUser?: boolean;
     source: 'routerParams' | 'deepLink';
   }) => {
-    console.log('[OAuthRedirect] ✅ Tokens received from', source, {
-      idTokenPresent: !!idToken,
-      accessTokenPresent: !!accessToken,
+    if (!idToken || !accessToken) {
+      console.warn(`[OAuthRedirect] [${source}] Missing tokens`, {
+        idTokenPresent: !!idToken,
+        accessTokenPresent: !!accessToken,
+      });
+      setError('Login failed: Missing tokens.');
+      return;
+    }
+
+    console.log(`[OAuthRedirect] ✅ Tokens received from ${source}`, {
+      idToken,
+      accessToken,
       isNewUser,
     });
 
     try {
       sessionStore.setSession({ idToken, accessToken });
+      sessionStore.fetchProfile();
 
       router.replace(
         isNewUser ? '/(auth)/onboarding/choose-bank-currency' : '/'
@@ -73,42 +64,55 @@ const OAuthRedirect = () => {
     }
   };
 
+  const handleUrl = ({ url }: { url: string }) => {
+    console.log('[OAuthRedirect] 🔗 Deep link received:', url);
+    const parsed = Linking.parse(url);
+    const query = parsed.queryParams || {};
+
+    handleTokens({
+      idToken: getParam(query.id),
+      accessToken: getParam(query.access),
+      isNewUser: getParam(query.isNewUser) === 'true',
+      source: 'deepLink',
+    });
+  };
+
+  const tryRouterParams = () => {
+    if (idToken && accessToken) {
+      console.log('[OAuthRedirect] ✅ Found tokens in router params');
+      handleTokens({
+        idToken,
+        accessToken,
+        isNewUser: isNew === 'true',
+        source: 'routerParams',
+      });
+      return true;
+    }
+    return false;
+  };
+
+  const init = async () => {
+    const handled = tryRouterParams();
+
+    if (!handled) {
+      console.log('[OAuthRedirect] ❌ No router params, checking getInitialURL...');
+      try {
+        const url = await Linking.getInitialURL();
+        if (url) {
+          handleUrl({ url });
+        } else {
+          console.warn('[OAuthRedirect] getInitialURL() returned null');
+          setError('Login failed: No redirect URL received.');
+        }
+      } catch (err) {
+        console.error('[OAuthRedirect] 🔥 Failed to get initial URL:', err);
+        setError('Unexpected error while checking redirect URL.');
+      }
+    }
+  };
+
   useEffect(() => {
     const subscription = Linking.addEventListener('url', handleUrl);
-
-    const tryLocalParams = () => {
-      if (idToken && accessToken) {
-        console.log('[OAuthRedirect] ✅ Found tokens in router params');
-        handleTokens({
-          idToken,
-          accessToken,
-          isNewUser: isNew === 'true',
-          source: 'routerParams',
-        });
-        return true;
-      }
-      return false;
-    };
-
-    const init = async () => {
-      const handled = tryLocalParams();
-
-      if (!handled) {
-        console.log('[OAuthRedirect] ❌ No router params, checking getInitialURL...');
-        try {
-          const url = await Linking.getInitialURL();
-          if (url) {
-            handleUrl({ url });
-          } else {
-            setError('Login failed: No redirect URL received.');
-            console.warn('[OAuthRedirect] getInitialURL() returned null');
-          }
-        } catch (err) {
-          console.error('[OAuthRedirect] 🔥 Failed to get initial URL:', err);
-          setError('Unexpected error while checking redirect URL.');
-        }
-      }
-    };
 
     init();
 
@@ -123,6 +127,13 @@ const OAuthRedirect = () => {
       clearTimeout(timeout);
     };
   }, []);
+
+  useFocusEffect(() => {
+    if (!hasTried) {
+      setHasTried(true);
+      init(); // Retry when screen is focused
+    }
+  });
 
   const animatePress = () => {
     Animated.sequence([

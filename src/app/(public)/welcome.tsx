@@ -38,23 +38,21 @@ export const Welcome = () => {
   });
 
   const loginWithGoogle = async () => {
-	setApiError(null);
+    setApiError(null);
     setIsLoggingIn(true);
-    try {
-		const authUrl =
-		  `https://auth.emigro.co/oauth2/authorize` +
-		  `?client_id=${clientId}` +
-		  `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-		  `&response_type=code` +
-		  `&scope=openid%20email%20profile%20aws.cognito.signin.user.admin` +
-		  `&identity_provider=Google` +
-		  `&prompt=consent` +
-		  `&access_type=offline`;
 
-		  const result = await WebBrowser.openAuthSessionAsync(
-		    authUrl,
-		    redirectUri
-		  );
+    try {
+      const authUrl =
+        `https://auth.emigro.co/oauth2/authorize` +
+        `?client_id=${clientId}` +
+        `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+        `&response_type=code` +
+        `&scope=openid%20email%20profile%20aws.cognito.signin.user.admin` +
+        `&identity_provider=Google` +
+        `&prompt=consent` +
+        `&access_type=offline`;
+
+      const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUri);
 
       if (result.type === 'success' && result.url) {
         const parsed = Linking.parse(result.url);
@@ -62,61 +60,68 @@ export const Welcome = () => {
 
         if (code) {
           const callbackUrl = `${backendUrl}/auth/oauth/callback?code=${encodeURIComponent(code)}`;
-          const response = await fetch(callbackUrl);
-		  
-		  // Check if the response failed (e.g. 500, 400)
-		  if (!response.ok) {
-		    const message = await response.text(); // optionally show backend error message
-		    setApiError(`Backend error: ${message}`);
-		    return;
-		  }
-		  
+          let response: Response;
+
+          try {
+            response = await fetch(callbackUrl);
+          } catch (err) {
+            console.error('[Login] 🔥 Fetch to backend failed:', err);
+            setApiError('Network error contacting backend. Check your internet or try again.');
+            return;
+          }
+
+          if (!response.ok) {
+            const message = await response.text();
+            console.warn('[Login] ❌ Backend returned error:', message);
+            setApiError(`Backend error: ${message || 'Something went wrong.'}`);
+            return;
+          }
+
           const redirect = await response.text();
-		  // Check if the redirect is actually a valid URL
-		  if (!redirect.startsWith('emigro://')) {
-		    setApiError('Invalid backend redirect response');
-		    return;
-		  }
 
-		  if (redirect.startsWith('emigro://')) {
-		    try {
-		      const parsed = Linking.parse(redirect);
-		      const query = parsed.queryParams;
+          if (!redirect.startsWith('emigro://')) {
+            setApiError('Invalid backend redirect response (missing scheme)');
+            console.warn('[Login] ❌ Invalid redirect:', redirect);
+            return;
+          }
 
-		      const id = query?.id;
-		      const access = query?.access;
-		      const isNewUser = query?.isNewUser;
+          try {
+            const parsedRedirect = Linking.parse(redirect);
+            const query = parsedRedirect.queryParams;
 
-		      if (!id || !access) {
-		        setApiError('Missing tokens in redirect URL.');
-		        console.warn('[Login] Redirect missing required tokens:', query);
-		        return;
-		      }
+            const id = query?.id;
+            const access = query?.access;
+            const isNewUser = query?.isNewUser;
 
-		      // Navigate to oauthredirect screen with tokens
-			  router.replace(`/oauthredirect?id=${encodeURIComponent(id)}&access=${encodeURIComponent(access)}&isNewUser=${isNewUser}`);
-		    } catch (err) {
-		      console.error('[Login] Failed to parse redirect URL:', err);
-		      setApiError('Invalid redirect URL received from backend.');
-		    }
-		  } else {
-		    setApiError('Invalid backend redirect response');
-		    console.warn('[Login] Redirect URL does not start with emigro://');
-		  }
+            if (!id || !access) {
+              setApiError('Missing tokens in redirect URL.');
+              console.warn('[Login] ❌ Missing tokens:', query);
+              return;
+            }
 
+            // ✅ Navigate to oauthredirect screen with tokens
+            router.replace(
+              `/oauthredirect?id=${encodeURIComponent(id)}&access=${encodeURIComponent(access)}&isNewUser=${isNewUser}`
+            );
+          } catch (err) {
+            console.error('[Login] ❌ Failed to parse redirect URL:', err);
+            setApiError('Invalid redirect URL received from backend.');
+          }
         } else {
-          setApiError('Authorization code not found.');
+          setApiError('Authorization code not found in redirect.');
         }
       } else {
+        console.warn('[Login] ❌ Auth session canceled or failed:', result);
         setApiError('Login canceled or failed.');
       }
     } catch (e) {
-      console.error('OAuth login error', e);
-      setApiError(e instanceof Error ? e.message : 'Something went wrong during login.');
+      console.error('[Login] ❌ Unexpected error:', e);
+      setApiError(e instanceof Error ? e.message : 'Unknown login error occurred.');
     } finally {
       setIsLoggingIn(false);
     }
   };
+
 
 
 
