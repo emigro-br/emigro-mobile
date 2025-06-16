@@ -76,15 +76,17 @@
     "android": {
       "permissions": ["android.permission.CAMERA", "NOTIFICATIONS"],
       "package": "co.emigro.app",
-      "intentFilters": [
-        {
-          "action": "VIEW",
-          "data": {
-            "scheme": "emigro"
-          },
-          "category": ["BROWSABLE", "DEFAULT"]
-        }
-      ]
+"intentFilters": [
+  {
+    "action": "VIEW",
+    "data": {
+      "scheme": "emigro",
+      "host": "*",
+      "pathPrefix": "/"
+    },
+    "category": ["BROWSABLE", "DEFAULT"]
+  }
+]
     },
     "extra": {
       "eas": {
