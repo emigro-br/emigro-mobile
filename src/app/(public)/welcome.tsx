@@ -34,10 +34,14 @@ export const Welcome = () => {
 
   const clientId = '3sbvb7isvqul6dlfbhakrqgei8';
   const nativeRedirectUri = 'com.googleusercontent.apps.994789891634-on3kh51cjsdcqndloq6cplqrog63bpah:/oauthredirect';
+  
   const redirectUri = AuthSession.makeRedirectUri({
     native: nativeRedirectUri,
     useProxy: false,
   });
+
+//const redirectUri = 'https://auth.expo.io/@emigro/emigro-mobile';
+//console.log('[OAuth] Using redirect URI:', redirectUri);
 
   const loginWithGoogle = async () => {
     setApiError(null);
@@ -138,6 +142,7 @@ export const Welcome = () => {
 			try {
 			  console.log('[Login] 📥 Fetching user profile...');
 			  await sessionStore.fetchProfile();
+			  await new Promise((resolve) => setTimeout(resolve, 100));
 			  console.log('[Login] ✅ Profile fetched successfully');
 			} catch (err) {
 			  console.error('[Login] ❌ Failed to fetch user profile:', err);

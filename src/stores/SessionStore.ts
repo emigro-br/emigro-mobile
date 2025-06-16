@@ -18,7 +18,7 @@ export class SessionStore {
   preferences: UserPreferences | null = {
     themePreference: 'dark', // ✅ default
   };
-
+  isLoaded = false;
   evmWallet: { publicAddress: string } | null = null;
   @observable cachedRewardPoints: number | null = null;
 
@@ -190,6 +190,7 @@ export class SessionStore {
   }
 
   async load(): Promise<AuthSession | null> {
+	
     const session = await this.loadSession();
     this.setSession(session as AuthSession);
     if (session) {
@@ -199,6 +200,7 @@ export class SessionStore {
 	  await this.loadCachedRewardPoints();
       await this.loadEvmWallet();
     }
+	this.isLoaded = true;
     return session;
   }
 

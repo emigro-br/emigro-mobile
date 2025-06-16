@@ -18,6 +18,8 @@ import { sessionStore } from '@/stores/SessionStore';
 
 import * as Notifications from 'expo-notifications';
 
+import { observer } from 'mobx-react-lite';
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -243,10 +245,10 @@ function AppLayout() {
     return <VersionLockScreen message={blockMessage} storeUrl={storeUrl} />;
   }
 
-  if (!isReady) {
+  if (!isReady || !sessionStore.isLoaded) {
     return (
       <View className="flex-1 bg-background-0 justify-center items-center">
-        <Text style={{ color: 'gray' }}>Loading...</Text>
+        <Text style={{ color: 'gray' }}>Loading…</Text>
       </View>
     );
   }
