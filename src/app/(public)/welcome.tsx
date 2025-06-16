@@ -22,6 +22,8 @@ import { View, Animated, Platform, Pressable } from 'react-native';
 import { useRef, useState } from 'react';
 import googleLogo from '@/assets/images/google-logo.png';
 
+import { sessionStore } from '@/stores/SessionStore';
+
 WebBrowser.maybeCompleteAuthSession();
 
 export const Welcome = () => {
