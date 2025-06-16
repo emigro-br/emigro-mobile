@@ -1,6 +1,8 @@
+// src/app/oauthredirect.tsx
+
 import { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import * as Linking from 'expo-linking';
 import LottieView from 'lottie-react-native';
 
@@ -16,64 +18,122 @@ const OAuthRedirect = () => {
   const router = useRouter();
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const [error, setError] = useState<string | null>(null);
+  const [hasTried, setHasTried] = useState(false); // For useFocusEffect retry
 
   const rawParams = useLocalSearchParams();
   const idToken = getParam(rawParams.id);
   const accessToken = getParam(rawParams.access);
   const isNew = getParam(rawParams.isNewUser);
 
-  useEffect(() => {
-    const processTokens = async () => {
-      if (!idToken || !accessToken) {
-        console.warn('[OAuthRedirect] ❌ Missing tokens in router params', {
-          idTokenPresent: !!idToken,
-          accessTokenPresent: !!accessToken,
-        });
+  const handleTokens = ({
+    idToken,
+    accessToken,
+    isNewUser,
+    source,
+  }: {
+    idToken?: string;
+    accessToken?: string;
+    isNewUser?: boolean;
+    source: 'routerParams' | 'deepLink';
+  }) => {
+    if (!idToken || !accessToken) {
+      console.warn(`[OAuthRedirect] [${source}] Missing tokens`, {
+        idTokenPresent: !!idToken,
+        accessTokenPresent: !!accessToken,
+      });
+      setError('Login failed: Missing tokens.');
+      return;
+    }
 
-        try {
-          const initialUrl = await Linking.getInitialURL();
-          if (initialUrl) {
-            console.log('[OAuthRedirect] 🌐 Got initial deep link:', initialUrl);
-            const parsed = Linking.parse(initialUrl);
-            const id = getParam(parsed.queryParams?.id);
-            const access = getParam(parsed.queryParams?.access);
-            const isNewUser = getParam(parsed.queryParams?.isNewUser) === 'true';
+    console.log(`[OAuthRedirect] ✅ Tokens received from ${source}`, {
+      idToken,
+      accessToken,
+      isNewUser,
+    });
 
-            if (id && access) {
-              sessionStore.setSession({ idToken: id, accessToken: access });
-              sessionStore.fetchProfile();
-              router.replace(isNewUser ? '/(auth)/onboarding/choose-bank-currency' : '/');
-              return;
-            }
-          }
+    try {
+      sessionStore.setSession({ idToken, accessToken });
+      sessionStore.fetchProfile();
 
-          setError('Login failed: Missing tokens.');
-        } catch (e) {
-          console.error('[OAuthRedirect] 🔥 Failed to parse fallback URL:', e);
-          setError('Login failed: Could not process redirect.');
-        }
+      router.replace(
+        isNewUser ? '/(auth)/onboarding/choose-bank-currency' : '/'
+      );
+    } catch (e) {
+      console.error('[OAuthRedirect] ❌ Failed to set session:', e);
+      setError('Login failed: Could not save session.');
+    }
+  };
 
-        return;
-      }
+  const handleUrl = ({ url }: { url: string }) => {
+    console.log('[OAuthRedirect] 🔗 Deep link received:', url);
+    const parsed = Linking.parse(url);
+    const query = parsed.queryParams || {};
 
-      console.log('[OAuthRedirect] ✅ Tokens from router params', {
+    handleTokens({
+      idToken: getParam(query.id),
+      accessToken: getParam(query.access),
+      isNewUser: getParam(query.isNewUser) === 'true',
+      source: 'deepLink',
+    });
+  };
+
+  const tryRouterParams = () => {
+    if (idToken && accessToken) {
+      console.log('[OAuthRedirect] ✅ Found tokens in router params');
+      handleTokens({
         idToken,
         accessToken,
-        isNew,
+        isNewUser: isNew === 'true',
+        source: 'routerParams',
       });
+      return true;
+    }
+    return false;
+  };
 
+  const init = async () => {
+    const handled = tryRouterParams();
+
+    if (!handled) {
+      console.log('[OAuthRedirect] ❌ No router params, checking getInitialURL...');
       try {
-        sessionStore.setSession({ idToken, accessToken });
-        sessionStore.fetchProfile();
-        router.replace(isNew === 'true' ? '/(auth)/onboarding/choose-bank-currency' : '/');
-      } catch (e) {
-        console.error('[OAuthRedirect] ❌ Failed to set session:', e);
-        setError('Login failed: Could not save session.');
+        const url = await Linking.getInitialURL();
+        if (url) {
+          handleUrl({ url });
+        } else {
+          console.warn('[OAuthRedirect] getInitialURL() returned null');
+          setError('Login failed: No redirect URL received.');
+        }
+      } catch (err) {
+        console.error('[OAuthRedirect] 🔥 Failed to get initial URL:', err);
+        setError('Unexpected error while checking redirect URL.');
       }
-    };
+    }
+  };
 
-    processTokens();
+  useEffect(() => {
+    const subscription = Linking.addEventListener('url', handleUrl);
+
+    init();
+
+    const timeout = setTimeout(() => {
+      if (!sessionStore.session?.idToken || !sessionStore.session?.accessToken) {
+        setError('Login failed: No redirect received within expected time.');
+      }
+    }, 10000);
+
+    return () => {
+      subscription.remove();
+      clearTimeout(timeout);
+    };
   }, []);
+
+  useFocusEffect(() => {
+    if (!hasTried) {
+      setHasTried(true);
+      init(); // Retry when screen is focused
+    }
+  });
 
   const animatePress = () => {
     Animated.sequence([
