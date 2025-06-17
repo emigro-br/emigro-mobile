@@ -40,9 +40,6 @@ export const Welcome = () => {
     useProxy: false,
   });
 
-//const redirectUri = 'https://auth.expo.io/@emigro/emigro-mobile';
-//console.log('[OAuth] Using redirect URI:', redirectUri);
-
   const loginWithGoogle = async () => {
     setApiError(null);
     setIsLoggingIn(true);
@@ -129,26 +126,42 @@ export const Welcome = () => {
 			}
 
 			try {
-			  await sessionStore.oauthLoginFromTokens(id, access);
+			  // Step 1: Store tokens
+			  try {
+			    await sessionStore.oauthLoginFromTokens(id, access);
+			  } catch (err: any) {
+			    throw new Error(`❌ Failed to store tokens: (${err?.name || 'UnknownError'}) ${err?.message || 'No message'}`);
+			  }
+
+			  // Step 2: Load session
+			  try {
+			    await sessionStore.load();
+			  } catch (err: any) {
+			    throw new Error(`❌ Failed to load session: (${err?.name || 'UnknownError'}) ${err?.message || 'No message'}`);
+			  }
+
+			  // Step 3: Fetch profile
+			  try {
+			    await sessionStore.fetchProfile();
+			    await new Promise((res) => setTimeout(res, 100));
+			  } catch (err: any) {
+			    throw new Error(`❌ Failed to fetch profile: (${err?.name || 'UnknownError'}) ${err?.message || 'No message'}`);
+			  }
 			} catch (err: any) {
-			  const errMsg = err?.message || 'Unknown error';
-			  const tokenHint = `ID length: ${id?.length ?? 0}, Access length: ${access?.length ?? 0}`;
-			  const errType = err?.constructor?.name || typeof err;
+			  const errName = err?.name || 'UnknownError';
+			  const errMsg = err?.message || 'No message';
+			  const idTokenPreview = id?.slice?.(0, 10) + '...' || '[none]';
+			  const accessTokenPreview = access?.slice?.(0, 10) + '...' || '[none]';
 
-			  setApiError(`Could not save session: (${errType}) ${errMsg}. ${tokenHint}`);
+			  setApiError(
+			    `${errMsg}
+
+			🪪 ID token: ${idTokenPreview}
+			🔐 Access token: ${accessTokenPreview}`
+			  );
 			  return;
 			}
 
-			try {
-			  console.log('[Login] 📥 Fetching user profile...');
-			  await sessionStore.fetchProfile();
-			  await new Promise((resolve) => setTimeout(resolve, 100));
-			  console.log('[Login] ✅ Profile fetched successfully');
-			} catch (err) {
-			  console.error('[Login] ❌ Failed to fetch user profile:', err);
-			  setApiError('Could not load your profile. Try again.');
-			  return;
-			}
 
 			const destination = isNewUser === 'true'
 			  ? '/(auth)/onboarding/choose-bank-currency'
@@ -156,7 +169,13 @@ export const Welcome = () => {
 
 			try {
 			  console.log(`[Login] 🚀 Redirecting to: ${destination}`);
-			  router.replace(destination);
+			  const interval = setInterval(() => {
+			    if (sessionStore.user?.id) {
+			      clearInterval(interval);
+			      console.log('[Login] ✅ User loaded, navigating to:', destination);
+			      router.replace(destination);
+			    }
+			  }, 200);
 			} catch (err) {
 			  console.error('[Login] ❌ Navigation error:', err);
 			  setApiError('Login succeeded, but navigation failed.');
