@@ -38,11 +38,12 @@ import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
 import LottieView from 'lottie-react-native';
 
+import * as Sentry from '@sentry/react-native';
+
 const FastQRCodeScreen = () => {
   const router = useRouter();
   const [primaryAsset, setPrimaryAsset] = useState(null);
   const [primaryChain, setPrimaryChain] = useState(null);
-  
 
   useEffect(() => {
     const fetchPrimary = async () => {
@@ -56,16 +57,15 @@ const FastQRCodeScreen = () => {
         const asset = assetRes.data;
         console.log('[FastQRCode] 📦 Asset data:', asset);
 
-        // ✅ FIXED: no api(true), just api()
         console.log('[FastQRCode] 🌐 Requesting chain info from:', `/chains/${primary.chainId}`);
         const chainRes = await api().get(`/chains/${primary.chainId}`);
         const chain = chainRes.data;
         console.log('[FastQRCode] 🔗 Chain data:', chain);
 
         const assetIcon = assetIconMap[asset.symbol.toLowerCase()];
-		const chainIcon = chain.iconUrl
-		  ? chainIconMap[chain.iconUrl.toLowerCase()]
-		  : null;
+        const chainIcon = chain.iconUrl
+          ? chainIconMap[chain.iconUrl.toLowerCase()]
+          : null;
 
         setPrimaryAsset({
           symbol: asset.symbol,
@@ -88,124 +88,242 @@ const FastQRCodeScreen = () => {
         });
       } catch (e) {
         console.warn('[FastQRCode] ❌ Failed to fetch primary asset info:', e);
+        Sentry.captureException(e, {
+          tags: { feature: 'fetchPrimaryCurrency' },
+          extra: { reason: 'Error during currency/asset/chain fetch' },
+        });
       }
     };
 
     fetchPrimary();
   }, []);
-  
 
-
-
-
-  
   return (
-	<>
-	<Stack.Screen options={{ headerShown: false }} />
-    <FastQRCodeScanner
-	onCancel={() => {
-	  router.push('/wallet');
-	}}
-	primaryAsset={primaryAsset}
-	primaryChain={primaryChain}
-	isLoading={!primaryAsset || !primaryChain}
-      onScanSuccess={async (pixPayload) => {
-        try {
-          console.log('[FastQRCode] ✅ Scanned payload:', pixPayload);
-
-          const userId = sessionStore.user?.id;
-          if (!userId) throw new Error('User not logged in');
-
-          const res = await api().get('/user/primary-currency');
-          const primary = res.data;
-
-          console.log('[FastQRCode] 🪙 Primary currency:', primary);
-
-          const assetRes = await api().get(`/assets/${primary.assetId}`);
-          console.log('[FastQRCode] 🧾 Full asset response:', assetRes.data);
-
-          const tokenAddress = assetRes.data.contractAddress;
-          const decimals = assetRes.data.decimals;
-          const assetSymbol = assetRes.data.symbol;
-
-          let quotedAmount;
-
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
+      <FastQRCodeScanner
+        onCancel={() => {
+          router.push('/wallet');
+        }}
+        primaryAsset={primaryAsset}
+        primaryChain={primaryChain}
+        isLoading={!primaryAsset || !primaryChain}
+        onScanSuccess={async (pixPayload) => {
           try {
-            const brlAmount = pixPayload.transactionAmount.toFixed(2);
-            console.log('[FastQRCode] 🛰 Fetching BRL → USDC quote...', {
-              from: 'BRL',
-              to: 'USDC',
-              amount: brlAmount,
-              type: 'strict_send',
+            console.log('[FastQRCode] ✅ Scanned payload:', pixPayload);
+
+            const userId = sessionStore.user?.id;
+            if (!userId) throw new Error('User not logged in');
+
+            const res = await api().get('/user/primary-currency');
+            const primary = res.data;
+
+            console.log('[FastQRCode] 🪙 Primary currency:', primary);
+
+            const assetRes = await api().get(`/assets/${primary.assetId}`);
+            console.log('[FastQRCode] 🧾 Full asset response:', assetRes.data);
+
+            const tokenAddress = assetRes.data.contractAddress;
+            const decimals = assetRes.data.decimals;
+            const assetSymbol = assetRes.data.symbol;
+
+            let quotedAmount;
+
+			try {
+				const parsedPixDump = JSON.stringify(pixPayload).slice(0, 400); // truncate large payload
+
+				let transactionAmount = pixPayload.transactionAmount;
+
+				if (
+				  transactionAmount == null ||
+				  isNaN(transactionAmount) ||
+				  transactionAmount <= 0
+				) {
+				  console.warn('[FastQRCode] ⚠️ Falling back to Transfero /payment-preview for dynamic QR');
+
+				  try {
+				    const preview = await api().post('/transfero/payment-preview', {
+				      id: pixPayload.brCode,
+				    });
+
+				    if (
+				      !preview?.data?.amount ||
+				      isNaN(preview.data.amount) ||
+				      preview.data.amount <= 0
+				    ) {
+				      throw new Error(
+				        `Transfero fallback failed or returned invalid amount. Preview: ${JSON.stringify(preview.data)}`
+				      );
+				    }
+
+				    transactionAmount = Number(preview.data.amount);
+				    pixPayload.transactionAmount = transactionAmount;
+				    pixPayload.merchantName =
+				      pixPayload.merchantName || preview.data.name || 'Unknown Merchant';
+				    pixPayload.taxId =
+				      pixPayload.taxId || preview.data.taxId || '55479337000115';
+				    pixPayload.pixKey =
+				      pixPayload.pixKey || preview.data.brCode?.keyId;
+
+				    console.log('[FastQRCode] ✅ Fallback succeeded. Amount:', transactionAmount);
+				  } catch (fallbackError) {
+				    throw new Error(
+				      `Fallback to Transfero /payment-preview failed: ${fallbackError?.message}`
+				    );
+				  }
+
+				}
+
+				if (
+				  transactionAmount == null ||
+				  isNaN(transactionAmount) ||
+				  transactionAmount <= 0
+				) {
+				  throw new Error(
+				    `Invalid or missing transaction amount in QR code (after fallback). Received: ${transactionAmount}. Parsed PIX: ${parsedPixDump}`
+				  );
+				}
+
+
+			  const brlAmount = pixPayload.transactionAmount.toFixed(2);
+
+			  console.log('[FastQRCode] 🛰 Fetching BRL → USDC quote...', {
+			    from: 'BRL',
+			    to: 'USDC',
+			    amount: brlAmount,
+			    type: 'strict_send',
+			  });
+
+			  const toUsdc = await fetchQuote({
+			    from: 'BRL',
+			    to: 'USDC',
+			    amount: brlAmount,
+			    type: 'strict_send',
+			  });
+
+			  if (!toUsdc || typeof toUsdc !== 'object') {
+			    const responseDump = JSON.stringify(toUsdc).slice(0, 300);
+			    throw new Error(
+			      `fetchQuote returned null or malformed response: ${responseDump}. Parsed PIX: ${parsedPixDump}`
+			    );
+			  }
+
+			  const usdcAmount = Number(toUsdc?.destination_amount);
+
+			  console.log('[FastQRCode] 💵 USDC amount:', usdcAmount);
+
+			  if (!usdcAmount || isNaN(usdcAmount) || usdcAmount <= 0) {
+			    const responseDump = JSON.stringify(toUsdc).slice(0, 300);
+			    throw new Error(
+			      `USDC quote returned invalid amount: ${usdcAmount}. Full response: ${responseDump}. Parsed PIX: ${parsedPixDump}`
+			    );
+			  }
+
+			  if (assetSymbol === 'USDC') {
+			    quotedAmount = usdcAmount;
+			  } else {
+			    console.log(`[FastQRCode] 🔁 Fetching USD → ${assetSymbol} price`);
+
+			    const tokenPrice = await fetchFiatQuote(assetSymbol, 'USD');
+
+			    if (!tokenPrice || isNaN(tokenPrice) || tokenPrice <= 0) {
+			      throw new Error(
+			        `Token price not found or invalid for symbol: ${assetSymbol}. Value: ${tokenPrice}. Parsed PIX: ${parsedPixDump}`
+			      );
+			    }
+
+			    quotedAmount = usdcAmount / tokenPrice;
+
+			    if (!quotedAmount || isNaN(quotedAmount) || quotedAmount <= 0) {
+			      throw new Error(
+			        `Converted token amount is invalid. Result: ${quotedAmount}, USDC: ${usdcAmount}, TokenPrice: ${tokenPrice}. Parsed PIX: ${parsedPixDump}`
+			      );
+			    }
+
+			    console.log('[FastQRCode] 🔁 Converted token amount:', quotedAmount);
+			  }
+
+			} catch (err) {
+			  console.error('[FastQRCode] ❌ Quote fetch failed:', err);
+
+			  Sentry.captureException(err, {
+			    tags: { feature: 'quoteConversion' },
+			    extra: {
+			      pixPayload,
+			      assetSymbol,
+			      transactionAmount: pixPayload?.transactionAmount,
+			    },
+			  });
+
+			  const debugMessage = [
+			    '[QR Quote Error]',
+			    `Message: ${err?.message}`,
+			    `Symbol: ${assetSymbol}`,
+			    `Amount: ${pixPayload?.transactionAmount}`,
+			  ].join(' | ');
+
+			  throw new Error(debugMessage);
+			}
+
+
+
+            const rawAmount = Math.floor(quotedAmount * Math.pow(10, decimals)).toString();
+
+            const payload = {
+              paymentId: `${Date.now()}_${uuid.v4()}`,
+              token: tokenAddress,
+              amount: rawAmount,
+              usePaymaster: true,
+              chainId: primary.chainIdOnchain,
+              walletId: sessionStore.user.circleWallet?.circleWalletId,
+              assetId: primary.assetId,
+              tokenSymbol: assetSymbol,
+              rawBrcode: pixPayload.brCode,
+              transferoTxid: pixPayload.txid,
+              taxId: pixPayload.taxId ?? '55479337000115',
+              name: pixPayload.merchantName ?? '',
+              pixKey: pixPayload.pixKey ?? '',
+              fiatAmount: pixPayload.transactionAmount.toFixed(6),
+              toTokenAmount: quotedAmount.toFixed(6),
+            };
+
+            console.log('[FastQRCode] 📦 Payload to send:', payload);
+
+            const response = await api().post('/evm/create-escrow-evm', payload);
+            console.log('[FastQRCode] ✅ Escrow created:', response.data);
+
+            router.replace({
+              pathname: '/payments/confirm/status',
+              params: { id: payload.paymentId },
+            });
+          } catch (error) {
+            console.error('[FastQRCode] ❌ Failed to process payment:', error);
+
+            Sentry.captureException(error, {
+              tags: { feature: 'onScanSuccess' },
+              extra: {
+                pixPayload,
+                userId: sessionStore.user?.id,
+                wallet: sessionStore.user?.circleWallet,
+              },
             });
 
-            const toUsdc = await fetchQuote({
-              from: 'BRL',
-              to: 'USDC',
-              amount: brlAmount,
-              type: 'strict_send',
+            router.replace({
+              pathname: '/payments/confirm/status',
+              params: {
+                id: 'error',
+                message: encodeURIComponent(
+                  error?.message || 'Unknown error while processing QR code'
+                ),
+              },
             });
-
-            console.log('[FastQRCode] 📡 Quote response:', toUsdc);
-
-            const usdcAmount = toUsdc?.destination_amount;
-            console.log('[FastQRCode] 💵 USDC amount:', usdcAmount);
-
-            if (isNaN(usdcAmount)) throw new Error('USDC quote returned NaN');
-
-            if (assetSymbol === 'USDC') {
-              quotedAmount = usdcAmount;
-            } else {
-              console.log(`[FastQRCode] 🔁 Fetching USD → ${assetSymbol} price`);
-              const tokenPrice = await fetchFiatQuote(assetSymbol, 'USD');
-              if (!tokenPrice) throw new Error('Token price not found');
-
-              quotedAmount = usdcAmount / tokenPrice;
-              console.log('[FastQRCode] 🔁 Converted token amount:', quotedAmount);
-            }
-          } catch (err) {
-            console.error('[FastQRCode] ❌ Quote fetch failed:', err);
-            throw new Error('Quote fetch failed');
           }
-
-          if (!quotedAmount || isNaN(quotedAmount)) {
-            throw new Error('Quoted amount is invalid');
-          }
-
-          const rawAmount = Math.floor(quotedAmount * Math.pow(10, decimals)).toString();
-
-          const payload = {
-            paymentId: `${Date.now()}_${uuid.v4()}`,
-            token: tokenAddress,
-            amount: rawAmount,
-            usePaymaster: true,
-            chainId: primary.chainIdOnchain,
-            walletId: sessionStore.user.circleWallet?.circleWalletId,
-            assetId: primary.assetId,
-            tokenSymbol: assetSymbol,
-            rawBrcode: pixPayload.brCode,
-            transferoTxid: pixPayload.txid,
-            taxId: pixPayload.taxId ?? '55479337000115',
-            name: pixPayload.merchantName ?? '',
-            pixKey: pixPayload.pixKey ?? '',
-            fiatAmount: pixPayload.transactionAmount.toFixed(6),
-            toTokenAmount: quotedAmount.toFixed(6),
-          };
-
-          console.log('[FastQRCode] 📦 Payload to send:', payload);
-
-          const response = await api().post('/evm/create-escrow-evm', payload);
-          console.log('[FastQRCode] ✅ Escrow created:', response.data);
-
-          router.replace({ pathname: '/payments/confirm/status', params: { id: payload.paymentId } });
-        } catch (error) {
-          console.error('[FastQRCode] ❌ Failed to process payment:', error);
-        }
-      }}
-    />
-	</>
+        }}
+      />
+    </>
   );
 };
+
 
 
 const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain, isLoading }) => {
@@ -217,9 +335,10 @@ const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain
   const [error, setError] = useState('');
 
   const [permission] = useCameraPermissions();
-  
+
   const isFocused = useIsFocused();
-  
+  const router = useRouter();
+
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const animatePress = () => {
     Animated.sequence([
@@ -227,29 +346,32 @@ const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain
       Animated.timing(scaleAnim, { toValue: 1, duration: 100, useNativeDriver: true }),
     ]).start();
   };
-  
+
   const handleFeedback = async () => {
     try {
-      // Vibrate device
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-
-      // Load and play sound
       const { sound } = await Audio.Sound.createAsync(
-        require('@/assets/sounds/success.mp3') // ✅ Place your sound file here
+        require('@/assets/sounds/success.mp3')
       );
       await sound.playAsync();
     } catch (err) {
       console.warn('[FastQRCode] ⚠️ Feedback error:', err);
+      Sentry.captureException(err, {
+        tags: { feature: 'handleFeedback' },
+        extra: { reason: 'Failed to vibrate or play success sound' },
+      });
     }
   };
-  
+
   useEffect(() => setCameraPermission(permission), [permission]);
 
-  useFocusEffect(useCallback(() => {
-    setIsScanned(false);
-    isScannedRef.current = false;
-    setError('');
-  }, []));
+  useFocusEffect(
+    useCallback(() => {
+      setIsScanned(false);
+      isScannedRef.current = false;
+      setError('');
+    }, [])
+  );
 
   const parseQRCode = (scanned: string) => {
     console.log('[FastQRCode] 🔍 Raw QR code scanned:', scanned);
@@ -264,7 +386,15 @@ const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain
     const pix = parsePix(scanned);
     console.log('[FastQRCode] 📤 Parsed pix data:', pix);
 
-    if (hasError(pix) || pix.type === PixElementType.INVALID) throw new Error(INVALID_QR_CODE);
+    if (hasError(pix) || pix.type === PixElementType.INVALID) {
+      const err = new Error(INVALID_QR_CODE);
+      Sentry.captureException(err, {
+        tags: { feature: 'parseQRCode' },
+        extra: { rawData: scanned, parsedData: pix },
+      });
+      throw err;
+    }
+
     return { ...pix, brCode: scanned };
   };
 
@@ -273,17 +403,46 @@ const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain
 
     if (isScannedRef.current) return;
     isScannedRef.current = true;
-
     setIsScanned(true);
+
     try {
       const pixPayload = parseQRCode(data);
-	  await handleFeedback();
+
+      Sentry.setContext('PixPayload', {
+        txid: pixPayload?.txid,
+        pixKey: pixPayload?.pixKey,
+        merchantName: pixPayload?.merchantName,
+        amount: pixPayload?.transactionAmount,
+        brCode: pixPayload?.brCode,
+      });
+
+      await handleFeedback();
       await onScanSuccess(pixPayload);
     } catch (err) {
       console.warn('[FastQRCode] ❌ Invalid QR:', err);
+
+      Sentry.captureException(err, {
+        tags: { feature: 'handleBarCodeScanned' },
+        extra: {
+          scannedData: data,
+          primaryAsset,
+          primaryChain,
+          message: err?.message,
+          stack: err?.stack,
+        },
+      });
+
       setError(INVALID_QR_CODE);
       setIsScanned(false);
-	  isScannedRef.current = false;
+      isScannedRef.current = false;
+
+      router.replace({
+        pathname: '/payments/confirm/status',
+        params: {
+          id: 'error',
+          message: encodeURIComponent(err?.message || 'Invalid QR code scanned.'),
+        },
+      });
     }
   };
 
@@ -294,27 +453,27 @@ const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain
   if (!cameraPermission?.granted) {
     return (
 		<Box className="flex-1 bg-background-900 justify-center items-center px-6">
-		  <VStack space="lg" className="items-center">
-		    <Text size="md" className="text-gray-400 text-center text-2xl">
-		      Camera Access Denied
-		    </Text>
+		  <Text size="md" className="text-gray-400 text-center text-2xl">
+		    Camera Access Denied
+		  </Text>
 
-		    <LottieView
-		      source={require('@/assets/lotties/error.json')}
-		      autoPlay
-		      loop={false}
-		      style={{ width: 180, height: 180 }}
-		    />
+		  <LottieView
+		    source={require('@/assets/lotties/error.json')}
+		    autoPlay
+		    loop={false}
+		    style={{ width: 180, height: 180, marginTop: 20 }}
+		  />
 
-		    <Text size="md" className="text-white text-center mt-2">
-		      Please enable camera permissions in your device settings to scan QR codes.
-		    </Text>
-		  </VStack>
+		  <Text size="md" className="text-white text-center mt-6">
+		    Please enable camera permissions in your device settings to scan QR codes.
+		  </Text>
 		</Box>
+
     );
   }
 
   if (isScanned) return <LoadingScreen />;
+
 
   return (
     <>
