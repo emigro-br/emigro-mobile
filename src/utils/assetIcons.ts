@@ -8,6 +8,5 @@ export const assetIconMap: Record<string, any> = {
   usdc: require('@/assets/images/icons/usdc-icon.png'),
   eurc: require('@/assets/images/icons/eurc-icon.png'),
   brz: require('@/assets/images/icons/brz-icon.png'),
-  mxne: require('@/assets/images/icons/mxne-icon.png'),
   default: require('@/assets/images/icons/default.png'),
 };

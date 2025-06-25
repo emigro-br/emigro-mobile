@@ -18,9 +18,8 @@ export class SessionStore {
   preferences: UserPreferences | null = {
     themePreference: 'dark', // ✅ default
   };
-  isLoaded = false;
+
   evmWallet: { publicAddress: string } | null = null;
-  @observable cachedRewardPoints: number | null = null;
 
   isUserInitialized = false;
 
@@ -77,18 +76,8 @@ export class SessionStore {
     await this.updatePreferences({ themePreference: theme });
   }
 
-  setSession(session: Partial<AuthSession> | null) {
-    if (!session) {
-      this.session = null;
-      return;
-    }
-
-    this.session = {
-      accessToken: session.accessToken ?? '',
-      refreshToken: session.refreshToken ?? '',
-      idToken: session.idToken ?? '',
-      tokenExpirationDate: session.tokenExpirationDate ?? new Date(Date.now() + 3600 * 1000), // default: 1 hour
-    };
+  setSession(session: AuthSession | null) {
+    this.session = session;
   }
 
   setUser(user: User | null) {
@@ -110,11 +99,7 @@ export class SessionStore {
   setJustLoggedIn(justLoggedIn: boolean) {
     this.justLoggedIn = justLoggedIn;
   }
-  @action setCachedRewardPoints(points: number) {
-    this.cachedRewardPoints = points;
-    SecureStore.setItemAsync('user.cachedRewardPoints', String(points));
-  }
-  
+
   setEvmWallet(wallet: { publicAddress: string } | null) {
     //console.log('[SessionStore] Set EVM wallet:', wallet);
     this.evmWallet = wallet;
@@ -190,17 +175,14 @@ export class SessionStore {
   }
 
   async load(): Promise<AuthSession | null> {
-	
     const session = await this.loadSession();
     this.setSession(session as AuthSession);
     if (session) {
       await this.loadUser();
       await this.loadProfile();
       await this.loadPreferences();
-	  await this.loadCachedRewardPoints();
       await this.loadEvmWallet();
     }
-	this.isLoaded = true;
     return session;
   }
 
@@ -264,29 +246,12 @@ export class SessionStore {
     return prefs;
   }
 
-  async loadCachedRewardPoints() {
-    const value = await SecureStore.getItemAsync('user.cachedRewardPoints');
-    if (value) {
-      const parsed = Number(value);
-      if (!isNaN(parsed)) {
-        this.cachedRewardPoints = parsed;
-      }
-    }
-  }
-
-  async oauthLoginFromTokens(idToken: string, accessToken: string) {
-    const session = { idToken, accessToken };
-    this.setSession(session);
-    await this.save(session);
-  }
-  
   async clear() {
     await Promise.all(this.authKeys.map((key) => SecureStore.deleteItemAsync(key)));
     await SecureStore.deleteItemAsync(this.userKey);
     await SecureStore.deleteItemAsync(this.profileKey);
     await SecureStore.deleteItemAsync(this.preferencesKey);
-	await SecureStore.deleteItemAsync('user.cachedRewardPoints');
-	this.cachedRewardPoints = null;
+
     this.setSession(null);
     this.setUser(null);
     this.setProfile(null);

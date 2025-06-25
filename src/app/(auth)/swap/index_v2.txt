@@ -23,7 +23,7 @@ import { useCallback } from 'react';
 import { CryptoAsset } from '@/types/assets';
 import { balanceStore } from '@/stores/BalanceStore';
 import { swapStore as bloc } from '@/stores/SwapStore';
-import { fetchQuote, IQuoteRequest } from '@/services/emigro/quotes';
+import { fetchQuote as fetchQuoteFromApi } from '@/services/emigro/quotes';
 import { assetIconMap } from '@/utils/assetIcons';
 
 import { chainIconMap } from '@/utils/chainIconMap';
@@ -73,7 +73,28 @@ const Swap = () => {
   const [sellAssetBalance, setSellAssetBalance] = useState<number>(0);
   const [buyAssetBalance, setBuyAssetBalance] = useState<number>(0);
   const exceedsBalance = Number(sellValue || 0) > sellAssetBalance;
+  
+  const [lastQuote, setLastQuote] = useState<any | null>(null);
+  
+  const priceImpact = Number(lastQuote?.priceImpactPercent);
+  const hasValidImpact = Number.isFinite(priceImpact);
 
+  const formatRouterName = (routerType: string) => {
+    const normalized = routerType?.toLowerCase().replace(/\s/g, '').replace(/v(\d)/, '-v$1'); // normalize formats like "uniswapv3"
+
+    const nameMap: Record<string, string> = {
+      'uniswap-v2': 'Uniswap V2',
+      'uniswap-v3': 'Uniswap V3',
+      'uniswapv2': 'Uniswap V2',
+      'uniswapv3': 'Uniswap V3',
+      'aerodrome': 'Aerodrome',
+      'camelot': 'Camelot',
+      'sushiswap': 'SushiSwap',
+    };
+
+    return nameMap[normalized] || 'Unknown';
+  };
+  
   const isSwapDisabled =
     fetchingRate ||
     !sellValue ||
@@ -100,54 +121,100 @@ const Swap = () => {
     const parsedValue = Number(sellValue);
     const isValid =
       parsedValue > 0 &&
-      sellAsset?.assetId &&
-      (buyAsset?.assetId || buyAsset?.id) &&
-      sellAsset.assetId !== (buyAsset?.assetId ?? buyAsset?.id);
+      sellAsset?.contractAddress &&
+      buyAsset?.contractAddress &&
+      selectedWalletId;
 
     if (!isValid) {
-      console.warn('[swap index][fetchQuote] Skipping fetch due to invalid input');
+      console.warn('[swap index][fetchQuote] ⚠️ Skipping fetch due to invalid input', {
+        sellValue,
+        sellAsset,
+        buyAsset,
+        selectedWalletId,
+      });
       return;
     }
 
+    const selectedWallet = wallets.find(w => w.id === selectedWalletId);
+    const chain = chains.find(c => c.id === selectedWallet?.chainId);
+    const chainId = Number(chain?.chainId);
+
+    if (!chainId) {
+      console.error('[swap index][fetchQuote] ❌ Missing or invalid chainId', {
+        selectedWalletId,
+        wallet: selectedWallet,
+        chain,
+      });
+      return;
+    }
+
+    const fromToken = sellAsset.contractAddress;
+    const toToken = buyAsset.contractAddress;
+
+    const payload = {
+      fromTokenAddress: fromToken,
+      toTokenAddress: toToken,
+      amount: sellValue,
+      chainId,
+      slippage: 0.75,
+    };
+
     try {
+      console.log('[swap index][fetchQuote] 📤 Sending quote request', {
+        payload,
+        sellAsset: {
+          symbol: sellAsset.symbol,
+          decimals: sellAsset.decimals,
+        },
+        buyAsset: {
+          symbol: buyAsset.symbol,
+          decimals: buyAsset.decimals,
+        },
+        chain,
+      });
+
       setFetchingRate(true);
 
-      const decimals = sellAsset.decimals ?? 6;
-      const amountInBaseUnits = toBaseUnits(sellValue, decimals);
+      // 🔐 Make sure you're calling the correct imported fetchQuote
+      const response = await fetchQuoteFromApi(payload); // renamed to avoid self-calling
 
-      const quoteReq: IQuoteRequest = {
-        fromAssetId: sellAsset.assetId,
-        toAssetId: buyAsset.assetId ?? buyAsset.id,
-        amount: amountInBaseUnits,
-        maxSlippageBps: '100',
-      };
+	  if (!response) {
+	    console.warn('[swap index][fetchQuote] ❌ Quote returned null/undefined from API');
+	    setBuyValue('');
+	    setRate(null);
+	    setErrorMessage('Could not fetch quote. Try again.');
+	    return;
+	  }
 
-      console.log('[swap index][fetchQuote] 🚀 Sending:', quoteReq);
-      const quote = await fetchUniswapQuote(quoteReq);
 
-      const destinationAmount = Number(quote.amountOut);
-      const humanReadable = destinationAmount / 10 ** quote.toDecimals;
+      const estimatedAmount = parseFloat(response.estimatedAmount);
+      const calculatedRate = parsedValue / estimatedAmount;
 
-      setBuyValue(humanReadable.toFixed(6));
-      setRate(parsedValue / humanReadable);
+      console.log('[swap index][fetchQuote] ✅ Quote received', {
+        response,
+        estimatedAmount,
+        calculatedRate,
+      });
 
-      console.log('[swap index][fetchQuote] ✅ Result:', quote);
+      setBuyValue(estimatedAmount.toFixed(6));
+      setRate(calculatedRate);
+	  setLastQuote(response);
+      setErrorMessage(null);
     } catch (err) {
       console.error(`[swap index][fetchQuote] ❌ Error on attempt ${retry + 1}:`, err);
 
-      if (retry < 4) {
-        // wait 500ms * 2^retry before retrying
-        const delay = 500 * 2 ** retry;
-        await new Promise(res => setTimeout(res, delay));
-        return fetchQuote(retry + 1);
-      }
+
 
       setBuyValue('');
       setRate(null);
+      setErrorMessage('Currently, there is no swap available for this pair.');
     } finally {
       setFetchingRate(false);
     }
   };
+
+
+
 
 
   // Fetch once on mount with interval
@@ -155,7 +222,7 @@ const Swap = () => {
     useCallback(() => {
       const interval = setInterval(() => {
         fetchQuote();
-      }, 5000);
+      }, 20000);
 
       return () => {
         console.log('[swap index] 🔁 Clearing interval on blur');
@@ -180,6 +247,7 @@ const Swap = () => {
     setSellValue('');
     setBuyValue('');
     setRate(null);
+	setErrorMessage(null);
 
     setTimeout(() => inputRef.current?.focus(), 50);
   };
@@ -196,10 +264,9 @@ const Swap = () => {
     const tokenIn = sellAsset.contractAddress || sellAsset.address || sellAsset.tokenAddress;
     const tokenOut = buyAsset.contractAddress || buyAsset.address || buyAsset.tokenAddress;
 
-    // ✅ Get the numeric chainId from the selected wallet
     const selectedWallet = wallets.find(w => w.id === selectedWalletId);
-	const chain = chains.find(c => c.id === selectedWallet?.chainId);
-	const chainId = chain?.id;
+    const chain = chains.find(c => c.id === selectedWallet?.chainId);
+    const chainId = chain?.id;
 
     if (!tokenIn || !tokenOut) {
       console.error('[swap index][handleReview] ❌ Missing tokenIn or tokenOut', {
@@ -210,31 +277,40 @@ const Swap = () => {
       return;
     }
 
-	if (!chainId) {
-	  console.error('[swap index][handleReview] ❌ Missing chainId:', chainId);
-	  setErrorMessage('Invalid chain ID for selected wallet.');
-	  return;
-	}
+    if (!chainId) {
+      console.error('[swap index][handleReview] ❌ Missing chainId:', chainId);
+      setErrorMessage('Invalid chain ID for selected wallet.');
+      return;
+    }
 
-	console.log('[swap index][handleReview] ✅ Pushing to /swap/status with params:', {
-	  walletId: selectedWalletId,
-	  chainId,
-	  tokenIn,
-	  tokenOut,
-	  amountIn,
-	});
+    if (!lastQuote) {
+      console.error('[swap index][handleReview] ❌ Missing lastQuote');
+      setErrorMessage('Missing quote information.');
+      return;
+    }
 
-	router.push({
-	  pathname: '/swap/status',
-	  params: {
-	    walletId: selectedWalletId,
-	    chainId,
-	    tokenIn,
-	    tokenOut,
-	    amountIn,
-	  },
-	});
+    console.log('[swap index][handleReview] ✅ Pushing to /swap/status with full quote:', {
+      walletId: selectedWalletId,
+      chainId,
+      tokenIn,
+      tokenOut,
+      amountIn,
+      quote: lastQuote,
+    });
+
+    router.push({
+      pathname: '/swap/status',
+      params: {
+        walletId: selectedWalletId,
+        chainId,
+        tokenIn,
+        tokenOut,
+        amountIn,
+        quote: JSON.stringify(lastQuote),
+      },
+    });
   };
+
 
 
 
@@ -374,9 +450,11 @@ const Swap = () => {
       (buyAsset?.assetId || buyAsset?.id) &&
       sellAsset.assetId !== (buyAsset?.assetId ?? buyAsset?.id)
     ) {
+      setErrorMessage(null); // ✅ Clear error before new quote attempt
       fetchQuote();
     }
   }, [sellValue, sellAsset, buyAsset]);
+
 
   
   return (
@@ -417,14 +495,14 @@ const Swap = () => {
 		    </ScrollView>
 
 		    {/* Fixed gear icon */}
-		    <View style={{ width: 32, alignItems: 'flex-end' }}>
+		    {/*<View style={{ width: 32, alignItems: 'flex-end' }}>
 		      <Pressable onPress={() => console.log('Open settings')}>
 		        <Image
 		          source={require('@/assets/images/icons/gear.png')}
 		          style={{ width: 20, height: 20, tintColor: 'white' }}
 		        />
 		      </Pressable>
-		    </View>
+		    </View>*/}
 		  </HStack>
 		  
             <VStack>
@@ -530,13 +608,89 @@ const Swap = () => {
 				</Text>
               </Box>
 
+			  
+			  
               {/* Price info */}
-              {rate && buyAsset && (
-                <Text className="text-white text-center pt-3">
-                  1 {sellAsset.symbol} ≈ {(1 / rate).toFixed(6)} {buyAsset.symbol}
-                </Text>
-              )}
+			  {rate && buyAsset && lastQuote && (
+			    <View style={{ marginTop: 16, paddingHorizontal: 12 }}>
+			      {/* Main Rate Display */}
+			      <Text className="text-white text-center text-base font-medium mb-4">
+			        1 {sellAsset.symbol} ≈ {(1 / rate).toFixed(6)} {buyAsset.symbol}
+			      </Text>
 
+			      {/* Simple Table */}
+			      <View>
+				  {/* Row utility */}
+				  {[
+				    {
+				      label: 'Best Price',
+				      value: formatRouterName(lastQuote?.routerType),
+				      icon: lastQuote?.routerType === 'aerodrome'
+				        ? require('@/assets/images/dex/aero.png')
+				        : lastQuote?.routerType === 'uniswap-v2'
+				        ? require('@/assets/images/dex/uniswap-v2.png')
+				        : require('@/assets/images/dex/uniswap-v3.png'),
+				    },
+				    {
+				      label: 'LP Provider Fee',
+				      value: `${Number(lastQuote?.liquidityPoolFeePercent || 0).toFixed(2)}%`,
+				    },
+				    {
+				      label: 'Swap Fee',
+				      value: `${Number(lastQuote?.emigroFeePercent || 0).toFixed(2)}%`,
+				    },
+				    hasValidImpact && {
+				      label: 'Price Impact',
+				      value: `${priceImpact.toFixed(3)}%`,
+				      isHighImpact: priceImpact > 5,
+				    },
+				    {
+				      label: 'Minimum Received',
+				      value: `${parseFloat(lastQuote?.humanMinAmountIn || '0').toFixed(6)} ${buyAsset.symbol}`,
+				    }
+				  ]
+				  .filter(Boolean) // ✅ removes false/null
+				  .map((row, idx) => (
+				    <View
+				      key={idx}
+				      style={{
+				        flexDirection: 'row',
+				        justifyContent: 'space-between',
+				        alignItems: 'center',
+				        borderBottomColor: '#333',
+				        borderBottomWidth: 1,
+				        paddingVertical: 10,
+				      }}
+				    >
+				      <Text className="text-white text-sm">{row.label}</Text>
+				      <HStack space="xs" align="center">
+				        {row.icon && (
+				          <Image
+				            source={row.icon}
+				            style={{ width: 16, height: 16, marginRight: 6 }}
+				            resizeMode="contain"
+				          />
+				        )}
+				        <Text
+				          className={`text-sm ${
+				            row.isHighImpact ? 'text-red-500 font-bold' : 'text-white'
+				          }`}
+				        >
+				          {row.value}
+				        </Text>
+				      </HStack>
+				    </View>
+				  ))}
+
+			      </View>
+			    </View>
+			  )}
+
+			  
+			  {errorMessage && (
+			    <Text className="text-red-500 text-center mt-2">{errorMessage}</Text>
+			  )}
+			  
               {/* Review Button */}
 			  <Button
 			    disabled={isSwapDisabled}
@@ -549,9 +703,7 @@ const Swap = () => {
 			    </ButtonText>
 			  </Button>
 
-			  {errorMessage && (
-			    <Text className="text-red-500 text-center mt-2">{errorMessage}</Text>
-			  )}
+
             </VStack>
           </Box>
         </ScrollView>
@@ -562,15 +714,30 @@ const Swap = () => {
 	    walletId={selectedWalletId ?? ''}
 	    isOpen={isAssetSheetOpen}
 	    onClose={() => setIsAssetSheetOpen(false)}
-	    onSelect={(asset) => {
-	      const clean = sanitizeAsset(asset);
-	      console.log('[swap][index] ✅ Sanitized asset selected:', clean);
-	      if (selectingSellAsset) {
-	        setSellAsset(clean);
-	      } else {
-	        setBuyAsset(clean);
-	      }
-	    }}
+		onSelect={(asset) => {
+		  const clean = sanitizeAsset(asset);
+		  console.log('[swap][index] ✅ Sanitized asset selected:', clean);
+
+		  // 🔁 Fully reset quote-related state first
+		  setSellValue('');
+		  setBuyValue('');
+		  setRate(null);
+		  setLastQuote(null);
+		  setErrorMessage(null);
+
+		  // 🔄 Update assets AFTER resetting everything
+		  if (selectingSellAsset) {
+		    setSellAsset(clean);
+		  } else {
+		    setBuyAsset(null); // 👈 force unmount of price info
+		    // tiny delay to guarantee re-render before setting new one
+		    setTimeout(() => {
+		      setBuyAsset(clean);
+		    }, 0);
+		  }
+		}}
+
+
 	  />
     </>
   );

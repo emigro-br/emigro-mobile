@@ -54,11 +54,11 @@ export const WalletTransactions = () => {
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const [isSheetOpen, setSheetOpen] = useState(false);
 
-  const getChainName = (id: string) => {
+  const getChainName = (id: string | null | undefined) => {
+    if (!id) return 'Unknown';
     const chain = chains.find(c => c.id === id);
     return chain?.name ?? id.slice(0, 4);
   };
-
   const fetchTransactions = async () => {
     const isFirstLoad = transactions.length === 0;
     if (isFirstLoad) setLoading(true);
