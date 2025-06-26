@@ -64,7 +64,6 @@
         "NSCameraUsageDescription": "We need camera access to scan QRCode Payments.",
         "NSLocationWhenInUseUsageDescription": "This app uses your location to provide personalized content.",
         "NSPhotoLibraryUsageDescription": "Photo access is used to QRCode Payments.",
-        "NSUserTrackingUsageDescription": "Send you notifications about app updates and payments status.",
         "UIBackgroundModes": ["remote-notification"],
         "CFBundleURLTypes": [
           {
