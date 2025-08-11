@@ -4,7 +4,7 @@ import { api } from '@/services/emigro/api';
 import { sessionStore } from '@/stores/SessionStore';
 
 export const useUserRewardPoints = () => {
-  const [points, setPoints] = useState<number>(0);
+  const [points, setPoints] = useState<number>(sessionStore.cachedRewardPoints ?? 0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,6 +20,7 @@ export const useUserRewardPoints = () => {
         const parsed = Number(value);
         console.log(`[useUserRewardPoints] Parsed points: ${parsed}`);
 
+        sessionStore.setCachedRewardPoints(parsed);
         setPoints(parsed);
       } catch (error) {
         console.error('[useUserRewardPoints] Failed to fetch points:', error);

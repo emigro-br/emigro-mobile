@@ -18,6 +18,8 @@ import { sessionStore } from '@/stores/SessionStore';
 
 import * as Notifications from 'expo-notifications';
 
+import { observer } from 'mobx-react-lite';
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -38,7 +40,12 @@ let routingInstrumentation: any;
 
 try {
   const sentryDsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
-
+  if (!sentryDsn) {
+    console.warn('[SENTRY] ❌ DSN is missing in production!');
+  } else {
+    console.log('[SENTRY] ✅ DSN is:', sentryDsn);
+  }
+  
   if (Sentry && Sentry.ReactNavigationInstrumentation) {
     routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
   } else {
@@ -47,19 +54,30 @@ try {
 
   if (sentryDsn && Sentry) {
     console.log('[app/_layout][SENTRY] Initializing...');
+    console.log('[Sentry] DSN from env:', sentryDsn); // ✅ Log DSN for confirmation
+
     Sentry.init({
       dsn: sentryDsn,
       debug: __DEV__,
       environment: __DEV__ ? 'development' : 'production',
-      tracesSampleRate: 1.0,
+      sendDefaultPii: true,
+      replaysSessionSampleRate: 0.1,
+      replaysOnErrorSampleRate: 1,
       integrations: [
         new Sentry.ReactNativeTracing({
           routingInstrumentation,
           enableNativeFramesTracking: !isRunningInExpoGo(),
         }),
+        Sentry.mobileReplayIntegration(),
+        Sentry.feedbackIntegration(),
       ],
     });
+
+    // ✅ Send test events
+    Sentry.captureMessage('✅ Test message from _layout.tsx');
+    Sentry.captureException(new Error('🚨 Test error from _layout.tsx'));
   }
+
 } catch (e) {
   console.error('[app/_layout][SENTRY] Failed to initialize Sentry:', e);
 }
@@ -75,6 +93,10 @@ function AppLayout() {
   const router = useRouter();
   const hasRedirected = useRef(false);
 
+  useEffect(() => {
+    Sentry.captureException(new Error('🔥 Forced Test Error - Post-init'));
+  }, []);
+  
   useEffect(() => {
     try {
       if (routingInstrumentation && navRef) {
@@ -223,10 +245,10 @@ function AppLayout() {
     return <VersionLockScreen message={blockMessage} storeUrl={storeUrl} />;
   }
 
-  if (!isReady) {
+  if (!isReady || !sessionStore.isLoaded) {
     return (
       <View className="flex-1 bg-background-0 justify-center items-center">
-        <Text style={{ color: 'gray' }}>Loading...</Text>
+        <Text style={{ color: 'gray' }}>Loading…</Text>
       </View>
     );
   }

@@ -1,25 +1,24 @@
-// src/app/(auth)/swap/status.tsx
-
+import 'react-native-get-random-values';
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Pressable, Animated } from 'react-native';
 import { useRouter, useLocalSearchParams, Stack } from 'expo-router';
 import LottieView from 'lottie-react-native';
-
 import { Box } from '@/components/ui/box';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
 import { api } from '@/services/emigro/api';
+import { sessionStore } from '@/stores/SessionStore';
 
 const STATUS_MAP = {
-  pending: {
+  p001: {
     message: 'Starting swap...',
     secondmessage: 'Hang tight — we are currently preparing your swap',
     lottie: require('@/assets/lotties/loading.json'),
   },
   s001: {
-    message: 'Swapping tokens...',
-    secondmessage: 'Hang tight — your swap is being executed. Please keep your application open while we complete your operation (estimated less than 30 seconds)',
-    lottie: require('@/assets/lotties/loading.json'),
+    message: 'Your swap is on the way',
+    secondmessage: 'Your swap has been successfully sent onchain and you will be notified once the status changes (≈ 30s). You can leave this screen with success.',
+    lottie: require('@/assets/lotties/success.json'),
   },
   f001: {
     message: 'Swap complete!',
@@ -41,40 +40,53 @@ const fallbackStatus = {
 
 const SwapStatusScreen = () => {
   const router = useRouter();
-  const { walletId, chainId, tokenIn, tokenOut, amountIn } = useLocalSearchParams();
+  const { walletId, chainId, tokenIn, tokenOut, amountIn, quote } = useLocalSearchParams();
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
-  const [status, setStatus] = useState<'pending' | 's001' | 'f001' | 'e001'>('pending');
+  const [status, setStatus] = useState<string>('p001');
   const [txId, setTxId] = useState<string | null>(null);
+
+  const lastQuote = JSON.parse(quote as string);
+  const { user } = sessionStore;
+  const selectedWallet = user?.wallets?.find(w => w.id === walletId);
+  const walletAddress = selectedWallet?.publicAddress;
 
   useEffect(() => {
     const performSwap = async () => {
       try {
-        setStatus('s001');
+        if (!walletAddress) {
+          console.error('[swap status] ❌ Could not resolve walletAddress from walletId:', walletId);
+          setStatus('e001');
+          return;
+        }
 
-        const payload = {
-          walletId: walletId as string,
-          chainId: chainId as string,
-          tokenIn: tokenIn as string,
-          tokenOut: tokenOut as string,
-          amountIn: amountIn as string,
-        };
+		const payload = {
+		  fromTokenAddress: tokenIn as string,
+		  toTokenAddress: tokenOut as string,
+		  amount: amountIn as string,
+		  chainId: lastQuote?.chainId,
+		  routerType: lastQuote?.routerType,
+		  feeTier: lastQuote?.feeTier,
+		  estimatedAmount: lastQuote?.rawQuote,
+		  minAmountIn: lastQuote?.minAmountIn,
+		  slippage: Number(lastQuote?.slippagePercent ?? 0.75),
+		  multihop: lastQuote?.multihop ?? false,
+		};
 
-        console.log('[swap status] 🔁 swap payload', payload);
 
-		const response = await api().post('/evm/swap-evm', payload);
-		console.log('[swap status] 🧾 Swap response', response.data);
-		const txStatus = response.data?.data?.status;
-		const txId = response.data?.data?.id;
+        console.log('[swap status] 🔁 Final payload', payload);
 
-		setTxId(txId);
+        const response = await api().post('/emigroswap/swap', payload);
+        const intentId = response.data?.intentId;
 
-		if (txStatus === 'CONFIRMED') {
-		  setStatus('f001');
-		} else {
-		  console.warn('[swap status] ⚠️ Unexpected transaction status:', txStatus);
-		  setStatus('e001');
-		}
+        if (!intentId) {
+          console.error('[swap status] ❌ No intentId returned from backend');
+          setStatus('e001');
+          return;
+        }
+
+        setTxId(intentId);
+        pollForStatus(intentId);
       } catch (err) {
         console.error('[swap status] ❌ Swap failed:', err);
         setStatus('e001');
@@ -83,6 +95,22 @@ const SwapStatusScreen = () => {
 
     performSwap();
   }, [walletId, chainId, tokenIn, tokenOut, amountIn]);
+
+  const pollForStatus = (intentId: string) => {
+    const interval = setInterval(async () => {
+      try {
+        const { data } = await api().get(`/emigroswap/transaction/${intentId}`);
+        const backendStatus = data?.status;
+
+        if (backendStatus === 'f001' || backendStatus === 'e001') {
+          clearInterval(interval);
+          setStatus(backendStatus);
+        }
+      } catch (err) {
+        console.error('[pollForStatus] ❌ Error fetching status:', err);
+      }
+    }, 3000);
+  };
 
   const animatePress = () => {
     Animated.sequence([
@@ -96,7 +124,7 @@ const SwapStatusScreen = () => {
   };
 
   const statusConfig = STATUS_MAP[status] || fallbackStatus;
-  const isComplete = status === 'f001' || status === 'e001';
+  const isComplete = status === 'f001' || status === 'e001' || status === 's001';
 
   return (
     <>
@@ -117,8 +145,6 @@ const SwapStatusScreen = () => {
           <Text size="md" className="text-white text-center mt-2">
             {statusConfig.secondmessage}
           </Text>
-
-
 
           {isComplete && (
             <Pressable onPressIn={animatePress} onPress={handleGoHome}>

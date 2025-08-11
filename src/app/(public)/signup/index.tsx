@@ -8,9 +8,12 @@ import {
   ScrollView,
   Keyboard,
   TouchableWithoutFeedback,
+  SafeAreaView,
+  ViewStyle,
 } from 'react-native';
 import { SubmitHandler, useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Box } from '@/components/ui/box';
 import { Heading } from '@/components/ui/heading';
@@ -28,7 +31,6 @@ import { AlertCircleIcon } from '@/components/ui/icon';
 import { signUp } from '@/services/emigro/auth';
 import { RegisterUserRequest, Role } from '@/services/emigro/types';
 import { BadRequestException } from '@/types/errors';
-
 
 type FormData = {
   firstName: string;
@@ -55,6 +57,7 @@ const CreateAccount = () => {
   });
 
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  const insets = useSafeAreaInsets();
 
   const animatePress = () => {
     Animated.sequence([
@@ -98,136 +101,152 @@ const CreateAccount = () => {
     borderColor: focusedField === field ? '#ff0033' : '#333',
   });
 
+  const contentStyle: ViewStyle = {
+    flexGrow: 1,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: Math.max(insets.bottom, 16) + 24,
+  };
+
   return (
-	<KeyboardAvoidingView
-	  style={{ flex: 1 }}
-	  behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-	  keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
-	>
-	  <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-	    <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-	      <Box className="flex-1 bg-black p-6 justify-center">
-	      <VStack space="lg">
-            <Heading size="xl" className="text-white text-center mb-6">
-              Sign up to Emigro
-            </Heading>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'black' }}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={insets.top + 40}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <ScrollView
+            contentContainerStyle={contentStyle}
+            keyboardShouldPersistTaps="handled"
+          >
+            <Box className="flex-1">
+              <VStack space="lg">
+                <Heading size="xl" className="text-white text-center mb-6">
+                  Sign up to Emigro
+                </Heading>
 
-            <VStack space="xl">
-              {/* First Name */}
-              <Controller
-                control={control}
-                name="firstName"
-                rules={{ required: true }}
-                render={({ field: { onChange, value } }) => (
-                  <TextInput
-                    placeholder="First Name"
-                    placeholderTextColor="#888"
-                    value={value}
-                    onChangeText={onChange}
-                    onFocus={() => setFocusedField('firstName')}
-                    onBlur={() => setFocusedField(null)}
-                    style={inputStyle('firstName')}
+                <VStack space="xl">
+                  {/* First Name */}
+                  <Controller
+                    control={control}
+                    name="firstName"
+                    rules={{ required: true }}
+                    render={({ field: { onChange, value } }) => (
+                      <TextInput
+                        placeholder="First Name"
+                        placeholderTextColor="#888"
+                        value={value}
+                        onChangeText={onChange}
+                        onFocus={() => setFocusedField('firstName')}
+                        onBlur={() => setFocusedField(null)}
+                        style={inputStyle('firstName')}
+                      />
+                    )}
                   />
-                )}
-              />
 
-              {/* Last Name */}
-              <Controller
-                control={control}
-                name="lastName"
-                rules={{ required: true }}
-                render={({ field: { onChange, value } }) => (
-                  <TextInput
-                    placeholder="Last Name"
-                    placeholderTextColor="#888"
-                    value={value}
-                    onChangeText={onChange}
-                    onFocus={() => setFocusedField('lastName')}
-                    onBlur={() => setFocusedField(null)}
-                    style={inputStyle('lastName')}
+                  {/* Last Name */}
+                  <Controller
+                    control={control}
+                    name="lastName"
+                    rules={{ required: true }}
+                    render={({ field: { onChange, value } }) => (
+                      <TextInput
+                        placeholder="Last Name"
+                        placeholderTextColor="#888"
+                        value={value}
+                        onChangeText={onChange}
+                        onFocus={() => setFocusedField('lastName')}
+                        onBlur={() => setFocusedField(null)}
+                        style={inputStyle('lastName')}
+                      />
+                    )}
                   />
-                )}
-              />
 
-              {/* Email */}
-              <Controller
-                control={control}
-                name="email"
-                rules={{ required: true }}
-                render={({ field: { onChange, value } }) => (
-                  <TextInput
-                    placeholder="Email"
-                    placeholderTextColor="#888"
-                    value={value}
-                    onChangeText={onChange}
-                    keyboardType="email-address"
-                    onFocus={() => setFocusedField('email')}
-                    onBlur={() => setFocusedField(null)}
-                    style={inputStyle('email')}
+                  {/* Email */}
+                  <Controller
+                    control={control}
+                    name="email"
+                    rules={{ required: true }}
+                    render={({ field: { onChange, value } }) => (
+                      <TextInput
+                        placeholder="Email"
+                        placeholderTextColor="#888"
+                        value={value}
+                        onChangeText={onChange}
+                        keyboardType="email-address"
+                        onFocus={() => setFocusedField('email')}
+                        onBlur={() => setFocusedField(null)}
+                        style={inputStyle('email')}
+                      />
+                    )}
                   />
-                )}
-              />
 
-              {/* Password */}
-              <Controller
-                control={control}
-                name="password"
-                rules={{ required: true }}
-                render={({ field: { onChange, value } }) => (
-                  <TextInput
-                    placeholder="Password"
-                    placeholderTextColor="#888"
-                    value={value}
-                    onChangeText={onChange}
-                    secureTextEntry
-                    onFocus={() => setFocusedField('password')}
-                    onBlur={() => setFocusedField(null)}
-                    style={inputStyle('password')}
+                  {/* Password */}
+                  <Controller
+                    control={control}
+                    name="password"
+                    rules={{ required: true }}
+                    render={({ field: { onChange, value } }) => (
+                      <TextInput
+                        placeholder="Password"
+                        placeholderTextColor="#888"
+                        value={value}
+                        onChangeText={onChange}
+                        secureTextEntry
+                        onFocus={() => setFocusedField('password')}
+                        onBlur={() => setFocusedField(null)}
+                        style={inputStyle('password')}
+                      />
+                    )}
                   />
-                )}
-              />
 
-              {/* API Error */}
-              {apiError && (
-                <FormControl isInvalid={!!apiError}>
-                  <FormControlError>
-                    <FormControlErrorIcon as={AlertCircleIcon} />
-                    <FormControlErrorText>{apiError}</FormControlErrorText>
-                  </FormControlError>
-                </FormControl>
-              )}
+                  {/* API Error */}
+                  {apiError && (
+                    <FormControl isInvalid={!!apiError}>
+                      <FormControlError>
+                        <FormControlErrorIcon as={AlertCircleIcon} />
+                        <FormControlErrorText>{apiError}</FormControlErrorText>
+                      </FormControlError>
+                    </FormControl>
+                  )}
 
-              {/* Create Account Button */}
-              <Pressable onPressIn={animatePress} onPress={handleSubmit(onSubmit)} disabled={isLoading}>
-                <Animated.View
-                  style={{ transform: [{ scale: scaleAnim }] }}
-                  className={`bg-primary-500 rounded-full py-4 items-center justify-center mt-4 ${
-                    isLoading ? 'opacity-50' : ''
-                  }`}
-                >
-                  <Text className="text-white font-bold text-lg">
-                    {isLoading ? 'Creating account...' : 'Create Account'}
-                  </Text>
-                </Animated.View>
-              </Pressable>
+                  {/* Create Account Button */}
+                  <Pressable
+                    onPressIn={animatePress}
+                    onPress={handleSubmit(onSubmit)}
+                    disabled={isLoading}
+                  >
+                    <Animated.View
+                      style={{ transform: [{ scale: scaleAnim }] }}
+                      className={`bg-primary-500 rounded-full py-4 items-center justify-center mt-4 ${
+                        isLoading ? 'opacity-50' : ''
+                      }`}
+                    >
+                      <Text className="text-white font-bold text-lg">
+                        {isLoading ? 'Creating account...' : 'Create Account'}
+                      </Text>
+                    </Animated.View>
+                  </Pressable>
 
-              {/* Sign In link */}
-              <HStack className="justify-center mt-6">
-                <Text size="md" className="text-white">
-                  Already have an account?
-                </Text>
-                <Link onPress={() => router.replace('/login')}>
-                  <Text size="md" bold className="text-primary-500 ml-2">
-                    Sign in
-                  </Text>
-				              </Link>
-				            </HStack>
-				          </VStack>
-				        </VStack>
-						      </Box>
-						    </ScrollView>
-						  </TouchableWithoutFeedback>
-						</KeyboardAvoidingView>
+                  {/* Sign In link */}
+                  <HStack className="justify-center mt-6">
+                    <Text size="md" className="text-white">
+                      Already have an account?
+                    </Text>
+                    <Link onPress={() => router.replace('/login')}>
+                      <Text size="md" bold className="text-primary-500 ml-2">
+                        Sign in
+                      </Text>
+                    </Link>
+                  </HStack>
+                </VStack>
+              </VStack>
+            </Box>
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 

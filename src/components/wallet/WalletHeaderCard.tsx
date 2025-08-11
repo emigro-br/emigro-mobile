@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { View, Animated, Easing, ActivityIndicator } from 'react-native';
+import { ActivityIndicator } from 'react-native';
+import { observer } from 'mobx-react-lite';
 
 import { VStack } from '@/components/ui/vstack';
 import { HStack } from '@/components/ui/hstack';
@@ -17,6 +18,7 @@ import { Pressable } from '@/components/ui/pressable';
 import { WalletActionButton } from '@/components/wallet/WalletActionButton';
 
 import { sessionStore } from '@/stores/SessionStore';
+import { balanceStore } from '@/stores/BalanceStore';
 import { useWalletBalances } from '@/hooks/useWalletBalances';
 import { fetchFiatQuote } from '@/services/emigro/quotes';
 import { symbolFor } from '@/utils/assets';
@@ -27,64 +29,53 @@ type Props = {
   refreshTrigger: number;
 };
 
-export const WalletHeaderCard = ({ hide, toggleHide, refreshTrigger }: Props) => {
+const WalletHeaderCardComponent = ({ hide, toggleHide, refreshTrigger }: Props) => {
   const router = useRouter();
-  const fadeAnim = useState(new Animated.Value(0))[0];
-
-  const [totalFiat, setTotalFiat] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [formattedBalance, setFormattedBalance] = useState<string>('');
 
   const walletId = sessionStore.user?.wallets?.[0]?.id ?? '';
   const bankCurrency = sessionStore.preferences?.fiatsWithBank?.[0] ?? 'USD';
-
   const { balances } = useWalletBalances(walletId);
+
+  const [localBalance, setLocalBalance] = useState<number | null>(
+    balanceStore.totalBalance
+  );
+
+  useEffect(() => {
+    if (balanceStore.totalBalance !== null) {
+      setLocalBalance(balanceStore.totalBalance);
+    }
+  }, [balanceStore.totalBalance]);
+
+  const formattedBalance =
+    localBalance !== null ? symbolFor(bankCurrency, localBalance) : '';
+  const showSpinner = !hide && localBalance === null;
 
   useEffect(() => {
     const fetchTotal = async () => {
       if (!balances.length) return;
 
-      setLoading(true);
-      fadeAnim.setValue(0); // reset animation
-
       let sum = 0;
 
       await Promise.all(
         balances.map(async (asset) => {
-          const rawBalance = parseFloat(asset.balance);
-          if (!rawBalance || rawBalance <= 0) return;
+          const raw = parseFloat(asset.balance);
+          if (!raw || raw <= 0) return;
 
           if (asset.symbol === bankCurrency) {
-            sum += rawBalance;
+            sum += raw;
           } else {
             try {
               const quote = await fetchFiatQuote(asset.symbol, bankCurrency);
-              if (quote) {
-                sum += quote * rawBalance;
-              }
+              if (quote) sum += quote * raw;
             } catch (err) {
-              console.warn(
-                '[WalletHeaderCard] ⚠️ Quote fetch failed for',
-                asset.symbol,
-                '->',
-                bankCurrency,
-                err
-              );
+              console.warn('[WalletHeaderCard] Quote fetch failed:', asset.symbol, err);
             }
           }
         })
       );
 
-      setTotalFiat(sum);
-      setFormattedBalance(symbolFor(bankCurrency, sum));
-      setLoading(false);
-
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-        easing: Easing.out(Easing.ease),
-      }).start();
+      balanceStore.setTotalBalance(sum);
+      setLocalBalance(sum);
     };
 
     fetchTotal();
@@ -98,14 +89,16 @@ export const WalletHeaderCard = ({ hide, toggleHide, refreshTrigger }: Props) =>
 
           {hide ? (
             <Text className="text-white text-2xl font-bold mt-2">****</Text>
-          ) : loading || totalFiat === null ? (
-            <ActivityIndicator size="large" color="#ffffff" style={{ marginTop: 8 }} />
+          ) : showSpinner ? (
+            <ActivityIndicator
+              size="large"
+              color="#ffffff"
+              style={{ marginTop: 8 }}
+            />
           ) : (
-            <Animated.View style={{ opacity: fadeAnim }}>
-              <Text className="text-white text-5xl font-extrabold mt-2">
-                {formattedBalance}
-              </Text>
-            </Animated.View>
+            <Text className="text-white text-5xl font-extrabold mt-2">
+              {formattedBalance}
+            </Text>
           )}
         </VStack>
 
@@ -141,3 +134,5 @@ export const WalletHeaderCard = ({ hide, toggleHide, refreshTrigger }: Props) =>
     </VStack>
   );
 };
+
+export const WalletHeaderCard = observer(WalletHeaderCardComponent);

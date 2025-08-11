@@ -58,7 +58,13 @@ export const Wallet = () => {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Wallet', header: () => null }} />
+	<Stack.Screen
+	  options={{
+	    title: 'Wallet',
+	    header: () => null,
+	    unmountOnBlur: false,
+	  }}
+	/>
 
       <View className="flex-1 bg-background-0 dark:bg-background-900">
         <TopBar />

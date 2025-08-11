@@ -123,7 +123,7 @@ export const WalletBalances = ({ walletId, hide = false }: Props) => {
             const isETH = asset.symbol === 'ETH';
             const decimals = isUSDC ? 6 : 8;
             const formattedBalance = parsedBalance.toFixed(decimals);
-            const suffix = asset.symbol;
+            const suffix = !isUSDC && !isETH ? `$${asset.symbol}` : asset.symbol;
             const balanceDisplay = hide ? '****' : `${formattedBalance} ${suffix}`;
 
             const iconKey = asset.iconUrl?.split('/').pop()?.replace('.png', '').toLowerCase() ?? '';

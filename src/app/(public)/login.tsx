@@ -1,3 +1,5 @@
+// login
+
 import React, { useRef, useState } from 'react';
 import {
   Animated,
@@ -28,10 +30,13 @@ import {
 } from '@/components/ui/form-control';
 import { AlertCircleIcon } from '@/components/ui/icon';
 
+
+
 type FormData = {
   email: string;
   password: string;
 };
+
 
 const Login = () => {
   const router = useRouter();
@@ -44,7 +49,14 @@ const Login = () => {
   });
 
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  
+  
+  
+  
 
+  
+  
+  
   const animatePress = () => {
     Animated.sequence([
       Animated.timing(scaleAnim, { toValue: 0.96, duration: 100, useNativeDriver: true }),
@@ -147,6 +159,26 @@ const Login = () => {
                   )}
                 />
 
+				{/* Sign in button */}
+				<Pressable
+				  onPressIn={animatePress}
+				  onPress={handleSubmit(onSubmit)}
+				  disabled={isDisabled}
+				>
+				  <Animated.View
+				    style={{ transform: [{ scale: scaleAnim }] }}
+				    className={`bg-primary-500 rounded-full py-4 items-center justify-center mt-4 ${
+				      isDisabled ? 'opacity-50' : ''
+				    }`}
+				  >
+				    <Text className="text-white font-bold text-lg">
+				      {isLoggingIn ? 'Signing in...' : 'Sign in'}
+				    </Text>
+				  </Animated.View>
+				</Pressable>
+				
+
+				
                 {/* Forgot password */}
                 <Link onPress={() => router.push('/password-recovery')}>
                   <LinkText className="text-primary-500 text-right mt-2">
@@ -164,23 +196,7 @@ const Login = () => {
                   </FormControl>
                 )}
 
-                {/* Sign in button */}
-                <Pressable
-                  onPressIn={animatePress}
-                  onPress={handleSubmit(onSubmit)}
-                  disabled={isDisabled}
-                >
-                  <Animated.View
-                    style={{ transform: [{ scale: scaleAnim }] }}
-                    className={`bg-primary-500 rounded-full py-4 items-center justify-center mt-4 ${
-                      isDisabled ? 'opacity-50' : ''
-                    }`}
-                  >
-                    <Text className="text-white font-bold text-lg">
-                      {isLoggingIn ? 'Signing in...' : 'Sign in'}
-                    </Text>
-                  </Animated.View>
-                </Pressable>
+
 
                 {/* Sign up link */}
                 <HStack className="justify-center mt-6">
