@@ -21,7 +21,7 @@ import { LoadingScreen } from '@/screens/Loading';
 import { api } from '@/services/emigro/api';
 import { sessionStore } from '@/stores/SessionStore';
 import { brCodeFromMercadoPagoUrl } from '@/utils/pix';
-import { fetchQuote, fetchFiatQuote } from '@/services/emigro/quotes';
+import { fetchQuote, fetchFiatQuote, fetchDirectFiatPairQuote } from '@/services/emigro/quotes';
 import uuid from 'react-native-uuid';
 
 import { useRef } from 'react';
@@ -187,28 +187,25 @@ const FastQRCodeScreen = () => {
 
 			  const brlAmount = pixPayload.transactionAmount.toFixed(2);
 
-			  console.log('[FastQRCode] 🛰 Fetching BRL → USDC quote...', {
-			    from: 'BRL',
-			    to: 'USDC',
-			    amount: brlAmount,
-			    type: 'strict_send',
+			  console.log('[FastQRCode] 🛰 Fetching USDC/BRL price via /quote?asset=USDC&fiat=BRL...', {
+			    brlAmount,
 			  });
 
-			  const toUsdc = await fetchQuote({
-			    from: 'BRL',
-			    to: 'USDC',
-			    amount: brlAmount,
-			    type: 'strict_send',
-			  });
+			  const usdcBrlPrice = await fetchDirectFiatPairQuote('USDC', 'BRL'); // price of 1 USDC in BRL
 
-			  if (!toUsdc || typeof toUsdc !== 'object') {
-			    const responseDump = JSON.stringify(toUsdc).slice(0, 300);
-			    throw new Error(
-			      `fetchQuote returned null or malformed response: ${responseDump}. Parsed PIX: ${parsedPixDump}`
-			    );
+			  if (!usdcBrlPrice || isNaN(usdcBrlPrice) || usdcBrlPrice <= 0) {
+			    throw new Error(`[FiatPair] Invalid USDC/BRL price: ${usdcBrlPrice}. Parsed PIX: ${parsedPixDump}`);
 			  }
 
-			  const usdcAmount = Number(toUsdc?.destination_amount);
+			  // brlAmount is string; convert to number safely
+			  const brlAmtNum = Number(brlAmount);
+			  if (isNaN(brlAmtNum) || brlAmtNum <= 0) {
+			    throw new Error(`[FiatPair] Invalid BRL amount: ${brlAmount}. Parsed PIX: ${parsedPixDump}`);
+			  }
+
+			  const usdcAmount = brlAmtNum / usdcBrlPrice; // how many USDC to cover BRL amount
+			  console.log('[FastQRCode] 💵 USDC amount (derived):', usdcAmount);
+
 
 			  console.log('[FastQRCode] 💵 USDC amount:', usdcAmount);
 
@@ -274,7 +271,7 @@ const FastQRCodeScreen = () => {
               token: tokenAddress,
               amount: rawAmount,
               usePaymaster: true,
-              chainId: primary.chainIdOnchain,
+              chainId: Number(primary.chainIdOnchain),
               walletId: sessionStore.user.circleWallet?.circleWalletId,
               assetId: primary.assetId,
               tokenSymbol: assetSymbol,

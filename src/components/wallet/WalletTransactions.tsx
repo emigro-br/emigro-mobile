@@ -110,13 +110,20 @@ export const WalletTransactions = () => {
       };
     }
 
-    const floatVal = parseFloat(tx.token_amount || '0');
-    const formatted = floatVal.toFixed(6);
+    const metadata = typeof tx.metadata === "string" ? JSON.parse(tx.metadata) : (tx.metadata || {});
+    const decimals = metadata.fromDecimals ?? tx.token_decimals ?? 6;
+
+    const raw = Number(tx.token_amount || 0);
+    const human = raw / Math.pow(10, decimals);
+
     return {
-      value: formatted,
-      symbol: tx.token_symbol || '???',
+      value: human.toFixed(6),
+      symbol: tx.token_symbol || metadata.fromSymbol || '???',
     };
   };
+
+
+
 
   if (loading && transactions.length === 0) {
     return (

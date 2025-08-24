@@ -183,7 +183,6 @@ const Profile = observer(() => {
 			            style={{
 			              width: 32,
 			              height: 32,
-			              borderRadius: 32,
 			              marginLeft: idx === 0 ? 0 : -8,
 			              borderWidth: 2,
 			              borderColor: '#2e2e2e',

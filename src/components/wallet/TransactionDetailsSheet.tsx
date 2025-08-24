@@ -16,6 +16,7 @@ import { Pressable, Image } from 'react-native';
 import { Download, ExternalLink, X } from 'lucide-react-native';
 import { useChainStore } from '@/stores/ChainStore';
 
+
 const statusStyleMap = {
   success: { bg: '#156c47', text: '#fff', message: 'Payment received successfully!', icon: require('@/assets/images/transactions/success-icon.png') },
   pending: { bg: '#656c15', text: '#000', message: 'Pending', icon: require('@/assets/images/transactions/pending-icon.png') },
@@ -85,6 +86,7 @@ export const TransactionDetailsSheet = ({ isOpen, onClose, transaction }: Props)
     'coinbase-onramp': require('@/assets/images/transactions/coinbase-icon.png'),
     'crypto-transfer': require('@/assets/images/transactions/transfer-icon.png'),
 	'swap-input': require('@/assets/images/transactions/swap-icon.png'),
+	'swap': require('@/assets/images/transactions/swap-icon.png'),
   };
   const icon = iconMap[tx.type];
 
@@ -188,19 +190,30 @@ export const TransactionDetailsSheet = ({ isOpen, onClose, transaction }: Props)
             </>
           )}
 		  
-		  {isSwap && (
-		    <>
-		      <Text style={{ color: '#fff', fontSize: 22, marginBottom: 2 }}>
-		        From: {parseFloat(tx.token_amount).toFixed(6)} {tx.token_symbol}
-		      </Text>
-		      <Text style={{ color: '#fff', fontSize: 22, marginBottom: 4 }}>
-		        To: {parseFloat(tx.to_token_amount).toFixed(6)} {tx.to_token_symbol}
-		      </Text>
-		      <Text style={{ color: '#aaa', marginBottom: 4 }}>
-		        {tx.wallet_public_address} ({chainName})
-		      </Text>
-		    </>
-		  )}
+		  {isSwap && (() => {
+		    const metadata = typeof tx.metadata === "string" ? JSON.parse(tx.metadata) : (tx.metadata || {});
+		    const fromDecimals = metadata.fromDecimals ?? tx.token_decimals ?? 18;
+		    const toDecimals = metadata.toDecimals ?? tx.to_token_decimals ?? 18;
+
+		    const fromHuman = Number(tx.token_amount || 0) / Math.pow(10, fromDecimals);
+		    const toHuman = Number(tx.to_token_amount || 0) / Math.pow(10, toDecimals);
+
+		    return (
+		      <>
+		        <Text style={{ color: '#fff', fontSize: 22, marginBottom: 2 }}>
+		          From: {fromHuman.toFixed(6)} {tx.token_symbol || metadata.fromSymbol || '???'}
+		        </Text>
+		        <Text style={{ color: '#fff', fontSize: 22, marginBottom: 4 }}>
+		          To: {toHuman.toFixed(6)} {tx.to_token_symbol || metadata.toSymbol || '???'}
+		        </Text>
+		        <Text style={{ color: '#aaa', marginBottom: 4 }}>
+		          {tx.wallet_public_address} ({chainName})
+		        </Text>
+		      </>
+		    );
+		  })()}
+
+
 
           {isCoinbase && (
             <>

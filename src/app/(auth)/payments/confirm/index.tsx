@@ -22,7 +22,7 @@ import { paymentStore } from '@/stores/PaymentStore';
 import { useChainStore } from '@/stores/ChainStore';
 
 import { api } from '@/services/emigro/api';
-import { fetchQuote } from '@/services/emigro/quotes';
+import { fetchFiatQuote, fetchDirectFiatPairQuote } from '@/services/emigro/quotes';
 
 import { Image } from 'react-native';
 import { chainIconMap } from '@/utils/chainIconMap';
@@ -85,41 +85,41 @@ const ConfirmPayment = () => {
     if (!scannedPayment?.transactionAmount || !asset?.symbol) return;
 
     try {
-      const amount = scannedPayment.transactionAmount.toFixed(2);  // e.g., "0.01"
-      const isUSDC = asset.symbol === 'USDC';
+      // 1) Get price of 1 USDC in BRL
+      const brlAmount = Number(scannedPayment.transactionAmount.toFixed(2)); // safe numeric
+      const usdcBrlPrice = await fetchDirectFiatPairQuote('USDC', 'BRL');    // BRL per 1 USDC
 
-      const toUsdc = await fetchQuote({
-        from: 'BRL',
-        to: 'USDC',
-        amount,
-        type: 'strict_send',
-      });
+      if (!usdcBrlPrice || isNaN(usdcBrlPrice) || usdcBrlPrice <= 0) {
+        throw new Error(`Invalid USDC/BRL price: ${usdcBrlPrice}`);
+      }
 
-      const rawUsdc = parseFloat(toUsdc.destination_amount ?? '0');
-      const usdcWithFees = rawUsdc + platformFee;
-      setUsdcAmountForBackend(usdcWithFees);
+      // 2) Convert BRL → USDC (how many USDC we need to cover the BRL amount)
+      const usdcNeeded = brlAmount / usdcBrlPrice;
 
-      if (isUSDC) {
-        const slip = rawUsdc * 0.002;
-        const finalUsdc = rawUsdc + slip + platformFee;
-        setBaseAmount(rawUsdc);
+      // Keep what backend needs to escrow/settle in USDC (do NOT add slippage/fees here)
+      setUsdcAmountForBackend(usdcNeeded);
+
+      if (asset.symbol === 'USDC') {
+        // Show max (with UI slippage). 0.2% slippage visual, platformFee kept 0 for now.
+        const slip = usdcNeeded * 0.002;
+        setBaseAmount(usdcNeeded);
         setSlippage(slip);
-        setUsdQuote(finalUsdc.toFixed(6));
+        setUsdQuote((usdcNeeded + slip).toFixed(6));
         return;
       }
 
-      const res = await api().get('/quote', {
-        params: { asset: asset.symbol, fiat: 'USD' },
-      });
+      // 3) Asset is not USDC: get token's USD price, then USDC (≈USD) → token
+      const tokenUsdPrice = await fetchFiatQuote(asset.symbol, 'USD'); // USD per 1 token
+      if (!tokenUsdPrice || isNaN(tokenUsdPrice) || tokenUsdPrice <= 0) {
+        throw new Error(`Invalid ${asset.symbol}/USD price: ${tokenUsdPrice}`);
+      }
 
-      const pricePerUnit = parseFloat(res.data.price ?? '0');
-      const tokenAmount = rawUsdc / pricePerUnit;
-      const slip = tokenAmount * 0.01;
-      const finalToken = tokenAmount + slip + platformFee;
+      const tokenAmount = usdcNeeded / tokenUsdPrice;     // ~USDC is USD
+      const slip = tokenAmount * 0.01;                    // 1% visual slippage for tokens
 
       setBaseAmount(tokenAmount);
       setSlippage(slip);
-      setUsdQuote(finalToken.toFixed(10));
+      setUsdQuote((tokenAmount + slip).toFixed(10));
     } catch (error) {
       console.error('[ConfirmPayment][fetchConvertedQuote] ❌ Quote fetch failed:', error);
       setUsdQuote(null);
@@ -128,6 +128,7 @@ const ConfirmPayment = () => {
       setUsdcAmountForBackend(null);
     }
   };
+
 
   
   if (chain && chain.is_active === false) {
