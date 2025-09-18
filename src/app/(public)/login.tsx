@@ -71,7 +71,30 @@ const Login = () => {
       await sessionStore.signIn(data.email, data.password);
       await sessionStore.fetchProfile();
       router.replace('/');
-    } catch (error) {
+    } catch (error: any) {
+      // Normalize server error details
+      const status = error?.response?.status;
+      const code = error?.response?.data?.code || error?.code;
+      const pending = error?.response?.data?.pendingConfirmation;
+      const externalId = error?.response?.data?.externalId;
+      const message: string =
+        error?.response?.data?.message || error?.message || '';
+
+      // ✅ Redirect on any “not confirmed” signal (code/status/message)
+      if (
+        pending ||
+        code === 'USER_NOT_CONFIRMED' ||
+        code === 'UserNotConfirmedException' ||
+        status === 409 ||
+        /not\s*confirmed/i.test(message)
+      ) {
+        router.replace({
+          pathname: '/signup/confirm',
+          params: { email: data.email, externalId: externalId ?? '' },
+        });
+        return;
+      }
+
       if (error instanceof BadRequestException) {
         setApiError('Invalid login or password');
       } else if (error instanceof Error) {
@@ -83,6 +106,8 @@ const Login = () => {
       setIsLoggingIn(false);
     }
   };
+
+
 
   const { isDirty, isValid } = formState;
   const isDisabled = !isDirty || !isValid || isLoggingIn;

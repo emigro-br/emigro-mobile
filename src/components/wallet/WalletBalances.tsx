@@ -123,7 +123,7 @@ export const WalletBalances = ({ walletId, hide = false }: Props) => {
             const isETH = asset.symbol === 'ETH';
             const decimals = isUSDC ? 6 : 8;
             const formattedBalance = parsedBalance.toFixed(decimals);
-            const suffix = !isUSDC && !isETH ? `$${asset.symbol}` : asset.symbol;
+            const suffix = !isUSDC && !isETH ? `${asset.symbol}` : asset.symbol;
             const balanceDisplay = hide ? '****' : `${formattedBalance} ${suffix}`;
 
             const iconKey = asset.iconUrl?.split('/').pop()?.replace('.png', '').toLowerCase() ?? '';
@@ -182,7 +182,7 @@ export const WalletBalances = ({ walletId, hide = false }: Props) => {
                             position: 'absolute',
                             bottom: -2,
                             right: -2,
-                            borderRadius: 50,
+                            borderRadius: 7,
                             backgroundColor: '#000',
                           }}
                           resizeMode="contain"

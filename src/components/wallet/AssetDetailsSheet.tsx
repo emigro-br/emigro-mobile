@@ -158,7 +158,7 @@ export const AssetDetailsSheet = ({ isOpen, onClose, asset }: Props) => {
 		            position: 'absolute',
 		            bottom: -4,
 		            right: -4,
-		            borderRadius: 100,
+		            borderRadius: 15,
 		            backgroundColor: '#000',
 		          }}
 		          resizeMode="contain"

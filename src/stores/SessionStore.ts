@@ -296,6 +296,29 @@ export class SessionStore {
 
   signIn = async (email: string, password: string) => {
     const { session, user } = await signIn(email, password);
+
+    // 🛑 Block unconfirmed users from being logged in locally
+    const isUnconfirmed =
+      user?.status === 'UNCONFIRMED' ||
+      user?.emailVerified === false ||
+      user?.confirmed === false ||
+      user?.isConfirmed === false;
+
+    if (isUnconfirmed) {
+      // Shape an error similar to API errors so the login screen redirect logic catches it
+      const err: any = new Error('User is not confirmed');
+      err.response = {
+        status: 409,
+        data: {
+          code: 'USER_NOT_CONFIRMED',
+          pendingConfirmation: true,
+          externalId: user?.externalId ?? user?.id ?? '',
+        },
+      };
+      throw err;
+    }
+
+    // ✅ Proceed for confirmed users
     this.setUser(user);
     this.setPreferences(user.preferences);
     this.saveUser(user);
@@ -310,6 +333,7 @@ export class SessionStore {
 
     this.fetchProfile();
   };
+
 
   refresh = async () => {
     if (!this.session) {

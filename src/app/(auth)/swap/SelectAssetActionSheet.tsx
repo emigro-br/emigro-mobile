@@ -9,7 +9,7 @@ import {
 import { ScrollView } from '@/components/ui/scroll-view';
 import { Box } from '@/components/ui/box';
 import { Text } from '@/components/ui/text';
-import { Image, Pressable, Dimensions } from 'react-native';
+import { Image, Pressable, Dimensions, ActivityIndicator } from 'react-native';
 
 import { sessionStore } from '@/stores/SessionStore';
 import { useChainStore } from '@/stores/ChainStore';
@@ -127,19 +127,29 @@ export const SelectAssetActionSheet = ({ walletId, isOpen, onClose, onSelect }: 
           Select {chain?.name} Asset
         </Text>
 
-        <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-          {assets.map(asset => (
-            <React.Fragment key={asset.assetId}>
-              {renderAsset(asset)}
-            </React.Fragment>
-          ))}
+		{loading ? (
+		  <Box style={{ alignItems: 'center', paddingVertical: 24 }}>
+		    <ActivityIndicator size="small" />
+		    <Text style={{ color: '#888', marginTop: 8 }}>
+		      Loading currencies...
+		    </Text>
+		  </Box>
+		) : (
+		  <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+		    {assets.map(asset => (
+		      <React.Fragment key={asset.assetId}>
+		        {renderAsset(asset)}
+		      </React.Fragment>
+		    ))}
 
-          {!assets.length && !loading && (
-            <Text style={{ color: '#888', textAlign: 'center', marginTop: 20 }}>
-              No assets available
-            </Text>
-          )}
-        </ScrollView>
+		    {!assets.length && (
+		      <Text style={{ color: '#888', textAlign: 'center', marginTop: 20 }}>
+		        No assets available
+		      </Text>
+		    )}
+		  </ScrollView>
+		)}
+
       </ActionsheetContent>
     </Actionsheet>
   );

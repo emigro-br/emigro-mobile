@@ -26,6 +26,26 @@ export const confirmAccount = async (confirmUser: ConfirmUserRequest): Promise<U
   return res.data;
 };
 
+export const resendConfirmationCode = async (
+  email: string,
+  externalId?: string
+): Promise<{ success: boolean; status?: number; data?: any }> => {
+  const payload: any = { email };
+  if (externalId) payload.externalId = externalId;
+
+  console.log('[auth.ts][resendConfirmationCode] ➡️ POST /auth/resend-confirmation payload:', payload);
+  const res = await api().post('/auth/resend-confirmation', payload);
+  console.log('[auth.ts][resendConfirmationCode] ⬅️ response:', { status: res?.status, data: res?.data });
+
+  const status = res?.status ?? 0;
+  const is2xx = status >= 200 && status < 300;
+  const success = is2xx || res?.data?.success === true;
+
+  return { success, status, data: res?.data };
+};
+
+
+
 export const refresh = async (authSession: AuthSession): Promise<AuthSession> => {
   const res = await api().post('/auth/refresh', authSession);
   return res.data;

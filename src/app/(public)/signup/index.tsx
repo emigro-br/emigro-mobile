@@ -37,6 +37,7 @@ type FormData = {
   lastName: string;
   email: string;
   password: string;
+  confirmPassword: string;
   role: Role;
 };
 
@@ -46,15 +47,19 @@ const CreateAccount = () => {
   const [apiError, setApiError] = useState<string | null>(null);
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
-  const { control, handleSubmit } = useForm<FormData>({
+  const { control, handleSubmit, getValues, formState } = useForm<FormData>({
+    mode: 'onChange',
     defaultValues: {
       firstName: '',
       lastName: '',
       email: '',
       password: '',
+      confirmPassword: '',
       role: Role.CUSTOMER,
     },
   });
+
+
 
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const insets = useSafeAreaInsets();
@@ -70,9 +75,18 @@ const CreateAccount = () => {
     setIsLoading(true);
     setApiError(null);
     const defaultErrorMessage = 'An error occurred while creating your account. Please try again.';
+
+    // Client-side confirmation check
+    if (data.password !== data.confirmPassword) {
+      setIsLoading(false);
+      setApiError('Passwords do not match');
+      return;
+    }
+
     try {
-      const registerData: RegisterUserRequest = { ...data };
-      const { externalId } = await signUp(registerData);
+      // Do not send confirmPassword to backend
+      const { confirmPassword, ...registerData } = data as unknown as RegisterUserRequest & { confirmPassword: string };
+      const { externalId } = await signUp(registerData as RegisterUserRequest);
       if (!externalId) throw new Error(defaultErrorMessage);
 
       router.push({ pathname: '/signup/confirm', params: { email: data.email, externalId } });
@@ -88,6 +102,7 @@ const CreateAccount = () => {
       setIsLoading(false);
     }
   };
+
 
   const inputStyle = (field: string) => ({
     backgroundColor: '#1a1a1a',
@@ -200,6 +215,33 @@ const CreateAccount = () => {
                       />
                     )}
                   />
+				  {/* Confirm Password */}
+				  <Controller
+				    control={control}
+				    name="confirmPassword"
+				    rules={{
+				      required: 'Please confirm your password',
+				      validate: (val) => val === getValues('password') || 'Passwords do not match',
+				    }}
+				    render={({ field: { onChange, value }, fieldState: { error } }) => (
+				      <>
+				        <TextInput
+				          placeholder="Confirm Password"
+				          placeholderTextColor="#888"
+				          value={value}
+				          onChangeText={onChange}
+				          secureTextEntry
+				          onFocus={() => setFocusedField('confirmPassword')}
+				          onBlur={() => setFocusedField(null)}
+				          style={inputStyle('confirmPassword')}
+				        />
+				        {error?.message ? (
+				          <Text className="text-error-500 mt-1 text-center">{error.message}</Text>
+				        ) : null}
+				      </>
+				    )}
+				  />
+
 
                   {/* API Error */}
                   {apiError && (
@@ -212,22 +254,23 @@ const CreateAccount = () => {
                   )}
 
                   {/* Create Account Button */}
-                  <Pressable
-                    onPressIn={animatePress}
-                    onPress={handleSubmit(onSubmit)}
-                    disabled={isLoading}
-                  >
-                    <Animated.View
-                      style={{ transform: [{ scale: scaleAnim }] }}
-                      className={`bg-primary-500 rounded-full py-4 items-center justify-center mt-4 ${
-                        isLoading ? 'opacity-50' : ''
-                      }`}
-                    >
-                      <Text className="text-white font-bold text-lg">
-                        {isLoading ? 'Creating account...' : 'Create Account'}
-                      </Text>
-                    </Animated.View>
-                  </Pressable>
+				  <Pressable
+				    onPressIn={animatePress}
+				    onPress={handleSubmit(onSubmit)}
+				    disabled={isLoading || !formState.isValid}
+				  >
+				    <Animated.View
+				      style={{ transform: [{ scale: scaleAnim }] }}
+				      className={`bg-primary-500 rounded-full py-4 items-center justify-center mt-4 ${
+				        isLoading || !formState.isValid ? 'opacity-50' : ''
+				      }`}
+				    >
+				      <Text className="text-white font-bold text-lg">
+				        {isLoading ? 'Creating account...' : 'Create Account'}
+				      </Text>
+				    </Animated.View>
+				  </Pressable>
+
 
                   {/* Sign In link */}
                   <HStack className="justify-center mt-6">

@@ -88,6 +88,7 @@ const Swap = () => {
       'uniswapv2': 'Uniswap V2',
       'uniswapv3': 'Uniswap V3',
       'aerodrome': 'Aerodrome',
+	  'aerodrome-slipstream': 'Aerodrome',
       'camelot': 'Camelot',
       'sushiswap': 'SushiSwap',
     };
@@ -508,7 +509,55 @@ const Swap = () => {
             <VStack>
               {/* Input Container */}
               <Box className="bg-[#2e2e2e] rounded-2xl p-4">
-                <Text className="text-white mb-1">You Pay</Text>
+			  <HStack justify="between" align="center" style={{ marginBottom: 8, width: '100%', minHeight: 28 }}>
+			    <View style={{ justifyContent: 'center' }}>
+			      <Text
+			        className="text-white text-base"
+			        style={{
+			          includeFontPadding: false,
+			          textAlignVertical: 'center',
+			          lineHeight: 20,
+			        }}
+			      >
+			        You Pay
+			      </Text>
+			    </View>
+
+			    <HStack space="sm" style={{ marginLeft: 'auto', alignItems: 'center' }}>
+			      {([1, 0.5, 0.25] as const).map((p) => {
+			        const decimals = Math.min(Number(sellAsset?.decimals ?? 6), 18);
+			        const raw = sellAssetBalance * p;
+			        const amount = Number.isFinite(raw) ? raw.toFixed(decimals) : '0';
+			        const label = p === 1 ? '100%' : p === 0.5 ? '50%' : '25%';
+
+			        return (
+			          <Pressable
+			            key={label}
+			            onPress={() => {
+			              const cleaned = amount.replace(/\.?0+$/, '');
+			              setSellValue(cleaned);
+			            }}
+			            style={{
+			              backgroundColor: '#1a1a1a',
+			              paddingVertical: 6,
+			              paddingHorizontal: 10,
+			              borderRadius: 999,
+			              borderWidth: 1,
+			              borderColor: '#333',
+			              alignItems: 'center',
+			              justifyContent: 'center',
+			              minHeight: 28,
+			            }}
+			          >
+			            <Text className="text-white text-sm">{label}</Text>
+			          </Pressable>
+			        );
+			      })}
+			    </HStack>
+			  </HStack>
+
+
+
                 <HStack justify="between" align="center">
                   <TextInput
                     ref={inputRef}
@@ -521,23 +570,25 @@ const Swap = () => {
                     onChangeText={setSellValue}
                   />
 				  <Pressable
-				    className="flex-row items-center bg-[#1a1a1a] px-4 py-2 rounded-full ml-3"
+				    className="flex-row items-center bg-[#1a1a1a] px-4 rounded-full ml-3"
 				    style={{
 				      minWidth: 100,
-				      alignSelf: 'flex-start',
+				      height: 40,
+				      alignSelf: 'center',
 				    }}
-					onPress={() => {
-					  setSelectingSellAsset(true); // or false if it's the receive field
-					  setIsAssetSheetOpen(true);
-					}}
+				    onPress={() => {
+				      setSelectingSellAsset(true);
+				      setIsAssetSheetOpen(true);
+				    }}
 				  >
-                    <Image
-                      source={getAssetIcon(sellAsset)}
-                      style={{ width: 24, height: 24, marginRight: 6 }}
-                    />
-                    <Text className="text-white mr-1">{sellAsset?.symbol ?? 'Select asset'}</Text>
-                    <Text className="text-white text-lg">˅</Text>
-                  </Pressable>
+				    <Image
+				      source={getAssetIcon(sellAsset)}
+				      style={{ width: 24, height: 24, marginRight: 6 }}
+				    />
+				    <Text className="text-white mr-1">{sellAsset?.symbol ?? 'Select asset'}</Text>
+				    <Text className="text-white text-lg">˅</Text>
+				  </Pressable>
+
 				  
                 </HStack>
 				<Text
@@ -546,6 +597,8 @@ const Swap = () => {
 				>
 				  Balance: {sellAssetBalance.toFixed(6)} {sellAsset?.symbol}
 				</Text>
+
+
               </Box>
 
               {/* Swap button overlapping */}
@@ -579,26 +632,28 @@ const Swap = () => {
 				    editable={false}
 				  />
 				</ScrollView>
-				  <Pressable
-				    className="flex-row items-center bg-[#1a1a1a] px-4 py-2 rounded-full ml-3"
-				    style={{
-				      minWidth: 100,
-				      alignSelf: 'flex-start',
-				    }}
-					onPress={() => {
-					  setSelectingSellAsset(false); // or false if it's the receive field
-					  setIsAssetSheetOpen(true);
-					}}
-				  >
-                    <Image
-                      source={getAssetIcon(buyAsset)}
-                      style={{ width: 24, height: 24, marginRight: 6 }}
-                    />
-                    <Text className="text-white mr-1">
-                      {buyAsset?.symbol ?? 'Select asset'}
-                    </Text>
-                    <Text className="text-white text-lg">˅</Text>
-                  </Pressable>
+				<Pressable
+				  className="flex-row items-center bg-[#1a1a1a] px-4 rounded-full ml-3"
+				  style={{
+				    minWidth: 100,
+				    height: 40,
+				    alignSelf: 'center',
+				  }}
+				  onPress={() => {
+				    setSelectingSellAsset(false);
+				    setIsAssetSheetOpen(true);
+				  }}
+				>
+				  <Image
+				    source={getAssetIcon(buyAsset)}
+				    style={{ width: 24, height: 24, marginRight: 6 }}
+				  />
+				  <Text className="text-white mr-1">
+				    {buyAsset?.symbol ?? 'Select asset'}
+				  </Text>
+				  <Text className="text-white text-lg">˅</Text>
+				</Pressable>
+
                 </HStack>
 				<Text
 				  className="text-sm mt-2"
@@ -631,71 +686,129 @@ const Swap = () => {
 
 			      {/* Simple Table */}
 			      <View>
-				  {/* Row utility */}
-				  {[
-				    {
-				      label: 'Best Price',
-				      value: formatRouterName(lastQuote?.routerType),
-				      icon: lastQuote?.routerType === 'aerodrome'
-				        ? require('@/assets/images/dex/aero.png')
-				        : lastQuote?.routerType === 'uniswap-v2'
-				        ? require('@/assets/images/dex/uniswap-v2.png')
-				        : require('@/assets/images/dex/uniswap-v3.png'),
-				    },
-				    {
-				      label: 'LP Provider Fee',
-				      value: `${Number(lastQuote?.liquidityPoolFeePercent || 0).toFixed(2)}%`,
-				    },
-				    {
-				      label: 'Swap Fee',
-				      value: `${Number(lastQuote?.emigroFeePercent || 0).toFixed(2)}%`,
-				    },
-				    hasValidImpact && {
-				      label: 'Price Impact',
-				      value: `${priceImpact.toFixed(3)}%`,
-				      isHighImpact: priceImpact > 5,
-				    },
-				    {
-				      label: 'Minimum Received',
-				      value: `${parseFloat(lastQuote?.humanMinAmountIn || '0').toFixed(6)} ${buyAsset.symbol}`,
-				    }
-				  ]
-				  .filter(Boolean) // ✅ removes false/null
-				  .map((row, idx) => (
-				    <View
-				      key={idx}
-				      style={{
-				        flexDirection: 'row',
-				        justifyContent: 'space-between',
-				        alignItems: 'center',
-				        borderBottomColor: '#333',
-				        borderBottomWidth: 1,
-				        paddingVertical: 10,
-				      }}
-				    >
-				      <Text className="text-white text-sm">{row.label}</Text>
-				      <HStack space="xs" align="center">
-				        {row.icon && (
-				          <Image
-				            source={row.icon}
-				            style={{ width: 16, height: 16, marginRight: 6 }}
-				            resizeMode="contain"
-				          />
-				        )}
-				        <Text
-				          className={`text-sm ${
-				            row.isHighImpact ? 'text-red-500 font-bold' : 'text-white'
-				          }`}
-				        >
-				          {row.value}
-				        </Text>
-				      </HStack>
-				    </View>
-				  ))}
 
-			      </View>
-			    </View>
-			  )}
+
+				  
+				    {/* Row utility */}
+				    {[
+				      {
+				        label: 'Best Price',
+				        value: formatRouterName(lastQuote?.routerType),
+						icon:
+						  lastQuote?.routerType === 'aerodrome' ||
+						  lastQuote?.routerType === 'aerodrome-slipstream'
+						    ? require('@/assets/images/dex/aero.png')
+						    : lastQuote?.routerType === 'uniswap-v2'
+						    ? require('@/assets/images/dex/uniswap-v2.png')
+						    : require('@/assets/images/dex/uniswap-v3.png'),
+				      },
+				      {
+				        label: 'LP Provider Fee',
+				        value: `${Number(lastQuote?.liquidityPoolFeePercent || 0).toFixed(2)}%`,
+				      },
+				      {
+				        label: 'Swap Fee',
+				        value: `${Number(lastQuote?.emigroFeePercent || 0).toFixed(2)}%`,
+				      },
+				      hasValidImpact && {
+				        label: 'Price Impact',
+				        value: `${priceImpact.toFixed(3)}%`,
+				        isHighImpact: priceImpact > 5,
+				      },
+				      {
+				        label: 'Minimum Received',
+				        value: `${parseFloat(lastQuote?.humanMinAmountIn || '0').toFixed(6)} ${buyAsset.symbol}`,
+				      }
+				    ]
+				    .filter(Boolean) // ✅ removes false/null
+				    .map((row, idx) => {
+				      const isBestPrice = row.label === 'Best Price';
+
+				      // Build hop symbol list ONLY for Best Price row (icons only, no names)
+				      let hopSymbols: string[] = [];
+				      if (isBestPrice) {
+				        if (Array.isArray(lastQuote?.displayPath) && lastQuote.displayPath.length > 0) {
+				          hopSymbols = lastQuote.displayPath.map((p: any) => p?.symbol).filter(Boolean);
+				        } else if (Array.isArray(lastQuote?.multihop) && lastQuote.multihop.length > 0) {
+				          hopSymbols = [
+				            lastQuote.multihop[0].fromTokenSymbol,
+				            ...lastQuote.multihop.map((h: any) => h.toTokenSymbol),
+				          ].filter(Boolean);
+				        } else {
+				          hopSymbols = [sellAsset?.symbol, buyAsset?.symbol].filter(Boolean);
+				        }
+				      }
+
+				      return (
+				        <View
+				          key={idx}
+				          style={{
+				            flexDirection: 'row',
+				            justifyContent: 'space-between',
+				            alignItems: 'center',
+				            borderBottomColor: '#333',
+				            borderBottomWidth: 1,
+				            paddingVertical: 10,
+				          }}
+				        >
+				          <Text className="text-white text-sm">{row.label}</Text>
+
+				          <HStack space="xs" align="center">
+				            {row.icon && (
+				              <Image
+				                source={row.icon}
+				                style={{ width: 16, height: 16, marginRight: 6 }}
+				                resizeMode="contain"
+				              />
+				            )}
+
+				            <Text
+				              className={`text-sm ${
+				                row.isHighImpact ? 'text-red-500 font-bold' : 'text-white'
+				              }`}
+				            >
+				              {row.value}
+				            </Text>
+
+				            {isBestPrice && hopSymbols.length > 0 && (
+				              <>
+				                <Text
+				                  className="text-white"
+				                  style={{ marginHorizontal: 8, opacity: 0.4 }}
+				                >
+				                  •
+				                </Text>
+				                <HStack space="xs" align="center" style={{ alignItems: 'center' }}>
+				                  {hopSymbols.map((sym, i) => (
+				                    <React.Fragment key={`${sym}-${i}`}>
+				                      {i > 0 && (
+				                        <Text
+				                          className="text-white"
+				                          style={{ marginHorizontal: 6, opacity: 0.4 }}
+				                        >
+				                          &gt;
+				                        </Text>
+				                      )}
+				                      <Image
+				                        source={getAssetIcon({ symbol: sym })}
+				                        style={{ width: 16, height: 16 }}
+				                        resizeMode="contain"
+				                      />
+				                    </React.Fragment>
+				                  ))}
+				                </HStack>
+				              </>
+				            )}
+				          </HStack>
+				        </View>
+				      );
+				    })}
+
+				      </View>
+				    </View>
+				  )}
+
+
 
 			  
 			  {errorMessage && (
@@ -719,24 +832,28 @@ const Swap = () => {
 		  const clean = sanitizeAsset(asset);
 		  console.log('[swap][index] ✅ Sanitized asset selected:', clean);
 
-		  // 🔁 Fully reset quote-related state first
-		  setSellValue('');
-		  setBuyValue('');
-		  setRate(null);
-		  setLastQuote(null);
-		  setErrorMessage(null);
-
-		  // 🔄 Update assets AFTER resetting everything
 		  if (selectingSellAsset) {
+		    // Changing the asset you pay with — reset input
+		    setSellValue('');
+		    setBuyValue('');
+		    setRate(null);
+		    setLastQuote(null);
+		    setErrorMessage(null);
 		    setSellAsset(clean);
 		  } else {
-		    setBuyAsset(null); // 👈 force unmount of price info
-		    // tiny delay to guarantee re-render before setting new one
+		    // Changing the asset you receive — KEEP sellValue and just re-quote
+		    setBuyValue('');
+		    setRate(null);
+		    setLastQuote(null);
+		    setErrorMessage(null);
+
+		    setBuyAsset(null); // force unmount of price info
 		    setTimeout(() => {
 		      setBuyAsset(clean);
 		    }, 0);
 		  }
 		}}
+
 
 
 	  />
