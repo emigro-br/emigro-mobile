@@ -25,13 +25,18 @@ const typeIconMap: Record<string, any> = {
   'pix-payment': require('@/assets/images/transactions/pix-icon.png'),
   'coinbase-onramp': require('@/assets/images/transactions/coinbase-icon.png'),
   'crypto-transfer': require('@/assets/images/transactions/transfer-icon.png'),
+  'transaction_out': require('@/assets/images/transactions/transfer-icon.png'),
+  'transaction_in': require('@/assets/images/transactions/transfer-icon.png'),
   'swap-input': require('@/assets/images/transactions/swap-icon.png'),
 };
+
 
 const typeNameMap: Record<string, string> = {
   'pix-payment': 'Pix Payment',
   'coinbase-onramp': 'Deposit (Coinbase)',
   'crypto-transfer': 'Transfer Crypto',
+  'transaction_out': 'Transfer Out',
+  'transaction_in': 'Transfer In',
   'swap-input': 'Token Swap',
 };
 

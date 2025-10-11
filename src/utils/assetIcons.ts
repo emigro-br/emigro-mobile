@@ -10,5 +10,6 @@ export const assetIconMap: Record<string, any> = {
   brz: require('@/assets/images/icons/brz-icon.png'),
   mxne: require('@/assets/images/icons/mxne-icon.png'),
   cadc: require('@/assets/images/icons/cadc-icon.png'),
+  aero: require('@/assets/images/icons/aero-icon.png'),
   default: require('@/assets/images/icons/default.png'),
 };

@@ -4,7 +4,7 @@ import * as Application from 'expo-application';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import { Coins, Lock, User, CheckCircle } from 'lucide-react-native';
+import { Coins, Lock, User, CheckCircle, MessageCircle } from 'lucide-react-native';
 import { observer } from 'mobx-react-lite';
 import { AssetListActionSheet } from '@/components/AssetListActionSheet';
 import { ListTile } from '@/components/ListTile';
@@ -120,6 +120,39 @@ const Profile = observer(() => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
 
+  // WhatsApp support contact
+  const WHATSAPP_NUMBER_DISPLAY = '+55 11 94914 9999';
+  const WHATSAPP_NUMBER = '5511949149999';
+
+  const handleContactWhatsApp = async () => {
+    const message = encodeURIComponent('Olá! Preciso de ajuda com minha conta.');
+    const deeplink = `whatsapp://send?phone=${WHATSAPP_NUMBER}&text=${message}`;
+    try {
+      const supported = await Linking.canOpenURL(deeplink);
+      if (supported) {
+        await Linking.openURL(deeplink);
+        await Haptics.selectionAsync();
+        return;
+      }
+    } catch (e) {
+      // fall through to web
+    }
+
+    const webUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+    try {
+      await Linking.openURL(webUrl);
+      await Haptics.selectionAsync();
+    } catch (e) {
+      toast.show({
+        render: ({ id }) => (
+          <Toast nativeID={`toast${id}`} action="error" variant="solid">
+            <ToastDescription>Could not open WhatsApp</ToastDescription>
+          </Toast>
+        ),
+      });
+    }
+  };
+
   useEffect(() => {
     const fetchPermissions = async () => {
       const notif = await Notifications.getPermissionsAsync();
@@ -205,17 +238,20 @@ const Profile = observer(() => {
 			  </Pressable>
 
 
-			  {/* Second Box - EmiPoints */}
-			  <Box className="p-4 rounded-2xl flex-1" style={{ backgroundColor: '#2e2e2e' }}>
-			    <Image
-			      source={require('@/assets/images/icons/emipoint-icon-red.png')}
-			      style={{ width: 32, height: 32, marginBottom: 22 }}
-			    />
-			    <Text className="font-bold text-left text-gray-300 mb-1">EmiPoints</Text>
-			    <Text className="text-sm text-left text-muted-foreground text-white">
-			      {loadingPoints ? '...' : `${points?.toFixed(2)} EmiPoints`}
-			    </Text>
-			  </Box>
+			  {/* Second Box - EmiPoints (pressable) */}
+			  <Pressable onPress={() => router.push('/emipoints')} style={{ flex: 1 }}>
+			    <Box className="p-4 rounded-2xl flex-1" style={{ backgroundColor: '#2e2e2e' }}>
+			      <Image
+			        source={require('@/assets/images/icons/emipoint-icon-red.png')}
+			        style={{ width: 32, height: 32, marginBottom: 22 }}
+			      />
+			      <Text className="font-bold text-left text-gray-300 mb-1">EmiPoints</Text>
+			      <Text className="text-sm text-left text-white">
+			        {loadingPoints ? '...' : `${points?.toFixed(2)} EmiPoints`}
+			      </Text>
+			    </Box>
+			  </Pressable>
+
 			</Box>
 
 			
@@ -276,10 +312,23 @@ const Profile = observer(() => {
 		      />
 		    </Box>
 
+			{/* 📲 WhatsApp Support Contact */}
+			<Box style={{ backgroundColor: '#2e2e2e' }} className="rounded-2xl p-4">
+			  <ListTile
+			    leading={<Icon as={MessageCircle} />}
+			    title="Talk to us on WhatsApp"
+			    subtitle={WHATSAPP_NUMBER_DISPLAY}
+			    trailing={<Icon as={ChevronRightIcon} />}
+			    onPress={handleContactWhatsApp}
+			    testID="whatsapp-support-button"
+			  />
+			</Box>
+			
 			<Box style={{ backgroundColor: '#2e2e2e' }} className="rounded-2xl p-4">
 			  <Button onPress={handleLogout} variant="link" action="negative">
 			    <ButtonText>Logout</ButtonText>
 			  </Button>
+
 
 			</Box>
 		  

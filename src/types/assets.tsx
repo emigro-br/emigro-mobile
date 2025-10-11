@@ -56,6 +56,7 @@ export class Asset {
   isEnabled?: boolean;
   isActive: boolean;
   bridgeConfig?: Record<string, any>;
+  onrampSettings?: Record<string, any>;
 
   constructor(
     type: AssetType,
@@ -90,6 +91,7 @@ export class Asset {
     this.isEnabled = backendData?.isEnabled;
     this.isActive = backendData?.isActive ?? true;
     this.bridgeConfig = backendData?.bridgeConfig;
+	this.onrampSettings = (backendData as any)?.onrampSettings;
   }
 }
 

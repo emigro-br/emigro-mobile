@@ -12,21 +12,24 @@ export const useUserRewardPoints = () => {
       const userId = sessionStore.user?.id;
       console.log('[useUserRewardPoints] Fetching for user:', userId);
 
-      try {
-        const response = await api().get('/rewards/me');
-        console.log('[useUserRewardPoints] API response:', response?.data);
+	  try {
+	    const response = await api().get('/rewards/me');
+	    console.log('[useUserRewardPoints] API response:', response?.data);
 
-        const value = response?.data?.points ?? 0;
-        const parsed = Number(value);
-        console.log(`[useUserRewardPoints] Parsed points: ${parsed}`);
+	    // Prefer spendable → fallback to lifetime
+	    const raw = response?.data?.spendable ?? response?.data?.lifetime ?? 0;
+	    const parsed = Number(raw);
+	    console.log(`[useUserRewardPoints] Parsed points (spendable|lifetime): ${parsed}`);
 
-        sessionStore.setCachedRewardPoints(parsed);
-        setPoints(parsed);
-      } catch (error) {
-        console.error('[useUserRewardPoints] Failed to fetch points:', error);
-      } finally {
-        setLoading(false);
-      }
+	    sessionStore.setCachedRewardPoints(parsed);
+	    setPoints(Number.isFinite(parsed) ? parsed : 0);
+	  } catch (error) {
+	    console.error('[useUserRewardPoints] Failed to fetch points:', error);
+	    setPoints(0);
+	  } finally {
+	    setLoading(false);
+	  }
+
     };
 
     fetchPoints();

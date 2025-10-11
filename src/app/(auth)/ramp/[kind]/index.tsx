@@ -1,8 +1,6 @@
 // src/app/(auth)/ramp/[kind]/start.tsx
 
-// src/app/(auth)/ramp/[kind]/start.tsx
-
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Image,
   Pressable,
@@ -32,6 +30,13 @@ import { assetIconMap } from '@/utils/assetIcons';
 import { useChainStore } from '@/stores/ChainStore';
 import { api } from '@/services/emigro/api';
 
+const CARD_BG = '#0E0E0F';
+const CARD_BORDER = '#232326';
+const CARD_SELECTED = '#1F2937';
+const CHIP_BG = '#141414';
+const CHIP_SELECTED = '#1f2937';
+const TEXT_MUTED = '#9CA3AF';
+
 const RampStartScreen = () => {
   const { kind } = useGlobalSearchParams();
   const router = useRouter();
@@ -43,16 +48,16 @@ const RampStartScreen = () => {
   const [selectedWalletId, setSelectedWalletId] = useState<string | null>(firstWallet?.id ?? null);
   const { balances } = useWalletBalances(selectedWalletId);
 
-  const wallet = wallets.find(w => w.id === selectedWalletId);
+  const wallet = wallets.find((w) => w.id === selectedWalletId);
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
   const [inputAmount, setInputAmount] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const selectedAsset = balances.find(b => b.assetId === selectedAssetId);
+  const selectedAsset = balances.find((b) => b.assetId === selectedAssetId);
 
   const chains = useChainStore((state) => state.chains);
-  const selectedChain = chains.find(c => c.id === wallet?.chainId);
+  const selectedChain = chains.find((c) => c.id === wallet?.chainId);
 
   useEffect(() => {
     useChainStore.getState().fetchChains();
@@ -63,12 +68,12 @@ const RampStartScreen = () => {
       if (wallets.length > 0) {
         balanceStore.fetchUserBalance().catch(console.warn);
       }
-    }, [wallets.length])
+    }, [wallets.length]),
   );
 
   useEffect(() => {
     if (balances.length > 0 && !selectedAssetId) {
-      const defaultAsset = balances.find(b => b.isActive);
+      const defaultAsset = balances.find((b) => b.isActive);
       if (defaultAsset) setSelectedAssetId(defaultAsset.assetId);
     }
   }, [balances]);
@@ -86,17 +91,41 @@ const RampStartScreen = () => {
     }
   };
 
-  const filteredAssets = balances.filter(b => b.chainId === wallet?.chainId && b.isActive);
+  const filteredAssets = useMemo(
+    () =>
+      balances
+        .filter((b) => b.chainId === wallet?.chainId && b.isActive)
+        .sort((a, b) => a.symbol.localeCompare(b.symbol)),
+    [balances, wallet?.chainId],
+  );
 
   const handleChainChange = (walletId: string) => {
     setSelectedWalletId(walletId);
-    const newWallet = wallets.find(w => w.id === walletId);
-    const firstActive = balances.find(b => b.chainId === newWallet?.chainId && b.isActive);
+    const newWallet = wallets.find((w) => w.id === walletId);
+    const firstActive = balances.find((b) => b.chainId === newWallet?.chainId && b.isActive);
     setSelectedAssetId(firstActive?.assetId ?? null);
   };
 
+  const isCoinbaseAvailable: boolean = useMemo(() => {
+    const settings = (selectedAsset as any)?.onrampSettings;
+    // Treat missing settings as "not available"
+    return settings?.coinbase === true;
+  }, [selectedAsset]);
+
+  const primaryCtaDisabled =
+    !inputAmount || !selectedAsset || !wallet || !selectedChain || !isCoinbaseAvailable;
+
+  const primaryCtaLabel = loading
+    ? 'Loading...'
+    : !selectedAsset
+    ? 'Select an asset'
+    : !isCoinbaseAvailable
+    ? 'Not available on Coinbase yet'
+    : 'Pay with Coinbase';
+
   const handleSubmit = async () => {
     if (!selectedAsset || !wallet || !user?.id || !inputAmount || !selectedChain) return;
+    if (!isCoinbaseAvailable) return;
 
     try {
       setLoading(true);
@@ -124,52 +153,91 @@ const RampStartScreen = () => {
     }
   };
 
+  const renderWalletCard = (wId: string, isSelected: boolean, label: string, icon?: any) => {
+    return (
+      <Pressable
+        key={wId}
+        onPress={() => handleChainChange(wId)}
+        style={{
+          width: '48%',
+          backgroundColor: isSelected ? CARD_SELECTED : CARD_BG,
+          borderColor: isSelected ? '#334155' : CARD_BORDER,
+          borderWidth: 1,
+          borderRadius: 14,
+          paddingVertical: 12,
+          paddingHorizontal: 12,
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 10,
+          marginBottom: 10,
+        }}
+      >
+        {icon ? (
+          <Image source={icon} style={{ width: 22, height: 22, resizeMode: 'contain' }} />
+        ) : null}
+        <Text style={{ color: '#FFF', fontWeight: '600' }}>{label}</Text>
+      </Pressable>
+    );
+  };
 
-  const renderSelectableCard = (
+  const renderAssetChip = (
     value: string,
     selected: string | null,
     onSelect: (v: string) => void,
     iconSrc?: any,
-    displayLabel?: string
+    label?: string,
+    onPressExtra?: () => void,
+    coinbaseBadge?: boolean,
   ) => {
     const isSelected = selected === value;
-
-    console.log(`[renderSelectableCard] value: ${value}, selected: ${selected}, isSelected: ${isSelected}`);
 
     return (
       <Pressable
         key={value}
         onPress={() => {
-          console.log(`[onPress] Card clicked: ${value}`);
+          try {
+            onPressExtra?.();
+          } catch {}
           onSelect(value);
         }}
         style={{
-          borderWidth: 2,
-          borderColor: isSelected ? '#ff4d4d' : '#3c3c3c',
-          backgroundColor: isSelected ? '#fe0055' : '#141414',
-          borderRadius: 12,
-          paddingVertical: 10,
-          paddingHorizontal: 16,
+          borderWidth: 1,
+          borderColor: isSelected ? '#334155' : CARD_BORDER,
+          backgroundColor: isSelected ? CHIP_SELECTED : CHIP_BG,
+          borderRadius: 999,
+          paddingVertical: 8,
+          paddingHorizontal: 12,
           flexDirection: 'row',
           alignItems: 'center',
-          marginHorizontal: 6,
-          marginVertical: 4,
+          gap: 8,
+          marginRight: 8,
+          marginBottom: 10,
         }}
       >
-        {iconSrc && (
+        {iconSrc ? (
           <Image
             source={iconSrc}
-            style={{ width: 20, height: 20, marginRight: 8, resizeMode: 'contain' }}
+            style={{ width: 18, height: 18, resizeMode: 'contain', opacity: isSelected ? 1 : 0.9 }}
           />
-        )}
-        <Text size="md" className="font-semibold" style={{ color: '#ffffff' }}>
-          {(displayLabel ?? value).toUpperCase()}
-        </Text>
+        ) : null}
+        <Text style={{ color: '#FFF', fontWeight: '600' }}>{label ?? value}</Text>
+
+        {coinbaseBadge ? (
+          <View
+            style={{
+              backgroundColor: '#0b4a2f',
+              paddingHorizontal: 8,
+              paddingVertical: 2,
+              borderRadius: 999,
+              marginLeft: 4,
+            }}
+          >
+            <Text style={{ color: '#A7F3D0', fontSize: 11 }}>Coinbase</Text>
+          </View>
+        ) : null}
       </Pressable>
     );
   };
-
-
 
   return (
     <>
@@ -185,115 +253,163 @@ const RampStartScreen = () => {
               testID="refresh-control"
             />
           }
-          contentContainerStyle={{ padding: 16 }}
+          contentContainerStyle={{ padding: 16, paddingBottom: 28 }}
         >
           <VStack className="space-y-4">
             <Heading size="xl" className="text-center" style={{ color: '#ffffff' }}>
               Deposit Crypto
             </Heading>
 
-            <Text className="text-gray-400 mt-4">Choose a network</Text>
-            <HStack wrap="wrap">
-			{wallets.map(w => {
-			  const chain = chains.find(c => c.id === w.chainId);
-			  return renderSelectableCard(
-			    w.id,
-			    selectedWalletId,
-			    handleChainChange,
-			    chainIconMap[chain?.iconUrl ?? ''],
-			    chain?.name ?? 'Unknown'
-			  );
-			})}
-            </HStack>
+            {/* NETWORK SECTION */}
+            <View
+              style={{
+                backgroundColor: CARD_BG,
+                borderColor: CARD_BORDER,
+                borderWidth: 1,
+                borderRadius: 14,
+                padding: 14,
+              }}
+            >
+              <Text style={{ color: TEXT_MUTED, marginBottom: 8, fontWeight: '600' }}>
+                Choose a network
+              </Text>
 
-            <Text className="text-gray-400 mt-4">Select a currency</Text>
-			<View
-			  style={{
-			    flexDirection: 'row',
-			    flexWrap: 'wrap',
-			    justifyContent: 'flex-start',
-			    gap: 8,
-			  }}
-			>
-			  {filteredAssets.map(a =>
-			    renderSelectableCard(
-			      a.assetId,
-			      selectedAssetId,
-			      setSelectedAssetId,
-			      assetIconMap[a.symbol.toLowerCase()],
-			      `${a.name} (${a.symbol})`
-			    )
-			  )}
-			</View>
+              <HStack wrap="wrap" style={{ justifyContent: 'space-between' }}>
+                {wallets.map((w) => {
+                  const chain = chains.find((c) => c.id === w.chainId);
+                  return renderWalletCard(
+                    w.id,
+                    selectedWalletId === w.id,
+                    chain?.name ?? 'Unknown',
+                    chainIconMap[chain?.iconUrl ?? ''],
+                  );
+                })}
+              </HStack>
+            </View>
 
+            {/* ASSET SECTION */}
+            <View
+              style={{
+                backgroundColor: CARD_BG,
+                borderColor: CARD_BORDER,
+                borderWidth: 1,
+                borderRadius: 14,
+                padding: 14,
+              }}
+            >
+              <Text style={{ color: TEXT_MUTED, marginBottom: 8, fontWeight: '600' }}>
+                Select a currency
+              </Text>
 
-            <Box className="mt-4">
-              <Text className="text-gray-400 mb-1">Wallet address</Text>
-              <Box
-                style={{
-                  borderColor: '#e5e7eb',
-                  borderWidth: 0,
-                  borderRadius: 12,
-                  padding: 0,
-                  backgroundColor: '#0a0a0a',
-                }}
-              >
-                <Text style={{ color: '#fff', fontSize: 16 }}>
-                  {wallet?.publicAddress ?? 'No wallet'}
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                {filteredAssets.map((a) => {
+                  const settings = (a as any)?.onrampSettings;
+                  const coinbaseEnabled = settings?.coinbase === true;
+
+                  return renderAssetChip(
+                    a.assetId,
+                    selectedAssetId,
+                    setSelectedAssetId,
+                    assetIconMap[a.symbol.toLowerCase()],
+                    `${a.name} (${a.symbol})`,
+                    () => {
+                      console.log('[onramp] asset tapped:', {
+                        assetId: a.assetId,
+                        symbol: a.symbol,
+                        onrampSettings: settings,
+                      });
+                    },
+                    coinbaseEnabled,
+                  );
+                })}
+              </View>
+
+              {/* Availability hint */}
+              {selectedAsset ? (
+                <Text style={{ color: TEXT_MUTED, marginTop: 6 }}>
+                  {isCoinbaseAvailable
+                    ? 'This asset is available on Coinbase.'
+                    : 'This asset is not currently available on Coinbase.'}
                 </Text>
-              </Box>
-            </Box>
+              ) : null}
+            </View>
 
-			<View
-			  style={{
-			    flexDirection: 'row',
-			    alignItems: 'center',
-			    backgroundColor: '#0a0a0a',
-			    borderRadius: 12,
-			    borderWidth: 1,
-			    borderColor: '#333',
-			    paddingHorizontal: 16,
-			    paddingVertical: 12,
-			    marginTop: 20,
-			  }}
-			>
-			  <TextInput
-			    value={inputAmount}
-			    onChangeText={setInputAmount}
-			    keyboardType="decimal-pad"
-			    placeholder="Enter amount"
-			    placeholderTextColor="#555"
-			    style={{
-			      flex: 1,
-			      color: '#d1faff',
-			      fontSize: 18,
-			    }}
-			  />
-			  <Text
-			    style={{
-			      color: '#666',
-			      fontSize: 16,
-			      marginLeft: 8,
-			    }}
-			  >
-			    BRL
-			  </Text>
-			</View>
+            {/* WALLET + AMOUNT SECTION */}
+            <View
+              style={{
+                backgroundColor: CARD_BG,
+                borderColor: CARD_BORDER,
+                borderWidth: 1,
+                borderRadius: 14,
+                padding: 14,
+                gap: 14,
+              }}
+            >
+              <View>
+                <Text style={{ color: TEXT_MUTED, marginBottom: 6, fontWeight: '600' }}>
+                  Wallet address
+                </Text>
+                <View
+                  style={{
+                    borderColor: CARD_BORDER,
+                    borderWidth: 1,
+                    borderRadius: 12,
+                    padding: 12,
+                    backgroundColor: '#0a0a0a',
+                  }}
+                >
+                  <Text style={{ color: '#fff', fontSize: 15 }}>
+                    {wallet?.publicAddress ?? 'No wallet'}
+                  </Text>
+                </View>
+              </View>
 
+              <View>
+                <Text style={{ color: TEXT_MUTED, marginBottom: 6, fontWeight: '600' }}>
+                  Amount (BRL)
+                </Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    backgroundColor: '#0a0a0a',
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderColor: CARD_BORDER,
+                    paddingHorizontal: 14,
+                    paddingVertical: 10,
+                  }}
+                >
+                  <TextInput
+                    value={inputAmount}
+                    onChangeText={setInputAmount}
+                    keyboardType="decimal-pad"
+                    placeholder="Enter amount"
+                    placeholderTextColor="#555"
+                    style={{
+                      flex: 1,
+                      color: '#d1faff',
+                      fontSize: 18,
+                    }}
+                  />
+                  <Text style={{ color: '#888', fontSize: 14, marginLeft: 8 }}>BRL</Text>
+                </View>
+                <Text style={{ color: TEXT_MUTED, marginTop: 6, fontSize: 12 }}>
+                  Tip: availability depends on the selected asset/network.
+                </Text>
+              </View>
+            </View>
 
+            {/* PRIMARY CTA */}
             <Button
-              className="mt-6 rounded-full"
-              style={{ height: 56 }}
-              disabled={!inputAmount || !selectedAsset || !wallet || !selectedChain}
+              className="mt-2 rounded-full"
+              style={{ height: 56, opacity: primaryCtaDisabled ? 0.6 : 1 }}
+              disabled={primaryCtaDisabled}
               onPress={handleSubmit}
             >
-              <ButtonText className="text-lg text-white">
-                {loading ? 'Loading...' : 'Pay with Coinbase'}
-              </ButtonText>
+              <ButtonText className="text-lg text-white">{primaryCtaLabel}</ButtonText>
             </Button>
           </VStack>
-		  
-
         </RNScrollView>
       </Box>
     </>

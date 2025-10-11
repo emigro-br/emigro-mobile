@@ -1,4 +1,5 @@
-import { View, Platform } from 'react-native';
+import { View, Platform, Image } from 'react-native';
+
 import * as IconsOutline from 'react-native-heroicons/outline';
 import * as IconsSolid from 'react-native-heroicons/solid';
 import { Tabs } from 'expo-router';
@@ -72,6 +73,32 @@ export default function TabLayout() {
           ),
         }}
       />
+
+	  <Tabs.Screen
+	    name="emipoints/index"
+	    options={{
+	      title: 'EmiPoints',
+	      tabBarIcon: ({ color, size, focused }) => (
+	        <View style={{ alignItems: 'center' }}>
+	          <View
+	            style={{
+	              height: 4,
+	              width: 40,
+	              backgroundColor: focused ? '#f1496a' : 'transparent',
+	              borderRadius: 2,
+	              marginBottom: 4,
+	            }}
+	          />
+	          <Image
+	            source={require('@/assets/images/icons/emipoint-icon-red.png')}
+	            style={{ width: size, height: size, tintColor: color }}
+	            resizeMode="contain"
+	          />
+	        </View>
+	      ),
+	    }}
+	  />
+
 
 
       <Tabs.Screen

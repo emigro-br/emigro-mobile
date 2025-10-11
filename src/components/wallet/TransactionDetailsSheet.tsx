@@ -30,7 +30,8 @@ const getStatusData = (tx: any) => {
 
     if (tx.type === 'swap-input') {
       message = 'Swap completed successfully!';
-    } else if (tx.type === 'crypto-transfer') {
+    } else if (tx.type === 'crypto-transfer' || tx.type === 'transaction_out' || tx.type === 'transaction_in') {
+      // Keep identical success message for all transfer variants
       message = 'Crypto transferred successfully!';
     } else if (tx.type === 'pix-payment') {
       message = 'Pix payment received!';
@@ -45,6 +46,7 @@ const getStatusData = (tx: any) => {
   if (tx.status.startsWith('e')) return statusStyleMap.error;
   return statusStyleMap.pending;
 };
+
 
 
 
@@ -71,8 +73,12 @@ export const TransactionDetailsSheet = ({ isOpen, onClose, transaction }: Props)
   const tx = transaction;
   const isPix = tx.type === 'pix-payment';
   const isTransfer = tx.type === 'crypto-transfer';
+  const isTransferOut = tx.type === 'transaction_out';
+  const isTransferIn = tx.type === 'transaction_in';
+  const isAnyTransfer = isTransfer || isTransferOut || isTransferIn;
   const isCoinbase = tx.type === 'coinbase-onramp';
   const isSwap = tx.type === 'swap-input';
+
 
   const getChainName = (id: string) => {
     const chain = chains.find(c => c.id === id);
@@ -85,10 +91,12 @@ export const TransactionDetailsSheet = ({ isOpen, onClose, transaction }: Props)
     'pix-payment': require('@/assets/images/transactions/pix-icon.png'),
     'coinbase-onramp': require('@/assets/images/transactions/coinbase-icon.png'),
     'crypto-transfer': require('@/assets/images/transactions/transfer-icon.png'),
-	'swap-input': require('@/assets/images/transactions/swap-icon.png'),
-	'swap': require('@/assets/images/transactions/swap-icon.png'),
+    'transaction_out': require('@/assets/images/transactions/transfer-icon.png'),
+    'transaction_in': require('@/assets/images/transactions/transfer-icon.png'),
+    'swap-input': require('@/assets/images/transactions/swap-icon.png'),
+    'swap': require('@/assets/images/transactions/swap-icon.png'),
   };
-  const icon = iconMap[tx.type];
+const icon = iconMap[tx.type];
 
   return (
     <Actionsheet isOpen={isOpen} onClose={onClose}>
@@ -138,15 +146,20 @@ export const TransactionDetailsSheet = ({ isOpen, onClose, transaction }: Props)
             }}>
               {icon && <Image source={icon} style={{ width: 24, height: 24 }} resizeMode="contain" />}
             </Box>
-            <Text style={{ color: '#fff', fontSize: 22, fontWeight: 'bold' }}>
-			{isSwap
-			  ? 'Token Swap'
-			  : isPix
-			  ? 'Pix Payment'
-			  : isTransfer
-			  ? 'Crypto Transfer'
-			  : 'Deposit (Coinbase)'}
-            </Text>
+			<Text style={{ color: '#fff', fontSize: 22, fontWeight: 'bold' }}>
+			  {isSwap
+			    ? 'Token Swap'
+			    : isPix
+			    ? 'Pix Payment'
+			    : isTransferOut
+			    ? 'Transfer Out'
+			    : isTransferIn
+			    ? 'Transfer In'
+			    : isTransfer
+			    ? 'Crypto Transfer'
+			    : 'Deposit (Coinbase)'}
+			</Text>
+
           </Box>
 
           <Box style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: statusData.bg, padding: 10, borderRadius: 8, marginBottom: 16 }}>
@@ -180,15 +193,20 @@ export const TransactionDetailsSheet = ({ isOpen, onClose, transaction }: Props)
             </>
           )}
 
-          {isTransfer && (
-            <>
-              <Text style={{ color: '#fff', fontSize: 22, marginBottom: 4 }}>
-                Value: {parseFloat(tx.token_amount).toFixed(6)} {tx.token_symbol}
-              </Text>
-              <Text style={{ color: '#aaa', marginBottom: 4 }}>From: {tx.wallet_public_address} ({chainName})</Text>
-              <Text style={{ color: '#aaa', marginBottom: 12 }}>To: {tx.to_wallet_public_address} ({chainName})</Text>
-            </>
-          )}
+		  {isAnyTransfer && (
+		    <>
+		      <Text style={{ color: '#fff', fontSize: 22, marginBottom: 4 }}>
+		        Value: {parseFloat(tx.token_amount).toFixed(6)} {tx.token_symbol}
+		      </Text>
+		      <Text style={{ color: '#aaa', marginBottom: 4 }}>
+		        From: {tx.wallet_public_address} ({chainName})
+		      </Text>
+		      <Text style={{ color: '#aaa', marginBottom: 12 }}>
+		        To: {tx.to_wallet_public_address} ({chainName})
+		      </Text>
+		    </>
+		  )}
+
 		  
 		  {isSwap && (() => {
 		    const metadata = typeof tx.metadata === "string" ? JSON.parse(tx.metadata) : (tx.metadata || {});

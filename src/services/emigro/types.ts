@@ -28,8 +28,14 @@ export type RegisterUserRequest = {
   firstName: string;
   lastName: string;
   role: Role;
+  /**
+   * Optional referral code provided during signup.
+   * (Kept explicit even with the index signature for clarity & IDE help.)
+   */
+  referralCode?: string;
   [key: string]: string;
 };
+
 
 //-- Users
 
@@ -208,4 +214,53 @@ export type Sep24Transaction = {
   withdraw_anchor_account: string;
   withdraw_memo: string;
   withdraw_memo_type: string;
+};
+
+// ===== Rewards API types =====
+
+export type RewardSummaryResponse = {
+  // keep it flexible so BE can add fields without breaking the FE
+  points?: number;                  // current total / spendable (if you expose it)
+  lifetimePoints?: number;          // all-time
+  seasonPoints?: number;            // current season
+  spendablePoints?: number;         // spendable now
+  legacy?: { total?: number } | null;
+  referral?: {
+    myCode?: string | null;
+    referredCount?: number | null;
+    referredPoints?: number | null;
+    referredUsers?: Array<{ id: string; email?: string | null }> | null;
+  } | null;
+  [k: string]: any;
+};
+
+export type RewardLedgerEntry = {
+  id: string;
+  userId: string;
+  points: number;
+  reason: string;
+  createdAt: string;
+  metadata?: Record<string, any> | null;
+};
+
+export type RewardLedgerResponse = {
+  items: RewardLedgerEntry[];
+  nextCursor?: string | null;
+};
+
+export type RewardReferralCodeResponse = {
+  code: string;
+};
+
+export type RewardApplyReferralResponse = {
+  ok: boolean;
+  message?: string;
+};
+
+export type UserRankResponse = {
+  userId: string;
+  lifetimePoints: number;
+  rank: number;         // 1 = top
+  totalUsers: number;
+  percentile: number;   // 0..100 (100 = best)
 };

@@ -16,6 +16,7 @@ import { Heading } from '@/components/ui/heading';
 import { Textarea, TextareaInput } from '@/components/ui/textarea';
 import { VStack } from '@/components/ui/vstack';
 import { InvalidPixError, paymentStore } from '@/stores/PaymentStore';
+import { api } from '@/services/emigro/api';
 
 export const PastePixCode = () => {
   const router = useRouter();
@@ -55,19 +56,60 @@ export const PastePixCode = () => {
         throw new Error('Pix code is invalid or empty');
       }
 
-      const payment = await paymentStore.preview(brCode);
+      // 1) Your existing preview
+      let payment = await paymentStore.preview(brCode);
       console.log('[PastePixCode][handleContinue] Payment preview result:', payment);
 
       if (!payment || typeof payment !== 'object' || !payment.assetCode) {
-        console.error(
-          '[PastePixCode][handleContinue] Incomplete payment object returned:',
-          payment
-        );
+        console.error('[PastePixCode][handleContinue] Incomplete payment object returned:', payment);
         throw new Error('Payment details are incomplete or invalid');
       }
 
       paymentStore.setScannedPayment(payment);
-      console.log('[PastePixCode][handleContinue] Scanned payment set');
+
+      let amt = Number(payment?.transactionAmount);
+
+      // 2) If amount is missing/invalid, FALLBACK to Transfero /payment-preview
+      if (!Number.isFinite(amt) || amt <= 0) {
+        try {
+          const preview = await api().post('/transfero/payment-preview', { id: brCode });
+
+          if (
+            preview?.data?.amount != null &&
+            !isNaN(preview.data.amount) &&
+            Number(preview.data.amount) > 0
+          ) {
+            // Patch with Transfero values and proceed
+            const patched = {
+              ...payment,
+              transactionAmount: Number(preview.data.amount),
+              merchantName: payment?.merchantName || preview.data.name || 'Unknown Merchant',
+              taxId: payment?.taxId || preview.data.taxId || '55479337000115',
+              pixKey: payment?.pixKey || preview.data.brCode?.keyId,
+            };
+
+            paymentStore.setScannedPayment(patched);
+            setError('');
+            router.push('/payments/confirm');
+            return;
+          }
+        } catch (fallbackErr) {
+          console.warn('[PastePixCode][handleContinue] Transfero fallback failed:', fallbackErr);
+        }
+
+        // 3) Still no amount → ask the user to enter it
+        // Persist explicit 0 to mark "missing amount"
+        paymentStore.setScannedPayment({
+          ...payment,
+          transactionAmount: 0,
+        });
+
+        setError('');
+        router.push('/payments/pix/enter-amount');
+        return;
+      }
+
+      // 4) Amount present → proceed to confirmation
       setError('');
       router.push('/payments/confirm');
     } catch (err) {
@@ -82,6 +124,7 @@ export const PastePixCode = () => {
       setIsChecking(false);
     }
   };
+
 
   return (
     <>

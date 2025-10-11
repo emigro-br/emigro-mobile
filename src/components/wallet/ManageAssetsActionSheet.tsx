@@ -10,7 +10,7 @@ import { ScrollView } from '@/components/ui/scroll-view';
 import { VStack } from '@/components/ui/vstack';
 import { Text } from '@/components/ui/text';
 import { Box } from '@/components/ui/box';
-import { Image, Switch, Pressable, Dimensions, Alert } from 'react-native';
+import { Image, Switch, Pressable, Dimensions, Alert, ActivityIndicator } from 'react-native';
 import { assetIconMap } from '@/utils/assetIcons';
 import { api } from '@/services/emigro/api';
 import { sessionStore } from '@/stores/SessionStore';
@@ -38,13 +38,19 @@ const confirmToggle = (message: string): Promise<boolean> => {
 };
 
 const ManageAssetsActionSheetComponent = ({ walletId, isOpen, onClose }: Props) => {
-  const [assets, setAssets] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [togglingAssets, setTogglingAssets] = useState<Record<string, boolean>>({});
-  const chains = useChainStore.getState().chains;
-  const screenWidth = Dimensions.get('window').width;
-  
-  const [hasChanges, setHasChanges] = useState(false);
+	const [assets, setAssets] = useState<any[]>([]);
+	const [loading, setLoading] = useState(false);
+	const [togglingAssets, setTogglingAssets] = useState<Record<string, boolean>>({});
+	// NEW: show “preparing / pre-approving” state if enabling takes longer
+	const [preparingAssets, setPreparingAssets] = useState<Record<string, boolean>>({});
+	// NEW: global notice to explain the first-time pre-approval
+	const [showPreapprovalNotice, setShowPreapprovalNotice] = useState(false);
+
+	const chains = useChainStore.getState().chains;
+	const screenWidth = Dimensions.get('window').width;
+
+	const [hasChanges, setHasChanges] = useState(false);
+
 
   const currentWallet = useMemo(() => {
     return sessionStore.user?.wallets?.find(w => w.id === walletId);
@@ -135,8 +141,9 @@ const ManageAssetsActionSheetComponent = ({ walletId, isOpen, onClose }: Props) 
     }
 
     const action = asset.isEnabled ? 'disable' : 'enable';
-    console.log(`[ComponentsWallet][ManageAssetsActionSheet] 🟢 Toggle request for ${asset.name} (${action})`);
-
+    console.log(
+      `[ComponentsWallet][ManageAssetsActionSheet] 🟢 Toggle request for ${asset.name} (${action})`
+    );
 
     const confirmed = await confirmToggle(
       `Do you want to ${action} ${asset.name} in your ${chain?.name} wallet?`
@@ -145,9 +152,20 @@ const ManageAssetsActionSheetComponent = ({ walletId, isOpen, onClose }: Props) 
 
     setTogglingAssets(prev => ({ ...prev, [assetId]: true }));
 
+    // If enabling takes longer than this threshold, show a subtle “preparing” state
+    const LONG_ENABLE_MS = 1200;
+    let longEnableTimer: NodeJS.Timeout | null = null;
+
+    if (action === 'enable') {
+      longEnableTimer = setTimeout(() => {
+        setPreparingAssets(prev => ({ ...prev, [assetId]: true }));
+        setShowPreapprovalNotice(true);
+      }, LONG_ENABLE_MS);
+    }
+
     try {
       const res = await api().post(`/wallets/${walletId}/assets/${assetId}/${action}`);
-	  setHasChanges(true);
+      setHasChanges(true);
       console.log(`[ComponentsWallet][ManageAssetsActionSheet] ✅ API ${action} success`, res.data);
 
       setAssets(prev =>
@@ -155,17 +173,39 @@ const ManageAssetsActionSheetComponent = ({ walletId, isOpen, onClose }: Props) 
           a.assetId === assetId ? { ...a, isEnabled: !a.isEnabled } : a
         )
       );
+
+      // Small, friendly info when enabling succeeds and we showed “preparing”
+      if (action === 'enable' && preparingAssets[assetId]) {
+        Alert.alert(
+          'Ready to use',
+          `${asset.name} was enabled and pre-approved for faster payments.`
+        );
+      }
     } catch (err) {
-      console.error(`[ComponentsWallet][ManageAssetsActionSheet] ❌ Failed to ${action} ${asset.name}`, err);
-      Alert.alert('[ComponentsWallet][ManageAssetsActionSheet] Error', `Failed to ${action} ${asset.name}`);
+      console.error(
+        `[ComponentsWallet][ManageAssetsActionSheet] ❌ Failed to ${action} ${asset.name}`,
+        err
+      );
+      Alert.alert(
+        '[ComponentsWallet][ManageAssetsActionSheet] Error',
+        `Failed to ${action} ${asset.name}`
+      );
     } finally {
+      if (longEnableTimer) clearTimeout(longEnableTimer);
       setTogglingAssets(prev => ({ ...prev, [assetId]: false }));
+      setPreparingAssets(prev => {
+        const copy = { ...prev };
+        delete copy[assetId];
+        return copy;
+      });
     }
   };
+
 
   const renderCard = (asset: any) => {
     const icon = assetIconMap[asset.symbol?.toLowerCase()] ?? null;
     const isToggling = togglingAssets[asset.assetId] ?? false;
+    const isPreparing = preparingAssets[asset.assetId] ?? false;
 
     return (
       <Box
@@ -174,7 +214,7 @@ const ManageAssetsActionSheetComponent = ({ walletId, isOpen, onClose }: Props) 
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: asset.isEnabled ? '#141414' : '#141414',
+          backgroundColor: '#141414',
           borderColor: asset.isEnabled ? '#5c0420' : '#3c3c3c',
           borderWidth: 1,
           borderRadius: 12,
@@ -192,16 +232,24 @@ const ManageAssetsActionSheetComponent = ({ walletId, isOpen, onClose }: Props) 
               style={{ width: 42, height: 42, resizeMode: 'contain', marginRight: 12 }}
             />
           )}
-		  <Box style={{ flexShrink: 1 }}>
-		    <Text style={{ color: '#fff', fontSize: 16 }}>
-		      <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{asset.name}</Text> ({asset.symbol})
-		    </Text>
-		    <Text size="xs" style={{ color: '#aaa', marginTop: 2, fontSize: 12 }}>
-		      {asset.contractAddress?.trim()
-		        ? `${asset.contractAddress.slice(0, 9)}...${asset.contractAddress.slice(-7)}`
-		        : 'Native'}
-		    </Text>
-		  </Box>
+          <Box style={{ flexShrink: 1 }}>
+            <Text style={{ color: '#fff', fontSize: 16 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{asset.name}</Text> ({asset.symbol})
+            </Text>
+            <Text size="xs" style={{ color: '#aaa', marginTop: 2, fontSize: 12 }}>
+              {asset.contractAddress?.trim()
+                ? `${asset.contractAddress.slice(0, 9)}...${asset.contractAddress.slice(-7)}`
+                : 'Native'}
+            </Text>
+            {isPreparing && (
+              <Box style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6 }}>
+                <ActivityIndicator size="small" />
+                <Text size="xs" style={{ color: '#aaa', marginLeft: 8 }}>
+                  Preparing for first use… (one-time token approval)
+                </Text>
+              </Box>
+            )}
+          </Box>
         </Box>
 
         <Switch
@@ -214,6 +262,7 @@ const ManageAssetsActionSheetComponent = ({ walletId, isOpen, onClose }: Props) 
       </Box>
     );
   };
+
 
   return (
 	<Actionsheet
@@ -291,6 +340,26 @@ const ManageAssetsActionSheetComponent = ({ walletId, isOpen, onClose }: Props) 
             )}
 
             {assets.map(renderCard)}
+			{showPreapprovalNotice && (
+			  <Box
+			    style={{
+			      marginHorizontal: 16,
+			      marginBottom: 10,
+			      backgroundColor: '#171717',
+			      borderColor: '#333',
+			      borderWidth: 1,
+			      borderRadius: 12,
+			      paddingVertical: 10,
+			      paddingHorizontal: 12,
+			    }}
+			  >
+			    <Text style={{ color: '#ddd', fontSize: 12 }}>
+			      Enabling an asset may take a few seconds the first time while we prepare it for
+			      instant payments. This is a one-time approval and won’t be needed again.
+			    </Text>
+			  </Box>
+			)}
+
           </Box>
         </ScrollView>
       </ActionsheetContent>

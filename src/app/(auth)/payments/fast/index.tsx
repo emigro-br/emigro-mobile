@@ -38,13 +38,177 @@ import * as Haptics from 'expo-haptics';
 import { Audio } from 'expo-av';
 import LottieView from 'lottie-react-native';
 
+import { useLocalSearchParams } from 'expo-router';
+import { paymentStore } from '@/stores/PaymentStore';
+
 import * as Sentry from '@sentry/react-native';
 
 const FastQRCodeScreen = () => {
   const router = useRouter();
   const [primaryAsset, setPrimaryAsset] = useState(null);
   const [primaryChain, setPrimaryChain] = useState(null);
+  const params = useLocalSearchParams();
+  const resumeFast = params?.resume === '1';
+  
+  // If returning from /payments/pix/enter-amount with a just-entered amount,
+  // we re-use the stored scanned payment from the store and run the same success path.
+  useEffect(() => {
+    (async () => {
+      if (!resumeFast) return;
 
+      try {
+        const stored = paymentStore.scannedPayment;
+        if (!stored) return;
+
+        // Trigger the same flow as a successful scan, but with the updated amount from the store
+        await (async (pixPayload) => {
+          try {
+            console.log('[FastQRCode][resume] ✅ Using stored payload:', pixPayload);
+
+            const userId = sessionStore.user?.id;
+            if (!userId) throw new Error('User not logged in');
+
+            const res = await api().get('/user/primary-currency');
+            const primary = res.data;
+
+            console.log('[FastQRCode][resume] 🪙 Primary currency:', primary);
+
+            const assetRes = await api().get(`/assets/${primary.assetId}`);
+            console.log('[FastQRCode][resume] 🧾 Full asset response:', assetRes.data);
+
+            const tokenAddress = assetRes.data.contractAddress;
+            const decimals = assetRes.data.decimals;
+            const assetSymbol = assetRes.data.symbol;
+
+            let quotedAmount;
+
+            try {
+              const parsedPixDump = JSON.stringify(pixPayload).slice(0, 400);
+              let transactionAmount = pixPayload.transactionAmount;
+
+              if (
+                transactionAmount == null ||
+                isNaN(transactionAmount) ||
+                transactionAmount <= 0
+              ) {
+                throw new Error(
+                  `Missing transaction amount on resume. Parsed PIX: ${parsedPixDump}`
+                );
+              }
+
+              const brlAmount = Number(pixPayload.transactionAmount.toFixed(2));
+              console.log('[FastQRCode][resume] 🛰 Fetching USDC/BRL price via /quote?asset=USDC&fiat=BRL...', {
+                brlAmount,
+              });
+
+              const usdcBrlPrice = await fetchDirectFiatPairQuote('USDC', 'BRL'); // price of 1 USDC in BRL
+              if (!usdcBrlPrice || isNaN(usdcBrlPrice) || usdcBrlPrice <= 0) {
+                throw new Error(`[FiatPair] Invalid USDC/BRL price: ${usdcBrlPrice}. Parsed PIX: ${parsedPixDump}`);
+              }
+
+              const usdcAmount = brlAmount / usdcBrlPrice; // how many USDC to cover BRL amount
+              console.log('[FastQRCode][resume] 💵 USDC amount (derived):', usdcAmount);
+
+              if (!usdcAmount || isNaN(usdcAmount) || usdcAmount <= 0) {
+                throw new Error(
+                  `USDC conversion returned invalid amount: ${usdcAmount}. Parsed PIX: ${parsedPixDump}`
+                );
+              }
+
+              if (assetSymbol === 'USDC') {
+                quotedAmount = usdcAmount;
+              } else {
+                console.log(`[FastQRCode][resume] 🔁 Fetching USD → ${assetSymbol} price`);
+                const tokenPrice = await fetchFiatQuote(assetSymbol, 'USD');
+                if (!tokenPrice || isNaN(tokenPrice) || tokenPrice <= 0) {
+                  throw new Error(
+                    `Token price not found or invalid for symbol: ${assetSymbol}. Value: ${tokenPrice}. Parsed PIX: ${parsedPixDump}`
+                  );
+                }
+                quotedAmount = usdcAmount / tokenPrice;
+                if (!quotedAmount || isNaN(quotedAmount) || quotedAmount <= 0) {
+                  throw new Error(
+                    `Converted token amount is invalid. Result: ${quotedAmount}, USDC: ${usdcAmount}, TokenPrice: ${tokenPrice}. Parsed PIX: ${parsedPixDump}`
+                  );
+                }
+                console.log('[FastQRCode][resume] 🔁 Converted token amount:', quotedAmount);
+              }
+            } catch (err) {
+              console.error('[FastQRCode][resume] ❌ Quote fetch failed:', err);
+              Sentry.captureException(err, {
+                tags: { feature: 'quoteConversion' },
+                extra: {
+                  pixPayload,
+                  assetSymbol,
+                  transactionAmount: pixPayload?.transactionAmount,
+                },
+              });
+              const debugMessage = [
+                '[QR Quote Error]',
+                `Message: ${err?.message}`,
+                `Symbol: ${assetSymbol}`,
+                `Amount: ${pixPayload?.transactionAmount}`,
+              ].join(' | ');
+              throw new Error(debugMessage);
+            }
+
+            const rawAmount = Math.floor(quotedAmount * Math.pow(10, decimals)).toString();
+
+            const payload = {
+              paymentId: `${Date.now()}_${uuid.v4()}`,
+              token: tokenAddress,
+              amount: rawAmount,
+              usePaymaster: true,
+              chainId: Number(primary.chainIdOnchain),
+              walletId: sessionStore.user.circleWallet?.circleWalletId,
+              assetId: primary.assetId,
+              tokenSymbol: assetSymbol,
+              rawBrcode: pixPayload.brCode,
+              transferoTxid: pixPayload.txid,
+              taxId: pixPayload.taxId ?? '55479337000115',
+              name: pixPayload.merchantName ?? '',
+              pixKey: pixPayload.pixKey ?? '',
+              fiatAmount: pixPayload.transactionAmount.toFixed(6),
+              toTokenAmount: quotedAmount.toFixed(6),
+            };
+
+            console.log('[FastQRCode][resume] 📦 Payload to send:', payload);
+
+            const response = await api().post('/evm/create-escrow-evm', payload);
+            console.log('[FastQRCode][resume] ✅ Escrow created:', response.data);
+
+            router.replace({
+              pathname: '/payments/confirm/status',
+              params: { id: payload.paymentId },
+            });
+          } catch (error) {
+            console.error('[FastQRCode][resume] ❌ Failed to process payment:', error);
+
+            Sentry.captureException(error, {
+              tags: { feature: 'onScanSuccess' },
+              extra: {
+                pixPayload,
+                userId: sessionStore.user?.id,
+                wallet: sessionStore.user?.circleWallet,
+              },
+            });
+
+            router.replace({
+              pathname: '/payments/confirm/status',
+              params: {
+                id: 'error',
+                message: encodeURIComponent(
+                  error?.message || 'Unknown error while processing QR code'
+                ),
+              },
+            });
+          }
+        })(stored);
+      } catch {}
+    })();
+  }, [resumeFast]);
+
+  
   useEffect(() => {
     const fetchPrimary = async () => {
       try {
@@ -179,10 +343,23 @@ const FastQRCodeScreen = () => {
 				  isNaN(transactionAmount) ||
 				  transactionAmount <= 0
 				) {
-				  throw new Error(
-				    `Invalid or missing transaction amount in QR code (after fallback). Received: ${transactionAmount}. Parsed PIX: ${parsedPixDump}`
-				  );
+				  // Save scanned payload, then redirect user to enter amount; we'll resume this flow afterwards
+				  try {
+				    paymentStore.setScannedPayment({
+				      ...pixPayload,
+				      transactionAmount: 0, // explicit 0 to mark missing
+				    });
+				  } catch (e) {
+				    console.warn('[FastQRCode] ⚠️ Could not persist scanned payload in store:', e);
+				  }
+
+				  router.push({
+				    pathname: '/payments/pix/enter-amount',
+				    params: { returnTo: '/payments/fast?resume=1' }, // will trigger the resume effect
+				  });
+				  return;
 				}
+
 
 
 			  const brlAmount = pixPayload.transactionAmount.toFixed(2);

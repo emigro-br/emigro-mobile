@@ -29,6 +29,7 @@ import { paymentStore } from '@/stores/PaymentStore';
 import { Payment } from '@/types/PixPayment';
 import { isoToCrypto } from '@/utils/assets';
 import { brCodeFromMercadoPagoUrl } from '@/utils/pix';
+import { api } from '@/services/emigro/api';
 
 import AskCamera from './ask-camera';
 
@@ -37,16 +38,60 @@ export const PayWithQRCode = () => {
   return (
     <QRCodeScanner
       onCancel={() => router.back()}
-      onScanPayment={async (scanned) => {
-        try {
-          const payment = await paymentStore.preview(scanned.brCode);
-          paymentStore.setScannedPayment(payment);
-          router.push('/payments/confirm');
-        } catch (error) {
-          // FIXME: how show this error to the user?
-          console.warn('[onScanPayment]', error);
-        }
-      }}
+	  onScanPayment={async (scanned) => {
+	    try {
+	      // 1) Call existing preview (your store implementation)
+	      let payment = await paymentStore.preview(scanned.brCode);
+
+	      // Persist the parsed payload
+	      paymentStore.setScannedPayment(payment);
+
+	      let amt = Number(payment?.transactionAmount);
+
+	      // 2) If amount is missing/invalid, FALLBACK to Transfero /payment-preview
+	      if (!Number.isFinite(amt) || amt <= 0) {
+	        try {
+	          const preview = await api().post('/transfero/payment-preview', { id: scanned.brCode });
+
+	          if (
+	            preview?.data?.amount != null &&
+	            !isNaN(preview.data.amount) &&
+	            Number(preview.data.amount) > 0
+	          ) {
+	            // Build a patched payment with Transfero details
+	            const patched = {
+	              ...payment,
+	              transactionAmount: Number(preview.data.amount),
+	              merchantName: payment?.merchantName || preview.data.name || 'Unknown Merchant',
+	              taxId: payment?.taxId || preview.data.taxId || '55479337000115',
+	              pixKey: payment?.pixKey || preview.data.brCode?.keyId,
+	            };
+
+	            paymentStore.setScannedPayment(patched);
+	            router.push('/payments/confirm');
+	            return;
+	          }
+	        } catch (fallbackErr) {
+	          console.warn('[onScanPayment] Transfero fallback failed:', fallbackErr);
+	        }
+
+	        // 3) Still no amount → ask the user to enter it
+	        router.push({
+	          pathname: '/payments/pix/enter-amount',
+	          // no returnTo param => default will route to /payments/confirm
+	        });
+	        return;
+	      }
+
+	      // 4) Amount is present → proceed to confirmation
+	      router.push('/payments/confirm');
+	    } catch (error) {
+	      // FIXME: how show this error to the user?
+	      console.warn('[onScanPayment]', error);
+	    }
+	  }}
+
+
     />
   );
 };

@@ -17,13 +17,18 @@ const typeIconMap = {
   'pix-payment': require('@/assets/images/transactions/pix-icon.png'),
   'coinbase-onramp': require('@/assets/images/transactions/coinbase-icon.png'),
   'crypto-transfer': require('@/assets/images/transactions/transfer-icon.png'),
+  'transaction_out': require('@/assets/images/transactions/transfer-icon.png'),
+  'transaction_in': require('@/assets/images/transactions/transfer-icon.png'),
   'swap-input': require('@/assets/images/transactions/swap-icon.png'),
 };
+
 
 const typeNameMap = {
   'pix-payment': 'Pix Payment',
   'coinbase-onramp': 'Deposit (Coinbase)',
   'crypto-transfer': 'Transfer Crypto',
+  'transaction_out': 'Transfer Out',
+  'transaction_in': 'Transfer In',
   'swap-input': 'Token Swap',
 };
 
@@ -110,17 +115,27 @@ export const WalletTransactions = () => {
       };
     }
 
-    const metadata = typeof tx.metadata === "string" ? JSON.parse(tx.metadata) : (tx.metadata || {});
-    const decimals = metadata.fromDecimals ?? tx.token_decimals ?? 6;
+    // For swaps, amounts come in base units and need decimal conversion.
+    if (tx.type === 'swap-input') {
+      const metadata = typeof tx.metadata === 'string' ? JSON.parse(tx.metadata) : (tx.metadata || {});
+      const decimals = metadata.fromDecimals ?? tx.token_decimals ?? 6;
+      const raw = Number(tx.token_amount || 0);
+      const human = raw / Math.pow(10, decimals);
 
-    const raw = Number(tx.token_amount || 0);
-    const human = raw / Math.pow(10, decimals);
+      return {
+        value: human.toFixed(6),
+        symbol: tx.token_symbol || metadata.fromSymbol || '???',
+      };
+    }
 
+    // For transfers (crypto-transfer, transaction_out, transaction_in) and coinbase-onramp,
+    // token_amount is already human-readable.
     return {
-      value: human.toFixed(6),
-      symbol: tx.token_symbol || metadata.fromSymbol || '???',
+      value: parseFloat(tx.token_amount || '0').toFixed(6),
+      symbol: tx.token_symbol || '???',
     };
   };
+
 
 
 

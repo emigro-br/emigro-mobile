@@ -201,7 +201,15 @@ const Login = () => {
 				    </Text>
 				  </Animated.View>
 				</Pressable>
-				
+				{isLoggingIn && (
+				  <Text
+				    className="text-white text-center mt-3 opacity-80"
+				    testID="login-loading-hint"
+				  >
+				    Preparing your account and wallet… this may take a few moments. Please keep the app open.
+				  </Text>
+				)}
+
 
 				
                 {/* Forgot password */}
