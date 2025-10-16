@@ -45,6 +45,19 @@ const getStatusDetails = (status: string) => {
   return { name: 'Unknown', icon: statusIconMap.pending };
 };
 
+// --- Swap human-amount cutover (UTC) ---
+// All swap-input rows created *on/after* this instant already store HUMAN token_amount.
+// Rows *before* this instant stored RAW base units and must be scaled by 10^decimals.
+const SWAP_HUMAN_CUTOVER_ISO = '2025-10-15T17:00:00Z';
+const SWAP_HUMAN_CUTOVER_MS = Date.parse(SWAP_HUMAN_CUTOVER_ISO);
+
+const isOnOrAfterCutover = (iso?: string) => {
+  if (!iso) return true; // missing dates are treated as "new" to avoid double-scaling
+  const t = Date.parse(iso);
+  if (Number.isNaN(t)) return true; // invalid date → assume new format
+  return t >= SWAP_HUMAN_CUTOVER_MS;
+};
+
 export const WalletTransactions = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -115,13 +128,22 @@ export const WalletTransactions = () => {
       };
     }
 
-    // For swaps, amounts come in base units and need decimal conversion.
     if (tx.type === 'swap-input') {
       const metadata = typeof tx.metadata === 'string' ? JSON.parse(tx.metadata) : (tx.metadata || {});
       const decimals = metadata.fromDecimals ?? tx.token_decimals ?? 6;
+
+      // After cutover → token_amount already HUMAN (e.g., "0.010000")
+      if (isOnOrAfterCutover(tx.created_at)) {
+        const human = parseFloat(String(tx.token_amount ?? '0'));
+        return {
+          value: human.toFixed(6),
+          symbol: tx.token_symbol || metadata.fromSymbol || '???',
+        };
+      }
+
+      // Before cutover → token_amount is RAW base units (e.g., "10000" for 6 decimals)
       const raw = Number(tx.token_amount || 0);
       const human = raw / Math.pow(10, decimals);
-
       return {
         value: human.toFixed(6),
         symbol: tx.token_symbol || metadata.fromSymbol || '???',
@@ -135,6 +157,7 @@ export const WalletTransactions = () => {
       symbol: tx.token_symbol || '???',
     };
   };
+
 
 
 

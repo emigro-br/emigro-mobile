@@ -47,6 +47,20 @@ const getStatusData = (tx: any) => {
   return statusStyleMap.pending;
 };
 
+// --- Swap human-amount cutover (UTC) ---
+// All swap-input rows created *on/after* this instant already store HUMAN amounts.
+// Rows *before* this instant stored RAW base units and must be scaled by 10^decimals.
+const SWAP_HUMAN_CUTOVER_ISO = '2025-10-15T17:00:00Z';
+const SWAP_HUMAN_CUTOVER_MS = Date.parse(SWAP_HUMAN_CUTOVER_ISO);
+
+const isOnOrAfterCutover = (iso?: string) => {
+  if (!iso) return true; // missing dates → assume new format to avoid double-scaling
+  const t = Date.parse(iso);
+  if (Number.isNaN(t)) return true; // invalid date → assume new format
+  return t >= SWAP_HUMAN_CUTOVER_MS;
+};
+
+
 
 
 
@@ -210,19 +224,36 @@ const icon = iconMap[tx.type];
 		  
 		  {isSwap && (() => {
 		    const metadata = typeof tx.metadata === "string" ? JSON.parse(tx.metadata) : (tx.metadata || {});
-		    const fromDecimals = metadata.fromDecimals ?? tx.token_decimals ?? 18;
-		    const toDecimals = metadata.toDecimals ?? tx.to_token_decimals ?? 18;
+		    const fromDecimals = metadata.fromDecimals ?? tx.token_decimals ?? 6;
+		    const toDecimals   = metadata.toDecimals   ?? tx.to_token_decimals ?? 6;
 
-		    const fromHuman = Number(tx.token_amount || 0) / Math.pow(10, fromDecimals);
-		    const toHuman = Number(tx.to_token_amount || 0) / Math.pow(10, toDecimals);
+		    const createdAtIso = tx.created_at;
+
+		    let fromHuman: number;
+		    let toHuman: number;
+
+		    if (isOnOrAfterCutover(createdAtIso)) {
+		      // After cutover → DB already stores HUMAN values
+		      fromHuman = parseFloat(String(tx.token_amount ?? '0'));
+		      toHuman   = parseFloat(String(tx.to_token_amount ?? '0'));
+		    } else {
+		      // Before cutover → DB stored RAW base units
+		      const fromRaw = Number(tx.token_amount || 0);
+		      const toRaw   = Number(tx.to_token_amount || 0);
+		      fromHuman = fromRaw / Math.pow(10, fromDecimals);
+		      toHuman   = toRaw   / Math.pow(10, toDecimals);
+		    }
+
+		    const fromSymbol = tx.token_symbol    || metadata.fromSymbol || '???';
+		    const toSymbol   = tx.to_token_symbol || metadata.toSymbol   || '???';
 
 		    return (
 		      <>
 		        <Text style={{ color: '#fff', fontSize: 22, marginBottom: 2 }}>
-		          From: {fromHuman.toFixed(6)} {tx.token_symbol || metadata.fromSymbol || '???'}
+		          From: {fromHuman.toFixed(6)} {fromSymbol}
 		        </Text>
 		        <Text style={{ color: '#fff', fontSize: 22, marginBottom: 4 }}>
-		          To: {toHuman.toFixed(6)} {tx.to_token_symbol || metadata.toSymbol || '???'}
+		          To: {toHuman.toFixed(6)} {toSymbol}
 		        </Text>
 		        <Text style={{ color: '#aaa', marginBottom: 4 }}>
 		          {tx.wallet_public_address} ({chainName})
@@ -230,6 +261,7 @@ const icon = iconMap[tx.type];
 		      </>
 		    );
 		  })()}
+
 
 
 

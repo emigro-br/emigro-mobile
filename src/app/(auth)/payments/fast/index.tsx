@@ -49,6 +49,7 @@ const FastQRCodeScreen = () => {
   const [primaryChain, setPrimaryChain] = useState(null);
   const params = useLocalSearchParams();
   const resumeFast = params?.resume === '1';
+  const [resumeInProgress, setResumeInProgress] = useState<boolean>(resumeFast);
   
   // If returning from /payments/pix/enter-amount with a just-entered amount,
   // we re-use the stored scanned payment from the store and run the same success path.
@@ -265,14 +266,14 @@ const FastQRCodeScreen = () => {
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
-      <FastQRCodeScanner
-        onCancel={() => {
-          router.push('/wallet');
-        }}
-        primaryAsset={primaryAsset}
-        primaryChain={primaryChain}
-        isLoading={!primaryAsset || !primaryChain}
-        onScanSuccess={async (pixPayload) => {
+	  <FastQRCodeScanner
+	    onCancel={() => {
+	      router.push('/wallet');
+	    }}
+	    primaryAsset={primaryAsset}
+	    primaryChain={primaryChain}
+	    isLoading={resumeInProgress || !primaryAsset || !primaryChain}
+	    onScanSuccess={async (pixPayload) => {
           try {
             console.log('[FastQRCode] ✅ Scanned payload:', pixPayload);
 
@@ -311,30 +312,35 @@ const FastQRCodeScreen = () => {
 				    });
 
 				    if (
-				      !preview?.data?.amount ||
-				      isNaN(preview.data.amount) ||
-				      preview.data.amount <= 0
+				      preview?.data?.amount != null &&
+				      !isNaN(preview.data.amount) &&
+				      Number(preview.data.amount) > 0
 				    ) {
-				      throw new Error(
-				        `Transfero fallback failed or returned invalid amount. Preview: ${JSON.stringify(preview.data)}`
+				      transactionAmount = Number(preview.data.amount);
+				      pixPayload.transactionAmount = transactionAmount;
+				      pixPayload.merchantName =
+				        pixPayload.merchantName || preview.data.name || 'Unknown Merchant';
+				      pixPayload.taxId =
+				        pixPayload.taxId || preview.data.taxId || '55479337000115';
+				      pixPayload.pixKey =
+				        pixPayload.pixKey || preview.data.brCode?.keyId;
+
+				      console.log('[FastQRCode] ✅ Fallback succeeded. Amount:', transactionAmount);
+				    } else {
+				      // ⚠️ No valid amount from Transfero — do NOT throw.
+				      console.warn(
+				        '[FastQRCode] ⚠️ Transfero fallback returned invalid amount. Preview:',
+				        preview?.data
 				      );
 				    }
-
-				    transactionAmount = Number(preview.data.amount);
-				    pixPayload.transactionAmount = transactionAmount;
-				    pixPayload.merchantName =
-				      pixPayload.merchantName || preview.data.name || 'Unknown Merchant';
-				    pixPayload.taxId =
-				      pixPayload.taxId || preview.data.taxId || '55479337000115';
-				    pixPayload.pixKey =
-				      pixPayload.pixKey || preview.data.brCode?.keyId;
-
-				    console.log('[FastQRCode] ✅ Fallback succeeded. Amount:', transactionAmount);
 				  } catch (fallbackError) {
-				    throw new Error(
-				      `Fallback to Transfero /payment-preview failed: ${fallbackError?.message}`
+				    // ⚠️ Network/Transfero error — do NOT throw. We’ll ask the user for the value next.
+				    console.warn(
+				      '[FastQRCode] ⚠️ Transfero /payment-preview failed:',
+				      fallbackError
 				    );
 				  }
+
 
 				}
 
@@ -541,11 +547,15 @@ const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain
 
   useFocusEffect(
     useCallback(() => {
-      setIsScanned(false);
-      isScannedRef.current = false;
-      setError('');
+      // Keep flags during navigation; clear only when leaving the screen.
+      return () => {
+        setIsScanned(false);
+        isScannedRef.current = false;
+        setError('');
+      };
     }, [])
   );
+
 
   const parseQRCode = (scanned: string) => {
     console.log('[FastQRCode] 🔍 Raw QR code scanned:', scanned);
