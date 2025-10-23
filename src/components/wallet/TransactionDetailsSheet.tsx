@@ -195,17 +195,50 @@ const icon = iconMap[tx.type];
 
           <Box style={{ height: 1, backgroundColor: '#222', marginVertical: 12 }} />
 
-          {isPix && (
-            <>
-              <Text style={{ color: '#fff', fontSize: 22, marginBottom: 4 }}>
-                Value: R$ {parseFloat(tx.fiat_amount || '0').toFixed(2)}
-              </Text>
-              <Text style={{ color: '#aaa', marginBottom: 12 }}>To: {tx.merchant_name}</Text>
-              <Text style={{ color: '#fff', fontWeight: 'bold' }}>Transaction Details</Text>
-              <Text style={{ color: '#aaa' }}>Paid using: {parseFloat(tx.token_amount).toFixed(6)} {tx.token_symbol} on {chainName}</Text>
-			  <Text style={{ color: '#aaa', marginBottom: 4 }}>{tx.wallet_public_address}</Text>
-            </>
-          )}
+		  {isPix && (() => {
+		    // base BRL (without fee)
+		    const baseBrl = parseFloat(String(tx.fiat_amount ?? '0')) || 0;
+
+		    // support camelCase or snake_case just in case
+		    const feePremiumBrl = parseFloat(String((tx.feePremiumTotalBrl ?? tx.fee_premium_total_brl) ?? 0)) || 0;
+		    const feeFixedBrl   = parseFloat(String((tx.feeFixedBrl        ?? tx.fee_fixed_brl)        ?? 0)) || 0;
+		    const feePctBrl     = parseFloat(String((tx.feePctBrl          ?? tx.fee_pct_brl)          ?? 0)) || 0;
+		    const feePctFrac    = parseFloat(String((tx.feePct             ?? tx.fee_pct)               ?? 0)) || 0; // e.g. 0.01 = 1%
+		    const finalBrl      = parseFloat(String((tx.amountBrlWithFees  ?? tx.amount_brl_with_fees)  ?? baseBrl)) || baseBrl;
+
+		    const pctPercent = (isFinite(feePctFrac) ? feePctFrac * 100 : 0).toFixed(2);
+
+		    return (
+		      <>
+		        <Text style={{ color: '#fff', fontSize: 22, marginBottom: 4 }}>
+		          Pix Amount: R$ {baseBrl.toFixed(2)}
+		        </Text>
+
+		        {/* show fees only if premium > 0 */}
+		        {feePremiumBrl > 0 ? (
+		          <>
+		            <Text style={{ color: '#fff', fontSize: 16, marginBottom: 2 }}>
+		              Emigro fees: R$ {feePremiumBrl.toFixed(2)} (R$ {feeFixedBrl.toFixed(2)} + {pctPercent} %)
+		            </Text>
+		            <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
+		              Final Amount: R$ {finalBrl.toFixed(2)}
+		            </Text>
+		          </>
+		        ) : null}
+
+				{tx.merchant_name && tx.merchant_name !== 'Unknown Merchant' ? (
+				  <Text style={{ color: '#aaa', marginBottom: 12 }}>To: {tx.merchant_name}</Text>
+				) : null}
+
+		        <Text style={{ color: '#fff', fontWeight: 'bold' }}>Transaction Details</Text>
+		        <Text style={{ color: '#aaa' }}>
+		          Paid using: {parseFloat(String(tx.token_amount ?? 0)).toFixed(6)} {tx.token_symbol} on {chainName}
+		        </Text>
+		        <Text style={{ color: '#aaa', marginBottom: 4 }}>{tx.wallet_public_address}</Text>
+		      </>
+		    );
+		  })()}
+
 
 		  {isAnyTransfer && (
 		    <>

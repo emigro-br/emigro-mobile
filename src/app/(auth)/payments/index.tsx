@@ -114,8 +114,15 @@ export const Payments = () => {
               subtitle="Paste a PIX code to make a payment"
               onPress={() => router.push('/payments/pix/copia-e-cola')}
             />
-
+			
 			{/*
+			<PaymentOption
+			 icon={PixIcon}
+			 title="Pix via Key"
+			 subtitle="Email, CPF/CNPJ, phone, or Random Key"
+			  onPress={() => router.push('/payments/pix/key')}
+			/>
+			
             <PaymentOption
               icon={(props) => <HandCoinsIcon {...props} />}
               title="Request Payment"

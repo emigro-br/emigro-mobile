@@ -39,6 +39,23 @@ const ConfirmPayment = () => {
   const { scannedPayment } = paymentStore;
   const chains = useChainStore((state) => state.chains);
 
+  // --- Emigro fee preview state (BRL) ---
+  const [fixedFeeBrl, setFixedFeeBrl] = useState<number>(0);
+  const [pctFeeBrl, setPctFeeBrl] = useState<number>(0);
+  const [premiumBrl, setPremiumBrl] = useState<number>(0);
+  const [finalBrl, setFinalBrl] = useState<number | null>(null);
+
+  // % text for UI (derived from pct fee / base)
+  const [pctPercent, setPctPercent] = useState<number>(0);
+
+  // cache USDC→BRL price for quoting
+  const [usdcBrlPrice, setUsdcBrlPrice] = useState<number | null>(null);
+  
+  // raw fraction from server (e.g. 0.01 for 1%) to avoid rounding issues
+  const [feePctRaw, setFeePctRaw] = useState<number>(0);
+
+  const fmtBRL = (n: number) => `R$ ${Number(n).toFixed(2)}`.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
 
   const [selectedAssetId, setSelectedAssetId] = useState<string | null>('1e90df0a-2920-11f0-8f36-02ee245cdcb3');
   const [walletModalVisible, setWalletModalVisible] = useState(false);
@@ -81,45 +98,159 @@ const ConfirmPayment = () => {
     (b) => b.chainId === tempChain?.id && b.isActive
   );
 
+  // Load fee preview (BRL) and USDC→BRL FX whenever base BRL changes
+  useEffect(() => {
+    const run = async () => {
+      try {
+        const baseBrl = Number(scannedPayment?.transactionAmount ?? 0);
+        console.log('[fees][preview] baseBrl from Pix (merchant amount, no fee):', baseBrl);
+
+        if (!Number.isFinite(baseBrl) || baseBrl <= 0) {
+          setFixedFeeBrl(0);
+          setPctFeeBrl(0);
+          setPremiumBrl(0);
+          setFinalBrl(null);
+          setPctPercent(0);
+          console.warn('[fees][preview] invalid/zero baseBrl; resetting fee state.');
+          return;
+        }
+
+        // 1) Fees preview (from your existing /fees/preview)
+        const feeRes = await api().post('/fees/preview', { amountBrl: baseBrl });
+        console.log('[fees][preview] /fees/preview response:', feeRes?.data);
+
+		const {
+		  fixedBrl = 0,
+		  pctBrl = 0,
+		  premium = 0,
+		  total = baseBrl,
+		  usdPerBrl = 0,
+
+		  // NEW from backend
+		  feePct,        // raw fraction (e.g., 0.01 for 1%)
+		  feeFixedUsd,   // for logging only
+		} = feeRes?.data ?? {};
+
+		const fixedBrlNum = Number(fixedBrl) || 0;
+		const pctBrlNum   = Number(pctBrl)   || 0;
+		const premiumNum  = Number(premium)  || 0;
+		const totalNum    = Number(total)    || baseBrl;
+
+		setFixedFeeBrl(fixedBrlNum);
+		setPctFeeBrl(pctBrlNum);
+		setPremiumBrl(premiumNum);
+		setFinalBrl(totalNum);
+
+		// Prefer raw fraction from server; fallback to derived-from-rounded
+		let pctDisplay = 0;
+		if (typeof feePct === 'number' && isFinite(feePct)) {
+		  pctDisplay = feePct * 100;
+		  setFeePctRaw(feePct);
+		} else {
+		  const derived = baseBrl > 0 ? (pctBrlNum / baseBrl) * 100 : 0;
+		  pctDisplay = Number.isFinite(derived) ? derived : 0;
+		  setFeePctRaw(derived / 100); // keep some value for consistency
+		}
+		setPctPercent(pctDisplay);
+
+		console.log('[fees][preview] derived:', {
+		  fixedFeeBrl: fixedBrlNum,
+		  pctFeeBrl: pctBrlNum,
+		  premiumBrl: premiumNum,
+		  finalBrl: totalNum,
+		  pctPercent: pctDisplay,
+		  usdPerBrl,
+		  feePctRaw: feePct,
+		  feeFixedUsd,
+		});
+
+
+        // 2) USDC→BRL (BRL per 1 USDC) to use for quoting
+        // If usdPerBrl came, invert it safely; otherwise call your existing quotes helper
+        if (usdPerBrl && usdPerBrl > 0) {
+          const brlPerUsdc = 1 / usdPerBrl;
+          console.log('[fees][preview] usdPerBrl available; BRL per 1 USDC =', brlPerUsdc);
+          setUsdcBrlPrice(brlPerUsdc);
+        } else {
+          const px = await fetchDirectFiatPairQuote('USDC', 'BRL');
+          console.log('[fees][preview] fetched BRL per 1 USDC via quotes helper =', px);
+          setUsdcBrlPrice(px && px > 0 ? px : null);
+        }
+      } catch (e) {
+        // graceful fallback
+        console.warn('[fees][preview] error, resetting fee state:', e);
+        setFixedFeeBrl(0);
+        setPctFeeBrl(0);
+        setPremiumBrl(0);
+        setFinalBrl(null);
+        setPctPercent(0);
+        setUsdcBrlPrice(null);
+      }
+    };
+    run();
+  }, [scannedPayment?.transactionAmount]);
+
+
   const fetchConvertedQuote = async () => {
-    if (!scannedPayment?.transactionAmount || !asset?.symbol) return;
+    if (!asset?.symbol) return;
 
     try {
-      // 1) Get price of 1 USDC in BRL
-      const brlAmount = Number(scannedPayment.transactionAmount.toFixed(2)); // safe numeric
-      const usdcBrlPrice = await fetchDirectFiatPairQuote('USDC', 'BRL');    // BRL per 1 USDC
+      // Base BRL (merchant amount) -> backend / Transfero / net escrow
+      const baseBrl = Number(scannedPayment?.transactionAmount ?? 0);
+      console.log('[quote] baseBrl (to backend / merchant):', baseBrl);
 
-      if (!usdcBrlPrice || isNaN(usdcBrlPrice) || usdcBrlPrice <= 0) {
-        throw new Error(`Invalid USDC/BRL price: ${usdcBrlPrice}`);
-      }
-
-      // 2) Convert BRL → USDC (how many USDC we need to cover the BRL amount)
-      const usdcNeeded = brlAmount / usdcBrlPrice;
-
-      // Keep what backend needs to escrow/settle in USDC (do NOT add slippage/fees here)
-      setUsdcAmountForBackend(usdcNeeded);
-
-      if (asset.symbol === 'USDC') {
-        // Show max (with UI slippage). 0.2% slippage visual, platformFee kept 0 for now.
-        const slip = usdcNeeded * 0.002;
-        setBaseAmount(usdcNeeded);
-        setSlippage(slip);
-        setUsdQuote((usdcNeeded + slip).toFixed(6));
+      if (!Number.isFinite(baseBrl) || baseBrl <= 0) {
+        setUsdQuote(null);
+        setBaseAmount(null);
+        setSlippage(null);
+        setUsdcAmountForBackend(null);
+        console.warn('[quote] invalid/zero baseBrl; skipping quote.');
         return;
       }
 
-      // 3) Asset is not USDC: get token's USD price, then USDC (≈USD) → token
+      // Final BRL for **display only** (includes Emigro fee if any)
+      const displayBrl = Number(finalBrl ?? baseBrl);
+      console.log('[quote] displayBrl (user pays incl. Emigro fee):', displayBrl);
+
+      // BRL per 1 USDC
+      const px = usdcBrlPrice ?? (await fetchDirectFiatPairQuote('USDC', 'BRL'));
+      if (!px || px <= 0) throw new Error(`Invalid USDC→BRL price: ${px}`);
+      console.log('[quote] BRL per 1 USDC:', px);
+
+      // --- NET USDC for backend (merchant payout) ---
+      const usdcNeededNet = baseBrl / px;
+      setUsdcAmountForBackend(usdcNeededNet); // <-- keep backend/net on base
+      console.log('[quote] usdcNeededNet (backend settlement, no UI slippage):', usdcNeededNet);
+
+      // --- DISPLAY amount (user "will pay") uses final BRL (base + fee) ---
+      const usdcForDisplay = displayBrl / px;
+      console.log('[quote] usdcForDisplay (fee-inclusive before token conversion):', usdcForDisplay);
+
+      if (asset.symbol === 'USDC') {
+        // Visual slippage (0.2%) only for UI
+        const slip = usdcForDisplay * 0.002;
+        setBaseAmount(usdcForDisplay);
+        setSlippage(slip);
+        const quoted = (usdcForDisplay + slip).toFixed(6);
+        setUsdQuote(quoted);
+        console.log('[quote] USDC path -> slip(0.2%):', slip, 'usdQuote (no gas):', quoted);
+        return;
+      }
+
+      // Non-USDC asset: convert via USD price for display amount
       const tokenUsdPrice = await fetchFiatQuote(asset.symbol, 'USD'); // USD per 1 token
       if (!tokenUsdPrice || isNaN(tokenUsdPrice) || tokenUsdPrice <= 0) {
         throw new Error(`Invalid ${asset.symbol}/USD price: ${tokenUsdPrice}`);
       }
+      console.log(`[quote] ${asset.symbol} price USD per 1 token:`, tokenUsdPrice);
 
-      const tokenAmount = usdcNeeded / tokenUsdPrice;     // ~USDC is USD
-      const slip = tokenAmount * 0.01;                    // 1% visual slippage for tokens
-
-      setBaseAmount(tokenAmount);
+      const tokenAmountDisplay = usdcForDisplay / tokenUsdPrice; // USDC≈USD
+      const slip = tokenAmountDisplay * 0.01; // 1% UI slippage for tokens
+      setBaseAmount(tokenAmountDisplay);
       setSlippage(slip);
-      setUsdQuote((tokenAmount + slip).toFixed(10));
+      const quoted = (tokenAmountDisplay + slip).toFixed(10);
+      setUsdQuote(quoted);
+      console.log('[quote] token path -> base:', tokenAmountDisplay, 'slip(1%):', slip, 'usdQuote (no gas):', quoted);
     } catch (error) {
       console.error('[ConfirmPayment][fetchConvertedQuote] ❌ Quote fetch failed:', error);
       setUsdQuote(null);
@@ -128,6 +259,9 @@ const ConfirmPayment = () => {
       setUsdcAmountForBackend(null);
     }
   };
+
+
+
 
 
   
@@ -166,21 +300,35 @@ const ConfirmPayment = () => {
     return quote + gas;
   })();
 
-	
+  useEffect(() => {
+    if (!usdQuote) return;
+    const q = parseFloat(usdQuote);
+    const isNativeAsset = asset.symbol === chain.nativeSymbol;
+    const gas = isNativeAsset ? gasFeeEth : (gasFeeInUsdc ?? 0);
+    const total = q + gas;
+    console.log('[quote][display] usdQuote(no gas):', q,
+      '| gas used:', isNativeAsset ? `${gas} ${nativeToken}` : `${gas} ${asset?.symbol}`,
+      '| totalQuoteWithGas:', total);
+  }, [usdQuote, gasFeeEth, gasFeeInUsdc, asset?.symbol, chain?.nativeSymbol, nativeToken]);
+
 
   useEffect(() => {
     fetchConvertedQuote();
-  }, [scannedPayment.transactionAmount, asset?.symbol]);
+  }, [scannedPayment.transactionAmount, finalBrl, asset?.symbol]);
 
 
+
+  // Recreate the timer whenever inputs that affect displayBrl change,
+  // so the interval callback always uses the latest finalBrl (fee-inclusive).
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log('[ConfirmPayment] 🔄 Refreshing quote...');
+      console.log('[ConfirmPayment] 🔄 Refreshing quote (timer)...');
       fetchConvertedQuote();
     }, 30000); // 30 seconds
 
     return () => clearInterval(interval); // Clean up on unmount
-  }, [asset?.symbol, scannedPayment.transactionAmount]);
+  }, [asset?.symbol, scannedPayment.transactionAmount, finalBrl]);
+
 
 
 
@@ -199,6 +347,8 @@ const ConfirmPayment = () => {
   console.log('[ConfirmPayment] balances:', balances);
   console.log('[ConfirmPayment] asset:', asset);
   console.log('[ConfirmPayment] scannedPayment:', scannedPayment);
+  console.log('[ConfirmPayment] keys:', { brCode: scannedPayment?.brCode, pixKey: scannedPayment?.pixKey });
+
 
   useEffect(() => {
     const fetchNativeAsset = async () => {
@@ -430,7 +580,22 @@ const ConfirmPayment = () => {
 	const toTokenAmount = toMicroUnits(usdcAmountForBackend, 6);
 	console.log('[handleConfirm][CONVERT] usdcAmountForBackend:', usdcAmountForBackend);
 	console.log('[handleConfirm][CONVERT] toTokenAmount (micro):', toTokenAmount);
-	
+	// --- SUMMARY LOG BEFORE SENDING ---
+	(function () {
+	  const baseBrl = Number(scannedPayment.transactionAmount);
+	  const displayBrl = Number(finalBrl ?? baseBrl);
+	  const isNativeAsset = asset.symbol === chain.nativeSymbol;
+	  const gasUsed = isNativeAsset ? `${gasFeeEth} ${nativeToken}` : `${gasFeeInUsdc ?? 0} ${asset.symbol}`;
+	  console.log('[handleConfirm][SUMMARY] baseBrl (merchant/base, sent to backend as fiatAmount):', baseBrl);
+	  console.log('[handleConfirm][SUMMARY] displayBrl (user pays, fee-inclusive):', displayBrl);
+	  console.log('[handleConfirm][SUMMARY] usdQuote (token max without gas):', usdQuote);
+	  console.log('[handleConfirm][SUMMARY] gas used:', gasUsed);
+	  console.log('[handleConfirm][SUMMARY] totalQuoteWithGas (token max incl. gas):', totalQuoteWithGas);
+	  console.log('[handleConfirm][SUMMARY] integerAmount (on-chain amount in selected token units):', integerAmount);
+	  console.log('[handleConfirm][SUMMARY] toTokenAmount (USDC micro sent to backend for net settlement):', toTokenAmount);
+	  console.log('[handleConfirm][SUMMARY] NOTE: backend computes on-chain fee; client sends BASE fiatAmount only.');
+	})();
+
     const payload = {
       paymentId: generatedPaymentId,
       token: tokenAddress,
@@ -505,20 +670,68 @@ const ConfirmPayment = () => {
 	    </Text>
 
 	    {/* Bank Info */}
-	    <VStack className="mb-5 mt-[-10]">
-	      <HStack className="justify-between">
-	        <Text className="text-white font-bold">Name:</Text>
-	        <Text className="text-white text-right">{scannedPayment.merchantName}</Text>
-	      </HStack>
-	      <HStack className="justify-between">
-	        <Text className="text-white font-bold">Amount:</Text>
-	        <Text className="text-white text-right">R$ {scannedPayment.transactionAmount.toFixed(2)}</Text>
-	      </HStack>
-	      <HStack className="justify-between">
-	        <Text className="text-white font-bold">Identifier:</Text>
-	        <Text className="text-white text-right">{scannedPayment.txid}</Text>
-	      </HStack>
-	    </VStack>
+		{/* Bank / PIX Info */}
+		<VStack className="mb-5 mt-[-10]">
+		{scannedPayment.merchantName &&
+		 scannedPayment.merchantName !== 'Unknown Merchant' ? (
+		  <HStack className="justify-between">
+		    <Text className="text-white font-bold">Name:</Text>
+		    <Text className="text-white text-right">
+		      {scannedPayment.merchantName}
+		    </Text>
+		  </HStack>
+		) : null}
+
+		  <HStack className="justify-between">
+		    <Text className="text-white font-bold">Pix Amount:</Text>
+		    <Text className="text-white text-right">R$ {scannedPayment.transactionAmount.toFixed(2)}</Text>
+		  </HStack>
+		  {scannedPayment.pixKey ? (
+		    <HStack className="justify-between">
+		      <Text className="text-white font-bold">PIX key:</Text>
+		      <Text className="text-white text-right">{scannedPayment.pixKey}</Text>
+		    </HStack>
+		  ) : (
+		    <HStack className="justify-between">
+		      <Text className="text-white font-bold">Identifier:</Text>
+		      <Text className="text-white text-right">{scannedPayment.txid}</Text>
+		    </HStack>
+		  )}
+		</VStack>
+		{/* Emigro Fee Breakdown */}
+		{(() => {
+		  const hasPct   = typeof feePctRaw === 'number' && feePctRaw > 0;
+		  const hasFixed = typeof fixedFeeBrl === 'number' && fixedFeeBrl > 0;
+		  const showFees = hasPct || hasFixed;
+
+		  if (!showFees) return null;
+
+		  // Build breakdown parts only for the fees that exist
+		  const parts: string[] = [];
+		  if (hasFixed) parts.push(`${fmtBRL(fixedFeeBrl)}`);
+		  if (hasPct)   parts.push(`${pctPercent.toFixed(2)} %`);
+		  const breakdown = parts.length ? ` (${parts.join(' + ')})` : '';
+
+		  return (
+		    <VStack className="mb-2 mt-[-6]">
+		      <HStack className="justify-between">
+		        <Text className="text-white font-bold">Emigro fees:</Text>
+		        <Text className="text-white text-right">
+		          {fmtBRL(premiumBrl)}{breakdown}
+		        </Text>
+		      </HStack>
+
+		      <HStack className="justify-between">
+		        <Text className="text-white font-bold">Final Amount:</Text>
+		        <Text className="text-white text-right">
+		          {fmtBRL(finalBrl ?? scannedPayment.transactionAmount)}
+		        </Text>
+		      </HStack>
+		    </VStack>
+		  );
+		})()}
+
+
 
 	    {/* Amount + Asset Pill */}
 		<Pressable
