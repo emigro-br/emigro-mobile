@@ -33,6 +33,13 @@
         <data android:scheme="emigro"/>
         <data android:scheme="exp+emigro-mobile"/>
       </intent-filter>
+      <intent-filter data-generated="true">
+        <action android:name="android.intent.action.VIEW"/>
+        <data android:scheme="emigro" android:host="*" android:pathPrefix="/"/>
+        <data android:scheme="exp+emigro-mobile"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>
     </activity>
   </application>
 </manifest>
