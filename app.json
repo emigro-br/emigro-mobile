@@ -3,7 +3,7 @@
     "name": "Emigro",
     "slug": "emigro-mobile",
     "owner": "emigro",
-    "version": "2.6.2",
+    "version": "2.6.3",
     "description": "The traveler's digital wallet",
     "orientation": "portrait",
     "scheme": "emigro",
@@ -60,17 +60,19 @@
       "config": {
         "usesNonExemptEncryption": false
       },
-      "infoPlist": {
-        "NSCameraUsageDescription": "We need camera access to scan QRCode Payments.",
-        "NSLocationWhenInUseUsageDescription": "This app uses your location to provide personalized content.",
-        "NSPhotoLibraryUsageDescription": "Photo access is used to QRCode Payments.",
-        "UIBackgroundModes": ["remote-notification"],
-        "CFBundleURLTypes": [
-          {
-            "CFBundleURLSchemes": ["emigro"]
-          }
-        ]
-      }
+"infoPlist": {
+  "NSCameraUsageDescription": "Emigro needs camera access to scan QR codes and take photos for your profile.",
+  "NSPhotoLibraryUsageDescription": "Emigro needs photo library access so you can choose a profile picture.",
+  "NSPhotoLibraryAddUsageDescription": "Emigro may save images to your photo library when you choose to download or export them.",
+  "NSLocationWhenInUseUsageDescription": "This app uses your location to provide personalized content.",
+  "UIBackgroundModes": ["remote-notification"],
+  "CFBundleURLTypes": [
+    {
+      "CFBundleURLSchemes": ["emigro"]
+    }
+  ]
+}
+
     },
     "android": {
       "permissions": ["android.permission.CAMERA", "NOTIFICATIONS"],
@@ -92,6 +94,6 @@
         "projectId": "d84d8915-cdac-448c-bf38-fc1ebcbe8eac"
       }
     },
-    "runtimeVersion": "2.6.2"
+    "runtimeVersion": "2.6.3"
   }
 }

@@ -23,30 +23,38 @@ export const TopBar = () => {
 
   const userName = sessionStore.user?.name ?? sessionStore.user?.username ?? '';
   const truncatedName = userName.length > 24 ? userName.slice(0, 24) + '...' : userName;
+  const profileImageUrl =
+    (sessionStore.user as any)?.profileImageUrl ??
+    (sessionStore.profile as any)?.picture ??
+    null;
 
   return (
     <>
       <VStack className="px-4 pb-4 bg-background-0" style={{ paddingTop: insets.top + 22 }}>
         <HStack className="items-center">
           {/* Profile Avatar */}
-          <Pressable onPress={() => setProfileVisible(true)}>
-            <Image
-              source={require('@/assets/images/profile-temp.png')}
-              style={{ width: 40, height: 40, borderRadius: 20 }}
-            />
-          </Pressable>
+		  <Pressable onPress={() => setProfileVisible(true)}>
+		    {profileImageUrl ? (
+		      <Image
+		        source={{ uri: profileImageUrl }}
+		        style={{ width: 40, height: 40, borderRadius: 20 }}
+		        resizeMode="cover"
+		      />
+		    ) : (
+		      <Image
+		        source={require('@/assets/images/profile-temp.png')}
+		        style={{ width: 40, height: 40, borderRadius: 20 }}
+		      />
+		    )}
+		  </Pressable>
+
 
           <View className="w-3" />
 
-          {/* Username */}
-          {userName ? (
-            <Text className="ml-0 text-white text-xl">{truncatedName}</Text>
-          ) : (
-            <Image
-              source={require('@/assets/images/emigro-word.png')}
-              style={{ width: 100, height: 30, resizeMode: 'contain' }}
-            />
-          )}
+		  <Image
+		    source={require('@/assets/images/emigro-word.png')}
+		    style={{ width: 100, height: 30, resizeMode: 'contain' }}
+		  />
 
           <View className="flex-1" />
 

@@ -226,6 +226,23 @@ function AppLayout() {
       cancelled = true;
     };
   }, []);
+  
+  // 👇 Preload announcements so Wallet can render with no "loading" flash
+  useEffect(() => {
+    (async () => {
+      try {
+        const { announcementStore } = await import('@/stores/AnnouncementStore');
+        // Make sure session is attempted first (preload can use auth if needed)
+        if (!sessionStore.isLoaded) {
+          await sessionStore.load().catch(() => undefined);
+        }
+        await announcementStore.preload();
+      } catch (e) {
+        console.warn('[app/_layout] Failed to preload announcements', e);
+      }
+    })();
+  }, []);
+
 
   // ✅ Redirect logic in its own useEffect
   useEffect(() => {

@@ -115,7 +115,7 @@ export const Payments = () => {
               onPress={() => router.push('/payments/pix/copia-e-cola')}
             />
 			
-			{/*
+			
 			<PaymentOption
 			 icon={PixIcon}
 			 title="Pix via Key"
@@ -123,6 +123,7 @@ export const Payments = () => {
 			  onPress={() => router.push('/payments/pix/key')}
 			/>
 			
+			{/*
             <PaymentOption
               icon={(props) => <HandCoinsIcon {...props} />}
               title="Request Payment"

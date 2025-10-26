@@ -28,6 +28,7 @@ import { StartupModeSheet } from '@/components/StartupModeSheet';
 
 import { useUserRewardPoints } from '@/hooks/useUserRewardPoints';
 import { Image } from 'react-native';
+import { ProfileEditSheet } from '@/components/ProfileSheet';
 
 
 import * as Notifications from 'expo-notifications';
@@ -59,6 +60,7 @@ const Profile = observer(() => {
   const { points, loading: loadingPoints } = useUserRewardPoints();
   
   const [profileSheetVisible, setProfileSheetVisible] = useState(false);
+  const [editSheetVisible, setEditSheetVisible] = useState(false);
 
   // 📌 Get active chains from balances
    const walletId = sessionStore.user?.wallets?.[0]?.id ?? '';
@@ -168,7 +170,16 @@ const Profile = observer(() => {
   }
 
   const fullName = `${profileInfo.given_name} ${profileInfo.family_name}`;
+  const profileImageUrl =
+    (sessionStore.user as any)?.profileImageUrl ??
+    (sessionStore.profile as any)?.picture ??
+    null;
+
   const bankCurrency = sessionStore.preferences?.fiatsWithBank ?? [];
+  const username =
+    (sessionStore.user as any)?.username ??
+    (sessionStore.profile as any)?.preferred_username ??
+    null;
 
   // 🪙 Fiat currency icon map
   const iconMap: Record<string, string> = {
@@ -196,15 +207,71 @@ const Profile = observer(() => {
     >
       <Box className="flex-1 justify-between" style={{ paddingTop: insets.top + 8 }}>
         <VStack space="3xl" className="p-4">
-          <Center>
-            <Avatar size="xl" className="bg-primary-300 rounded-full">
-              <AvatarFallbackText>{fullName}</AvatarFallbackText>
-            </Avatar>
-            <Heading size="xl" className="py-2">
-              {fullName}
-            </Heading>
-			
-			<Box className="flex-row justify-between mt-2 gap-x-4">
+		<Center>
+		  {/* Make avatar + name tappable to edit profile */}
+		  <Pressable onPress={() => setEditSheetVisible(true)} style={{ alignItems: 'center' }}>
+		    <View style={{ position: 'relative' }}>
+			{profileImageUrl ? (
+			  <View
+			    style={{
+			      width: 96,
+			      height: 96,
+			      borderRadius: 48,
+			      overflow: 'hidden',
+			      backgroundColor: '#141414',
+			      borderWidth: 1,
+			      borderColor: '#333',
+			    }}
+			  >
+			    <Image
+			      source={{ uri: profileImageUrl }}
+			      style={{ width: '100%', height: '100%' }}
+			      resizeMode="cover"
+			    />
+			  </View>
+			) : (
+			  <Avatar size="xl" className="bg-primary-300 rounded-full">
+			    <AvatarFallbackText>{fullName}</AvatarFallbackText>
+			  </Avatar>
+			)}
+
+
+		      {/* Pencil badge */}
+		      <View
+		        style={{
+		          position: 'absolute',
+		          bottom: -2,
+		          right: -2,
+		          width: 28,
+		          height: 28,
+		          borderRadius: 14,
+		          backgroundColor: '#fe0055',
+		          alignItems: 'center',
+		          justifyContent: 'center',
+		          borderWidth: 2,
+		          borderColor: '#0f172a',
+		        }}
+		      >
+		        <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>✎</Text>
+		      </View>
+		    </View>
+
+			<Heading size="xl" className="py-2">
+			  {fullName}
+			</Heading>
+			{username ? (
+			  <Text style={{ color: '#9ca3af', marginTop: -10, fontSize: 13 }}>
+			    {username}
+			  </Text>
+			) : null}
+			<Text style={{ color: '#93c5fd', marginTop: -2, marginBottom: 6, fontSize: 12 }}>
+			  Tap photo to edit
+			</Text>
+
+		  </Pressable>
+
+		  <Box className="flex-row justify-between mt-2 gap-x-4">
+
 			  {/* First Box - Chains */}
 			  <Pressable onPress={() => setProfileSheetVisible(true)} style={{ flex: 1 }}>
 			    <Box className="p-4 rounded-2xl" style={{ backgroundColor: '#2e2e2e' }}>
@@ -389,6 +456,8 @@ const Profile = observer(() => {
     </ScrollView>
 	<StartupModeSheet isOpen={modeSheetOpen} onClose={() => setModeSheetOpen(false)} />
 	<ProfileSheet visible={profileSheetVisible} onClose={() => setProfileSheetVisible(false)} />
+	<ProfileEditSheet visible={editSheetVisible} onClose={() => setEditSheetVisible(false)} />
+
 	</>
   );
 });

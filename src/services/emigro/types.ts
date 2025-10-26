@@ -91,6 +91,19 @@ export type InteractiveUrlResponse = {
   url: string;
 };
 
+export type AnnouncementDTO = {
+  id: string;
+  title: string;
+  description?: string | null;
+  imageUrl?: string | null;
+  deepLinkUrl?: string | null;
+  startsAt?: string | null; // ISO
+  endsAt?: string | null;   // ISO
+  priority?: number | null;
+  // when true, hide client-side even if received (server may filter too)
+  dismissed?: boolean | null;
+};
+
 //-- Transactions
 
 export type TransactionType =

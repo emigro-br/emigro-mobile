@@ -55,32 +55,32 @@ const STATUS_MAP = {
   },
   e001: {
     message: 'Transaction Failed. Please, try again or contact support and inform error code e001. All funds have returned to your wallet.',
-    secondmessage: 'Oops...',
+    secondmessage: '',
     lottie: require('@/assets/lotties/error.json'),
   },
   e002: {
     message: 'Transaction Failed. Please, try again or contact support and inform error code e002. All funds have returned to your wallet.',
-    secondmessage: 'Oops...',
+    secondmessage: '',
     lottie: require('@/assets/lotties/error.json'),
   },
   e003: {
     message: 'Transaction does not yet support this chain or token [error003]. No funds have been moved in your wallet.',
-    secondmessage: 'Oops...',
+    secondmessage: '',
     lottie: require('@/assets/lotties/error.json'),
   },
   e004: {
-    message: 'Transaction does not yet support this chain or token [error004]. No funds have been moved in your wallet.',
-    secondmessage: 'Oops...',
+    message: 'Pix provider failled to process your transaction. Please check that the receiver is correct. If the error persists, please contact support and report error code e004. Funds have returned to your wallet.',
+    secondmessage: '',
     lottie: require('@/assets/lotties/error.json'),
   },
   e005: {
-    message: 'Pix provider failled to process your transaction. Please contact support and inform [error005]. Funds have returned to your wallet.',
-    secondmessage: 'Oops...',
+    message: 'Pix provider failled to process your transaction. Please check that the receiver is correct. If the error persists, please contact support and report error code e005. Funds have returned to your wallet.',
+    secondmessage: '',
     lottie: require('@/assets/lotties/error.json'),
   },
   e006: {
     message: 'We were unable to make the payment with your selected token. Please try again or use another token for payment.',
-    secondmessage: 'Oops...',
+    secondmessage: '',
     lottie: require('@/assets/lotties/error.json'),
   },
 };

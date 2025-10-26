@@ -26,7 +26,15 @@ const formatAddress = (addr: string) => `${addr.slice(0, 6)}...${addr.slice(-6)}
 export const ProfileSheet = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
   const wallets = sessionStore.user?.wallets ?? [];
   const chains = useChainStore.getState().chains;
-
+  const profileImageUrl =
+    (sessionStore.user as any)?.profileImageUrl ??
+    (sessionStore.profile as any)?.picture ??
+    null;
+  const nickname =
+	  (sessionStore.user as any)?.username ??
+	  (sessionStore.profile as any)?.preferred_username ??
+	  null;
+	  
   const copyToClipboard = (address: string) => {
     Clipboard.setString(address);
     Alert.alert('Copied', 'Wallet address copied to clipboard');
@@ -68,18 +76,43 @@ export const ProfileSheet = ({ visible, onClose }: { visible: boolean; onClose: 
         </Box>
 
         <ScrollView style={{ paddingHorizontal: 12, paddingBottom: 80, marginTop: 16, width: '100%' }}>
-          <Box style={{ alignItems: 'center', marginBottom: 24 }}>
-            <Image
-              source={require('@/assets/images/profile-temp.png')}
-              style={{
-                width: 120,
-                height: 120,
-                borderRadius: 60,
-                borderWidth: 2,
-                borderColor: '#fe0055',
-              }}
-            />
-          </Box>
+		<Box style={{ alignItems: 'center', marginBottom: 24 }}>
+		  {profileImageUrl ? (
+		    <Image
+		      source={{ uri: profileImageUrl }}
+		      style={{
+		        width: 120,
+		        height: 120,
+		        borderRadius: 60,
+		        borderWidth: 2,
+		        borderColor: '#fe0055',
+		      }}
+		      resizeMode="cover"
+		    />
+		  ) : (
+		    <Image
+		      source={require('@/assets/images/profile-temp.png')}
+		      style={{
+		        width: 120,
+		        height: 120,
+		        borderRadius: 60,
+		        borderWidth: 2,
+		        borderColor: '#fe0055',
+		      }}
+		    />
+		  )}
+
+		  {nickname ? (
+		    <Text style={{ color: '#9ca3af', fontSize: 16, marginTop: 8, textAlign: 'center' }}>
+		      {nickname}
+		    </Text>
+		  ) : null}
+		</Box>
+
+
+		<Text style={{ color: '#fff', fontSize: 18, fontWeight: '700', marginBottom: 8, paddingHorizontal: 4 }}>
+		  Wallets
+		</Text>
 
           <VStack space="md">
             {wallets.map((wallet) => {
