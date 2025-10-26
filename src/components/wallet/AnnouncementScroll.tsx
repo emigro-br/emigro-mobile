@@ -55,10 +55,23 @@ export const AnnouncementScroll = observer(() => {
         {cards.map((card, index) => (
           <Pressable
             key={card.id}
-            onPress={() => {
-              if (card.deepLinkUrl) Linking.openURL(card.deepLinkUrl).catch(() => {});
-              else setModalIndex(index);
-            }}
+			onPress={async () => {
+			  const url = typeof card.deepLinkUrl === 'string' ? card.deepLinkUrl.trim() : '';
+			  if (!url) {
+			    // No URL: do nothing
+			    return;
+			  }
+			  try {
+			    const supported = await Linking.canOpenURL(url);
+			    if (supported) {
+			      await Linking.openURL(url);
+			    }
+			    // If not supported, do nothing
+			  } catch {
+			    // Swallow errors: do nothing
+			  }
+			}}
+
           >
             <Animated.View
               style={{
