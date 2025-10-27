@@ -15,10 +15,12 @@ import { Box } from '@/components/ui/box';
 import { Toast, ToastDescription, useToast } from '@/components/ui/toast';
 import { Spinner } from '@/components/ui/spinner';
 import { sessionStore } from '@/stores/SessionStore';
-import { Pressable, TextInput, View, Image } from 'react-native';
+import { Pressable, TextInput, View, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+
 import * as Haptics from 'expo-haptics';
 import { backendUrl as API_BASE } from '@/services/emigro/api';
 import { runInAction } from 'mobx';
+import * as ImagePicker from 'expo-image-picker';
 
 type Props = {
   visible: boolean;
@@ -89,39 +91,37 @@ export const ProfileSheet = ({ visible, onClose }: Props) => {
   // ---------- PICK & UPLOAD ----------
   const pickImage = async () => {
     try {
-      // 1) Load picker module (no overlay during native UI)
-      let ImagePicker: any;
-      try {
-        ImagePicker = await import('expo-image-picker');
-      } catch {
-        toast.show({
-          render: ({ id }) => (
-            <Toast nativeID={`toast-${id}`} action="error" variant="solid">
-              <ToastDescription>Image picker not available in this build.</ToastDescription>
-            </Toast>
-          ),
-        });
-        return;
-      }
+		 // 1) Image picker is statically imported at top. Proceed.
 
-      // 2) Ask for permission (still no overlay here)
-      const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (perm.status !== 'granted') {
-        toast.show({
-          render: ({ id }) => (
-            <Toast nativeID={`toast-${id}`} action="error" variant="solid">
-              <ToastDescription>Permission to access photos is required.</ToastDescription>
-            </Toast>
-          ),
-        });
-        return;
-      }
+
+	  // 2) Permissions
+	  // `launchImageLibraryAsync` doesn't require a manual permission request on most platforms.
+	  // Some SDKs still expose `requestMediaLibraryPermissionsAsync`; if it's present, use it.
+	  if (typeof ImagePicker?.requestMediaLibraryPermissionsAsync === 'function') {
+	    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+	    if (!(perm?.granted === true || perm?.status === 'granted')) {
+	      toast.show({
+	        render: ({ id }) => (
+	          <Toast nativeID={`toast-${id}`} action="error" variant="solid">
+	            <ToastDescription>Permission to access photos is required.</ToastDescription>
+	          </Toast>
+	        ),
+	      });
+	      return;
+	    }
+	  }
+
+
+	  // If the method is undefined, continue without requesting permissions.
+
 
       // 3) Launch picker — handle old/new SDKs
-      const mediaTypesCompat =
-        (ImagePicker as any)?.MediaType?.Images ??
-        (ImagePicker as any)?.MediaTypeOptions?.Images ??
-        undefined;
+	  const mediaTypesCompat =
+	    (ImagePicker as any)?.MediaType?.Images ??
+	    (ImagePicker as any)?.MediaTypeOptions?.Images ??
+	    undefined;
+
+
 
       const pickerOptions: any = {
         allowsEditing: true,
@@ -298,202 +298,212 @@ export const ProfileSheet = ({ visible, onClose }: Props) => {
 	      borderTopRightRadius: 24,
 	      paddingTop: 12,
 	      paddingBottom: 64,
+	      flex: 1,
 	    }}
 	  >
+	    <KeyboardAvoidingView
+	      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+	      keyboardVerticalOffset={Platform.OS === 'ios' ? 36 : 0}
+	      style={{ flex: 1 }}
+	    >
+	      <ScrollView
+	        keyboardShouldPersistTaps="handled"
+	        bounces={false}
+	        contentContainerStyle={{ paddingBottom: 40 }}
+	      >
+	        {/* Spinner overlay (only during work) */}
+	        {isLoading && (
+	          <View
+	            style={{
+	              position: 'absolute',
+	              top: 0,
+	              left: 0,
+	              right: 0,
+	              bottom: 0,
+	              backgroundColor: 'rgba(0,0,0,0.6)',
+	              zIndex: 9999,
+	              alignItems: 'center',
+	              justifyContent: 'center',
+	            }}
+	          >
+	            <Spinner size="large" color="#fe0055" />
+	            <Text style={{ color: '#fff', marginTop: 12 }}>
+	              {busyMsg ?? (uploading ? 'Uploading photo…' : 'Saving profile…')}
+	            </Text>
+	          </View>
+	        )}
 
-        {/* Spinner overlay (only during work) */}
-        {isLoading && (
-          <View
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'rgba(0,0,0,0.6)',
-              zIndex: 9999,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Spinner size="large" color="#fe0055" />
-            <Text style={{ color: '#fff', marginTop: 12 }}>
-              {busyMsg ?? (uploading ? 'Uploading photo…' : 'Saving profile…')}
-            </Text>
-          </View>
-        )}
+	        {/* Close */}
+	        <Pressable
+	          onPress={onClose}
+	          style={{
+	            position: 'absolute',
+	            top: 12,
+	            right: 16,
+	            zIndex: 10,
+	            width: 34,
+	            height: 34,
+	            borderRadius: 16,
+	            backgroundColor: '#fe0055',
+	            alignItems: 'center',
+	            justifyContent: 'center',
+	          }}
+	        >
+	          <Text style={{ color: '#fff', fontSize: 22, fontWeight: '600' }}>×</Text>
+	        </Pressable>
 
-        {/* Close */}
-        <Pressable
-          onPress={onClose}
-          style={{
-            position: 'absolute',
-            top: 12,
-            right: 16,
-            zIndex: 10,
-            width: 34,
-            height: 34,
-            borderRadius: 16,
-            backgroundColor: '#fe0055',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Text style={{ color: '#fff', fontSize: 22, fontWeight: '600' }}>×</Text>
-        </Pressable>
+	        {/* Drag handle */}
+	        <Box style={{ alignItems: 'center', paddingTop: 12, paddingBottom: 12 }}>
+	          <ActionsheetDragIndicatorWrapper>
+	            <ActionsheetDragIndicator
+	              style={{
+	                width: 80,
+	                height: 8,
+	                borderRadius: 3,
+	                backgroundColor: '#555',
+	              }}
+	            />
+	          </ActionsheetDragIndicatorWrapper>
+	        </Box>
 
-        {/* Drag handle */}
-        <Box style={{ alignItems: 'center', paddingTop: 12, paddingBottom: 12 }}>
-          <ActionsheetDragIndicatorWrapper>
-            <ActionsheetDragIndicator
-              style={{
-                width: 80,
-                height: 8,
-                borderRadius: 3,
-                backgroundColor: '#555',
-              }}
-            />
-          </ActionsheetDragIndicatorWrapper>
-        </Box>
+	        <Text className="text-lg font-bold text-center mb-3" style={{ color: '#fff' }}>
+	          Edit Profile
+	        </Text>
 
-        <Text className="text-lg font-bold text-center mb-3" style={{ color: '#fff' }}>
-          Edit Profile
-        </Text>
+	        <VStack space="lg" className="w-full px-4">
+	          {/* Photo preview + actions */}
+	          <View style={{ alignItems: 'center', marginTop: 2 }}>
+	            <View
+	              style={{
+	                width: 108,
+	                height: 108,
+	                borderRadius: 54,
+	                overflow: 'hidden',
+	                borderWidth: 1,
+	                borderColor: '#333',
+	                backgroundColor: '#141414',
+	              }}
+	            >
+	              {photoUrl ? (
+	                <Image
+	                  source={{ uri: photoUrl }}
+	                  style={{ width: '100%', height: '100%' }}
+	                  resizeMode="cover"
+	                />
+	              ) : (
+	                <View
+	                  style={{
+	                    flex: 1,
+	                    alignItems: 'center',
+	                    justifyContent: 'center',
+	                  }}
+	                >
+	                  <Text style={{ color: '#666' }}>No photo</Text>
+	                </View>
+	              )}
+	            </View>
 
-        <VStack space="lg" className="w-full px-4">
-          {/* Photo preview + actions */}
-          <View style={{ alignItems: 'center', marginTop: 2 }}>
-            <View
-              style={{
-                width: 108,
-                height: 108,
-                borderRadius: 54,
-                overflow: 'hidden',
-                borderWidth: 1,
-                borderColor: '#333',
-                backgroundColor: '#141414',
-              }}
-            >
-              {photoUrl ? (
-                <Image
-                  source={{ uri: photoUrl }}
-                  style={{ width: '100%', height: '100%' }}
-                  resizeMode="cover"
-                />
-              ) : (
-                <View
-                  style={{
-                    flex: 1,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Text style={{ color: '#666' }}>No photo</Text>
-                </View>
-              )}
-            </View>
+	            <View style={{ flexDirection: 'row', gap: 10, marginTop: 12 }}>
+	              <Button onPress={pickImage} isDisabled={uploading || saving}>
+	                <ButtonText>Pick image</ButtonText>
+	              </Button>
+	              <Button onPress={removePhoto} variant="outline" isDisabled={uploading || saving}>
+	                <ButtonText>Remove</ButtonText>
+	              </Button>
+	            </View>
+	          </View>
 
-            <View style={{ flexDirection: 'row', gap: 10, marginTop: 12 }}>
-              <Button onPress={pickImage} isDisabled={uploading || saving}>
-                <ButtonText>Pick image</ButtonText>
-              </Button>
-              <Button onPress={removePhoto} variant="outline" isDisabled={uploading || saving}>
-                <ButtonText>Remove</ButtonText>
-              </Button>
-            </View>
-          </View>
+	          {/* Username */}
+	          <View style={{ marginTop: 12 }}>
+	            <Text style={{ color: '#cbd5e1', marginBottom: 8 }}>Username</Text>
+	            <TextInput
+	              value={username}
+	              onChangeText={onChangeUsername}
+	              placeholder="yourname"
+	              placeholderTextColor="#64748b"
+	              autoCapitalize="none"
+	              autoCorrect={false}
+	              textContentType="username"
+	              maxLength={MAX_USERNAME}
+	              selectionColor="#fe0055"
+	              style={{
+	                backgroundColor: '#0b1220',
+	                borderColor: usernameError ? '#ef4444' : '#1f2937',
+	                borderWidth: 1,
+	                color: '#e5e7eb',
+	                borderRadius: 10,
+	                paddingHorizontal: 12,
+	                paddingVertical: 10,
+	                fontSize: 16,
+	              }}
+	            />
+	            <View style={{ marginTop: 6, flexDirection: 'row', justifyContent: 'space-between' }}>
+	              <Text style={{ color: usernameError ? '#fca5a5' : '#94a3b8', fontSize: 12 }}>
+	                {usernameError
+	                  ? usernameError
+	                  : 'Only letters, numbers, underscore (_) and dot (.) are allowed.'}
+	              </Text>
+	              <Text style={{ color: '#94a3b8', fontSize: 12 }}>
+	                {username?.length ?? 0}/{MAX_USERNAME}
+	              </Text>
+	            </View>
+	          </View>
 
-		  {/* Username */}
-		  <View style={{ marginTop: 12 }}>
-		    <Text style={{ color: '#cbd5e1', marginBottom: 8 }}>Username</Text>
-		    <TextInput
-		      value={username}
-		      onChangeText={onChangeUsername}
-		      placeholder="yourname"
-		      placeholderTextColor="#64748b"
-		      autoCapitalize="none"
-		      autoCorrect={false}
-		      textContentType="username"
-		      maxLength={MAX_USERNAME}
-		      selectionColor="#fe0055"
-		      style={{
-		        backgroundColor: '#0b1220',
-		        borderColor: usernameError ? '#ef4444' : '#1f2937',
-		        borderWidth: 1,
-		        color: '#e5e7eb',
-		        borderRadius: 10,
-		        paddingHorizontal: 12,
-		        paddingVertical: 10,
-		        fontSize: 16,
-		      }}
-		    />
-		    <View style={{ marginTop: 6, flexDirection: 'row', justifyContent: 'space-between' }}>
-		      <Text style={{ color: usernameError ? '#fca5a5' : '#94a3b8', fontSize: 12 }}>
-		        {usernameError
-		          ? usernameError
-		          : 'Only letters, numbers, underscore (_) and dot (.) are allowed.'}
-		      </Text>
-		      <Text style={{ color: '#94a3b8', fontSize: 12 }}>
-		        {username?.length ?? 0}/{MAX_USERNAME}
-		      </Text>
-		    </View>
-		  </View>
-		  {/* Referred By Code (read-only if already set) */}
-		  <View style={{ marginTop: 16 }}>
-		    <Text style={{ color: '#cbd5e1', marginBottom: 8 }}>Referral code (optional)</Text>
-		    <TextInput
-		      value={hasReferrerAlready ? (existingReferredByCode ?? '—') : referredByCode}
-		      onChangeText={onChangeReferredBy}
-		      placeholder="ABC123"
-		      placeholderTextColor="#64748b"
-		      autoCapitalize="characters"
-		      autoCorrect={false}
-		      maxLength={6}
-		      editable={!hasReferrerAlready}
-		      selectionColor="#fe0055"
-		      style={{
-		        backgroundColor: hasReferrerAlready ? '#0f172a' : '#0b1220',
-		        borderColor: hasReferrerAlready ? '#334155' : '#1f2937',
-		        borderWidth: 1,
-		        color: hasReferrerAlready ? '#94a3b8' : '#e5e7eb',
-		        borderRadius: 10,
-		        paddingHorizontal: 12,
-		        paddingVertical: 10,
-		        fontSize: 16,
-		      }}
-		    />
-			<View style={{ marginTop: 6, flexDirection: 'row', justifyContent: 'space-between' }}>
-			  <Text style={{ color: '#94a3b8', fontSize: 12 }}>
-			  {hasReferrerAlready
-			    ? 'A referral code is already applied to your account. You’re earning 2% extra EmiPoints on Pix payments and transfers.'
-			    : 'Add a referral code to earn 2% extra EmiPoints on your Pix payments and transfers.'}
+	          {/* Referred By Code (read-only if already set) */}
+	          <View style={{ marginTop: 16 }}>
+	            <Text style={{ color: '#cbd5e1', marginBottom: 8 }}>Referral code (optional)</Text>
+	            <TextInput
+	              value={hasReferrerAlready ? (existingReferredByCode ?? '—') : referredByCode}
+	              onChangeText={onChangeReferredBy}
+	              placeholder="ABC123"
+	              placeholderTextColor="#64748b"
+	              autoCapitalize="characters"
+	              autoCorrect={false}
+	              maxLength={6}
+	              editable={!hasReferrerAlready}
+	              selectionColor="#fe0055"
+	              style={{
+	                backgroundColor: hasReferrerAlready ? '#0f172a' : '#0b1220',
+	                borderColor: hasReferrerAlready ? '#334155' : '#1f2937',
+	                borderWidth: 1,
+	                color: hasReferrerAlready ? '#94a3b8' : '#e5e7eb',
+	                borderRadius: 10,
+	                paddingHorizontal: 12,
+	                paddingVertical: 10,
+	                fontSize: 16,
+	              }}
+	            />
+	            <View style={{ marginTop: 6, flexDirection: 'row', justifyContent: 'space-between' }}>
+	              <Text style={{ color: '#94a3b8', fontSize: 12 }}>
+	                {hasReferrerAlready
+	                  ? 'A referral code is already applied to your account. You’re earning 2% extra EmiPoints on Pix payments and transfers.'
+	                  : 'Add a referral code to earn 2% extra EmiPoints on your Pix payments and transfers.'}
+	              </Text>
+	              {!hasReferrerAlready && (
+	                <Text style={{ color: '#94a3b8', fontSize: 12 }}>
+	                  {referredByCode.length}/6
+	                </Text>
+	              )}
+	            </View>
+	          </View>
 
-			  </Text>
-			  {!hasReferrerAlready && (
-			    <Text style={{ color: '#94a3b8', fontSize: 12 }}>
-			      {referredByCode.length}/6
-			    </Text>
-			  )}
-			</View>
+	          {/* Save */}
+	          <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
+	            <Button
+	              onPress={saveProfile}
+	              isDisabled={uploading || saving || !!usernameError}
+	            >
+	              <ButtonText>{saving ? 'Saving…' : 'Save changes'}</ButtonText>
+	            </Button>
+	            <Button onPress={onClose} variant="outline" isDisabled={uploading || saving}>
+	              <ButtonText>Cancel</ButtonText>
+	            </Button>
+	          </View>
+	        </VStack>
+	      </ScrollView>
+	    </KeyboardAvoidingView>
+	  </ActionsheetContent>
 
-		  </View>
-
-
-		  {/* Save */}
-		  <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
-		    <Button
-		      onPress={saveProfile}
-		      isDisabled={uploading || saving || !!usernameError}
-		    >
-		      <ButtonText>{saving ? 'Saving…' : 'Save changes'}</ButtonText>
-		    </Button>
-		    <Button onPress={onClose} variant="outline" isDisabled={uploading || saving}>
-		      <ButtonText>Cancel</ButtonText>
-		    </Button>
-		  </View>
-
-        </VStack>
-      </ActionsheetContent>
     </Actionsheet>
   );
 };
