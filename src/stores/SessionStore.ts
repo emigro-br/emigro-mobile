@@ -6,9 +6,6 @@ import { refresh as refreshSession, signIn } from '@/services/emigro/auth';
 import { AuthSession, User, UserProfile } from '@/services/emigro/types';
 import { checkKycStatus, getUser, getUserProfile, saveUserPreferences } from '@/services/emigro/users';
 import { UserPreferences } from '@/types/UserPreferences';
-import { InvalidSessionError } from '@/types/errors';
-
-import { securityStore } from './SecurityStore';
 
 export class SessionStore {
   justLoggedIn = false;
@@ -16,7 +13,7 @@ export class SessionStore {
   user: User | null = null;
   profile: UserProfile | null = null;
   preferences: UserPreferences | null = {
-    themePreference: 'dark', // ✅ default
+    themePreference: 'dark',
   };
   isLoaded = false;
   evmWallet: { publicAddress: string } | null = null;
@@ -87,12 +84,11 @@ export class SessionStore {
       accessToken: session.accessToken ?? '',
       refreshToken: session.refreshToken ?? '',
       idToken: session.idToken ?? '',
-      tokenExpirationDate: session.tokenExpirationDate ?? new Date(Date.now() + 3600 * 1000), // default: 1 hour
+      tokenExpirationDate: session.tokenExpirationDate ?? new Date(Date.now() + 3600 * 1000),
     };
   }
 
   setUser(user: User | null) {
-    //console.log('[SessionStore] setUser called with:', user);
     this.user = user;
     if ((user as any)?.evmWallet !== undefined) {
       this.evmWallet = (user as any).evmWallet;
@@ -110,18 +106,17 @@ export class SessionStore {
   setJustLoggedIn(justLoggedIn: boolean) {
     this.justLoggedIn = justLoggedIn;
   }
+
   @action setCachedRewardPoints(points: number) {
     this.cachedRewardPoints = points;
     SecureStore.setItemAsync('user.cachedRewardPoints', String(points));
   }
-  
+
   setEvmWallet(wallet: { publicAddress: string } | null) {
-    //console.log('[SessionStore] Set EVM wallet:', wallet);
     this.evmWallet = wallet;
   }
 
   async fetchUser() {
-    //console.debug('Fetching user...');
     const user = await getUser();
     if (user) {
       this.setUser(user);
@@ -150,7 +145,7 @@ export class SessionStore {
   async updateStartupMode(mode: 'wallet' | 'payment') {
     await this.updatePreferences({ startupMode: mode });
   }
-  
+
   get isTokenExpired(): boolean {
     return !this.session || this.session.tokenExpirationDate < new Date();
   }
@@ -183,12 +178,17 @@ export class SessionStore {
   }
 
   async updatePreferences(preferences: UserPreferences) {
-    const merged = { ...this.preferences, ...preferences };
-    saveUserPreferences(merged); // async background
+    const merged = { ...(this.preferences ?? {}), ...preferences };
+    saveUserPreferences(merged); // fire-and-forget
     await SecureStore.setItemAsync(this.preferencesKey, JSON.stringify(merged));
     this.setPreferences(merged);
   }
 
+  /**
+   * Bullet-proof load:
+   * - Clears local session on ANY failure (partial tokens, corrupt JSON, etc.)
+   * - Always flips isLoaded = true so the UI can proceed to login.
+   */
   async load(): Promise<AuthSession | null> {
     try {
       const session = await this.loadSession();
@@ -202,42 +202,59 @@ export class SessionStore {
         await this.loadEvmWallet();
       }
       return session;
-    } catch (e) {
-      // 👇 KEY PART: if we have a broken/partial session, nuke it and continue unauthenticated
-      if (e instanceof InvalidSessionError) {
-        await this.clear();          // deletes bad keys from SecureStore
-        return null;                 // treat as signed out
-      }
-      throw e;                       // unknown error -> surface it
+    } catch {
+      // Clear on ANY error; proceed as signed out
+      try {
+        await this.clear();
+      } catch {}
+      return null;
     } finally {
-      this.isLoaded = true;          // 👈 ALWAYS flip this so UI can move past spinner
+      this.isLoaded = true;
     }
   }
-
 
   async loadEvmWallet(): Promise<void> {
     const evmWallet = await SecureStore.getItemAsync('user.evmWallet');
     this.setEvmWallet(evmWallet ? JSON.parse(evmWallet) : null);
   }
 
+  /**
+   * Robust session loader:
+   * - Tolerates bad JSON
+   * - Self-heals partial sessions by nuking keys and returning null
+   * - Never throws; caller treats null as "signed out"
+   */
   async loadSession(): Promise<AuthSession | null> {
     const session: Partial<AuthSession> = {};
+
     await Promise.all(
       this.authKeys.map(async (key) => {
         const value = await SecureStore.getItemAsync(key);
-        if (value) {
-          const [, attr] = key.split('.');
-          session[attr as keyof AuthSession] = JSON.parse(value);
-          if (attr === 'tokenExpirationDate') {
-            session.tokenExpirationDate = new Date(session.tokenExpirationDate!);
+        if (!value) return;
+
+        const [, attr] = key.split('.');
+        try {
+          const parsed = JSON.parse(value);
+          if (attr === 'tokenExpirationDate' && parsed) {
+            session.tokenExpirationDate = new Date(parsed);
+          } else {
+            (session as any)[attr] = parsed;
           }
+        } catch {
+          // corrupted JSON for this key; ignore it
         }
       })
     );
 
     if (!session.accessToken) return null;
-    if (!session.refreshToken || !session.idToken || !session.tokenExpirationDate) {
-      throw new InvalidSessionError();
+
+    const missing =
+      !session.refreshToken || !session.idToken || !session.tokenExpirationDate;
+
+    if (missing) {
+      // self-heal: nuke all auth keys so next boot is clean
+      await Promise.all(this.authKeys.map((k) => SecureStore.deleteItemAsync(k)));
+      return null;
     }
 
     return session as AuthSession;
@@ -246,9 +263,15 @@ export class SessionStore {
   async loadUser(): Promise<User | null> {
     const user = await SecureStore.getItemAsync(this.userKey);
     if (user) {
-      const parsed = JSON.parse(user);
-      this.setUser(parsed);
-      if (parsed.evmWallet) this.setEvmWallet(parsed.evmWallet);
+      try {
+        const parsed = JSON.parse(user);
+        this.setUser(parsed);
+        if (parsed.evmWallet) this.setEvmWallet(parsed.evmWallet);
+      } catch {
+        // corrupt user blob → drop it
+        await SecureStore.deleteItemAsync(this.userKey);
+        this.setUser(null);
+      }
     }
     return this.user;
   }
@@ -256,7 +279,12 @@ export class SessionStore {
   async loadProfile(): Promise<UserProfile | null> {
     const profile = await SecureStore.getItemAsync(this.profileKey);
     if (profile) {
-      this.setProfile(JSON.parse(profile));
+      try {
+        this.setProfile(JSON.parse(profile));
+      } catch {
+        await SecureStore.deleteItemAsync(this.profileKey);
+        this.setProfile(null);
+      }
     }
     return this.profile;
   }
@@ -267,8 +295,8 @@ export class SessionStore {
     if (stored) {
       try {
         prefs = { ...prefs, ...JSON.parse(stored) };
-      } catch (e) {
-        console.warn('[SessionStore] Failed to parse preferences:', e);
+      } catch {
+        await SecureStore.deleteItemAsync(this.preferencesKey);
       }
     }
     this.setPreferences(prefs);
@@ -281,23 +309,25 @@ export class SessionStore {
       const parsed = Number(value);
       if (!isNaN(parsed)) {
         this.cachedRewardPoints = parsed;
+      } else {
+        await SecureStore.deleteItemAsync('user.cachedRewardPoints');
       }
     }
   }
 
   async oauthLoginFromTokens(idToken: string, accessToken: string) {
-    const session = { idToken, accessToken };
+    const session = { idToken, accessToken } as Partial<AuthSession>;
     this.setSession(session);
-    await this.save(session);
+    await this.save(session as AuthSession);
   }
-  
+
   async clear() {
     await Promise.all(this.authKeys.map((key) => SecureStore.deleteItemAsync(key)));
     await SecureStore.deleteItemAsync(this.userKey);
     await SecureStore.deleteItemAsync(this.profileKey);
     await SecureStore.deleteItemAsync(this.preferencesKey);
-	await SecureStore.deleteItemAsync('user.cachedRewardPoints');
-	this.cachedRewardPoints = null;
+    await SecureStore.deleteItemAsync('user.cachedRewardPoints');
+    this.cachedRewardPoints = null;
     this.setSession(null);
     this.setUser(null);
     this.setProfile(null);
@@ -308,7 +338,6 @@ export class SessionStore {
   signIn = async (email: string, password: string) => {
     const { session, user } = await signIn(email, password);
 
-    // 🛑 Block unconfirmed users from being logged in locally
     const isUnconfirmed =
       user?.status === 'UNCONFIRMED' ||
       user?.emailVerified === false ||
@@ -316,7 +345,6 @@ export class SessionStore {
       user?.isConfirmed === false;
 
     if (isUnconfirmed) {
-      // Shape an error similar to API errors so the login screen redirect logic catches it
       const err: any = new Error('User is not confirmed');
       err.response = {
         status: 409,
@@ -329,12 +357,13 @@ export class SessionStore {
       throw err;
     }
 
-    // ✅ Proceed for confirmed users
     this.setUser(user);
     this.setPreferences(user.preferences);
-    this.saveUser(user);
+    await this.saveUser(user);
+
     this.setSession(session);
-    this.save(session);
+    await this.save(session);
+
     this.setJustLoggedIn(true);
 
     this.setEvmWallet(user.evmWallet ?? null);
@@ -345,14 +374,13 @@ export class SessionStore {
     this.fetchProfile();
   };
 
-
   refresh = async () => {
     if (!this.session) {
       await this.load();
-      if (!this.session) throw new InvalidSessionError();
+      if (!this.session) throw new Error('No session');
     }
 
-    const newSession = await refreshSession(this.session);
+    const newSession = await refreshSession(this.session as AuthSession);
     if (newSession) {
       await this.save(newSession);
       return this.session;

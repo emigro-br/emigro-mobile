@@ -95,10 +95,6 @@ function AppLayout() {
   const hasRedirected = useRef(false);
 
   useEffect(() => {
-    Sentry.captureException(new Error('🔥 Forced Test Error - Post-init'));
-  }, []);
-
-  useEffect(() => {
     try {
       if (routingInstrumentation && navRef) {
         console.log('[app/_layout][NAVIGATION] Registering navigation container');
@@ -116,21 +112,31 @@ function AppLayout() {
     async function prepare() {
       try {
         console.log('[app/_layout][UPDATES] Checking for updates...');
-        const platform = Platform.OS;
-        const currentVersion = Application.nativeApplicationVersion || '0.0.0';
-        const res = await api().get('/version/check', {
-          params: { platform },
-        });
+		// Version check (fast-fail in 5s so boot can't hang)
+		let needsBlock = false;
+		try {
+		  const platform = Platform.OS;
+		  const currentVersion = Application.nativeApplicationVersion || '0.0.0';
 
-        const { minVersion, forceUpdate, message, storeUrl: apiStoreUrl } = res.data;
-        console.log(`[VERSION] App version: ${currentVersion} | Required: ${minVersion}`);
+		  // override only this request to 5s (does NOT change global axios defaults)
+		  const res = await api({ timeout: 5000 }).get('/version/check', { params: { platform } });
+		  const { minVersion, forceUpdate, message, storeUrl: apiStoreUrl } = res.data;
+		  console.log(`[VERSION] App version: ${currentVersion} | Required: ${minVersion}`);
 
-        if (forceUpdate && compareVersions(currentVersion, minVersion) < 0) {
-          setBlockMessage(message || 'Please update your app.');
-          setStoreUrl(apiStoreUrl);
-          setIsBlocked(true);
-          return;
-        }
+		  if (forceUpdate && compareVersions(currentVersion, minVersion) < 0) {
+		    setBlockMessage(message || 'Please update your app.');
+		    setStoreUrl(apiStoreUrl);
+		    needsBlock = true;
+		  }
+		} catch (e) {
+		  console.warn('[app/_layout][VERSION] Skipping version check (timeout or error):', (e as any)?.message ?? e);
+		}
+
+		if (needsBlock) {
+		  setIsBlocked(true);
+		  return; // don't proceed with normal boot if truly blocked
+		}
+
 
         await sessionStore.load();
         console.log('[SESSION] Loaded →', {
