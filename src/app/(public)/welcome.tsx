@@ -221,14 +221,15 @@ export const Welcome = () => {
         </Center>
 
         <ButtonGroup space="md" flexDirection="column">
-          <Button
-            onPress={() => router.push('/login')}
-            variant="solid"
-            size="xl"
-            className="rounded-full bg-[#890000] py-4 h-16"
-          >
-            <ButtonText className="text-white">Login</ButtonText>
-          </Button>
+		<Button
+		  onPress={() => router.push('/login')}
+		  variant="solid"
+		  size="xl"
+		  className="rounded-full bg-white py-4 h-16"
+		>
+		  <ButtonText className="text-[#890000]">Login</ButtonText>
+		</Button>
+
 
           <Button
             onPress={() => router.push('/signup')}

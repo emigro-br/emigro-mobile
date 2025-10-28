@@ -94,6 +94,24 @@ export const WalletBalances = ({ walletId, hide = false }: Props) => {
     }
   };
   
+  const sortedBalances = React.useMemo(() => {
+    const primaryAssetId = primaryCurrency?.assetId;
+    return [...balances].sort((a, b) => {
+      const aPrimary = primaryAssetId && a.assetId === primaryAssetId ? 1 : 0;
+      const bPrimary = primaryAssetId && b.assetId === primaryAssetId ? 1 : 0;
+
+      // Primary first
+      if (aPrimary !== bPrimary) return bPrimary - aPrimary;
+
+      // Then alphabetical by ticker (symbol), case-insensitive
+      const aSym = (a.symbol || '').toUpperCase();
+      const bSym = (b.symbol || '').toUpperCase();
+      if (aSym < bSym) return -1;
+      if (aSym > bSym) return 1;
+      return 0;
+    });
+  }, [balances, primaryCurrency]);
+
   return (
     <VStack space="md" testID="wallet-balances">
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
@@ -116,7 +134,7 @@ export const WalletBalances = ({ walletId, hide = false }: Props) => {
         <Text>Loading assets...</Text>
       ) : (
         <VStack space="sm">
-          {balances.map((asset, index) => {
+          {sortedBalances.map((asset, index) => {
             const rawBalance = asset.balance ?? '0';
             const parsedBalance = parseFloat(rawBalance);
             const isUSDC = asset.symbol === 'USDC';

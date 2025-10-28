@@ -190,19 +190,30 @@ export class SessionStore {
   }
 
   async load(): Promise<AuthSession | null> {
-	
-    const session = await this.loadSession();
-    this.setSession(session as AuthSession);
-    if (session) {
-      await this.loadUser();
-      await this.loadProfile();
-      await this.loadPreferences();
-	  await this.loadCachedRewardPoints();
-      await this.loadEvmWallet();
+    try {
+      const session = await this.loadSession();
+      this.setSession(session as AuthSession);
+
+      if (session) {
+        await this.loadUser();
+        await this.loadProfile();
+        await this.loadPreferences();
+        await this.loadCachedRewardPoints();
+        await this.loadEvmWallet();
+      }
+      return session;
+    } catch (e) {
+      // 👇 KEY PART: if we have a broken/partial session, nuke it and continue unauthenticated
+      if (e instanceof InvalidSessionError) {
+        await this.clear();          // deletes bad keys from SecureStore
+        return null;                 // treat as signed out
+      }
+      throw e;                       // unknown error -> surface it
+    } finally {
+      this.isLoaded = true;          // 👈 ALWAYS flip this so UI can move past spinner
     }
-	this.isLoaded = true;
-    return session;
   }
+
 
   async loadEvmWallet(): Promise<void> {
     const evmWallet = await SecureStore.getItemAsync('user.evmWallet');
