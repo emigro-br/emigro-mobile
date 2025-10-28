@@ -17,9 +17,9 @@ import VersionLockScreen from '@/screens/VersionLock';
 import { sessionStore } from '@/stores/SessionStore';
 
 import * as Notifications from 'expo-notifications';
-
 import { observer } from 'mobx-react-lite';
 
+// --- Notifications setup ---
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -36,6 +36,7 @@ SplashScreen.preventAutoHideAsync().catch((e) => {
   console.warn('[app/_layout][SPLASH] Failed to prevent auto hide', e);
 });
 
+// --- Sentry setup ---
 let routingInstrumentation: any;
 
 try {
@@ -45,7 +46,7 @@ try {
   } else {
     console.log('[SENTRY] ✅ DSN is:', sentryDsn);
   }
-  
+
   if (Sentry && Sentry.ReactNavigationInstrumentation) {
     routingInstrumentation = new Sentry.ReactNavigationInstrumentation();
   } else {
@@ -54,7 +55,7 @@ try {
 
   if (sentryDsn && Sentry) {
     console.log('[app/_layout][SENTRY] Initializing...');
-    console.log('[Sentry] DSN from env:', sentryDsn); // ✅ Log DSN for confirmation
+    console.log('[Sentry] DSN from env:', sentryDsn);
 
     Sentry.init({
       dsn: sentryDsn,
@@ -96,7 +97,7 @@ function AppLayout() {
   useEffect(() => {
     Sentry.captureException(new Error('🔥 Forced Test Error - Post-init'));
   }, []);
-  
+
   useEffect(() => {
     try {
       if (routingInstrumentation && navRef) {
@@ -132,73 +133,45 @@ function AppLayout() {
         }
 
         await sessionStore.load();
+        console.log('[SESSION] Loaded →', {
+          isLoaded: sessionStore.isLoaded,
+          hasSession: !!sessionStore.session,
+        });
+
         setMode(sessionStore.preferences?.startupMode || 'wallet');
-		// ✅ Register push device after session is ready
-		registerForPushNotificationsAsync().then(async (token) => {
-		  if (!token) {
-		    console.warn('[PUSH] No push token received');
-		    return;
-		  }
 
-		  const payload = {
-		    expo_push_token: token,
-		    device_type: Platform.OS,
-		    device_name: Device.deviceName,
-		    app_version: Constants.expoConfig?.version,
-		    os_version: Device.osVersion,
-		  };
+        // ✅ Register push device only if signed in
+        if (sessionStore.user?.id && sessionStore.accessToken) {
+          console.log('[PUSH] Starting registration...');
+          registerForPushNotificationsAsync().then(async (token) => {
+            if (!token) {
+              console.warn('[PUSH] No token received');
+              return;
+            }
 
-		  try {
-		    // ⏳ Wait for valid session (JWT and user ID present)
-		    while (!sessionStore.user?.id || !sessionStore.accessToken) {
-		      console.warn('[PUSH] Waiting for session to be ready...');
-		      await new Promise((res) => setTimeout(res, 500));
-		    }
+            const payload = {
+              expo_push_token: token,
+              device_type: Platform.OS,
+              device_name: Device.deviceName,
+              app_version: Constants.expoConfig?.version,
+              os_version: Device.osVersion,
+            };
 
-		    const maxAttempts = 3;
-		    let attempt = 0;
+            try {
+              const apiWithAuth = api({
+                headers: { Authorization: `Bearer ${sessionStore.accessToken}` },
+              });
+              await apiWithAuth.post('/notifications/register-device', payload);
+              console.log('[PUSH] Registered ✅');
+            } catch (e) {
+              console.warn('[PUSH] Registration failed:', e);
+              Sentry.captureException(e);
+            }
+          });
+        } else {
+          console.log('[PUSH] Skipped: not logged in');
+        }
 
-		    while (attempt < maxAttempts) {
-		      attempt++;
-
-		      const apiWithAuth = api({
-		        headers: {
-		          Authorization: `Bearer ${sessionStore.accessToken}`,
-		        },
-		      });
-
-		      try {
-		        await apiWithAuth.post('/notifications/debug/log', {
-		          tag: `TestFlight push registration (attempt ${attempt})`,
-		          token,
-		          payload,
-		        });
-
-		        const res = await apiWithAuth.post('/notifications/register-device', payload);
-		        console.log('[PUSH] Token sent to backend ✅', res.data);
-		        break; // ✅ success
-		      } catch (err: any) {
-		        if (err.response?.status === 401) {
-		          console.warn(`[PUSH] Attempt ${attempt}: Unauthorized — will retry`);
-		          await new Promise((r) => setTimeout(r, 1000));
-		        } else {
-		          console.warn('[PUSH] Register device failed:', err.message ?? err);
-		          break; // 🚫 do not retry on other errors
-		        }
-		      }
-		    }
-		  } catch (e) {
-		    console.error('[PUSH] Unexpected error during registration:', e);
-		    Sentry.captureException(e);
-		  } finally {
-		    console.log('[PUSH] Push registration flow finished');
-		  }
-		});
-
-
-
-
-		
         if (!__DEV__) {
           const update = await Updates.checkForUpdateAsync();
           if (update.isAvailable) {
@@ -226,13 +199,33 @@ function AppLayout() {
       cancelled = true;
     };
   }, []);
-  
+
+  // 🛡️ Bullet-proof watchdog — prevents infinite spinner
+  useEffect(() => {
+    if (!isReady) return;
+    if (sessionStore.isLoaded) return;
+
+    const t = setTimeout(async () => {
+      if (!sessionStore.isLoaded) {
+        console.warn('[WATCHDOG] isLoaded still false after 5s → clearing session and continuing');
+        try {
+          await sessionStore.clear();
+        } catch (e) {
+          console.warn('[WATCHDOG] clear() failed:', e);
+        } finally {
+          sessionStore.isLoaded = true;
+        }
+      }
+    }, 5000);
+
+    return () => clearTimeout(t);
+  }, [isReady]);
+
   // 👇 Preload announcements so Wallet can render with no "loading" flash
   useEffect(() => {
     (async () => {
       try {
         const { announcementStore } = await import('@/stores/AnnouncementStore');
-        // Make sure session is attempted first (preload can use auth if needed)
         if (!sessionStore.isLoaded) {
           await sessionStore.load().catch(() => undefined);
         }
@@ -242,7 +235,6 @@ function AppLayout() {
       }
     })();
   }, []);
-
 
   // ✅ Redirect logic in its own useEffect
   useEffect(() => {
@@ -287,4 +279,5 @@ const compareVersions = (a: string, b: string) => {
   return 0;
 };
 
-export default Sentry.wrap(AppLayout);
+// ✅ MobX observer ensures re-render on store updates
+export default Sentry.wrap(observer(AppLayout));
