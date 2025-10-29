@@ -333,7 +333,9 @@ export class SessionStore {
     this.setProfile(null);
     this.setPreferences({ themePreference: 'dark' });
     this.setJustLoggedIn(false);
+    this.evmWallet = null;
   }
+
 
   signIn = async (email: string, password: string) => {
     const { session, user } = await signIn(email, password);
