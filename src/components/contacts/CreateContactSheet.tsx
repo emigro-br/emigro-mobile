@@ -49,6 +49,7 @@ const ACCENT = '#fe0055';
 
 const onlyDigits = (v: string) => (v || '').replace(/\D/g, '');
 
+
 const cpfValid = (raw: string) => {
   const v = onlyDigits(raw);
   if (v.length !== 11) return false;
@@ -344,9 +345,12 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
 	      backgroundColor: '#0a0a0a',
 	      borderTopLeftRadius: 24,
 	      borderTopRightRadius: 24,
-	      paddingTop: 12,
 	      paddingHorizontal: 16,
-	      flex: 1, // allow sheet to resize with keyboard
+	      alignSelf: 'stretch',
+	      width: '100%',
+	      maxHeight: '92%',
+	      paddingTop: insets.top > 0 ? 8 : 12,
+	      flex: 1,
 	    }}
 	  >
 
@@ -355,7 +359,7 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
           onPress={onClose}
           style={{
             position: 'absolute',
-            top: 12,
+            top: insets.top + 12,
             right: 16,
             zIndex: 10,
             width: 34,
@@ -388,6 +392,7 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
 			<RNScrollView
 			  style={{ flex: 1 }}
 			  contentContainerStyle={{
+				flexGrow: 1,
 			    paddingHorizontal: 4,
 			    paddingTop: 8,
 			    paddingBottom: insets.bottom + 24,

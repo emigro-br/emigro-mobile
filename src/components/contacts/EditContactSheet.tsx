@@ -247,9 +247,9 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
   const [keys, setKeys] = useState<PixKeyDraft[]>([]);
   const [saving, setSaving] = useState(false);
 
-  const insets = useSafeAreaInsets();
-  const SHEET_HEADER = 56;
 
+  const SHEET_HEADER = 56;
+  const insets = useSafeAreaInsets();
   
   // hydrate when sheet opens / contact changes
   useEffect(() => {
@@ -419,9 +419,12 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
 	      backgroundColor: '#0a0a0a',
 	      borderTopLeftRadius: 24,
 	      borderTopRightRadius: 24,
-	      paddingTop: 12,
 	      paddingHorizontal: 16,
-	      flex: 1, // allow sheet to resize with keyboard
+	      alignSelf: 'stretch',
+	      width: '100%',
+	      maxHeight: '92%',
+	      paddingTop: insets.top > 0 ? 8 : 12,
+	      flex: 1,
 	    }}
 	  >
 
@@ -430,7 +433,7 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
           onPress={onClose}
           style={{
             position: 'absolute',
-            top: 12,
+            top: insets.top + 12,
             right: 16,
             zIndex: 10,
             width: 34,
@@ -463,6 +466,7 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
 			<RNScrollView
 			  style={{ flex: 1 }}
 			  contentContainerStyle={{
+				flexGrow: 1,
 			    paddingHorizontal: 4,
 			    paddingTop: 8,
 			    paddingBottom: insets.bottom + 24,
