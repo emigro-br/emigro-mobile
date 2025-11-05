@@ -374,14 +374,14 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
 
 		{/* Content */}
 		{Platform.OS === 'ios' ? (
-		  <KeyboardAvoidingView
-		    behavior="padding"
-		    keyboardVerticalOffset={80}
-		    style={{ width: '100%' }}
-		  >
+			<KeyboardAvoidingView
+			  behavior="padding"
+			  keyboardVerticalOffset={80}
+			  style={{ flex: 1, width: '100%' }}
+			>
 		    <ScrollView
 		      style={{ width: '100%' }}
-		      contentContainerStyle={{ paddingHorizontal: 4, paddingBottom: 28, paddingTop: 8 }}
+		      contentContainerStyle={{ paddingHorizontal: 4, paddingBottom: 28, paddingTop: 8, minHeight: '100%' }}
 		      keyboardShouldPersistTaps="handled"
 		      keyboardDismissMode="interactive"
 		      contentInsetAdjustmentBehavior="always"
