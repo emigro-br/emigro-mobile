@@ -25,6 +25,7 @@ import { api } from '@/services/emigro/api';
 import { Picker } from '@react-native-picker/picker';
 import type { Contact, ContactPixKey } from '@/services/emigro/contacts';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScrollView as RNScrollView } from 'react-native';
 
 type Props = {
   isOpen: boolean;
@@ -456,18 +457,17 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
 		{Platform.OS === 'ios' ? (
 		  <KeyboardAvoidingView
 		    behavior="padding"
-		    keyboardVerticalOffset={kbOffset}
-		    style={{ flex: 1, width: '100%' }}
+		    keyboardVerticalOffset={insets.top + SHEET_HEADER}
+		    style={{ flex: 1 }}
 		  >
-		    <ScrollView
-		      style={{ width: '100%' }}
+		    <RNScrollView
+		      style={{ flex: 1 }}
 		      contentContainerStyle={{
 		        paddingHorizontal: 4,
 		        paddingTop: 8,
-		        paddingBottom: insets.bottom + 24
+		        paddingBottom: insets.bottom + 24,
 		      }}
-		      automaticallyAdjustKeyboardInsets
-		      contentInsetAdjustmentBehavior="always"
+		      contentInsetAdjustmentBehavior="never"
 		      keyboardShouldPersistTaps="always"
 		      keyboardDismissMode="interactive"
 		    >
@@ -728,7 +728,7 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
 		          Delete Contact
 		        </Text>
 		      </Pressable>
-		    </ScrollView>
+		    </RNScrollView>
 		  </KeyboardAvoidingView>
 		) : (
 		  <ScrollView

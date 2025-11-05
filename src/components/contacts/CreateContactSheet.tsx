@@ -25,6 +25,7 @@ import { X } from 'lucide-react-native';
 import { api } from '@/services/emigro/api';
 import { Picker } from '@react-native-picker/picker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ScrollView as RNScrollView } from 'react-native';
 
 
 type Props = {
@@ -380,18 +381,17 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
 		{Platform.OS === 'ios' ? (
 		  <KeyboardAvoidingView
 		    behavior="padding"
-		    keyboardVerticalOffset={kbOffset}
-		    style={{ flex: 1, width: '100%' }}
+		    keyboardVerticalOffset={insets.top + SHEET_HEADER}
+		    style={{ flex: 1 }}
 		  >
-		    <ScrollView
-		      style={{ width: '100%' }}
+		    <RNScrollView
+		      style={{ flex: 1 }}
 		      contentContainerStyle={{
 		        paddingHorizontal: 4,
 		        paddingTop: 8,
-		        paddingBottom: insets.bottom + 24
+		        paddingBottom: insets.bottom + 24,
 		      }}
-		      automaticallyAdjustKeyboardInsets
-		      contentInsetAdjustmentBehavior="always"
+		      contentInsetAdjustmentBehavior="never"
 		      keyboardShouldPersistTaps="always"
 		      keyboardDismissMode="interactive"
 		    >
@@ -607,7 +607,7 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
 		          Add at least one valid PIX key to continue.
 		        </Text>
 		      )}
-		    </ScrollView>
+		    </RNScrollView>
 		  </KeyboardAvoidingView>
 		) : (
 		  <ScrollView
