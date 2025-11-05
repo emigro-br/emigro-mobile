@@ -290,26 +290,32 @@ const ConfirmPayment = () => {
   }, [chain, asset, balances]);
     
   const totalQuoteWithGas = (() => {
-    if (!usdQuote) return null;
+    if (!usdQuote || !asset || !chain) return null;
 
     const quote = parseFloat(usdQuote);
 
     const isNativeAsset = asset.symbol === chain.nativeSymbol;
-    const gas = isNativeAsset ? gasFeeEth : gasFeeInUsdc ?? 0;
+    const gas = isNativeAsset ? gasFeeEth : (gasFeeInUsdc ?? 0);
 
     return quote + gas;
   })();
 
+
   useEffect(() => {
-    if (!usdQuote) return;
+    if (!usdQuote || !asset || !chain) return;
+
     const q = parseFloat(usdQuote);
     const isNativeAsset = asset.symbol === chain.nativeSymbol;
     const gas = isNativeAsset ? gasFeeEth : (gasFeeInUsdc ?? 0);
     const total = q + gas;
-    console.log('[quote][display] usdQuote(no gas):', q,
-      '| gas used:', isNativeAsset ? `${gas} ${nativeToken}` : `${gas} ${asset?.symbol}`,
-      '| totalQuoteWithGas:', total);
-  }, [usdQuote, gasFeeEth, gasFeeInUsdc, asset?.symbol, chain?.nativeSymbol, nativeToken]);
+
+    console.log(
+      '[quote][display] usdQuote(no gas):', q,
+      '| gas used:', isNativeAsset ? `${gas} ${nativeToken}` : `${gas} ${asset.symbol}`,
+      '| totalQuoteWithGas:', total
+    );
+  }, [usdQuote, gasFeeEth, gasFeeInUsdc, asset, chain, nativeToken]);
+
 
 
   useEffect(() => {
@@ -762,7 +768,8 @@ const ConfirmPayment = () => {
 		    <Text className="text-gray-500">You will pay max</Text>
 			<Box className="flex-row flex-wrap items-baseline">
 			  {totalQuoteWithGas
-			    ? formatAmountWithPrecision(totalQuoteWithGas, asset.symbol === 'USDC')
+				? formatAmountWithPrecision(totalQuoteWithGas, asset?.symbol === 'USDC')
+
 			    : <Text className="text-4xl font-bold text-black">...</Text>}
 			</Box>
 
@@ -862,13 +869,15 @@ const ConfirmPayment = () => {
 	    {/* Pay Button */}
 		<Button
 		  onPress={handleConfirm}
-		  className="mt-6 rounded-full bg-[#FF0050] h-14"
+		  className="mt-6 bg-[#FF0050] h-14"
+		  style={{ borderRadius: 12 }}
 		  disabled={isLoadingEssentialData || usdQuote === null || isConfirming}
 		>
 		  <ButtonText className="text-white text-2xl">
-		    {isConfirming ? 'Processing...' : 'Pay'}
+		    {isConfirming ? 'Processing...' : 'Pay now'}
 		  </ButtonText>
 		</Button>
+
 
 
 	    {/* Quote Timer */}

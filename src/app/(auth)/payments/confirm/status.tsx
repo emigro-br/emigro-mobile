@@ -83,6 +83,11 @@ const STATUS_MAP = {
     secondmessage: '',
     lottie: require('@/assets/lotties/error.json'),
   },
+  e900: {
+    message: 'The selected payment chain is temporarily under maintenance. Please try again later or select another chain.',
+    secondmessage: '',
+    lottie: require('@/assets/lotties/error.json'),
+  },
 };
 
 const fallbackStatus = {
@@ -125,7 +130,7 @@ const StatusScreen = () => {
 		if (escrowStatus && STATUS_MAP[escrowStatus as keyof typeof STATUS_MAP]) {
 		  setStatus(escrowStatus);
 
-		  const isFinalStatus = ['f001', 'p005', 'e001', 'e002', 'e003', 'e004', 'e005', 'e006'].includes(escrowStatus);
+		  const isFinalStatus = ['f001', 'p005', 'e001', 'e002', 'e003', 'e004', 'e005', 'e006', 'e900'].includes(escrowStatus);
 		  if (isFinalStatus) {
 		    clearInterval(poll);
 		  }
@@ -163,7 +168,7 @@ const StatusScreen = () => {
   // This is the fix: use derived "effectiveStatus" for all logic
   const effectiveStatus = id === 'error' ? 'e001' : status;
 
-  const isError = ['e001', 'e002', 'e003', 'e004', 'e005', 'e006'].includes(effectiveStatus);
+  const isError = ['e001', 'e002', 'e003', 'e004', 'e005', 'e006', 'e900'].includes(effectiveStatus);
   const isSuccess = ['f001', 'p005'].includes(effectiveStatus);
 
 
@@ -172,7 +177,7 @@ const StatusScreen = () => {
   const finalStatus = isManualError ? 'e001' : status;
   const statusFromMap = STATUS_MAP[finalStatus] || fallbackStatus;
 
-  const shouldLoop = !['f001', 'p005', 'e001', 'e002', 'e003', 'e004', 'e005', 'e006'].includes(finalStatus);
+  const shouldLoop = !['f001', 'p005', 'e001', 'e002', 'e003', 'e004', 'e005', 'e006', 'e900'].includes(finalStatus);
   const showButton = !shouldLoop;
 
   const finalMessage = isManualError

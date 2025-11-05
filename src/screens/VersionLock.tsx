@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { Pressable, Animated, Linking, Platform } from 'react-native';
 import LottieView from 'lottie-react-native';
 import { Stack } from 'expo-router';
+import * as Updates from 'expo-updates';
 
 import { Box } from '@/components/ui/box';
 import { VStack } from '@/components/ui/vstack';
@@ -9,14 +10,16 @@ import { Text } from '@/components/ui/text';
 
 type Props = {
   message: string;
-  storeUrl?: string; // ✅ receives the URL from API
+  /** When present → "Update" mode. When falsy (undefined/null/empty) → "Maintenance" mode. */
+  storeUrl?: string;
 };
 
 const VersionLockScreen = ({ message, storeUrl }: Props) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const lottieRef = useRef<LottieView>(null);
 
-  const LOOP_DELAY_MS = 2000; // ⏱ Delay before restarting animation
+  const LOOP_DELAY_MS = 2000;
+  const isMaintenance = !storeUrl; // 🔑 interpret falsy storeUrl as maintenance
 
   useEffect(() => {
     lottieRef.current?.play();
@@ -29,8 +32,20 @@ const VersionLockScreen = ({ message, storeUrl }: Props) => {
     ]).start();
   };
 
-  const handleUpdate = async () => {
+  const handlePrimary = async () => {
     try {
+      if (isMaintenance) {
+        // In maintenance mode, just retry app boot (best-effort)
+        try {
+          await Updates.reloadAsync();
+        } catch (e) {
+          // If reloadAsync not available (dev/web), do nothing
+          console.warn('[VersionLock] reloadAsync not available or failed:', e);
+        }
+        return;
+      }
+
+      // Update mode → open store URL (or a safe fallback)
       if (storeUrl) {
         console.log('[VersionLock] Opening store URL:', storeUrl);
         await Linking.openURL(storeUrl);
@@ -43,7 +58,7 @@ const VersionLockScreen = ({ message, storeUrl }: Props) => {
         await Linking.openURL(fallbackUrl);
       }
     } catch (err) {
-      console.error('[VersionLock] Failed to open store URL:', err);
+      console.error('[VersionLock] Primary action failed:', err);
     }
   };
 
@@ -67,17 +82,22 @@ const VersionLockScreen = ({ message, storeUrl }: Props) => {
             style={{ width: 200, height: 200 }}
           />
           <Text size="xl" className="text-white font-bold text-center">
-            Update Required
+            {isMaintenance ? 'Maintenance' : 'Update Required'}
           </Text>
           <Text size="md" className="text-gray-300 text-center px-4">
-            {message || 'Please update your app to continue.'}
+            {message ||
+              (isMaintenance
+                ? 'App temporarily unavailable. Please try again soon.'
+                : 'Please update your app to continue.')}
           </Text>
-          <Pressable onPressIn={animatePress} onPress={handleUpdate}>
+          <Pressable onPressIn={animatePress} onPress={handlePrimary}>
             <Animated.View
               style={{ transform: [{ scale: scaleAnim }] }}
               className="bg-primary-500 rounded-full py-4 px-12 items-center justify-center mt-6"
             >
-              <Text className="text-white font-bold text-lg">Update Now</Text>
+              <Text className="text-white font-bold text-lg">
+                {isMaintenance ? 'Reload App' : 'Update Now'}
+              </Text>
             </Animated.View>
           </Pressable>
         </VStack>
