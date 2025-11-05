@@ -18,6 +18,7 @@ import {
   TextInput,
   View,
   ActivityIndicator,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { X } from 'lucide-react-native';
 import { api } from '@/services/emigro/api';
@@ -445,272 +446,546 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
           </ActionsheetDragIndicatorWrapper>
         </Box>
 
-        {/* Content */}
-        <ScrollView
-          style={{ width: '100%' }}
-          contentContainerStyle={{ paddingHorizontal: 4, paddingBottom: 28, paddingTop: 8 }}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Text size="xl" weight="semibold" style={{ marginBottom: 12 }}>
-            Edit Contact
-          </Text>
-
-          {/* Contact info */}
-          <View
-            style={{
-              borderWidth: 1,
-              borderColor: '#e5e7eb',
-              borderRadius: 12,
-              backgroundColor: '#0a0a0a',
-              paddingHorizontal: 14,
-              height: 52,
-              justifyContent: 'center',
-              marginBottom: 12,
-            }}
-          >
-            <TextInput
-              value={displayName}
-              onChangeText={setDisplayName}
-              placeholder="Full name"
-              placeholderTextColor="#a1a1aa"
-              autoCapitalize="words"
-              autoCorrect
-              style={{ color: '#fff', fontSize: 16 }}
-              returnKeyType="next"
-            />
-          </View>
-
-          <View style={{ marginBottom: 4 }}>
-            <View
-              style={{
-                borderWidth: 1,
-                borderColor: docError ? '#f87171' : '#e5e7eb',
-                borderRadius: 12,
-                backgroundColor: '#0a0a0a',
-                paddingHorizontal: 14,
-                height: 52,
-                justifyContent: 'center',
-              }}
-            >
-              <TextInput
-                value={formatCPFOrCNPJ(docDigits)}
-                onChangeText={(t) => {
-                  setDocTouched(true);
-                  const d = onlyDigits(t).slice(0, 14);
-                  setDocDigits(d);
-                }}
-                placeholder="CPF/CNPJ (optional)"
-                placeholderTextColor="#a1a1aa"
-                keyboardType="number-pad"
-                autoCapitalize="none"
-                autoCorrect={false}
-                style={{ color: '#fff', fontSize: 16 }}
-                returnKeyType="done"
-              />
-            </View>
-            {!!docError && (
-              <Text style={{ color: '#f87171', fontSize: 12, marginTop: 6 }}>{docError}</Text>
-            )}
-          </View>
-
-          {/* PIX keys section header */}
-          <Text style={{ color: '#fff', fontWeight: '700', marginBottom: 8 }}>PIX keys</Text>
-
-          {/* Key rows */}
-          {keys.map((k, idx) => {
-            const error = keyErrors[idx];
-            const placeholder =
-              k.keyType === 'EMAIL'
-                ? 'name@domain.com'
-                : k.keyType === 'PHONE'
-                ? '+5511999999999'
-                : k.keyType === 'CPF'
-                ? 'CPF (11 digits)'
-                : k.keyType === 'CNPJ'
-                ? 'CNPJ (14 digits)'
-                : 'UUID or 32 hex chars';
-
-            return (
-              <View
-                key={k.id}
-                style={{
-                  borderWidth: 1,
-                  borderColor: error ? '#f87171' : '#e5e7eb',
-                  borderRadius: 12,
-                  backgroundColor: '#0a0a0a',
-                  padding: 12,
-                  marginBottom: 10,
-                }}
-              >
-                <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-                  <View style={{ width: 130 }}>
-                    <KeyTypeSelector
-                      value={k.keyType}
-                      onChange={(t) => updateKey(k.id, { keyType: t, keyValue: '' })}
-                    />
-                  </View>
-
-                  <View style={{ flex: 1 }}>
-                    <TextInput
-                      value={k.keyValue}
-                      onChangeText={(t) => updateKey(k.id, { keyValue: t })}
-                      placeholder={placeholder}
-                      placeholderTextColor="#a1a1aa"
-                      autoCapitalize={k.keyType === 'EMAIL' ? 'none' : 'characters'}
-                      autoCorrect={false}
-                      keyboardType={
-                        k.keyType === 'EMAIL'
-                          ? 'email-address'
-                          : k.keyType === 'PHONE'
-                          ? 'phone-pad'
-                          : 'default'
-                      }
-                      style={{
-                        color: '#fff',
-                        fontSize: 16,
-                        lineHeight: 20,
-                        borderWidth: 1,
-                        borderColor: '#e5e7eb',
-                        borderRadius: 10,
-                        paddingHorizontal: 12,
-                        paddingVertical: 10,
-                        height: 48,
-                        textAlignVertical: 'center',
-                      }}
-                    />
-                  </View>
-
-                  <Pressable
-                    onPress={() => removeKey(k.id)}
-                    hitSlop={12}
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 18,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: '#141414',
-                      borderWidth: 1,
-                      borderColor: '#303030',
-                    }}
-                  >
-                    <Text style={{ color: '#bbb', fontSize: 16 }}>×</Text>
-                  </Pressable>
-                </View>
-
-                <View style={{ marginTop: 8 }}>
-                  <TextInput
-                    value={k.label}
-                    onChangeText={(t) => updateKey(k.id, { label: t })}
-                    placeholder="Label (optional, e.g., Work)"
-                    placeholderTextColor="#a1a1aa"
-                    style={{
-                      color: '#fff',
-                      fontSize: 14,
-                      borderBottomWidth: 1,
-                      borderColor: '#e5e7eb',
-                      borderRadius: 0,
-                      paddingHorizontal: 0,
-                      paddingBottom: 0,
-                      height: 40,
-                      justifyContent: 'center',
-                    }}
-                  />
-                </View>
-
-                {!!error && (
-                  <Text style={{ color: '#f87171', marginTop: 6, fontSize: 12 }}>{error}</Text>
-                )}
-              </View>
-            );
-          })}
-
-          {/* Add key button */}
-          <Pressable
-            onPress={addKey}
-            style={{
-              height: 46,
-              borderRadius: 10,
-              borderWidth: 1,
-              borderColor: ACCENT,
-              backgroundColor: 'transparent',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: 16,
-            }}
-          >
-            <Text style={{ color: ACCENT, fontWeight: '700' }}>+ Add PIX key</Text>
-          </Pressable>
-
-          {/* Save */}
-          <Pressable
-            disabled={!canSave}
-            onPress={handleSave}
-            style={{
-              height: 52,
-              borderRadius: 500,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: canSave ? ACCENT : '#7a213f',
-            }}
-          >
-            {saving ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>Save</Text>
-            )}
-          </Pressable>
-		  
-		  {/* Danger zone */}
-		  <Pressable
-		    onPress={() => {
-		      if (!contact) return;
-		      Alert.alert(
-		        'Delete contact',
-		        'This will remove the contact and all its PIX keys. This action cannot be undone.',
-		        [
-		          { text: 'Cancel', style: 'cancel' },
-		          {
-		            text: 'Delete',
-		            style: 'destructive',
-		            onPress: async () => {
-		              try {
-		                setSaving(true);
-		                await api().delete(`/contacts/${contact.id}`);
-		                onUpdated && onUpdated(null as any);
-		                onClose();
-		              } catch (e: any) {
-		                Alert.alert('Error', e?.message ?? 'Failed to delete contact.');
-		              } finally {
-		                setSaving(false);
-		              }
-		            },
-		          },
-		        ],
-		      );
-		    }}
-		    style={{
-		      marginTop: 16,
-		      alignItems: 'center',
-		      justifyContent: 'center',
-		      backgroundColor: 'transparent',
-		      paddingVertical: 6,
-		    }}
+		{/* Content */}
+		{Platform.OS === 'ios' ? (
+		  <KeyboardAvoidingView
+		    behavior="padding"
+		    keyboardVerticalOffset={80}
+		    style={{ width: '100%' }}
 		  >
-		    <Text
+		    <ScrollView
+		      style={{ width: '100%' }}
+		      contentContainerStyle={{ paddingHorizontal: 4, paddingBottom: 28, paddingTop: 8 }}
+		      keyboardShouldPersistTaps="handled"
+		      keyboardDismissMode="interactive"
+		      contentInsetAdjustmentBehavior="always"
+		    >
+		      <Text size="xl" weight="semibold" style={{ marginBottom: 12 }}>
+		        Edit Contact
+		      </Text>
+
+		      {/* Contact info */}
+		      <View
+		        style={{
+		          borderWidth: 1,
+		          borderColor: '#e5e7eb',
+		          borderRadius: 12,
+		          backgroundColor: '#0a0a0a',
+		          paddingHorizontal: 14,
+		          height: 52,
+		          justifyContent: 'center',
+		          marginBottom: 12,
+		        }}
+		      >
+		        <TextInput
+		          value={displayName}
+		          onChangeText={setDisplayName}
+		          placeholder="Full name"
+		          placeholderTextColor="#a1a1aa"
+		          autoCapitalize="words"
+		          autoCorrect
+		          style={{ color: '#fff', fontSize: 16 }}
+		          returnKeyType="next"
+		        />
+		      </View>
+
+		      <View style={{ marginBottom: 4 }}>
+		        <View
+		          style={{
+		            borderWidth: 1,
+		            borderColor: docError ? '#f87171' : '#e5e7eb',
+		            borderRadius: 12,
+		            backgroundColor: '#0a0a0a',
+		            paddingHorizontal: 14,
+		            height: 52,
+		            justifyContent: 'center',
+		          }}
+		        >
+		          <TextInput
+		            value={formatCPFOrCNPJ(docDigits)}
+		            onChangeText={(t) => {
+		              setDocTouched(true);
+		              const d = onlyDigits(t).slice(0, 14);
+		              setDocDigits(d);
+		            }}
+		            placeholder="CPF/CNPJ (optional)"
+		            placeholderTextColor="#a1a1aa"
+		            keyboardType="number-pad"
+		            autoCapitalize="none"
+		            autoCorrect={false}
+		            style={{ color: '#fff', fontSize: 16 }}
+		            returnKeyType="done"
+		          />
+		        </View>
+		        {!!docError && (
+		          <Text style={{ color: '#f87171', fontSize: 12, marginTop: 6 }}>{docError}</Text>
+		        )}
+		      </View>
+
+		      {/* PIX keys section header */}
+		      <Text style={{ color: '#fff', fontWeight: '700', marginBottom: 8 }}>PIX keys</Text>
+
+		      {/* Key rows */}
+		      {keys.map((k, idx) => {
+		        const error = keyErrors[idx];
+		        const placeholder =
+		          k.keyType === 'EMAIL'
+		            ? 'name@domain.com'
+		            : k.keyType === 'PHONE'
+		            ? '+5511999999999'
+		            : k.keyType === 'CPF'
+		            ? 'CPF (11 digits)'
+		            : k.keyType === 'CNPJ'
+		            ? 'CNPJ (14 digits)'
+		            : 'UUID or 32 hex chars';
+
+		        return (
+		          <View
+		            key={k.id}
+		            style={{
+		              borderWidth: 1,
+		              borderColor: error ? '#f87171' : '#e5e7eb',
+		              borderRadius: 12,
+		              backgroundColor: '#0a0a0a',
+		              padding: 12,
+		              marginBottom: 10,
+		            }}
+		          >
+		            <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+		              <View style={{ width: 130 }}>
+		                <KeyTypeSelector
+		                  value={k.keyType}
+		                  onChange={(t) => updateKey(k.id, { keyType: t, keyValue: '' })}
+		                />
+		              </View>
+
+		              <View style={{ flex: 1 }}>
+		                <TextInput
+		                  value={k.keyValue}
+		                  onChangeText={(t) => updateKey(k.id, { keyValue: t })}
+		                  placeholder={placeholder}
+		                  placeholderTextColor="#a1a1aa"
+		                  autoCapitalize={k.keyType === 'EMAIL' ? 'none' : 'characters'}
+		                  autoCorrect={false}
+		                  keyboardType={
+		                    k.keyType === 'EMAIL'
+		                      ? 'email-address'
+		                      : k.keyType === 'PHONE'
+		                      ? 'phone-pad'
+		                      : 'default'
+		                  }
+		                  style={{
+		                    color: '#fff',
+		                    fontSize: 16,
+		                    lineHeight: 20,
+		                    borderWidth: 1,
+		                    borderColor: '#e5e7eb',
+		                    borderRadius: 10,
+		                    paddingHorizontal: 12,
+		                    paddingVertical: 10,
+		                    height: 48,
+		                    textAlignVertical: 'center',
+		                  }}
+		                />
+		              </View>
+
+		              <Pressable
+		                onPress={() => removeKey(k.id)}
+		                hitSlop={12}
+		                style={{
+		                  width: 36,
+		                  height: 36,
+		                  borderRadius: 18,
+		                  alignItems: 'center',
+		                  justifyContent: 'center',
+		                  backgroundColor: '#141414',
+		                  borderWidth: 1,
+		                  borderColor: '#303030',
+		                }}
+		              >
+		                <Text style={{ color: '#bbb', fontSize: 16 }}>×</Text>
+		              </Pressable>
+		            </View>
+
+		            <View style={{ marginTop: 8 }}>
+		              <TextInput
+		                value={k.label}
+		                onChangeText={(t) => updateKey(k.id, { label: t })}
+		                placeholder="Label (optional, e.g., Work)"
+		                placeholderTextColor="#a1a1aa"
+		                style={{
+		                  color: '#fff',
+		                  fontSize: 14,
+		                  borderBottomWidth: 1,
+		                  borderColor: '#e5e7eb',
+		                  borderRadius: 0,
+		                  paddingHorizontal: 0,
+		                  paddingBottom: 0,
+		                  height: 40,
+		                  justifyContent: 'center',
+		                }}
+		              />
+		            </View>
+
+		            {!!error && (
+		              <Text style={{ color: '#f87171', marginTop: 6, fontSize: 12 }}>{error}</Text>
+		            )}
+		          </View>
+		        );
+		      })}
+
+		      {/* Add key button */}
+		      <Pressable
+		        onPress={addKey}
+		        style={{
+		          height: 46,
+		          borderRadius: 10,
+		          borderWidth: 1,
+		          borderColor: ACCENT,
+		          backgroundColor: 'transparent',
+		          alignItems: 'center',
+		          justifyContent: 'center',
+		          marginBottom: 16,
+		        }}
+		      >
+		        <Text style={{ color: ACCENT, fontWeight: '700' }}>+ Add PIX key</Text>
+		      </Pressable>
+
+		      {/* Save */}
+		      <Pressable
+		        disabled={!canSave}
+		        onPress={handleSave}
+		        style={{
+		          height: 52,
+		          borderRadius: 500,
+		          alignItems: 'center',
+		          justifyContent: 'center',
+		          backgroundColor: canSave ? ACCENT : '#7a213f',
+		        }}
+		      >
+		        {saving ? (
+		          <ActivityIndicator color="#fff" />
+		        ) : (
+		          <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>Save</Text>
+		        )}
+		      </Pressable>
+
+		      {/* Danger zone */}
+		      <Pressable
+		        onPress={() => {
+		          if (!contact) return;
+		          Alert.alert(
+		            'Delete contact',
+		            'This will remove the contact and all its PIX keys. This action cannot be undone.',
+		            [
+		              { text: 'Cancel', style: 'cancel' },
+		              {
+		                text: 'Delete',
+		                style: 'destructive',
+		                onPress: async () => {
+		                  try {
+		                    setSaving(true);
+		                    await api().delete(`/contacts/${contact.id}`);
+		                    onUpdated && onUpdated(null as any);
+		                    onClose();
+		                  } catch (e: any) {
+		                    Alert.alert('Error', e?.message ?? 'Failed to delete contact.');
+		                  } finally {
+		                    setSaving(false);
+		                  }
+		                },
+		              },
+		            ],
+		          );
+		        }}
+		        style={{
+		          marginTop: 16,
+		          alignItems: 'center',
+		          justifyContent: 'center',
+		          backgroundColor: 'transparent',
+		          paddingVertical: 6,
+		        }}
+		      >
+		        <Text
+		          style={{
+		            color: '#fe0055',
+		            fontWeight: '600',
+		            fontSize: 14,
+		            textDecorationLine: 'underline',
+		          }}
+		        >
+		          Delete Contact
+		        </Text>
+		      </Pressable>
+		    </ScrollView>
+		  </KeyboardAvoidingView>
+		) : (
+		  <ScrollView
+		    style={{ width: '100%' }}
+		    contentContainerStyle={{ paddingHorizontal: 4, paddingBottom: 28, paddingTop: 8 }}
+		    keyboardShouldPersistTaps="handled"
+		  >
+		    <Text size="xl" weight="semibold" style={{ marginBottom: 12 }}>
+		      Edit Contact
+		    </Text>
+
+		    {/* Contact info */}
+		    <View
 		      style={{
-		        color: '#fe0055',
-		        fontWeight: '600',
-		        fontSize: 14,
-		        textDecorationLine: 'underline',
+		        borderWidth: 1,
+		        borderColor: '#e5e7eb',
+		        borderRadius: 12,
+		        backgroundColor: '#0a0a0a',
+		        paddingHorizontal: 14,
+		        height: 52,
+		        justifyContent: 'center',
+		        marginBottom: 12,
 		      }}
 		    >
-		      Delete Contact
-		    </Text>
-		  </Pressable>
+		      <TextInput
+		        value={displayName}
+		        onChangeText={setDisplayName}
+		        placeholder="Full name"
+		        placeholderTextColor="#a1a1aa"
+		        autoCapitalize="words"
+		        autoCorrect
+		        style={{ color: '#fff', fontSize: 16 }}
+		        returnKeyType="next"
+		      />
+		    </View>
+
+		    <View style={{ marginBottom: 4 }}>
+		      <View
+		        style={{
+		          borderWidth: 1,
+		          borderColor: docError ? '#f87171' : '#e5e7eb',
+		          borderRadius: 12,
+		          backgroundColor: '#0a0a0a',
+		          paddingHorizontal: 14,
+		          height: 52,
+		          justifyContent: 'center',
+		        }}
+		      >
+		        <TextInput
+		          value={formatCPFOrCNPJ(docDigits)}
+		          onChangeText={(t) => {
+		            setDocTouched(true);
+		            const d = onlyDigits(t).slice(0, 14);
+		            setDocDigits(d);
+		          }}
+		          placeholder="CPF/CNPJ (optional)"
+		          placeholderTextColor="#a1a1aa"
+		          keyboardType="number-pad"
+		          autoCapitalize="none"
+		          autoCorrect={false}
+		          style={{ color: '#fff', fontSize: 16 }}
+		          returnKeyType="done"
+		        />
+		      </View>
+		      {!!docError && (
+		        <Text style={{ color: '#f87171', fontSize: 12, marginTop: 6 }}>{docError}</Text>
+		      )}
+		    </View>
+
+		    {/* PIX keys section header */}
+		    <Text style={{ color: '#fff', fontWeight: '700', marginBottom: 8 }}>PIX keys</Text>
+
+		    {/* Key rows */}
+		    {keys.map((k, idx) => {
+		      const error = keyErrors[idx];
+		      const placeholder =
+		        k.keyType === 'EMAIL'
+		          ? 'name@domain.com'
+		          : k.keyType === 'PHONE'
+		          ? '+5511999999999'
+		          : k.keyType === 'CPF'
+		          ? 'CPF (11 digits)'
+		          : k.keyType === 'CNPJ'
+		          ? 'CNPJ (14 digits)'
+		          : 'UUID or 32 hex chars';
+
+		      return (
+		        <View
+		          key={k.id}
+		          style={{
+		            borderWidth: 1,
+		            borderColor: error ? '#f87171' : '#e5e7eb',
+		            borderRadius: 12,
+		            backgroundColor: '#0a0a0a',
+		            padding: 12,
+		            marginBottom: 10,
+		          }}
+		        >
+		          <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+		            <View style={{ width: 130 }}>
+		              <KeyTypeSelector
+		                value={k.keyType}
+		                onChange={(t) => updateKey(k.id, { keyType: t, keyValue: '' })}
+		              />
+		            </View>
+
+		            <View style={{ flex: 1 }}>
+		              <TextInput
+		                value={k.keyValue}
+		                onChangeText={(t) => updateKey(k.id, { keyValue: t })}
+		                placeholder={placeholder}
+		                placeholderTextColor="#a1a1aa"
+		                autoCapitalize={k.keyType === 'EMAIL' ? 'none' : 'characters'}
+		                autoCorrect={false}
+		                keyboardType={
+		                  k.keyType === 'EMAIL'
+		                    ? 'email-address'
+		                    : k.keyType === 'PHONE'
+		                    ? 'phone-pad'
+		                    : 'default'
+		                }
+		                style={{
+		                  color: '#fff',
+		                  fontSize: 16,
+		                  lineHeight: 20,
+		                  borderWidth: 1,
+		                  borderColor: '#e5e7eb',
+		                  borderRadius: 10,
+		                  paddingHorizontal: 12,
+		                  paddingVertical: 10,
+		                  height: 48,
+		                  textAlignVertical: 'center',
+		                }}
+		              />
+		            </View>
+
+		            <Pressable
+		              onPress={() => removeKey(k.id)}
+		              hitSlop={12}
+		              style={{
+		                width: 36,
+		                height: 36,
+		                borderRadius: 18,
+		                alignItems: 'center',
+		                justifyContent: 'center',
+		                backgroundColor: '#141414',
+		                borderWidth: 1,
+		                borderColor: '#303030',
+		              }}
+		            >
+		              <Text style={{ color: '#bbb', fontSize: 16 }}>×</Text>
+		            </Pressable>
+		          </View>
+
+		          <View style={{ marginTop: 8 }}>
+		            <TextInput
+		              value={k.label}
+		              onChangeText={(t) => updateKey(k.id, { label: t })}
+		              placeholder="Label (optional, e.g., Work)"
+		              placeholderTextColor="#a1a1aa"
+		              style={{
+		                color: '#fff',
+		                fontSize: 14,
+		                borderBottomWidth: 1,
+		                borderColor: '#e5e7eb',
+		                borderRadius: 0,
+		                paddingHorizontal: 0,
+		                paddingBottom: 0,
+		                height: 40,
+		                justifyContent: 'center',
+		              }}
+		            />
+		          </View>
+
+		          {!!error && (
+		            <Text style={{ color: '#f87171', marginTop: 6, fontSize: 12 }}>{error}</Text>
+		          )}
+		        </View>
+		      );
+		    })}
+
+		    {/* Add key button */}
+		    <Pressable
+		      onPress={addKey}
+		      style={{
+		        height: 46,
+		        borderRadius: 10,
+		        borderWidth: 1,
+		        borderColor: ACCENT,
+		        backgroundColor: 'transparent',
+		        alignItems: 'center',
+		        justifyContent: 'center',
+		        marginBottom: 16,
+		      }}
+		    >
+		      <Text style={{ color: ACCENT, fontWeight: '700' }}>+ Add PIX key</Text>
+		    </Pressable>
+
+		    {/* Save */}
+		    <Pressable
+		      disabled={!canSave}
+		      onPress={handleSave}
+		      style={{
+		        height: 52,
+		        borderRadius: 500,
+		        alignItems: 'center',
+		        justifyContent: 'center',
+		        backgroundColor: canSave ? ACCENT : '#7a213f',
+		      }}
+		    >
+		      {saving ? (
+		        <ActivityIndicator color="#fff" />
+		      ) : (
+		        <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>Save</Text>
+		      )}
+		    </Pressable>
+
+		    {/* Danger zone */}
+		    <Pressable
+		      onPress={() => {
+		        if (!contact) return;
+		        Alert.alert(
+		          'Delete contact',
+		          'This will remove the contact and all its PIX keys. This action cannot be undone.',
+		          [
+		            { text: 'Cancel', style: 'cancel' },
+		            {
+		              text: 'Delete',
+		              style: 'destructive',
+		              onPress: async () => {
+		                try {
+		                  setSaving(true);
+		                  await api().delete(`/contacts/${contact.id}`);
+		                  onUpdated && onUpdated(null as any);
+		                  onClose();
+		                } catch (e: any) {
+		                  Alert.alert('Error', e?.message ?? 'Failed to delete contact.');
+		                } finally {
+		                  setSaving(false);
+		                }
+		              },
+		            },
+		          ],
+		        );
+		      }}
+		      style={{
+		        marginTop: 16,
+		        alignItems: 'center',
+		        justifyContent: 'center',
+		        backgroundColor: 'transparent',
+		        paddingVertical: 6,
+		      }}
+		    >
+		      <Text
+		        style={{
+		          color: '#fe0055',
+		          fontWeight: '600',
+		          fontSize: 14,
+		          textDecorationLine: 'underline',
+		        }}
+		      >
+		        Delete Contact
+		      </Text>
+		    </Pressable>
+		  </ScrollView>
+		)}
 
 
-        </ScrollView>
       </ActionsheetContent>
     </Actionsheet>
   );
