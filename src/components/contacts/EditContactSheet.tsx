@@ -24,6 +24,7 @@ import { X } from 'lucide-react-native';
 import { api } from '@/services/emigro/api';
 import { Picker } from '@react-native-picker/picker';
 import type { Contact, ContactPixKey } from '@/services/emigro/contacts';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Props = {
   isOpen: boolean;
@@ -245,6 +246,11 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
   const [keys, setKeys] = useState<PixKeyDraft[]>([]);
   const [saving, setSaving] = useState(false);
 
+  const insets = useSafeAreaInsets();
+  const SHEET_HEADER = 56; // drag handle + close row height
+  const kbOffset = insets.top + SHEET_HEADER;
+
+  
   // hydrate when sheet opens / contact changes
   useEffect(() => {
     if (!contact) return;
@@ -448,17 +454,22 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
 
 		{/* Content */}
 		{Platform.OS === 'ios' ? (
-			<KeyboardAvoidingView
-			  behavior="padding"
-			  keyboardVerticalOffset={80}
-			  style={{ flex: 1, width: '100%' }}
-			>
+		  <KeyboardAvoidingView
+		    behavior="padding"
+		    keyboardVerticalOffset={kbOffset}
+		    style={{ flex: 1, width: '100%' }}
+		  >
 		    <ScrollView
 		      style={{ width: '100%' }}
-		      contentContainerStyle={{ paddingHorizontal: 4, paddingBottom: 28, paddingTop: 8, minHeight: '100%' }}
-		      keyboardShouldPersistTaps="handled"
-		      keyboardDismissMode="interactive"
+		      contentContainerStyle={{
+		        paddingHorizontal: 4,
+		        paddingTop: 8,
+		        paddingBottom: insets.bottom + 24
+		      }}
+		      automaticallyAdjustKeyboardInsets
 		      contentInsetAdjustmentBehavior="always"
+		      keyboardShouldPersistTaps="always"
+		      keyboardDismissMode="interactive"
 		    >
 		      <Text size="xl" weight="semibold" style={{ marginBottom: 12 }}>
 		        Edit Contact

@@ -24,6 +24,7 @@ import {
 import { X } from 'lucide-react-native';
 import { api } from '@/services/emigro/api';
 import { Picker } from '@react-native-picker/picker';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
 type Props = {
@@ -249,7 +250,10 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
   ]);
 
   const [saving, setSaving] = useState(false);
-
+  const insets = useSafeAreaInsets();
+  const SHEET_HEADER = 56; // drag handle + close row height
+  const kbOffset = insets.top + SHEET_HEADER;
+  
   const keyErrors = useMemo(() => {
     return keys.map((k) => validateKey(k));
   }, [keys]);
@@ -374,17 +378,22 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
 
 		{/* Content */}
 		{Platform.OS === 'ios' ? (
-			<KeyboardAvoidingView
-			  behavior="padding"
-			  keyboardVerticalOffset={80}
-			  style={{ flex: 1, width: '100%' }}
-			>
+		  <KeyboardAvoidingView
+		    behavior="padding"
+		    keyboardVerticalOffset={kbOffset}
+		    style={{ flex: 1, width: '100%' }}
+		  >
 		    <ScrollView
 		      style={{ width: '100%' }}
-		      contentContainerStyle={{ paddingHorizontal: 4, paddingBottom: 28, paddingTop: 8, minHeight: '100%' }}
-		      keyboardShouldPersistTaps="handled"
-		      keyboardDismissMode="interactive"
+		      contentContainerStyle={{
+		        paddingHorizontal: 4,
+		        paddingTop: 8,
+		        paddingBottom: insets.bottom + 24
+		      }}
+		      automaticallyAdjustKeyboardInsets
 		      contentInsetAdjustmentBehavior="always"
+		      keyboardShouldPersistTaps="always"
+		      keyboardDismissMode="interactive"
 		    >
 		      {/* Contact info */}
 		      <View
