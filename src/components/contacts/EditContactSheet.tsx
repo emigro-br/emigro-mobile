@@ -248,8 +248,7 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
   const [saving, setSaving] = useState(false);
 
   const insets = useSafeAreaInsets();
-  const SHEET_HEADER = 56; // drag handle + close row height
-  const kbOffset = insets.top + SHEET_HEADER;
+  const SHEET_HEADER = 56;
 
   
   // hydrate when sheet opens / contact changes
@@ -415,16 +414,17 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
   return (
     <Actionsheet isOpen={isOpen} onClose={onClose}>
       <ActionsheetBackdrop />
-      <ActionsheetContent
-        style={{
-          maxHeight: '85%',
-          backgroundColor: '#0a0a0a',
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
-          paddingTop: 12,
-          paddingHorizontal: 16,
-        }}
-      >
+	  <ActionsheetContent
+	    style={{
+	      backgroundColor: '#0a0a0a',
+	      borderTopLeftRadius: 24,
+	      borderTopRightRadius: 24,
+	      paddingTop: 12,
+	      paddingHorizontal: 16,
+	      flex: 1, // allow sheet to resize with keyboard
+	    }}
+	  >
+
         {/* Close */}
         <Pressable
           onPress={onClose}
@@ -455,22 +455,23 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
 
 		{/* Content */}
 		{Platform.OS === 'ios' ? (
-		  <KeyboardAvoidingView
-		    behavior="padding"
-		    keyboardVerticalOffset={insets.top + SHEET_HEADER}
-		    style={{ flex: 1 }}
-		  >
-		    <RNScrollView
-		      style={{ flex: 1 }}
-		      contentContainerStyle={{
-		        paddingHorizontal: 4,
-		        paddingTop: 8,
-		        paddingBottom: insets.bottom + 24,
-		      }}
-		      contentInsetAdjustmentBehavior="never"
-		      keyboardShouldPersistTaps="always"
-		      keyboardDismissMode="interactive"
-		    >
+			<KeyboardAvoidingView
+			  behavior="padding"
+			  keyboardVerticalOffset={SHEET_HEADER}
+			  style={{ flex: 1 }}
+			>
+			<RNScrollView
+			  style={{ flex: 1 }}
+			  contentContainerStyle={{
+			    paddingHorizontal: 4,
+			    paddingTop: 8,
+			    paddingBottom: insets.bottom + 24,
+			  }}
+			  contentInsetAdjustmentBehavior="automatic"
+			  automaticallyAdjustKeyboardInsets={true}
+			  keyboardShouldPersistTaps="handled"
+			  keyboardDismissMode="interactive"
+			>
 		      <Text size="xl" weight="semibold" style={{ marginBottom: 12 }}>
 		        Edit Contact
 		      </Text>
@@ -731,11 +732,11 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
 		    </RNScrollView>
 		  </KeyboardAvoidingView>
 		) : (
-		  <ScrollView
-		    style={{ width: '100%' }}
-		    contentContainerStyle={{ paddingHorizontal: 4, paddingBottom: 28, paddingTop: 8 }}
-		    keyboardShouldPersistTaps="handled"
-		  >
+			<ScrollView
+			  style={{ width: '100%' }}
+			  contentContainerStyle={{ paddingHorizontal: 4, paddingBottom: insets.bottom + 28, paddingTop: 8 }}
+			  keyboardShouldPersistTaps="handled"
+			>
 		    <Text size="xl" weight="semibold" style={{ marginBottom: 12 }}>
 		      Edit Contact
 		    </Text>
