@@ -427,6 +427,7 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
 	      maxHeight: '92%',
 	      paddingTop: insets.top > 0 ? 8 : 12,
 	      flex: 1,
+		  alignItems: 'stretch',
 	    }}
 	  >
 
@@ -464,15 +465,16 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
 			<KeyboardAvoidingView
 			  behavior="padding"
 			  keyboardVerticalOffset={SHEET_HEADER}
-			  style={{ flex: 1 }}
+			  style={{ flex: 1, alignSelf: 'stretch', width: '100%' }}
 			>
 			<RNScrollView
-			  style={{ flex: 1 }}
+			  style={{ flex: 1, alignSelf: 'stretch', width: '100%' }}
 			  contentContainerStyle={{
 				flexGrow: 1,
 			    paddingHorizontal: 4,
 			    paddingTop: 8,
 			    paddingBottom: insets.bottom + 24,
+				width: '100%',
 				alignItems: 'stretch',
 			  }}
 			  contentInsetAdjustmentBehavior="automatic"
