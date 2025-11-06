@@ -3,7 +3,7 @@
     "name": "Emigro",
     "slug": "emigro-mobile",
     "owner": "emigro",
-    "version": "2.8.9",
+    "version": "2.8.10",
     "description": "The traveler's digital wallet",
     "orientation": "portrait",
     "scheme": "emigro",
@@ -94,6 +94,6 @@
         "projectId": "d84d8915-cdac-448c-bf38-fc1ebcbe8eac"
       }
     },
-    "runtimeVersion": "2.8.9"
+    "runtimeVersion": "2.8.10"
   }
 }

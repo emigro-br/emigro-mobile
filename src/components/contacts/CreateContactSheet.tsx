@@ -498,9 +498,12 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
 				  <View style={{ marginBottom: 10 }}>
 				    <KeyTypeSelector
 				      value={k.keyType}
-				      onChange={(t) => updateKey(k.id, { keyType: t, keyValue: '' })}
+				      onChange={(t) =>
+				        updateKey(k.id, { keyType: t, keyValue: t === 'PHONE' ? '+' : '' })
+				      }
 				    />
 				  </View>
+
 
 				  {/* selector input (with per-type mask/validation) */}
 				  <View style={{ marginBottom: 10 }}>
@@ -517,11 +520,13 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
 				        } else if (k.keyType === 'CNPJ') {
 				          const d = onlyDigits(t).slice(0, 14);
 				          updateKey(k.id, { keyValue: d });
-				        } else if (k.keyType === 'PHONE') {
-				          // allow only digits and a single leading '+'
-				          let v = (t || '').replace(/[^\d+]/g, '');
-				          v = v.replace(/(?!^)\+/g, '');
-				          updateKey(k.id, { keyValue: v });
+					  } else if (k.keyType === 'PHONE') {
+					    // allow only digits and a single leading '+', and auto-prefix '+'
+					    let v = (t || '').replace(/[^\d+]/g, '');
+					    v = v.replace(/(?!^)\+/g, ''); // keep only the first '+'
+					    if (v.length > 0 && v[0] !== '+') v = '+' + v.replace(/\+/g, '');
+					    updateKey(k.id, { keyValue: v });
+
 				        } else {
 				          updateKey(k.id, { keyValue: t });
 				        }
@@ -554,6 +559,13 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
 				      }}
 				    />
 				  </View>
+				  {k.keyType === 'PHONE' &&
+				    k.keyValue.trim().length > 0 &&
+				    !k.keyValue.trim().startsWith('+55') && (
+				      <Text style={{ color: '#fbbf24', fontSize: 12, marginBottom: 6 }}>
+				        This phone doesn’t start with +55 (Brazil). Make sure the DDI is correct.
+				      </Text>
+				  )}
 
 
 				  {/* label */}
@@ -732,9 +744,12 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
 				<View style={{ marginBottom: 10 }}>
 				  <KeyTypeSelector
 				    value={k.keyType}
-				    onChange={(t) => updateKey(k.id, { keyType: t, keyValue: '' })}
+				    onChange={(t) =>
+				      updateKey(k.id, { keyType: t, keyValue: t === 'PHONE' ? '+' : '' })
+				    }
 				  />
 				</View>
+
 
 				{/* selector input (with per-type mask/validation) */}
 				<View style={{ marginBottom: 10 }}>
@@ -751,11 +766,13 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
 				      } else if (k.keyType === 'CNPJ') {
 				        const d = onlyDigits(t).slice(0, 14);
 				        updateKey(k.id, { keyValue: d });
-				      } else if (k.keyType === 'PHONE') {
-				        // allow only digits and a single leading '+'
-				        let v = (t || '').replace(/[^\d+]/g, '');
-				        v = v.replace(/(?!^)\+/g, '');
-				        updateKey(k.id, { keyValue: v });
+					} else if (k.keyType === 'PHONE') {
+					  // allow only digits and a single leading '+', and auto-prefix '+'
+					  let v = (t || '').replace(/[^\d+]/g, '');
+					  v = v.replace(/(?!^)\+/g, ''); // keep only the first '+'
+					  if (v.length > 0 && v[0] !== '+') v = '+' + v.replace(/\+/g, '');
+					  updateKey(k.id, { keyValue: v });
+
 				      } else {
 				        updateKey(k.id, { keyValue: t });
 				      }
@@ -788,6 +805,13 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
 				    }}
 				  />
 				</View>
+				{k.keyType === 'PHONE' &&
+				  k.keyValue.trim().length > 0 &&
+				  !k.keyValue.trim().startsWith('+55') && (
+				    <Text style={{ color: '#fbbf24', fontSize: 12, marginBottom: 6 }}>
+				      This phone doesn’t start with +55 (Brazil). Make sure the DDI is correct.
+				    </Text>
+				)}
 
 
 				{/* label */}
