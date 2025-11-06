@@ -398,6 +398,7 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
 			    paddingHorizontal: 4,
 			    paddingTop: 8,
 			    paddingBottom: insets.bottom + 24,
+				alignItems: 'stretch',
 			  }}
 			  contentInsetAdjustmentBehavior="automatic"
 			  automaticallyAdjustKeyboardInsets={true}
@@ -415,6 +416,7 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
 		          height: 52,
 		          justifyContent: 'center',
 		          marginBottom: 12,
+				  width: '100%',
 		        }}
 		      >
 		        <TextInput
@@ -429,7 +431,7 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
 		        />
 		      </View>
 
-		      <View style={{ marginBottom: 4 }}>
+		      <View style={{ marginBottom: 4, width: '100%' }}>
 		        <View
 		          style={{
 		            borderWidth: 1,
@@ -489,6 +491,7 @@ export function CreateContactSheet({ isOpen, onClose, onCreated }: Props) {
 		              backgroundColor: '#0a0a0a',
 		              padding: 12,
 		              marginBottom: 10,
+					  width: '100%',
 		            }}
 		          >
 				  

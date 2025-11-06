@@ -473,6 +473,7 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
 			    paddingHorizontal: 4,
 			    paddingTop: 8,
 			    paddingBottom: insets.bottom + 24,
+				alignItems: 'stretch',
 			  }}
 			  contentInsetAdjustmentBehavior="automatic"
 			  automaticallyAdjustKeyboardInsets={true}
@@ -494,6 +495,7 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
 		          height: 52,
 		          justifyContent: 'center',
 		          marginBottom: 12,
+				  width: '100%',
 		        }}
 		      >
 		        <TextInput
@@ -508,7 +510,7 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
 		        />
 		      </View>
 
-		      <View style={{ marginBottom: 4 }}>
+		      <View style={{ marginBottom: 4, width: '100%' }}>
 		        <View
 		          style={{
 		            borderWidth: 1,
@@ -568,6 +570,7 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
 		              backgroundColor: '#0a0a0a',
 		              padding: 12,
 		              marginBottom: 10,
+					  width: '100%',
 		            }}
 		          >
 				  {/* selector */}
