@@ -181,6 +181,7 @@ function KeyTypeSelector({
           justifyContent: 'center',
           paddingHorizontal: 10,
           paddingVertical: 0,
+          width: '100%',
         }}
       >
         <Text
@@ -192,11 +193,12 @@ function KeyTypeSelector({
           }}
           numberOfLines={1}
         >
-          {options.find((o) => o.value === value)?.label ?? value}
+          {options.find(o => o.value === value)?.label ?? value}
         </Text>
       </Pressable>
     );
   }
+
 
   return (
     <View
@@ -429,23 +431,24 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
 	  >
 
         {/* Close */}
-        <Pressable
-          onPress={onClose}
-          style={{
-            position: 'absolute',
-            top: insets.top + 12,
-            right: 16,
-            zIndex: 10,
-            width: 34,
-            height: 34,
-            borderRadius: 16,
-            backgroundColor: ACCENT,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <X color="#fff" size={20} />
-        </Pressable>
+		<Pressable
+		  onPress={onClose}
+		  style={{
+		    position: 'absolute',
+		    top: 12,            // ⬅️ back to fixed 12 like before
+		    right: 16,
+		    zIndex: 10,
+		    width: 34,
+		    height: 34,
+		    borderRadius: 16,
+		    backgroundColor: ACCENT,
+		    alignItems: 'center',
+		    justifyContent: 'center',
+		  }}
+		>
+		  <X color="#fff" size={20} />
+		</Pressable>
+
 
         {/* Drag indicator */}
         <Box style={{ alignItems: 'center', paddingTop: 12, paddingBottom: 8 }}>
@@ -575,35 +578,41 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
 		                />
 		              </View>
 
-		              <View style={{ flex: 1 }}>
-		                <TextInput
-		                  value={k.keyValue}
-		                  onChangeText={(t) => updateKey(k.id, { keyValue: t })}
-		                  placeholder={placeholder}
-		                  placeholderTextColor="#a1a1aa"
-		                  autoCapitalize={k.keyType === 'EMAIL' ? 'none' : 'characters'}
-		                  autoCorrect={false}
-		                  keyboardType={
-		                    k.keyType === 'EMAIL'
-		                      ? 'email-address'
-		                      : k.keyType === 'PHONE'
-		                      ? 'phone-pad'
-		                      : 'default'
-		                  }
-		                  style={{
-		                    color: '#fff',
-		                    fontSize: 16,
-		                    lineHeight: 20,
-		                    borderWidth: 1,
-		                    borderColor: '#e5e7eb',
-		                    borderRadius: 10,
-		                    paddingHorizontal: 12,
-		                    paddingVertical: 10,
-		                    height: 48,
-		                    textAlignVertical: 'center',
-		                  }}
-		                />
-		              </View>
+					  <View style={{ flex: 1, minWidth: 0 }}>
+					    <TextInput
+					      value={k.keyValue}
+					      onChangeText={(t) => updateKey(k.id, { keyValue: t })}
+					      placeholder={placeholder}
+					      placeholderTextColor="#a1a1aa"
+					      autoCapitalize={k.keyType === 'EMAIL' ? 'none' : 'characters'}
+					      autoCorrect={false}
+					      keyboardType={
+					        k.keyType === 'EMAIL'
+					          ? 'email-address'
+					          : k.keyType === 'PHONE'
+					          ? 'phone-pad'
+					          : 'default'
+					      }
+					      style={{
+					        color: '#fff',
+					        fontSize: 16,
+					        lineHeight: 20,
+					        borderWidth: 1,
+					        borderColor: '#e5e7eb',
+					        borderRadius: 10,
+					        paddingHorizontal: 12,
+					        paddingVertical: 10,
+					        height: 48,
+					        textAlignVertical: 'center',
+					        // ↓ ensure the input can actually grow on iOS
+					        flexGrow: 1,
+					        flexShrink: 1,
+					        minWidth: 0,
+					        width: '100%',
+					      }}
+					    />
+					  </View>
+
 
 		              <Pressable
 		                onPress={() => removeKey(k.id)}
