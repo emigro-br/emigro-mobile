@@ -570,68 +570,78 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
 		              marginBottom: 10,
 		            }}
 		          >
-		            <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-		              <View style={{ width: 130 }}>
-		                <KeyTypeSelector
-		                  value={k.keyType}
-		                  onChange={(t) => updateKey(k.id, { keyType: t, keyValue: '' })}
-		                />
-		              </View>
+				  <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+				    {/* fixed-size selector must NOT shrink */}
+				    <View style={{ width: 130, flexShrink: 0 }}>
+				      <KeyTypeSelector
+				        value={k.keyType}
+				        onChange={(t) => updateKey(k.id, { keyType: t, keyValue: '' })}
+				      />
+				    </View>
 
-					  <View style={{ flex: 1, minWidth: 0 }}>
-					    <TextInput
-					      value={k.keyValue}
-					      onChangeText={(t) => updateKey(k.id, { keyValue: t })}
-					      placeholder={placeholder}
-					      placeholderTextColor="#a1a1aa"
-					      autoCapitalize={k.keyType === 'EMAIL' ? 'none' : 'characters'}
-					      autoCorrect={false}
-					      keyboardType={
-					        k.keyType === 'EMAIL'
-					          ? 'email-address'
-					          : k.keyType === 'PHONE'
-					          ? 'phone-pad'
-					          : 'default'
-					      }
-					      style={{
-					        color: '#fff',
-					        fontSize: 16,
-					        lineHeight: 20,
-					        borderWidth: 1,
-					        borderColor: '#e5e7eb',
-					        borderRadius: 10,
-					        paddingHorizontal: 12,
-					        paddingVertical: 10,
-					        height: 48,
-					        textAlignVertical: 'center',
-					        // ↓ ensure the input can actually grow on iOS
-					        flexGrow: 1,
-					        flexShrink: 1,
-					        minWidth: 0,
-					        width: '100%',
-					      }}
-					    />
-					  </View>
+				    {/* input owns remaining width */}
+				    <View style={{ flex: 1, minWidth: 0 }}>
+				      <TextInput
+				        value={k.keyValue}
+				        onChangeText={(t) => updateKey(k.id, { keyValue: t })}
+				        placeholder={placeholder}
+				        placeholderTextColor="#a1a1aa"
+				        autoCapitalize={k.keyType === 'EMAIL' ? 'none' : 'characters'}
+				        autoCorrect={false}
+				        keyboardType={
+				          k.keyType === 'EMAIL'
+				            ? 'email-address'
+				            : k.keyType === 'PHONE'
+				            ? 'phone-pad'
+				            : 'default'
+				        }
+				        style={{
+				          color: '#fff',
+				          fontSize: 16,
+				          lineHeight: 20,
+				          borderWidth: 1,
+				          borderColor: '#e5e7eb',
+				          borderRadius: 10,
+				          paddingHorizontal: 12,
+				          paddingVertical: 10,
+				          height: 48,
+				          textAlignVertical: 'center',
+				          // ↓ ensure the input can actually grow on iOS
+				          flexGrow: 1,
+				          flexShrink: 1,
+				          minWidth: 0,
+				          width: '100%',
+				        }}
+				      />
+				    </View>
+
+				    {/* fixed-size close button must NOT shrink */}
+				    <Pressable
+				      onPress={() => removeKey(k.id)}
+				      hitSlop={12}
+				      style={{
+				        width: 36,
+				        height: 36,
+				        borderRadius: 18,
+				        alignItems: 'center',
+				        justifyContent: 'center',
+				        backgroundColor: '#141414',
+				        borderWidth: 1,
+				        borderColor: '#303030',
+				        flexShrink: 0,
+				      }}
+				    >
+				      <Text style={{ color: '#bbb', fontSize: 16 }}>×</Text>
+				    </Pressable>
+				  </View>
 
 
-		              <Pressable
-		                onPress={() => removeKey(k.id)}
-		                hitSlop={12}
-		                style={{
-		                  width: 36,
-		                  height: 36,
-		                  borderRadius: 18,
-		                  alignItems: 'center',
-		                  justifyContent: 'center',
-		                  backgroundColor: '#141414',
-		                  borderWidth: 1,
-		                  borderColor: '#303030',
-		                }}
-		              >
-		                <Text style={{ color: '#bbb', fontSize: 16 }}>×</Text>
-		              </Pressable>
-		            </View>
 
+					
+					
+					
+					
+					
 		            <View style={{ marginTop: 8 }}>
 		              <TextInput
 		                value={k.label}
@@ -841,61 +851,70 @@ export default function EditContactSheet({ isOpen, onClose, contact, onUpdated }
 		            marginBottom: 10,
 		          }}
 		        >
-		          <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
-		            <View style={{ width: 130 }}>
-		              <KeyTypeSelector
-		                value={k.keyType}
-		                onChange={(t) => updateKey(k.id, { keyType: t, keyValue: '' })}
-		              />
-		            </View>
+				<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+				  {/* fixed-size selector must NOT shrink */}
+				  <View style={{ width: 130, flexShrink: 0 }}>
+				    <KeyTypeSelector
+				      value={k.keyType}
+				      onChange={(t) => updateKey(k.id, { keyType: t, keyValue: '' })}
+				    />
+				  </View>
 
-		            <View style={{ flex: 1 }}>
-		              <TextInput
-		                value={k.keyValue}
-		                onChangeText={(t) => updateKey(k.id, { keyValue: t })}
-		                placeholder={placeholder}
-		                placeholderTextColor="#a1a1aa"
-		                autoCapitalize={k.keyType === 'EMAIL' ? 'none' : 'characters'}
-		                autoCorrect={false}
-		                keyboardType={
-		                  k.keyType === 'EMAIL'
-		                    ? 'email-address'
-		                    : k.keyType === 'PHONE'
-		                    ? 'phone-pad'
-		                    : 'default'
-		                }
-		                style={{
-		                  color: '#fff',
-		                  fontSize: 16,
-		                  lineHeight: 20,
-		                  borderWidth: 1,
-		                  borderColor: '#e5e7eb',
-		                  borderRadius: 10,
-		                  paddingHorizontal: 12,
-		                  paddingVertical: 10,
-		                  height: 48,
-		                  textAlignVertical: 'center',
-		                }}
-		              />
-		            </View>
+				  {/* flexible input CAN shrink and should own the remaining width */}
+				  <View style={{ flex: 1, minWidth: 0 }}>
+				    <TextInput
+				      value={k.keyValue}
+				      onChangeText={(t) => updateKey(k.id, { keyValue: t })}
+				      placeholder={placeholder}
+				      placeholderTextColor="#a1a1aa"
+				      autoCapitalize={k.keyType === 'EMAIL' ? 'none' : 'characters'}
+				      autoCorrect={false}
+				      keyboardType={
+				        k.keyType === 'EMAIL'
+				          ? 'email-address'
+				          : k.keyType === 'PHONE'
+				          ? 'phone-pad'
+				          : 'default'
+				      }
+				      style={{
+				        color: '#fff',
+				        fontSize: 16,
+				        lineHeight: 20,
+				        borderWidth: 1,
+				        borderColor: '#e5e7eb',
+				        borderRadius: 10,
+				        paddingHorizontal: 12,
+				        paddingVertical: 10,
+				        height: 48,
+				        textAlignVertical: 'center',
+				        flexGrow: 1,
+				        flexShrink: 1,
+				        minWidth: 0,
+				        width: '100%',
+				      }}
+				    />
+				  </View>
 
-		            <Pressable
-		              onPress={() => removeKey(k.id)}
-		              hitSlop={12}
-		              style={{
-		                width: 36,
-		                height: 36,
-		                borderRadius: 18,
-		                alignItems: 'center',
-		                justifyContent: 'center',
-		                backgroundColor: '#141414',
-		                borderWidth: 1,
-		                borderColor: '#303030',
-		              }}
-		            >
-		              <Text style={{ color: '#bbb', fontSize: 16 }}>×</Text>
-		            </Pressable>
-		          </View>
+				  {/* fixed-size X must NOT shrink either */}
+				  <Pressable
+				    onPress={() => removeKey(k.id)}
+				    hitSlop={12}
+				    style={{
+				      width: 36,
+				      height: 36,
+				      borderRadius: 18,
+				      alignItems: 'center',
+				      justifyContent: 'center',
+				      backgroundColor: '#141414',
+				      borderWidth: 1,
+				      borderColor: '#303030',
+				      flexShrink: 0, // <-- critical on iOS
+				    }}
+				  >
+				    <Text style={{ color: '#bbb', fontSize: 16 }}>×</Text>
+				  </Pressable>
+				</View>
+
 
 		          <View style={{ marginTop: 8 }}>
 		            <TextInput
