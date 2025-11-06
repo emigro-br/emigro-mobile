@@ -48,6 +48,44 @@ const DDI_OPTIONS = [
 ] as const;
 type DdiOption = (typeof DDI_OPTIONS)[number];
 
+// --- helper: split an E.164 phone into { ddi, local } ------------------------
+const splitE164 = (raw: string): { ddi: DdiOption | 'Custom'; local: string; ddiValue: string } => {
+  const s = String(raw || '').trim();
+  const only = s.replace(/[^\d+]/g, '');
+  if (!only.startsWith('+')) {
+    // no + -> fallback to Brazil default
+    return { ddi: '+55', local: only.replace(/\D/g, ''), ddiValue: '+55' };
+  }
+
+  // Prefer any known DDI in your list (longest first), excluding "Custom"
+  const known = (DDI_OPTIONS.filter((d) => d !== 'Custom') as string[]).sort(
+    (a, b) => b.length - a.length
+  );
+
+  for (const code of known) {
+    if (only.startsWith(code)) {
+      return { ddi: code as DdiOption, local: only.slice(code.length), ddiValue: code };
+    }
+  }
+
+  // Fallback: first 1–3 digits after '+', but avoid the "+551" case by trying 2 then 1 then 3
+  // (works better for countries like +55 and +1 without a full country map)
+  const digits = only.slice(1);
+  const try2 = `+${digits.slice(0, 2)}`;
+  const try1 = `+${digits.slice(0, 1)}`;
+  const try3 = `+${digits.slice(0, 3)}`;
+
+  let ddiValue = try2; // default to 2, fixes Brazil "+55"
+  if (known.includes(try1)) ddiValue = try1;
+  else if (known.includes(try3)) ddiValue = try3;
+
+  return {
+    ddi: (known.includes(ddiValue) ? (ddiValue as DdiOption) : 'Custom') as DdiOption | 'Custom',
+    ddiValue,
+    local: only.slice(ddiValue.length),
+  };
+};
+
 
 // CPF algorithm
 const cpfValid = (raw: string) => {
@@ -252,22 +290,33 @@ export default function PixKeyScreen() {
 
       if (keyType === 'CPF/CNPJ') {
         resolvedTaxId = onlyDigits(pixKeyDigits || pixKey);
-      } else {
-        try {
-          const res = await api().get(
-            `/pix/dict-key/${encodeURIComponent(normalizedPixKey)}`
-          );
-          if (res?.data) {
-            resolvedName = res.data.name || '';
-            const maybe = onlyDigits(res.data.taxId || '');
-            if ((maybe.length === 11 && cpfValid(maybe)) || (maybe.length === 14 && cnpjValid(maybe))) {
-              resolvedTaxId = maybe;
-            }
-          }
-        } catch {
-          // ignore DICT failures
-        }
-      }
+		} else {
+		  try {
+		    // For phone keys, DICT on the backend expects digits-only (matches your key_value_norm)
+		    const dictQuery =
+		      keyType === 'Phone'
+		        ? onlyDigits(normalizedPixKey) // e.g. "+5511..." -> "5511..."
+		        : normalizedPixKey;
+
+		    const res = await api().get(
+		      `/pix/dict-key/${encodeURIComponent(dictQuery)}`
+		    );
+
+		    if (res?.data) {
+		      resolvedName = res.data.name || '';
+		      const maybe = onlyDigits(res.data.taxId || '');
+		      if (
+		        (maybe.length === 11 && cpfValid(maybe)) ||
+		        (maybe.length === 14 && cnpjValid(maybe))
+		      ) {
+		        resolvedTaxId = maybe;
+		      }
+		    }
+		  } catch {
+		    // ignore DICT failures
+		  }
+		}
+
 
 	  if (!resolvedTaxId) {
 	    if (needTaxId) {
@@ -523,19 +572,17 @@ export default function PixKeyScreen() {
 		          setPixKey(v);
 		          setPixKeyDigits('');
 		          setPhoneLocal('');
-		        } else if (t === 'PHONE') {
-		          // Expect E.164 value like +5511999999999
-		          const m = String(v || '').trim();
-		          const ddiMatch = m.match(/^\+\d{1,3}/);
-		          const ddiVal = ddiMatch ? ddiMatch[0] : '+55';
-		          const localVal = m.replace(/^\+\d{1,3}/, '');
-		          setKeyType('Phone');
-		          setAndroidType('Phone');
-		          setDdi((['+55','+1','+44','+34','+351','+52','+54'] as const).includes(ddiVal as any) ? (ddiVal as any) : 'Custom');
-		          setCustomDdi(ddiVal);
-		          setPhoneLocal(localVal);
-		          setPixKey('');
-		          setPixKeyDigits('');
+			  } else if (t === 'PHONE') {
+			    // Expect E.164 value like +5511999999999
+			    const { ddi, ddiValue, local } = splitE164(String(v || ''));
+			    setKeyType('Phone');
+			    setAndroidType('Phone');
+			    setDdi(ddi);
+			    setCustomDdi(ddiValue);     // shown if ddi === 'Custom'
+			    setPhoneLocal(local.replace(/\D/g, ''));
+			    setPixKey('');
+			    setPixKeyDigits('');
+
 		        } else if (t === 'CPF' || t === 'CNPJ') {
 		          setKeyType('CPF/CNPJ');
 		          setAndroidType('CPF/CNPJ');
