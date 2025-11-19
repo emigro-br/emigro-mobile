@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { balanceStore } from '@/stores/BalanceStore';
+
 
 export const useWalletBalances = (walletId: string) => {
   const [loading, setLoading] = useState(true);

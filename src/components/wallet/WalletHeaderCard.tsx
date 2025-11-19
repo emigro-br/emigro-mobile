@@ -19,8 +19,7 @@ import { WalletActionButton } from '@/components/wallet/WalletActionButton';
 
 import { sessionStore } from '@/stores/SessionStore';
 import { balanceStore } from '@/stores/BalanceStore';
-import { useWalletBalances } from '@/hooks/useWalletBalances';
-import { fetchFiatQuote } from '@/services/emigro/quotes';
+
 import { symbolFor } from '@/utils/assets';
 
 type Props = {
@@ -32,9 +31,8 @@ type Props = {
 const WalletHeaderCardComponent = ({ hide, toggleHide, refreshTrigger }: Props) => {
   const router = useRouter();
 
-  const walletId = sessionStore.user?.wallets?.[0]?.id ?? '';
   const bankCurrency = sessionStore.preferences?.fiatsWithBank?.[0] ?? 'USD';
-  const { balances } = useWalletBalances(walletId);
+
 
   const [localBalance, setLocalBalance] = useState<number | null>(
     balanceStore.totalBalance
@@ -50,36 +48,9 @@ const WalletHeaderCardComponent = ({ hide, toggleHide, refreshTrigger }: Props) 
     localBalance !== null ? symbolFor(bankCurrency, localBalance) : '';
   const showSpinner = !hide && localBalance === null;
 
-  useEffect(() => {
-    const fetchTotal = async () => {
-      if (!balances.length) return;
+  // Rely only on the store’s aggregated total (computed in BalanceStore.fetchUserBalance)
+  // No local recomputation here to avoid overwriting the global total.
 
-      let sum = 0;
-
-      await Promise.all(
-        balances.map(async (asset) => {
-          const raw = parseFloat(asset.balance);
-          if (!raw || raw <= 0) return;
-
-          if (asset.symbol === bankCurrency) {
-            sum += raw;
-          } else {
-            try {
-              const quote = await fetchFiatQuote(asset.symbol, bankCurrency);
-              if (quote) sum += quote * raw;
-            } catch (err) {
-              console.warn('[WalletHeaderCard] Quote fetch failed:', asset.symbol, err);
-            }
-          }
-        })
-      );
-
-      balanceStore.setTotalBalance(sum);
-      setLocalBalance(sum);
-    };
-
-    fetchTotal();
-  }, [balances, bankCurrency, refreshTrigger]);
 
   return (
     <VStack className="bg-primary-500 rounded-3xl m-4 p-6 space-y-6">

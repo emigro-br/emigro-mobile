@@ -66,8 +66,10 @@ export const AssetDetailsSheet = ({ isOpen, onClose, asset }: Props) => {
 
   if (!asset) return null;
 
-  const iconKey = asset.iconUrl?.split('/').pop()?.replace('.png', '').toLowerCase() ?? '';
-  const icon = assetIconMap[iconKey];
+  const icon =
+    assetIconMap[(asset?.symbol || '').toLowerCase()] ??
+    assetIconMap['default'];
+
 
   const chain = useChainStore.getState().getChainById(asset.chainId);
   const chainIcon = chain?.icon;
@@ -159,7 +161,6 @@ export const AssetDetailsSheet = ({ isOpen, onClose, asset }: Props) => {
 		            bottom: -4,
 		            right: -4,
 		            borderRadius: 15,
-		            backgroundColor: '#000',
 		          }}
 		          resizeMode="contain"
 		        />

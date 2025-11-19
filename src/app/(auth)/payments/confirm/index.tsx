@@ -5,12 +5,12 @@ import { View, Pressable, Modal, FlatList } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { observer } from 'mobx-react-lite';
-
-import { Box } from '@/components/ui/box';
-import { Button, ButtonText } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Divider } from '@/components/ui/divider';
 import { Heading } from '@/components/ui/heading';
+import { Box } from '@/components/ui/box';
+import { Button, ButtonText } from '@/components/ui/button';
+
 import { HStack } from '@/components/ui/hstack';
 import { Text } from '@/components/ui/text';
 import { VStack } from '@/components/ui/vstack';
@@ -20,6 +20,7 @@ import { sessionStore } from '@/stores/SessionStore';
 import { useWalletBalances } from '@/hooks/useWalletBalances';
 import { paymentStore } from '@/stores/PaymentStore';
 import { useChainStore } from '@/stores/ChainStore';
+import { SelectAssetSheet } from '@/components/payments/SelectAssetSheet';
 
 import { api } from '@/services/emigro/api';
 import { fetchFiatQuote, fetchDirectFiatPairQuote } from '@/services/emigro/quotes';
@@ -30,6 +31,8 @@ import { ChevronDown } from 'lucide-react-native';
 import { assetIconMap } from '@/utils/assetIcons';
 
 import uuid from 'react-native-uuid';
+
+import { fetchPrimaryCurrency } from '@/services/emigro/userPrimaryCurrency';
 
 const ConfirmPayment = () => {
   const router = useRouter();
@@ -57,22 +60,72 @@ const ConfirmPayment = () => {
   const fmtBRL = (n: number) => `R$ ${Number(n).toFixed(2)}`.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 
 
-  const [selectedAssetId, setSelectedAssetId] = useState<string | null>('1e90df0a-2920-11f0-8f36-02ee245cdcb3');
-  const [walletModalVisible, setWalletModalVisible] = useState(false);
-  const [assetModalVisible, setAssetModalVisible] = useState(false);
+  const [selectedAssetId, setSelectedAssetId] = useState<string | null>(null);
+
+
 
   const wallets = user?.wallets ?? [];
-  const [selectedWalletId, setSelectedWalletId] = useState<string | null>(wallets[0]?.id ?? null);
-  const wallet = wallets.find((w) => w.id === selectedWalletId);
+  const [selectedWalletId, setSelectedWalletId] = useState<string | null>(null);
+
+  // resolve current wallet & balances from selection (after we set them below)
+  const wallet = wallets.find((w) => w.id === selectedWalletId) ?? wallets[0];
   const chain = chains.find((c) => c.id === wallet?.chainId);
-  const { balances } = useWalletBalances(wallet?.id);
-  const asset = balances.find((a) => a.assetId === selectedAssetId);
+  const { balances } = useWalletBalances(wallet?.id ?? '');
+
+  const asset = balances.find((a) => a.assetId === selectedAssetId) ?? null;
+
+  /**
+   * Bootstrap selection: try user's Primary Currency, then fall back to first wallet + first active asset
+   */
+  useEffect(() => {
+    (async () => {
+      // already initialized?
+      if (selectedWalletId && selectedAssetId) return;
+
+      try {
+        const primary = await fetchPrimaryCurrency(); // { chainId, assetId, chainIdOnchain }
+        if (primary?.chainId && primary?.assetId) {
+          // pick a wallet on that chain
+          const w = wallets.find((x) => x.chainId === primary.chainId) ?? wallets[0];
+          if (w) {
+            setSelectedWalletId(w.id);
+
+            // ensure balances for that wallet are fetched before selecting the asset
+            // (useWalletBalances above auto-fetches when walletId changes)
+            // pick asset by id once balances are present; we may attempt immediately
+            setSelectedAssetId(primary.assetId);
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn('[ConfirmPayment] primary currency fetch failed, will fallback:', e);
+      }
+
+      // fallback path: first wallet, first active asset on its chain
+      const fw = wallets[0];
+      if (fw) {
+        setSelectedWalletId(fw.id);
+      }
+    })();
+  // include wallets so this runs when user info loads
+  }, [wallets]);
+
   if (!wallet) {
     console.warn('[ConfirmPayment] Wallet not found for selectedWalletId:', selectedWalletId);
-    return <LoadingScreen message="Wallet not found. Please return and try again." />;
   }
   console.log('[ConfirmPayment] Selected asset object:', asset);
-  
+
+  // When we have a wallet selected but no asset selected yet (e.g., right after bootstrap),
+  // pick the first active asset on that wallet's chain as a fallback.
+  useEffect(() => {
+    if (!selectedAssetId && chain && balances.length) {
+      const firstActive = balances.find((b) => b.chainId === chain.id && b.isActive);
+      if (firstActive?.assetId) {
+        setSelectedAssetId(firstActive.assetId);
+      }
+    }
+  }, [selectedAssetId, chain?.id, balances]);
+
   const [usdQuote, setUsdQuote] = useState<string | null>(null);
   
   const [baseAmount, setBaseAmount] = useState<number | null>(null);
@@ -91,12 +144,8 @@ const ConfirmPayment = () => {
   const [isConfirming, setIsConfirming] = useState(false);
     
   const [assetWalletModalVisible, setAssetWalletModalVisible] = useState(false);
-  const [tempWalletId, setTempWalletId] = useState<string | null>(selectedWalletId);
-  const tempWallet = wallets.find((w) => w.id === tempWalletId);
-  const tempChain = chains.find((c) => c.id === tempWallet?.chainId);
-  const filteredAssetsForTempWallet = balances.filter(
-    (b) => b.chainId === tempChain?.id && b.isActive
-  );
+
+
 
   // Load fee preview (BRL) and USDC→BRL FX whenever base BRL changes
   useEffect(() => {
@@ -265,13 +314,6 @@ const ConfirmPayment = () => {
 
 
   
-  if (chain && chain.is_active === false) {
-    console.warn('[ConfirmPayment] Chain is not active:', chain.name);
-    return (
-      <LoadingScreen message="Selected network is currently disabled. Please choose another wallet." />
-    );
-  }
-
   console.log('[ConfirmPayment][DEBUG] Full chain object:', chain);
   console.log('[ConfirmPayment][DEBUG] Full asset object:', asset);
   
@@ -300,6 +342,14 @@ const ConfirmPayment = () => {
     return quote + gas;
   })();
 
+  // 🔒 Disable payment if the quoted total (incl. gas) exceeds wallet balance
+  const insufficientBalance = (() => {
+    if (!asset || !totalQuoteWithGas) return false;
+    const bal = parseFloat(String(asset.balance ?? '0'));
+    const needed = Number(totalQuoteWithGas);
+    if (!Number.isFinite(bal) || !Number.isFinite(needed)) return false;
+    return bal < needed;
+  })();
 
   useEffect(() => {
     if (!usdQuote || !asset || !chain) return;
@@ -397,8 +447,11 @@ const ConfirmPayment = () => {
       balancesLength: balances.length,
       assetFound: !!asset,
     });
-    return <LoadingScreen />;
   }
+
+  // unify inactive-chain flag (don’t early-return)
+  const chainInactive = !!(chain && (chain as any).is_active === false);
+
 
   const formatAmountWithPrecision = (
     value: string | number,
@@ -665,9 +718,19 @@ const ConfirmPayment = () => {
   
   return (
     <>
-	<Stack.Screen options={{ title: 'Review the payment', headerBackTitleVisible: false }} />
-	<Box className="flex-1 bg-background-900" style={{ paddingTop: insets.top }}>
-	  <VStack space="lg" className="p-4">
+      <Stack.Screen options={{ title: 'Review the payment', headerBackTitleVisible: false }} />
+
+      {chainInactive ? (
+        <LoadingScreen message="Selected network is currently disabled. Please choose another wallet." />
+      ) : isLoadingEssentialData ? (
+        <LoadingScreen />
+		) : (
+		  <>
+		    <Box className="flex-1 bg-background-900" style={{ paddingTop: insets.top }}>
+		      <VStack space="lg" className="p-4">
+
+
+
 
 	    {/* Header Amount */}
 	    <Text className="text-white text-xl font-semibold">Review the payment</Text>
@@ -761,6 +824,8 @@ const ConfirmPayment = () => {
 		  {/* Chain Name */}
 		  <Text className="text-white font-semibold"></Text>
 		</Pressable>
+
+
 
 		{/* Payment Row */}
 		<HStack className="bg-white rounded-xl overflow-hidden mt-[-10px] mb-[-10px]">
@@ -866,17 +931,28 @@ const ConfirmPayment = () => {
 			</HStack>
 		)}
 
-	    {/* Pay Button */}
+		{/* Insufficient balance alert */}
+		{insufficientBalance && (
+		  <Box className="bg-[#2B0000] border border-[#FF3B30] rounded-lg px-3 py-2 mt-3 mb-1">
+		    <Text className="text-white font-semibold">Insufficient balance</Text>
+		    <Text className="text-[#FFB4B0]">
+		      You don&apos;t have enough {asset?.symbol} to cover this payment. Deposit funds or select another currency.
+		    </Text>
+		  </Box>
+		)}
+		
+		{/* Pay Button */}
 		<Button
 		  onPress={handleConfirm}
 		  className="mt-6 bg-[#FF0050] h-14"
-		  style={{ borderRadius: 12 }}
-		  disabled={isLoadingEssentialData || usdQuote === null || isConfirming}
+		  style={{ borderRadius: 12, opacity: (isLoadingEssentialData || usdQuote === null || isConfirming || insufficientBalance) ? 0.6 : 1 }}
+		  disabled={isLoadingEssentialData || usdQuote === null || isConfirming || insufficientBalance}
 		>
 		  <ButtonText className="text-white text-2xl">
 		    {isConfirming ? 'Processing...' : 'Pay now'}
 		  </ButtonText>
 		</Button>
+
 
 
 
@@ -901,98 +977,26 @@ const ConfirmPayment = () => {
 	  </VStack>
 	</Box>
 
-      {/* Wallet+Chain+Asset Selection Modal */}
-	  <Modal visible={assetWalletModalVisible} transparent animationType="slide">
-	    <View className="flex-1 justify-center items-center bg-black/80">
-	      <Card className="w-11/12 p-4 bg-[#222] rounded-xl max-h-[90%]">
-	        <Heading className="text-white mb-4">Select Asset</Heading>
+	<SelectAssetSheet
+	  isOpen={assetWalletModalVisible}
+	  onClose={() => setAssetWalletModalVisible(false)}
+	  wallets={wallets}
+	  chains={chains}
+	  initialWalletId={selectedWalletId}
+	  onSelect={(walletId, assetId) => {
+	    setSelectedWalletId(walletId);
+	    setSelectedAssetId(assetId);
+	    setAssetWalletModalVisible(false);
+	  }}
+	/>
 
-	        {/* Wallet / Chain Selector with Chain Icons */}
-	        <FlatList
-	          horizontal
-	          data={wallets}
-	          keyExtractor={(item) => item.id}
-	          showsHorizontalScrollIndicator={false}
-	          contentContainerStyle={{ marginBottom: 16 }}
-	          renderItem={({ item }) => {
-	            const walletChain = chains.find((c) => c.id === item.chainId);
-	            const isSelected = item.id === tempWalletId;
-	            const chainIcon = chainIconMap[walletChain?.iconUrl ?? ''];
-
-	            return (
-					<Pressable onPress={() => setTempWalletId(item.id)} className="mr-3">
-					<Box
-					  className={`flex flex-row items-center px-4 py-2 rounded-md border transition-all duration-200 ${
-					    isSelected
-					      ? 'bg-[#FF0050] text-white border-[#FF668A]'
-					      : 'bg-[#2b2b2b] text-white border-[#FF668A] hover:bg-[#330012]'
-					  }`}
-					>
-					    {chainIcon && (
-					      <Image
-					        source={chainIcon}
-					        className="w-8 h-8 mr-2 rounded-full"
-					        resizeMode="contain"
-					      />
-					    )}
-					    <Text className={isSelected ? 'text-white' : 'text-gray'}>
-					      {walletChain?.name ?? 'Unknown'}
-					    </Text>
-					  </Box>
-					</Pressable>
-	            );
-	          }}
-	        />
-
-	        {/* Asset List with Asset Icons */}
-			<FlatList
-			  data={filteredAssetsForTempWallet}
-			  keyExtractor={(item) => item.assetId}
-			  renderItem={({ item }) => {
-			    const assetIcon = assetIconMap[item.symbol.toLowerCase()];
-			    return (
-			      <Pressable
-			        onPress={() => {
-			          setSelectedWalletId(tempWalletId);
-			          setSelectedAssetId(item.assetId);
-			          setAssetWalletModalVisible(false);
-			        }}
-			        className="flex-row items-center py-3 px-4 mb-2 bg-[#3a3a3a] rounded-lg"
-			      >
-			        {assetIcon && (
-			          <Image
-			            source={assetIcon}
-			            className="w-10 h-10 mr-4 rounded-full"
-			            resizeMode="contain"
-			          />
-			        )}
-			        <View className="flex-1">
-			          <Text className="text-white text-base font-semibold">
-			            {item.name} ({item.symbol})
-			          </Text>
-			          <Text className="text-gray-300 text-sm">
-			            Balance: {parseFloat(item.balance).toFixed(6)} {item.symbol}
-			          </Text>
-			        </View>
-			      </Pressable>
-			    );
-			  }}
-			/>
+		  </>
+		)}
 
 
+		    </>
+		  );
+		};
 
-			<Button
-			  onPress={() => setAssetWalletModalVisible(false)}
-			  className="mt-4 border border-white bg-transparent px-4 py-2 rounded-md"
-			>
-			  <ButtonText className="text-white">Cancel</ButtonText>
-			</Button>
-	      </Card>
-	    </View>
-	  </Modal>
-
-    </>
-  );
-};
 
 export default observer(ConfirmPayment);

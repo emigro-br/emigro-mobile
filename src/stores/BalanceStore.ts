@@ -3,6 +3,8 @@ import { action, makeAutoObservable, observable, runInAction } from 'mobx';
 import { Balance } from '@/services/emigro/types';
 import { getUserBalance, getWalletBalances } from '@/services/emigro/users';
 import { CryptoAsset } from '@/types/assets';
+import { sessionStore } from '@/stores/SessionStore';
+import { fetchFiatQuote } from '@/services/emigro/quotes';
 
 export class BalanceStore {
   userBalance: Balance[] = [];
@@ -62,25 +64,68 @@ export class BalanceStore {
     force?: boolean;
     interval?: number;
   } = {}): Promise<Balance[]> {
+    // Recompute "userBalance" and "totalBalance" by aggregating ALL wallets.
     const now = Date.now();
-    if (force || this.lastUpdate === null || now - this.lastUpdate >= interval) {
-      console.log('[store][BalanceStore] fetchUserBalance - fetching (force:', force, ')');
-      const balances = await getUserBalance();
-      console.log('[store][BalanceStore] fetchUserBalance - response:', balances);
-
-      if (balances) {
-        runInAction(() => {
-          this.setUserBalance(balances);
-          const total = balances.reduce((acc, balance) => acc + balance.priceUSD, 0);
-          this.setTotalBalance(total);
-        });
-      }
-    } else {
-      console.log('[store][BalanceStore] fetchUserBalance - using cached data');
+    if (!(force || this.lastUpdate === null || now - this.lastUpdate >= interval)) {
+      console.log('[store][BalanceStore] fetchUserBalance - using cached aggregated data');
+      return this.userBalance;
     }
 
-    return this.userBalance;
+    console.log('[store][BalanceStore] fetchUserBalance (AGGREGATED) - fetching from all wallets');
+    const wallets = sessionStore.user?.wallets ?? [];
+    const bankCurrency = sessionStore.preferences?.fiatsWithBank?.[0] ?? 'USD';
+
+    // 1) fetch balances per wallet and keep store.walletBalances updated
+    const perWalletBalances: Balance[][] = [];
+    for (const w of wallets) {
+      try {
+        const b = await getWalletBalances(w.id);
+        runInAction(() => {
+          this.setWalletBalances(w.id, b ?? []);
+        });
+        perWalletBalances.push(b ?? []);
+      } catch (e) {
+        console.warn('[store][BalanceStore] fetchUserBalance - wallet fetch failed:', w.id, e);
+        perWalletBalances.push([]);
+      }
+    }
+
+    // 2) merge all balances into one flat list
+    const merged: Balance[] = ([] as Balance[]).concat(...perWalletBalances);
+
+	// 3) price map by symbol (shared across chains)
+	const symbols = Array.from(new Set(merged.map(b => b.symbol).filter(Boolean))) as string[];
+	const priceMap: Record<string, number> = {};
+
+	// bank currency is 1:1
+	priceMap[bankCurrency] = 1;
+
+	for (const s of symbols) {
+	  if (s === bankCurrency) continue; // skip fetching bankCurrency
+	  try {
+	    const p = await fetchFiatQuote(s, bankCurrency);
+	    if (p !== null) priceMap[s] = p;
+	  } catch (e) {
+	    console.warn('[store][BalanceStore] quote error for', s, e);
+	  }
+	}
+
+
+    // 4) compute total fiat
+    const total = merged.reduce((acc, b) => {
+      const qty = Number(b.balance ?? '0');
+      const px = priceMap[b.symbol ?? ''] ?? 0;
+      return acc + qty * px;
+    }, 0);
+
+    runInAction(() => {
+      this.setUserBalance(merged);
+      this.setTotalBalance(total);
+    });
+
+    return merged;
   }
+
 
   async fetchWalletBalance(
     walletId: string,

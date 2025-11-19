@@ -12,7 +12,7 @@ import { sessionStore } from '@/stores/SessionStore';
 const STATUS_MAP = {
   p001: {
     message: 'Starting swap...',
-    secondmessage: 'Hang tight — we are currently preparing your swap',
+    secondmessage: 'Hang tight — we are currently preparing your swap. This may take a few seconds, please keep this screen open.',
     lottie: require('@/assets/lotties/loading.json'),
   },
   s001: {
@@ -30,11 +30,26 @@ const STATUS_MAP = {
     secondmessage: 'Please try again or contact support.',
     lottie: require('@/assets/lotties/error.json'),
   },
+  e060: {
+    message: 'Swap failed',
+    secondmessage: 'Please try again or contact support.',
+    lottie: require('@/assets/lotties/error.json'),
+  },
+  e070: {
+    message: 'Swap failed for this router',
+    secondmessage: 'Please try again or contact support.',
+    lottie: require('@/assets/lotties/error.json'),
+  },
+  e080: {
+    message: 'Swap failed for this router',
+    secondmessage: 'Please try again or contact support.',
+    lottie: require('@/assets/lotties/error.json'),
+  },
 };
 
 const fallbackStatus = {
   message: 'Processing...',
-  secondmessage: 'Hang tight — we are currently working on it.',
+  secondmessage: 'Hang tight — we are currently working on it. This may take a few seconds, please keep this screen open.',
   lottie: require('@/assets/lotties/loading.json'),
 };
 
@@ -102,7 +117,7 @@ const SwapStatusScreen = () => {
         const { data } = await api().get(`/emigroswap/transaction/${intentId}`);
         const backendStatus = data?.status;
 
-        if (backendStatus === 'f001' || backendStatus === 'e001') {
+        if (backendStatus === 'f001' || backendStatus === 'e001' || backendStatus === 'e060' || backendStatus === 'e070' || backendStatus === 'e080') {
           clearInterval(interval);
           setStatus(backendStatus);
         }
@@ -124,7 +139,7 @@ const SwapStatusScreen = () => {
   };
 
   const statusConfig = STATUS_MAP[status] || fallbackStatus;
-  const isComplete = status === 'f001' || status === 'e001' || status === 's001';
+  const isComplete = status === 'f001' || status === 'e001' || status === 's001' || status === 'e060' || status === 'e070' || status === 'e080';
 
   return (
     <>

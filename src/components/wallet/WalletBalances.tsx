@@ -1,6 +1,8 @@
-// walletbalance
+// src/components/wallet/WalletBalances.tsx
 
 import React, { useEffect, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+
 import { useColorScheme, ActivityIndicator, View, Pressable, Image } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -30,9 +32,24 @@ interface PrimaryCurrencyResponse {
 interface Props {
   walletId: string;
   hide?: boolean;
+  manageEnabled?: boolean;
+  showHeader?: boolean;
+  headerRefreshing?: boolean;
+  onRefreshAll?: () => Promise<void> | void;
 }
 
-export const WalletBalances = ({ walletId, hide = false }: Props) => {
+
+export const WalletBalances = observer(({
+  walletId,
+  hide = false,
+  manageEnabled = true,
+  showHeader = true,
+  headerRefreshing = false,
+  onRefreshAll,
+}: Props) => {
+
+
+
   const isDark = useColorScheme() === 'dark';
   const { balances, loading, refresh } = useWalletBalances(walletId);
 
@@ -114,21 +131,34 @@ export const WalletBalances = ({ walletId, hide = false }: Props) => {
 
   return (
     <VStack space="md" testID="wallet-balances">
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-        <Heading>Assets</Heading>
-        <Pressable onPress={onRefresh} disabled={refreshing}>
-          <View style={{
-            backgroundColor: '#222',
-            borderRadius: 999,
-            width: 32,
-            height: 32,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-            {refreshing ? <ActivityIndicator size="small" color="#fff" /> : <RefreshCw size={16} color="#fff" />}
-          </View>
-        </Pressable>
-      </View>
+	{showHeader && (
+	  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+	    <Heading>Assets</Heading>
+	    <Pressable
+	      onPress={onRefreshAll ? onRefreshAll : onRefresh}
+	      disabled={headerRefreshing || refreshing}
+	    >
+	      <View
+	        style={{
+	          backgroundColor: '#222',
+	          borderRadius: 999,
+	          width: 32,
+	          height: 32,
+	          justifyContent: 'center',
+	          alignItems: 'center',
+	        }}
+	      >
+	        {(headerRefreshing || refreshing) ? (
+	          <ActivityIndicator size="small" color="#fff" />
+	        ) : (
+	          <RefreshCw size={16} color="#fff" />
+	        )}
+	      </View>
+	    </Pressable>
+	  </View>
+	)}
+
+
 
       {loading ? (
         <Text>Loading assets...</Text>
@@ -161,13 +191,14 @@ export const WalletBalances = ({ walletId, hide = false }: Props) => {
             const isPrimary = primaryCurrency?.assetId === asset.assetId;
 
             return (
-              <Pressable
-                key={index}
-                onPress={() => {
-                  setSelectedAsset(asset);
-                  setAssetSheetOpen(true);
-                }}
-              >
+				<Pressable
+				  key={asset.assetId ?? `${asset.chainId}:${asset.symbol}:${index}`}
+				  onPress={() => {
+				    setSelectedAsset(asset);
+				    setAssetSheetOpen(true);
+				  }}
+				>
+
                 <Card
                   variant="flat"
                   style={{
@@ -201,7 +232,7 @@ export const WalletBalances = ({ walletId, hide = false }: Props) => {
                             bottom: -2,
                             right: -2,
                             borderRadius: 7,
-                            backgroundColor: '#000',
+                            
                           }}
                           resizeMode="contain"
                         />
@@ -248,48 +279,67 @@ export const WalletBalances = ({ walletId, hide = false }: Props) => {
             );
           })}
 
-          <Pressable onPress={() => setManageSheetOpen(true)} testID="manage-assets-button">
-            <Card
-              variant="flat"
-              style={{
-                borderStyle: 'dashed',
-                borderWidth: 2,
-                borderColor: isDark ? 'rgba(255, 255, 255, 0.5)' : '#ccc',
-                backgroundColor: 'transparent',
-                borderRadius: 16,
-                paddingVertical: 16,
-                paddingHorizontal: 16,
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'row',
-                gap: 8,
-              }}
-            >
-              <Text size="md" weight="medium">Manage assets</Text>
-              <Settings size={20} color="#fff" />
-            </Card>
-          </Pressable>
+		  {manageEnabled && (
+		    <Pressable onPress={() => setManageSheetOpen(true)} testID="manage-assets-button">
+		      <Card
+		        variant="flat"
+		        style={{
+		          borderStyle: 'dashed',
+		          borderWidth: 2,
+		          borderColor: isDark ? 'rgba(255, 255, 255, 0.5)' : '#ccc',
+		          backgroundColor: 'transparent',
+		          borderRadius: 16,
+		          paddingVertical: 16,
+		          paddingHorizontal: 16,
+		          alignItems: 'center',
+		          justifyContent: 'center',
+		          flexDirection: 'row',
+				  marginTop: 5,
+				  marginBottom: 16,
+		          gap: 8,
+		        }}
+		      >
+		        <Text size="md" weight="medium">Manage assets</Text>
+		        <Settings size={20} color="#fff" />
+		      </Card>
+		    </Pressable>
+		  )}
+
         </VStack>
       )}
 
-      <ManageAssetsActionSheet
-        isOpen={manageSheetOpen}
-        onClose={async (refreshNeeded) => {
-          setManageSheetOpen(false);
-          if (refreshNeeded) await refresh();
-        }}
-        walletId={walletId}
-      />
+	  {manageEnabled && (
+	    <ManageAssetsActionSheet
+	      isOpen={manageSheetOpen}
+	      onClose={async (refreshNeeded) => {
+	        setManageSheetOpen(false);
+	        if (refreshNeeded) {
+	          if (onRefreshAll) {
+	            await onRefreshAll();
+	          } else {
+	            await refresh();
+	          }
+	          // ensure we also re-check primary (in case user changed it)
+	          await refreshPrimary();
+	        }
+	      }}
+	      walletId={walletId}
+	    />
+	  )}
 
-	  <AssetDetailsSheet
-	    isOpen={isAssetSheetOpen}
-	    onClose={() => {
-	      setAssetSheetOpen(false);
-	      refreshPrimary();
-	    }}
-	    asset={selectedAsset}
-	    onPrimaryCurrencyChanged={refreshPrimary}
-	  />
+
+	  {manageEnabled && (
+	    <AssetDetailsSheet
+	      isOpen={isAssetSheetOpen}
+	      onClose={() => {
+	        setAssetSheetOpen(false);
+	        refreshPrimary();
+	      }}
+	      asset={selectedAsset}
+	      onPrimaryCurrencyChanged={refreshPrimary}
+	    />
+	  )}
+
     </VStack>
   );
-};
+});

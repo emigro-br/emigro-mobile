@@ -62,18 +62,16 @@ const Profile = observer(() => {
   const [profileSheetVisible, setProfileSheetVisible] = useState(false);
   const [editSheetVisible, setEditSheetVisible] = useState(false);
 
-  // 📌 Get active chains from balances
-   const walletId = sessionStore.user?.wallets?.[0]?.id ?? '';
-  const { balances } = useWalletBalances(walletId);
-
-  const userChains = Array.from(
-    new Set(balances.map((b) => b.chainId).filter(Boolean))
-  );
-
+  // 📌 Use user wallets directly (one per chain)
+  const wallets = sessionStore.user?.wallets ?? [];
   const chains = useChainStore((s) => s.chains);
-  const chainIcons = userChains
-    .map((chainId) => chains.find((c) => c.id === chainId || c.chainId === chainId)?.icon)
+  const walletCount = wallets.length;
+
+  // Chain icons for the user's wallets (one per wallet’s chain)
+  const chainIcons = wallets
+    .map((w: any) => chains.find((c: any) => c.id === w.chainId || c.chainId === w.chainId)?.icon)
     .filter(Boolean);
+
 
 
 	
@@ -283,9 +281,8 @@ const Profile = observer(() => {
 			            style={{
 			              width: 32,
 			              height: 32,
-			              marginLeft: idx === 0 ? 0 : -8,
-			              borderWidth: 2,
-			              borderColor: '#2e2e2e',
+			              marginLeft: idx === 0 ? 0 : -12,
+
 			            }}
 			            resizeMode="contain"
 			          />
@@ -297,10 +294,11 @@ const Profile = observer(() => {
 			        )}
 			      </View>
 
-			      <Text className="font-bold text-left text-gray-300 mb-1">Wallets</Text>
-			      <Text className="text-sm text-left text-white">
-			        {chainIcons.length} {chainIcons.length === 1 ? 'chain' : 'chains'}
-			      </Text>
+				  <Text className="font-bold text-left text-gray-300 mb-1">Wallets</Text>
+				  <Text className="text-sm text-left text-white">
+				    {walletCount} {walletCount === 1 ? 'wallet' : 'wallets'}
+				  </Text>
+
 			    </Box>
 			  </Pressable>
 

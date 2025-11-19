@@ -30,6 +30,7 @@ import { Animated } from 'react-native';
 import { assetIconMap } from '@/utils/assetIcons';
 import { chainIconMap } from '@/utils/chainIconMap';
 import { useChainStore } from '@/stores/ChainStore';
+import { balanceStore } from '@/stores/BalanceStore';
 import { Image } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
@@ -42,6 +43,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { paymentStore } from '@/stores/PaymentStore';
 
 import * as Sentry from '@sentry/react-native';
+import { observer } from 'mobx-react-lite';
 
 const FastQRCodeScreen = () => {
   const router = useRouter();
@@ -50,6 +52,9 @@ const FastQRCodeScreen = () => {
   const params = useLocalSearchParams();
   const resumeFast = params?.resume === '1';
   const [resumeInProgress, setResumeInProgress] = useState<boolean>(resumeFast);
+  const [primaryBalance, setPrimaryBalance] = useState<number | null>(null);
+  const userBalance = balanceStore.userBalance; // read observable during render for MobX reactivity
+
   
   // If returning from /payments/pix/enter-amount with a just-entered amount,
   // we re-use the stored scanned payment from the store and run the same success path.
@@ -153,25 +158,38 @@ const FastQRCodeScreen = () => {
               throw new Error(debugMessage);
             }
 
+			// Resolve the correct Circle wallet ID for the primary chain
+			const circleWalletIdForPrimaryChain = (() => {
+			  const wallets = sessionStore.user?.wallets || [];
+			  // primary.chainId is the DB UUID in most of your APIs; primary.chainIdOnchain is the EVM number.
+			  // Your DB wallet rows use chain_id (UUID). Compare against primary.chainId (not chainIdOnchain).
+			  const match = wallets.find(
+			    (w: any) => String(w.chain_id) === String(primary.chainId)
+			  );
+			  // Fallback to the old single-wallet field if nothing matched (keeps previous behavior)
+			  return match?.circle_wallet_id || sessionStore.user?.circleWallet?.circleWalletId || null;
+			})();
+
             const rawAmount = Math.floor(quotedAmount * Math.pow(10, decimals)).toString();
 
-            const payload = {
-              paymentId: `${Date.now()}_${uuid.v4()}`,
-              token: tokenAddress,
-              amount: rawAmount,
-              usePaymaster: true,
-              chainId: Number(primary.chainIdOnchain),
-              walletId: sessionStore.user.circleWallet?.circleWalletId,
-              assetId: primary.assetId,
-              tokenSymbol: assetSymbol,
-              rawBrcode: pixPayload.brCode,
-              transferoTxid: pixPayload.txid,
-              taxId: pixPayload.taxId ?? '55479337000115',
-              name: pixPayload.merchantName ?? '',
-              pixKey: pixPayload.pixKey ?? '',
-              fiatAmount: pixPayload.transactionAmount.toFixed(6),
-              toTokenAmount: quotedAmount.toFixed(6),
-            };
+			const payload = {
+			  paymentId: `${Date.now()}_${uuid.v4()}`,
+			  token: tokenAddress,
+			  amount: rawAmount,
+			  usePaymaster: true,
+			  chainId: Number(primary.chainIdOnchain),
+			  walletId: circleWalletIdForPrimaryChain,
+			  assetId: primary.assetId,
+			  tokenSymbol: assetSymbol,
+			  rawBrcode: pixPayload.brCode,
+			  transferoTxid: pixPayload.txid,
+			  taxId: pixPayload.taxId ?? '55479337000115',
+			  name: pixPayload.merchantName ?? '',
+			  pixKey: pixPayload.pixKey ?? '',
+			  fiatAmount: pixPayload.transactionAmount.toFixed(6),
+			  toTokenAmount: quotedAmount.toFixed(6),
+			};
+
 
             console.log('[FastQRCode][resume] 📦 Payload to send:', payload);
 
@@ -210,6 +228,14 @@ const FastQRCodeScreen = () => {
   }, [resumeFast]);
 
   
+  useFocusEffect(
+    useCallback(() => {
+      // keep it light; cached fetch in store prevents spam
+      balanceStore.fetchUserBalance().catch(() => {});
+    }, [])
+  );
+
+  
   useEffect(() => {
     const fetchPrimary = async () => {
       try {
@@ -227,30 +253,39 @@ const FastQRCodeScreen = () => {
         const chain = chainRes.data;
         console.log('[FastQRCode] 🔗 Chain data:', chain);
 
-        const assetIcon = assetIconMap[asset.symbol.toLowerCase()];
-        const chainIcon = chain.iconUrl
-          ? chainIconMap[chain.iconUrl.toLowerCase()]
-          : null;
+		// icons
+		const assetIcon = assetIconMap[(asset?.symbol || '').toLowerCase()];
+		// IMPORTANT: keys in chainIconMap are exact iconUrl values; do NOT lowercase
+		const chainIcon = chain?.iconUrl ? chainIconMap[chain.iconUrl] : null;
 
-        setPrimaryAsset({
-          symbol: asset.symbol,
-          icon: assetIcon,
-        });
+		// IMPORTANT: always use the API primary.assetId (DB UUID), not asset.id
+		setPrimaryAsset({
+		  assetId: primary.assetId,           // <-- fixed
+		  chainId: String(primary.chainId),   // keep chain for disambiguation
+		  symbol: asset.symbol,
+		  decimals: asset.decimals ?? 6,
+		  icon: assetIcon,
+		});
 
-        setPrimaryChain({
-          name: chain.name ?? '',
-          icon: chainIcon,
-        });
+		setPrimaryChain({
+		  id: String(primary.chainId),
+		  name: chain?.name ?? '',
+		  icon: chainIcon,
+		});
 
-        console.log('[FastQRCode] ✅ Set primaryAsset:', {
-          symbol: asset.symbol,
-          icon: assetIcon,
-        });
+		console.log('[FastQRCode] ✅ Set primaryAsset:', {
+		  assetId: primary.assetId,
+		  chainId: String(primary.chainId),
+		  symbol: asset.symbol,
+		  icon: !!assetIcon,
+		});
 
-        console.log('[FastQRCode] ✅ Set primaryChain:', {
-          name: chain.name ?? '',
-          icon: chainIcon,
-        });
+		console.log('[FastQRCode] ✅ Set primaryChain:', {
+		  id: String(primary.chainId),
+		  name: chain?.name ?? '',
+		  hasIcon: !!chainIcon,
+		});
+
       } catch (e) {
         console.warn('[FastQRCode] ❌ Failed to fetch primary asset info:', e);
         Sentry.captureException(e, {
@@ -263,6 +298,39 @@ const FastQRCodeScreen = () => {
     fetchPrimary();
   }, []);
 
+  useEffect(() => {
+    if (!primaryAsset?.assetId && !primaryAsset?.symbol) {
+      setPrimaryBalance(null);
+      return;
+    }
+
+    const all = userBalance ?? [];
+
+    // Prefer exact DB assetId match; fallback to (symbol + chain) to avoid cross-chain collisions.
+    const match = all.find((b: any) => {
+      const sameAssetId =
+        b?.assetId != null &&
+        primaryAsset?.assetId != null &&
+        String(b.assetId) === String(primaryAsset.assetId);
+
+      const sameSymbolAndChain =
+        !!b?.symbol &&
+        !!primaryAsset?.symbol &&
+        b.symbol.toUpperCase() === String(primaryAsset.symbol).toUpperCase() &&
+        (primaryAsset?.chainId == null ||
+          String(b.chainId) === String(primaryAsset.chainId));
+
+      return sameAssetId || sameSymbolAndChain;
+    });
+
+    // Be resilient to strings/undefined
+    const qty = parseFloat(String(match?.balance ?? '0'));
+    setPrimaryBalance(Number.isFinite(qty) ? qty : 0);
+  }, [primaryAsset?.assetId, primaryAsset?.symbol, primaryAsset?.chainId, userBalance]);
+
+
+
+  
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
@@ -272,6 +340,7 @@ const FastQRCodeScreen = () => {
 	    }}
 	    primaryAsset={primaryAsset}
 	    primaryChain={primaryChain}
+		primaryBalance={primaryBalance}
 	    isLoading={resumeInProgress || !primaryAsset || !primaryChain}
 	    onScanSuccess={async (pixPayload) => {
           try {
@@ -446,26 +515,35 @@ const FastQRCodeScreen = () => {
 			}
 
 
+			// Resolve the correct Circle wallet ID for the primary chain
+			const circleWalletIdForPrimaryChain = (() => {
+			  const wallets = sessionStore.user?.wallets || [];
+			  const match = wallets.find(
+			    (w: any) => String(w.chain_id) === String(primary.chainId)
+			  );
+			  return match?.circle_wallet_id || sessionStore.user?.circleWallet?.circleWalletId || null;
+			})();
 
             const rawAmount = Math.floor(quotedAmount * Math.pow(10, decimals)).toString();
 
-            const payload = {
-              paymentId: `${Date.now()}_${uuid.v4()}`,
-              token: tokenAddress,
-              amount: rawAmount,
-              usePaymaster: true,
-              chainId: Number(primary.chainIdOnchain),
-              walletId: sessionStore.user.circleWallet?.circleWalletId,
-              assetId: primary.assetId,
-              tokenSymbol: assetSymbol,
-              rawBrcode: pixPayload.brCode,
-              transferoTxid: pixPayload.txid,
-              taxId: pixPayload.taxId ?? '55479337000115',
-              name: pixPayload.merchantName ?? '',
-              pixKey: pixPayload.pixKey ?? '',
-              fiatAmount: pixPayload.transactionAmount.toFixed(6),
-              toTokenAmount: quotedAmount.toFixed(6),
-            };
+			const payload = {
+			  paymentId: `${Date.now()}_${uuid.v4()}`,
+			  token: tokenAddress,
+			  amount: rawAmount,
+			  usePaymaster: true,
+			  chainId: Number(primary.chainIdOnchain),
+			  walletId: circleWalletIdForPrimaryChain,
+			  assetId: primary.assetId,
+			  tokenSymbol: assetSymbol,
+			  rawBrcode: pixPayload.brCode,
+			  transferoTxid: pixPayload.txid,
+			  taxId: pixPayload.taxId ?? '55479337000115',
+			  name: pixPayload.merchantName ?? '',
+			  pixKey: pixPayload.pixKey ?? '',
+			  fiatAmount: pixPayload.transactionAmount.toFixed(6),
+			  toTokenAmount: quotedAmount.toFixed(6),
+			};
+
 
             console.log('[FastQRCode] 📦 Payload to send:', payload);
 
@@ -506,7 +584,8 @@ const FastQRCodeScreen = () => {
 
 
 
-const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain, isLoading }) => {
+const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain, primaryBalance, isLoading }) => {
+
   const insets = useSafeAreaInsets();
   const [cameraPermission, setCameraPermission] = useState<PermissionResponse | null>(null);
   const [cameraReady, setCameraReady] = useState(false);
@@ -685,7 +764,8 @@ const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain
 	    )}
 
 	    {/* Return to App Button (animated) */}
-		<View style={{ marginBottom: 60, alignItems: 'center' }}>
+		<View style={{ marginBottom: 110, alignItems: 'center' }}>
+
 		  <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
 		    <Pressable
 		      onPressIn={animatePress}
@@ -727,7 +807,23 @@ const FastQRCodeScanner = ({ onCancel, onScanSuccess, primaryAsset, primaryChain
 		            {primaryChain.name}
 		          </Text>
 		        )}
+
+
 		      </View>
+			  {typeof primaryBalance === 'number' && (primaryAsset?.symbol || primaryChain?.name) && (
+			    <Text
+			      style={{
+			        color: '#aaa',
+			        fontSize: 15,
+			        marginTop: 8,
+			        fontWeight: '400',
+			        textAlign: 'center',
+			      }}
+			    >
+			      {`Balance: ${Number(primaryBalance).toFixed(6).replace(/\.?0+$/, '')}${primaryAsset?.symbol ? ` ${primaryAsset.symbol}` : ''}`}
+			    </Text>
+			  )}
+
 		    </View>
 		  )}
 
@@ -764,4 +860,5 @@ const styles = StyleSheet.create({
   
 });
 
-export default FastQRCodeScreen;
+export default observer(FastQRCodeScreen);
+

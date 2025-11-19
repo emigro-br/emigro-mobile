@@ -17,22 +17,24 @@ import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { AssetListTile } from '@/components/AssetListTile';
 import { assetIconMap } from '@/utils/assetIcons';
-import { useWalletBalances } from '@/hooks/useWalletBalances';
 import { sessionStore } from '@/stores/SessionStore';
+import { balanceStore } from '@/stores/BalanceStore';
 import { Card } from '@/components/ui/card';
 import { Button, ButtonText } from '@/components/ui/button';
 import { TouchableOpacity } from 'react-native';
 
 import { useChainStore } from '@/stores/ChainStore';
 
-const Transfers = () => {
-  const router = useRouter();
-  const { user } = sessionStore;
-  const wallets = user?.wallets ?? [];
-  const walletId = wallets[0]?.id;
-  const { balances } = useWalletBalances(walletId);
 
-  const [selectedAsset, setSelectedAsset] = useState<any | null>(null);
+const Transfers = () => {
+	const router = useRouter();
+	const { user } = sessionStore;
+	const wallets = user?.wallets ?? [];
+	const balances = balanceStore.userBalance ?? [];
+
+	const [selectedAsset, setSelectedAsset] = useState<any | null>(null);
+
+
   const [recipientAddress, setRecipientAddress] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   
@@ -40,7 +42,15 @@ const Transfers = () => {
 
   const chains = useChainStore((state) => state.chains);
   
-  // ✅ Trigger modal *after* asset is selected
+  // Ensure chains and balances are loaded (multichain)
+  useEffect(() => {
+    // Load chains (for names/icons)
+    useChainStore.getState().fetchChains();
+
+    // Load aggregated balances across all chains
+    balanceStore.fetchUserBalance().catch(() => {});
+  }, []);
+
   useEffect(() => {
     if (selectedAsset) {
       setModalVisible(true);
@@ -67,6 +77,19 @@ const Transfers = () => {
       return;
     }
 
+    if (!selectedAsset) {
+      setAddressError('Please select an asset first.');
+      return;
+    }
+
+    const sourceWallet =
+      wallets.find((w: any) => w.chainId === selectedAsset.chainId) ?? null;
+
+    if (!sourceWallet) {
+      setAddressError('No wallet found for the selected chain.');
+      return;
+    }
+
     setAddressError('');
     setModalVisible(false);
     router.push({
@@ -78,10 +101,11 @@ const Transfers = () => {
         balance: selectedAsset.balance,
         chainId: selectedAsset.chainId,
         recipientAddress,
-        walletId,
+        walletId: sourceWallet.id,
       },
     });
   };
+
 
   
 
@@ -96,10 +120,12 @@ const Transfers = () => {
 
 	  <VStack space="sm">
 	  {balances.map((asset, index) => {
-	    const iconKey = asset.iconUrl?.replace('.png', '').toLowerCase() ?? '';
-	    const icon = assetIconMap[iconKey];
+	    const icon =
+	      assetIconMap[(asset?.symbol || '').toLowerCase()] ??
+	      assetIconMap['default'];
 
 	    return (
+
 			<Pressable
 			  key={index}
 			  onPress={() => {

@@ -33,6 +33,8 @@ import { SelectAssetActionSheet } from './SelectAssetActionSheet';
 
 import { fetchUniswapQuote } from '@/services/emigro/uniswap';
 import { toBaseUnits } from '@/utils/token.utils';
+import { backendUrl } from '@/services/emigro/api';
+
 
 const getAssetIcon = (asset: string | { symbol?: string } | null | undefined) => {
   const symbol =
@@ -118,6 +120,54 @@ const Swap = () => {
     ...a,
   });
     
+  /**
+   * Ensure a wallet is selected for the given chain and set the default asset (You Pay).
+   * - picks the user's wallet that belongs to the given chain
+   * - fetches /chains/:id/assets and selects the asset with isDefault === true
+   * - falls back to the first wallet balance if no default asset is marked
+   */
+  const selectDefaultForChain = async (chainId: string) => {
+    try {
+      // pick wallet on this chain
+      const walletOnChain = wallets.find((w) => w.chainId === chainId);
+      if (!walletOnChain) {
+        console.warn('[swap][index] No wallet found for chainId:', chainId);
+        return;
+      }
+
+      // ensure balances exist for that wallet (for fallback)
+      const maybeBalances = balanceStore.walletBalances[walletOnChain.id];
+      if (!maybeBalances) {
+        await balanceStore.fetchWalletBalance(walletOnChain.id, { force: true });
+      }
+
+      setSelectedWalletId(walletOnChain.id);
+
+      // fetch chain assets to locate default
+      const res = await fetch(`${backendUrl}/chains/${chainId}/assets`);
+      const assets = await res.json();
+
+      // prefer asset with isDefault === true
+      const defaultAsset = assets.find((a: any) => a?.isDefault === true);
+      if (defaultAsset) {
+        setSellAsset(sanitizeAsset(defaultAsset));
+        return;
+      }
+
+      // fallback: first balance found on wallet
+      const balances = balanceStore.walletBalances[walletOnChain.id] ?? [];
+      if (balances.length > 0) {
+        setSellAsset(sanitizeAsset(balances[0]));
+        return;
+      }
+
+      // last resort: clear
+      setSellAsset(null);
+    } catch (e) {
+      console.warn('[swap][index] selectDefaultForChain error:', e);
+    }
+  };
+
   const fetchQuote = async (retry = 0): Promise<void> => {
     const parsedValue = Number(sellValue);
     const isValid =
@@ -316,26 +366,27 @@ const Swap = () => {
 
 
 
-  const DEFAULT_CHAIN_ID = '05c65d14-291c-11f0-8f36-02ee245cdcb3';
-  const DEFAULT_ASSET_ID = '1e90df0a-2920-11f0-8f36-02ee245cdcb3';
-
   useEffect(() => {
-    const baseWallet = wallets.find(w => w.chainId === DEFAULT_CHAIN_ID);
-    const walletId = baseWallet?.id;
+    // On mount (and when chains/wallets update), auto-select the system default chain + its default asset.
+    try {
+      const getDefaultChain = useChainStore.getState().getDefaultChain;
+      const def = typeof getDefaultChain === 'function' ? getDefaultChain() : null;
 
-    if (!walletId) return;
-
-    const balances = balanceStore.walletBalances[walletId];
-    const usdc = balances?.find(a => a.assetId === DEFAULT_ASSET_ID);
-
-    if (walletId && usdc) {
-      setSelectedWalletId(walletId);
-      setSellAsset(usdc);
-    } else if (!balances) {
-      // Fetch if not already done
-      balanceStore.fetchWalletBalance(walletId, { force: true });
+      if (def?.id) {
+        selectDefaultForChain(def.id);
+      } else if (wallets.length > 0 && chains.length > 0) {
+        // Fallback: use the first wallet's chain if no default chain is marked
+        const firstWalletChainId = wallets[0].chainId;
+        if (firstWalletChainId) {
+          selectDefaultForChain(firstWalletChainId);
+        }
+      }
+    } catch (e) {
+      console.warn('[swap][index] default chain/asset bootstrap error:', e);
     }
-  }, [wallets, balanceStore.walletBalances]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wallets, chains]);
+
 
 
 
@@ -402,7 +453,16 @@ const Swap = () => {
     setSellValue('');
     setBuyValue('');
     setRate(null);
+
+    // Determine chainId (UUID) from wallet and set default asset for that chain
+    const selectedWallet = wallets.find((w) => w.id === walletId);
+    const chainUuid = selectedWallet?.chainId;
+    if (chainUuid) {
+      // fire and forget; it will set the sellAsset when fetched
+      selectDefaultForChain(chainUuid);
+    }
   };
+
   
   const renderSelectableCard = (
     value: string,

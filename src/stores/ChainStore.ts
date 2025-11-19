@@ -11,7 +11,7 @@ type Chain = {
   iconUrl?: string;
   icon?: any;
 
-  is_active?: boolean;
+  isActive?: boolean;
   supports_paymaster?: boolean;
   gasFeeSponsored?: boolean | number;
   nativeSymbol?: string;
@@ -23,9 +23,13 @@ type Chain = {
   rpcUrl?: string;
   isEvm?: boolean;
   mainnet?: boolean;
+
+  // ✅ new backend flag
+  isDefaultChain?: boolean;
   
   devOnly?: boolean;
 };
+
 
 interface ChainStoreState {
   chains: Chain[];
@@ -39,11 +43,30 @@ export const useChainStore = create<ChainStoreState>((set, get) => ({
   fetchChains: async () => {
     try {
       const res = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/chains`);
-      const rawChains: Chain[] = await res.json();
+      const rawChains: any[] = await res.json();
 
       console.log('[ChainStore] 🔍 Raw chains from backend:', rawChains);
 
-      const processedChains = rawChains.map((chain) => {
+      // Determine if we are in "production" mode based on PROD env:
+      // - PROD missing OR PROD === 'YES'  -> production
+      // - PROD === 'NO'                   -> non-production (dev)
+      const prodFlag = process.env.PROD;
+      const isProdEnv = !prodFlag || prodFlag === 'YES';
+
+      // Keep only real, enabled mainnets
+      // In production: exclude dev-only chains
+      // In dev (PROD=NO): include dev-only chains as well
+      const filtered = rawChains.filter((c) => {
+        const mainnet = c?.mainnet === true;
+        const isActive =
+          c?.isActive === true || c?.is_active === true; // tolerate legacy key
+
+        const notDevOnly = isProdEnv ? c?.devOnly !== true : true;
+
+        return mainnet && isActive && notDevOnly;
+      });
+
+      const processedChains: Chain[] = filtered.map((chain) => {
         const iconKey = chain.iconUrl;
         const resolvedIcon = iconKey ? chainIconMap[iconKey] : undefined;
 
@@ -53,11 +76,19 @@ export const useChainStore = create<ChainStoreState>((set, get) => ({
         };
       });
 
+      console.log(
+        '[ChainStore] ✅ Processed (mainnet+active) chains (isProdEnv=',
+        isProdEnv,
+        '):',
+        processedChains,
+      );
       set({ chains: processedChains });
     } catch (error) {
       console.error('[ChainStore] ❌ Failed to fetch chains:', error);
     }
   },
+
+
 
   getChainById: (id: string | number) => {
     const idStr = id.toString();
@@ -68,4 +99,11 @@ export const useChainStore = create<ChainStoreState>((set, get) => ({
     console.log('[ChainStore] 🔎 getChainById called for:', id, '| Found:', match);
     return match;
   },
+  
+  getDefaultChain: () => {
+    const def = get().chains.find((c) => c.isDefaultChain === true);
+    console.log('[ChainStore] ⭐ getDefaultChain:', def);
+    return def;
+  },
+  
 }));
