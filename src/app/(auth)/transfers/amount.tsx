@@ -1,5 +1,3 @@
-// src/app/(auth)/transfers/amount.tsx
-
 import React, { useState, useRef } from 'react';
 import {
   View,
@@ -27,13 +25,14 @@ export default function EnterAmountScreen() {
   } = useLocalSearchParams();
 
   const [amount, setAmount] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const parsedAmount = parseFloat(amount || '0');
   const parsedBalance = parseFloat(balance || '0');
 
   const isOverBalance = parsedAmount > parsedBalance;
   const isInvalid = !parsedAmount || isOverBalance;
-  const isDisabled = isInvalid;
+  const isDisabled = isInvalid || isSubmitting;
 
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const animatePress = () => {
@@ -46,6 +45,13 @@ export default function EnterAmountScreen() {
   const { handleSubmit } = useForm();
 
   const onSubmit = async () => {
+    if (isSubmitting) {
+      console.log('[amount.tsx][onSubmit] ⚠️ Already submitting, ignoring duplicate press');
+      return;
+    }
+
+    setIsSubmitting(true);
+
     console.log('[amount.tsx][onSubmit] 📨 Starting transfer...');
     console.log('[amount.tsx][onSubmit] Params:', {
       walletId,
@@ -61,17 +67,19 @@ export default function EnterAmountScreen() {
     }
 
     try {
-		await createCircleTransfer({
-		  sourceWalletId: walletId,
-		  assetId,
-		  destinationAddress: recipientAddress,
-		  amount,
-		});
+      await createCircleTransfer({
+        sourceWalletId: walletId,
+        assetId,
+        destinationAddress: recipientAddress,
+        amount,
+      });
 
       console.log('[amount.tsx][onSubmit] ✅ Transfer request sent successfully');
       router.replace('/transfers/confirm/status?success=true');
+      // Do not reset isSubmitting here; we are leaving this screen.
     } catch (err) {
       console.error('[amount.tsx][onSubmit] ❌ Transfer failed:', err);
+      setIsSubmitting(false);
       router.replace('/transfers/confirm/status?error=transfer_failed');
     }
   };
@@ -161,7 +169,9 @@ export default function EnterAmountScreen() {
               isDisabled ? 'opacity-50' : ''
             }`}
           >
-            <Text className="text-white font-bold text-lg">Transfer</Text>
+            <Text className="text-white font-bold text-lg">
+              {isSubmitting ? 'Transferring...' : 'Transfer'}
+            </Text>
           </Animated.View>
         </Pressable>
       </KeyboardAvoidingView>

@@ -93,6 +93,7 @@ const Swap = () => {
 	  'aerodrome-slipstream': 'Aerodrome',
       'camelot': 'Camelot',
       'sushiswap': 'SushiSwap',
+	  'lfj': 'LFJ',
     };
 
     return nameMap[normalized] || 'Unknown';
@@ -273,7 +274,7 @@ const Swap = () => {
     useCallback(() => {
       const interval = setInterval(() => {
         fetchQuote();
-      }, 20000);
+      }, 60000); // ⬅️ increased timer (60,000 ms = 60s)
 
       return () => {
         console.log('[swap index] 🔁 Clearing interval on blur');
@@ -281,6 +282,7 @@ const Swap = () => {
       };
     }, [sellAsset, buyAsset, sellValue])
   );
+
 
 
 
@@ -751,17 +753,20 @@ const Swap = () => {
 				  
 				    {/* Row utility */}
 				    {[
-				      {
-				        label: 'Best Price',
-				        value: formatRouterName(lastQuote?.routerType),
+						{
+						  label: 'Best Price',
+						  value: formatRouterName(lastQuote?.routerType),
 						icon:
 						  lastQuote?.routerType === 'aerodrome' ||
 						  lastQuote?.routerType === 'aerodrome-slipstream'
 						    ? require('@/assets/images/dex/aero.png')
+						    : lastQuote?.routerType === 'lfj'
+						    ? require('@/assets/images/dex/lfj.png')
 						    : lastQuote?.routerType === 'uniswap-v2'
 						    ? require('@/assets/images/dex/uniswap-v2.png')
 						    : require('@/assets/images/dex/uniswap-v3.png'),
-				      },
+						},
+
 				      {
 				        label: 'LP Provider Fee',
 				        value: `${Number(lastQuote?.liquidityPoolFeePercent || 0).toFixed(2)}%`,
